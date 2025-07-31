@@ -1,0 +1,407 @@
+"""Pydantic schemas for request/response validation."""
+
+import uuid
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, EmailStr, validator
+
+
+# Authentication schemas
+class UserLogin(BaseModel):
+    """Schema for user login request."""
+
+    email: EmailStr
+    password: str
+
+
+class UserRegister(BaseModel):
+    """Schema for user registration request."""
+
+    email: EmailStr
+    name: str
+    password: str
+
+
+class Token(BaseModel):
+    """Schema for JWT token response."""
+
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    """Schema for token data."""
+
+    email: Optional[str] = None
+
+
+class UserResponse(BaseModel):
+    """Schema for user response (without password)."""
+
+    id: uuid.UUID
+    email: str
+    name: str
+    is_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class UserUpdate(BaseModel):
+    """Schema for user update request."""
+
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    is_active: Optional[bool] = None
+
+
+# Workflow schemas
+class WorkflowCreate(BaseModel):
+    """Schema for workflow creation request."""
+
+    name: str
+    description: Optional[str] = None
+    definition: Dict[str, Any]
+
+    @validator("name")
+    def validate_name(cls, v):
+        if not v or not v.strip():
+            raise ValueError("Workflow name cannot be empty")
+        if len(v.strip()) > 255:
+            raise ValueError("Workflow name cannot exceed 255 characters")
+        return v.strip()
+
+    @validator("definition")
+    def validate_definition(cls, v):
+        if not isinstance(v, dict):
+            raise ValueError("Workflow definition must be a valid JSON object")
+
+        # Basic workflow structure validation
+        required_fields = ["nodes", "edges"]
+        for field in required_fields:
+            if field not in v:
+                raise ValueError(f'Workflow definition must contain "{field}" field')
+
+        # Validate nodes structure
+        if not isinstance(v["nodes"], list):
+            raise ValueError("Workflow nodes must be a list")
+
+        # Validate edges structure
+        if not isinstance(v["edges"], list):
+            raise ValueError("Workflow edges must be a list")
+
+        # Validate each node has required fields
+        for i, node in enumerate(v["nodes"]):
+            if not isinstance(node, dict):
+                raise ValueError(f"Node {i} must be an object")
+            if "id" not in node:
+                raise ValueError(f'Node {i} must have an "id" field')
+            if "type" not in node:
+                raise ValueError(f'Node {i} must have a "type" field')
+
+        # Validate each edge has required fields
+        for i, edge in enumerate(v["edges"]):
+            if not isinstance(edge, dict):
+                raise ValueError(f"Edge {i} must be an object")
+            if "source" not in edge:
+                raise ValueError(f'Edge {i} must have a "source" field')
+            if "target" not in edge:
+                raise ValueError(f'Edge {i} must have a "target" field')
+
+        return v
+
+
+class WorkflowUpdate(BaseModel):
+    """Schema for workflow update request."""
+
+    name: Optional[str] = None
+    description: Optional[str] = None
+    definition: Optional[Dict[str, Any]] = None
+    is_active: Optional[bool] = None
+
+    @validator("name")
+    def validate_name(cls, v):
+        if v is not None:
+            if not v or not v.strip():
+                raise ValueError("Workflow name cannot be empty")
+            if len(v.strip()) > 255:
+                raise ValueError("Workflow name cannot exceed 255 characters")
+            return v.strip()
+        return v
+
+    @validator("definition")
+    def validate_definition(cls, v):
+        if v is not None:
+            if not isinstance(v, dict):
+                raise ValueError("Workflow definition must be a valid JSON object")
+
+            # Basic workflow structure validation
+            required_fields = ["nodes", "edges"]
+            for field in required_fields:
+                if field not in v:
+                    raise ValueError(
+                        f'Workflow definition must contain "{field}" field'
+                    )
+
+            # Validate nodes structure
+            if not isinstance(v["nodes"], list):
+                raise ValueError("Workflow nodes must be a list")
+
+            # Validate edges structure
+            if not isinstance(v["edges"], list):
+                raise ValueError("Workflow edges must be a list")
+
+            # Validate each node has required fields
+            for i, node in enumerate(v["nodes"]):
+                if not isinstance(node, dict):
+                    raise ValueError(f"Node {i} must be an object")
+                if "id" not in node:
+                    raise ValueError(f'Node {i} must have an "id" field')
+                if "type" not in node:
+                    raise ValueError(f'Node {i} must have a "type" field')
+
+            # Validate each edge has required fields
+            for i, edge in enumerate(v["edges"]):
+                if not isinstance(edge, dict):
+                    raise ValueError(f"Edge {i} must be an object")
+                if "source" not in edge:
+                    raise ValueError(f'Edge {i} must have a "source" field')
+                if "target" not in edge:
+                    raise ValueError(f'Edge {i} must have a "target" field')
+
+        return v
+
+
+class WorkflowResponse(BaseModel):
+    """Schema for workflow response."""
+
+    id: uuid.UUID
+    name: str
+    description: Optional[str]
+    user_id: uuid.UUID
+    definition: Dict[str, Any]
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class WorkflowListResponse(BaseModel):
+    """Schema for workflow list response."""
+
+    workflows: List[WorkflowResponse]
+    total: int
+    page: int
+    page_size: int
+
+
+# Workflow execution schemas
+class WorkflowExecuteRequest(BaseModel):
+    """Schema for workflow execution request."""
+
+    input_data: Optional[Dict[str, Any]] = None
+
+
+class ExecutionStatusResponse(BaseModel):
+    """Schema for execution status response."""
+
+    id: uuid.UUID
+    workflow_id: uuid.UUID
+    status: str
+    input_data: Optional[Dict[str, Any]]
+    output_data: Optional[Dict[str, Any]]
+    error_message: Optional[str]
+    started_at: datetime
+    completed_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+class ExecutionLogResponse(BaseModel):
+    """Schema for execution log response."""
+
+    id: uuid.UUID
+    step_name: str
+    step_type: str
+    input_data: Optional[Dict[str, Any]]
+    output_data: Optional[Dict[str, Any]]
+    duration_ms: Optional[int]
+    error_message: Optional[str]
+    timestamp: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ExecutionResultResponse(BaseModel):
+    """Schema for workflow execution result."""
+
+    execution_id: uuid.UUID
+    status: str
+    output_data: Optional[Dict[str, Any]]
+    error_message: Optional[str]
+
+
+# Template schemas
+class TemplateParameterCreate(BaseModel):
+    """Schema for template parameter creation."""
+
+    name: str
+    description: Optional[str] = None
+    parameter_type: str
+    is_required: bool = False
+    default_value: Optional[Any] = None
+    validation_rules: Optional[Dict[str, Any]] = None
+
+    @validator("name")
+    def validate_name(cls, v):
+        if not v or not v.strip():
+            raise ValueError("Parameter name cannot be empty")
+        if len(v.strip()) > 255:
+            raise ValueError("Parameter name cannot exceed 255 characters")
+        return v.strip()
+
+    @validator("parameter_type")
+    def validate_parameter_type(cls, v):
+        allowed_types = ["string", "number", "boolean", "array", "object"]
+        if v not in allowed_types:
+            raise ValueError(f"Parameter type must be one of: {', '.join(allowed_types)}")
+        return v
+
+
+class TemplateParameterResponse(BaseModel):
+    """Schema for template parameter response."""
+
+    id: uuid.UUID
+    template_id: uuid.UUID
+    name: str
+    description: Optional[str]
+    parameter_type: str
+    is_required: bool
+    default_value: Optional[Any]
+    validation_rules: Optional[Dict[str, Any]]
+
+    class Config:
+        from_attributes = True
+
+
+class TemplateCreate(BaseModel):
+    """Schema for template creation request."""
+
+    name: str
+    description: Optional[str] = None
+    category: str
+    definition: Dict[str, Any]
+    parameters: Optional[List[TemplateParameterCreate]] = []
+
+    @validator("name")
+    def validate_name(cls, v):
+        if not v or not v.strip():
+            raise ValueError("Template name cannot be empty")
+        if len(v.strip()) > 255:
+            raise ValueError("Template name cannot exceed 255 characters")
+        return v.strip()
+
+    @validator("category")
+    def validate_category(cls, v):
+        allowed_categories = ["sales", "service", "parts", "general"]
+        if v.lower() not in allowed_categories:
+            raise ValueError(f"Category must be one of: {', '.join(allowed_categories)}")
+        return v.lower()
+
+    @validator("definition")
+    def validate_definition(cls, v):
+        if not isinstance(v, dict):
+            raise ValueError("Template definition must be a valid JSON object")
+
+        # Basic template structure validation
+        required_fields = ["nodes", "edges"]
+        for field in required_fields:
+            if field not in v:
+                raise ValueError(f'Template definition must contain "{field}" field')
+
+        # Validate nodes structure
+        if not isinstance(v["nodes"], list):
+            raise ValueError("Template nodes must be a list")
+
+        # Validate edges structure
+        if not isinstance(v["edges"], list):
+            raise ValueError("Template edges must be a list")
+
+        return v
+
+
+class TemplateUpdate(BaseModel):
+    """Schema for template update request."""
+
+    name: Optional[str] = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    definition: Optional[Dict[str, Any]] = None
+    is_active: Optional[bool] = None
+
+    @validator("name")
+    def validate_name(cls, v):
+        if v is not None:
+            if not v or not v.strip():
+                raise ValueError("Template name cannot be empty")
+            if len(v.strip()) > 255:
+                raise ValueError("Template name cannot exceed 255 characters")
+            return v.strip()
+        return v
+
+    @validator("category")
+    def validate_category(cls, v):
+        if v is not None:
+            allowed_categories = ["sales", "service", "parts", "general"]
+            if v.lower() not in allowed_categories:
+                raise ValueError(f"Category must be one of: {', '.join(allowed_categories)}")
+            return v.lower()
+        return v
+
+
+class TemplateResponse(BaseModel):
+    """Schema for template response."""
+
+    id: uuid.UUID
+    name: str
+    description: Optional[str]
+    category: str
+    definition: Dict[str, Any]
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+    parameters: List[TemplateParameterResponse] = []
+
+    class Config:
+        from_attributes = True
+
+
+class TemplateListResponse(BaseModel):
+    """Schema for template list response."""
+
+    templates: List[TemplateResponse]
+    total: int
+    page: int
+    page_size: int
+
+
+class TemplateInstantiateRequest(BaseModel):
+    """Schema for template instantiation request."""
+
+    name: str
+    description: Optional[str] = None
+    parameter_values: Dict[str, Any] = {}
+
+    @validator("name")
+    def validate_name(cls, v):
+        if not v or not v.strip():
+            raise ValueError("Workflow name cannot be empty")
+        if len(v.strip()) > 255:
+            raise ValueError("Workflow name cannot exceed 255 characters")
+        return v.strip()

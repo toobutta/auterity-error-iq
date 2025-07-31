@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Cline Pre-Planning Hook",
+  "description": "Triggers when user enters a prompt containing #cline in Vibe mode to identify tasks that Cline can prepare and begin pre-development legwork for",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "The user has entered a prompt containing #cline which indicates they want to do pre-planning development work. Analyze their request to identify specific tasks that Cline can prepare and begin pre-development legwork for. Consider the current project structure (AutoMatrix AI Hub - a workflow automation platform for automotive dealerships with FastAPI backend and React frontend) and suggest concrete preparatory steps Cline could take before full development begins. Focus on file analysis, dependency checking, code structure planning, and any preliminary setup tasks."
+  }
+}

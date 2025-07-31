@@ -1,0 +1,21 @@
+{
+  "clineRules": [
+    "Follow the existing code patterns and architecture established in the project",
+    "Use TypeScript with strict typing - no 'any' types allowed",
+    "Follow the established naming conventions: PascalCase for components, camelCase for functions",
+    "Use Tailwind CSS for styling with existing utility patterns",
+    "Implement comprehensive error handling for all API calls and user interactions",
+    "Add proper accessibility attributes (ARIA labels, keyboard navigation)",
+    "Write unit tests with 90%+ coverage for all new components",
+    "Use the existing API client patterns in src/api/ for backend communication",
+    "Follow React best practices: functional components, hooks, proper state management",
+    "Ensure responsive design works across desktop and mobile viewports"
+  ],
+  "customInstructions": "You are working on AutoMatrix AI Hub, a workflow automation platform for automotive dealerships. The project uses FastAPI backend with React/TypeScript frontend. Focus on creating clean, maintainable code that follows the established patterns. When implementing components, ensure they integrate seamlessly with the existing workflow builder and execution system. Always consider the automotive dealership context when making UX decisions.",
+  "alwaysAllowReadOnly": true,
+  "alwaysAllowWrite": true,
+  "alwaysAllowExecute": false,
+  "requestLimit": 50,
+  "contextLength": 200000,
+  "modelId": "cerebras/llama-3.3-70b"
+}

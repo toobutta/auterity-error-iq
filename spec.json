@@ -1,0 +1,135 @@
+{
+  "title": "SPEC-1-AutoMatrix-AI-Hub",
+  "background": "AutoMatrix AI is a next-generation, API-first, workflow-centric AI platform for automotive dealerships...",
+  "requirements": {
+    "must_have": [
+      "Unified AI Workflow Designer",
+      "Role-Based AI Agents",
+      "Multi-Tenant SaaS Core",
+      "CDK Global DMS Integration",
+      "CRM Integration",
+      "Model Control Programs (MCP)",
+      "Model Context Protocol",
+      "Secure Auth",
+      "Audit Trail Logging"
+    ],
+    "should_have": [
+      "Prebuilt AI Agent Templates",
+      "Workflow Analytics Dashboard",
+      "Mobile PWA Access",
+      "Workflow Import/Export"
+    ],
+    "could_have": [
+      "Auto Workflow Suggestions",
+      "Sub-agent Replay UI",
+      "Document Autofill for F&I"
+    ],
+    "wont_have": [
+      "AR/VR showroom",
+      "Headless browser scraping",
+      "In-vehicle integrations"
+    ]
+  },
+  "method": {
+    "architecture": "API-first, Workflow Engine with drag-and-drop UI, containerized agents, MCP routing",
+    "components": [
+      "API Gateway",
+      "Workflow Engine",
+      "MCP Layer",
+      "Advisor Agents",
+      "Data Layer",
+      "Integration Layer"
+    ]
+  },
+  "implementation": {
+    "timeline": [
+      "Infra + Auth + DB (Month 1)",
+      "Workflow UI + Engine (Month 2)",
+      "Advisor Agent Framework (Month 4)",
+      "MCP Model Layer (Month 5)",
+      "DMS/CRM Integrations (Month 6)",
+      "PWA + Analytics + Templates (Month 7)",
+      "Internal QA + Dealership Pilot (Month 8)",
+      "Review + Next Phase Planning (Month 9)"
+    ],
+    "tools": [
+      "FastAPI",
+      "React",
+      "Temporal",
+      "OpenAI",
+      "GitHub Actions",
+      "Grafana",
+      "PostgreSQL"
+    ],
+    "team": {
+      "Tech Lead": 1,
+      "Backend": 3,
+      "Frontend": 2,
+      "ML": 2,
+      "DevOps": 1,
+      "Integration": 1,
+      "QA": 1
+    }
+  },
+  "milestones": [
+    {
+      "milestone": "M1",
+      "month": 1,
+      "deliverable": "Infra, API Gateway, Auth"
+    },
+    {
+      "milestone": "M2",
+      "month": 2,
+      "deliverable": "Workflow Builder MVP"
+    },
+    {
+      "milestone": "M3",
+      "month": 4,
+      "deliverable": "Sales/Service/Parts Advisors"
+    },
+    {
+      "milestone": "M4",
+      "month": 5,
+      "deliverable": "MCP Layer + Model Routing"
+    },
+    {
+      "milestone": "M5",
+      "month": 5,
+      "deliverable": "Agent \u2194 Workflow Execution"
+    },
+    {
+      "milestone": "M6",
+      "month": 6,
+      "deliverable": "DMS & CRM Integration"
+    },
+    {
+      "milestone": "M7",
+      "month": 7,
+      "deliverable": "Mobile UI, Dashboards"
+    },
+    {
+      "milestone": "M8",
+      "month": 8,
+      "deliverable": "Live Pilot at Dealership"
+    },
+    {
+      "milestone": "M9",
+      "month": 9,
+      "deliverable": "Feedback, Metrics, Plan v1.1"
+    }
+  ],
+  "results": {
+    "metrics": {
+      "workflow_success": ">= 85%",
+      "agent_response_time": "<= 2.5s",
+      "override_rate": "<= 15%",
+      "user_satisfaction": ">= 80%"
+    },
+    "tools": [
+      "Grafana",
+      "Postgres",
+      "Audit Trail DB",
+      "Surveys"
+    ]
+  }
+}

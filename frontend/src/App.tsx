@@ -1,0 +1,123 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
+import { AuthProvider } from './contexts/AuthContext';
+import { ErrorProvider } from './contexts/ErrorContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import LoginForm from './components/auth/LoginForm';
+import RegisterForm from './components/auth/RegisterForm';
+import Dashboard from './pages/Dashboard';
+
+// Lazy load heavy components
+const Workflows = lazy(() => import('./pages/Workflows'));
+const Templates = lazy(() => import('./pages/Templates'));
+const WorkflowBuilderPage = lazy(() => import('./pages/WorkflowBuilderPage'));
+
+// Loading component for lazy-loaded routes
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    <span className="ml-3 text-gray-600">Loading...</span>
+  </div>
+);
+
+function App() {
+  return (
+    <ErrorBoundary 
+      showDetails={process.env.NODE_ENV === 'development'}
+      enableReporting={true}
+      component="App"
+    >
+      <ErrorProvider 
+        maxErrors={10}
+        enableErrorReporting={true}
+        toastPosition="top-right"
+      >
+        <AuthProvider>
+          <Router>
+            <div className="App">
+              <Routes>
+                {/* Public routes */}
+                <Route path="/login" element={
+                  <ErrorBoundary component="LoginForm">
+                    <LoginForm />
+                  </ErrorBoundary>
+                } />
+                <Route path="/register" element={
+                  <ErrorBoundary component="RegisterForm">
+                    <RegisterForm />
+                  </ErrorBoundary>
+                } />
+                
+                {/* Protected routes */}
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <ErrorBoundary component="Dashboard">
+                        <Dashboard />
+                      </ErrorBoundary>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/workflows"
+                  element={
+                    <ProtectedRoute>
+                      <ErrorBoundary component="Workflows">
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <Workflows />
+                        </Suspense>
+                      </ErrorBoundary>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/templates"
+                  element={
+                    <ProtectedRoute>
+                      <ErrorBoundary component="Templates">
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <Templates />
+                        </Suspense>
+                      </ErrorBoundary>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/workflows/builder"
+                  element={
+                    <ProtectedRoute>
+                      <ErrorBoundary component="WorkflowBuilder">
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <WorkflowBuilderPage />
+                        </Suspense>
+                      </ErrorBoundary>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/workflows/builder/:id"
+                  element={
+                    <ProtectedRoute>
+                      <ErrorBoundary component="WorkflowBuilder">
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <WorkflowBuilderPage />
+                        </Suspense>
+                      </ErrorBoundary>
+                    </ProtectedRoute>
+                  }
+                />
+                
+                {/* Default redirect */}
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+            </div>
+          </Router>
+        </AuthProvider>
+      </ErrorProvider>
+    </ErrorBoundary>
+  );
+}
+
+export default App;

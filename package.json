@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "test": "cd frontend && npm run test",
+    "test:frontend": "cd frontend && npm run test",
+    "test:backend": "cd backend && pytest",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && uvicorn app.main:app --reload"
+  },
+  "dependencies": {
+    "apexcharts": "^5.3.2",
+    "plotly.js": "^3.0.3",
+    "react-flow-renderer": "^10.3.17",
+    "recharts": "^3.1.0"
+  },
+  "devDependencies": {
+    "react-syntax-highlighter": "^15.6.1"
+  }
+}
