@@ -161,7 +161,7 @@ export const isRetryableError = (category: ErrorCategory, code: string): boolean
 /**
  * Generate suggested actions for error recovery
  */
-export const generateSuggestedActions = (category: ErrorCategory, code: string): string[] => {
+export const generateSuggestedActions = (category: ErrorCategory, _code: string): string[] => {
   const actions: string[] = [];
   
   switch (category) {

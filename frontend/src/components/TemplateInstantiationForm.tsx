@@ -117,7 +117,7 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
         break;
     }
 
-    // Custom validation rules
+    // Custom validation rules - check for number values specifically
     if (parameter.validationRules && value !== '' && value !== null && value !== undefined) {
       const rules = parameter.validationRules;
       

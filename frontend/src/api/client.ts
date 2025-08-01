@@ -1,5 +1,10 @@
-import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
+import axios, { AxiosResponse, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 import { logApiCall } from '../utils/logger';
+
+// Extended interfaces for request timing
+interface TimedAxiosRequestConfig extends InternalAxiosRequestConfig<any> {
+  requestStartTime?: number;
+}
 
 // Create axios instance with base configuration
 const apiClient = axios.create({
@@ -12,7 +17,7 @@ const apiClient = axios.create({
 
 // Request interceptor to add auth token and start timing
 apiClient.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
+  (config: TimedAxiosRequestConfig) => {
     const token = localStorage.getItem('access_token');
     if (token) {
       config.headers = config.headers || {};
@@ -20,7 +25,7 @@ apiClient.interceptors.request.use(
     }
     
     // Add request start time for duration calculation
-    (config as any).requestStartTime = Date.now();
+    config.requestStartTime = Date.now();
     
     return config;
   },
@@ -33,7 +38,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     // Calculate request duration
-    const startTime = (response.config as any).requestStartTime;
+    const startTime = (response.config as TimedAxiosRequestConfig).requestStartTime;
     const duration = startTime ? Date.now() - startTime : undefined;
     
     // Extract correlation ID from response headers

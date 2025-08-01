@@ -1,5 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AppError, ErrorCategory, ErrorSeverity } from '../types/error';
+import { AppError, ErrorSeverity } from '../types/error';
 import { createAppError } from '../utils/errorUtils';
 
 interface Props {

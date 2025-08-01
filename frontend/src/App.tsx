@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard';
 const Workflows = lazy(() => import('./pages/Workflows'));
 const Templates = lazy(() => import('./pages/Templates'));
 const WorkflowBuilderPage = lazy(() => import('./pages/WorkflowBuilderPage'));
+const ErrorDisplayDemo = lazy(() => import('./pages/ErrorDisplayDemo'));
 
 // Loading component for lazy-loaded routes
 const LoadingSpinner = () => (
@@ -103,6 +104,18 @@ function App() {
                       <ErrorBoundary component="WorkflowBuilder">
                         <Suspense fallback={<LoadingSpinner />}>
                           <WorkflowBuilderPage />
+                        </Suspense>
+                      </ErrorBoundary>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/error-demo"
+                  element={
+                    <ProtectedRoute>
+                      <ErrorBoundary component="ErrorDisplayDemo">
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <ErrorDisplayDemo />
                         </Suspense>
                       </ErrorBoundary>
                     </ProtectedRoute>

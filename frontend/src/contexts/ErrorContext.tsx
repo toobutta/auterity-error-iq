@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useErrorHandler } from '../hooks/useErrorHandler';
-import { AppError, ErrorContext as ErrorContextType, ErrorRecoveryAction } from '../types/error';
+import { AppError, ErrorContext as ErrorContextType, ErrorRecoveryAction, ErrorReportData } from '../types/error';
 import { ErrorToast } from '../components/ErrorToast';
 
 interface ExtendedErrorContextType {
@@ -14,7 +14,7 @@ interface ExtendedErrorContextType {
   handleApiError: (error: unknown, context?: Partial<ErrorContextType>) => AppError;
   handleWorkflowError: (error: unknown, workflowId?: string, executionId?: string, context?: Partial<ErrorContextType>) => AppError;
   retryError: (error: AppError, retryAction: () => Promise<void>) => Promise<void>;
-  reportError: (reportData: any) => Promise<void>;
+  reportError: (reportData: ErrorReportData) => Promise<void>;
   getErrorsByCategory: (category: string) => AppError[];
   getErrorsBySeverity: (severity: string) => AppError[];
 }

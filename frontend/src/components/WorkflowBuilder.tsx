@@ -51,17 +51,7 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [showNodePanel, setShowNodePanel] = useState(false);
 
-  // Load existing workflow if workflowId is provided
-  useEffect(() => {
-    if (workflowId) {
-      loadWorkflow(workflowId);
-    } else {
-      // Initialize with default start and end nodes
-      initializeDefaultWorkflow();
-    }
-  }, [workflowId, initializeDefaultWorkflow, loadWorkflow]);
-
-  const loadWorkflow = async (id: string) => {
+  const loadWorkflow = useCallback(async (id: string) => {
     setIsLoading(true);
     try {
       const workflow = await getWorkflow(id);
@@ -98,9 +88,9 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [setNodes, setEdges]);
 
-  const initializeDefaultWorkflow = () => {
+  const initializeDefaultWorkflow = useCallback(() => {
     const startNode: Node<NodeData> = {
       id: 'start-1',
       type: 'start',
@@ -127,7 +117,17 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
 
     setNodes([startNode, endNode]);
     setEdges([]);
-  };
+  }, [setNodes, setEdges]);
+
+  // Load existing workflow if workflowId is provided
+  useEffect(() => {
+    if (workflowId) {
+      loadWorkflow(workflowId);
+    } else {
+      // Initialize with default start and end nodes
+      initializeDefaultWorkflow();
+    }
+  }, [workflowId, initializeDefaultWorkflow, loadWorkflow]);
 
   // Validate workflow whenever nodes or edges change
   useEffect(() => {

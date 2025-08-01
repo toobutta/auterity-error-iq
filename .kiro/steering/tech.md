@@ -14,6 +14,10 @@
 - **Workflow UI**: React Flow Renderer for drag-and-drop interface
 - **HTTP Client**: Axios for API communication
 - **Routing**: React Router DOM v6
+- **Charts**: Recharts for data visualization
+- **Syntax Highlighting**: React Syntax Highlighter for code display
+- **Testing**: Vitest with React Testing Library
+- **State Management**: React Context API with custom hooks
 
 ## Development Environment
 - **Containerization**: Docker and Docker Compose

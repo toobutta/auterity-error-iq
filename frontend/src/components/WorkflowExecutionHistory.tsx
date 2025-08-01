@@ -2,6 +2,15 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { getExecutionHistory, ExecutionHistoryParams, ExecutionHistoryResponse } from '../api/workflows';
 import { WorkflowExecution } from '../types/workflow';
 
+// Interface for API error responses
+interface ApiErrorResponse {
+  response?: {
+    data?: {
+      detail?: string;
+    };
+  };
+}
+
 interface WorkflowExecutionHistoryProps {
   onExecutionSelect?: (execution: WorkflowExecution) => void;
   refreshTrigger?: number; // Can be used to trigger refresh from parent
@@ -51,7 +60,8 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
       setTotal(response.total);
       
     } catch (err: unknown) {
-      const errorMessage = (err as any)?.response?.data?.detail || (err instanceof Error ? err.message : 'Failed to load execution history');
+      const apiError = err as ApiErrorResponse;
+      const errorMessage = apiError?.response?.data?.detail || (err instanceof Error ? err.message : 'Failed to load execution history');
       setError(errorMessage);
     } finally {
       setLoading(false);

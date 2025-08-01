@@ -1,24 +1,33 @@
 # [TOOL] Task Delegation Guidelines
 
 ## Purpose
-This steering document provides guidelines for delegating tasks to external tools like Cline, Claude Dev, or other AI coding assistants.
+This steering document provides guidelines for delegating tasks to external tools like Cline, Amazon Q (Claude 3.7), or other AI coding assistants.
 
 ## Task Classification
 
-### Ideal [TOOL] Tasks
+### Amazon Q (Claude 3.7) - Primary QA & Debugging Tool
+- **Quality Assurance**: Code review, testing validation, bug identification
+- **Debugging**: Terminal errors, runtime issues, compilation problems
+- **Problem Resolution**: Error analysis, troubleshooting, diagnostic tasks
+- **Code Analysis**: Performance bottlenecks, security vulnerabilities
+- **Test Debugging**: Failed test analysis, test coverage improvements
+- **Environment Issues**: Docker, dependency, configuration problems
+
+### Cline - Development Implementation Tool
 - **Standard Component Development**: React components with clear specifications
 - **Data Formatting and Display**: Components that transform and present data
 - **Form Generation**: Dynamic forms based on configuration or API responses
-- **Testing Implementation**: Unit and integration tests with defined requirements
 - **API Integration**: Connecting frontend components to existing backend APIs
 - **Utility Functions**: Helper functions with clear input/output specifications
+- **Refactoring Tasks**: Code restructuring with clear requirements
 
-### Human-Retained Tasks
+### Kiro - Architecture & Complex Logic
 - **UX/UI Design Decisions**: Layout, user experience, and visual design choices
 - **Architecture Planning**: System design and technical architecture decisions
 - **Complex State Management**: Real-time updates, complex data flows
 - **Performance Optimization**: Advanced optimization requiring analysis
 - **Security Implementation**: Authentication, authorization, and security features
+- **Integration Strategy**: Multi-tool coordination and complex workflows
 
 ## Task Specification Requirements
 
@@ -78,10 +87,66 @@ This steering document provides guidelines for delegating tasks to external tool
 ### 2. Task Assignment - TIMING STRATEGY
 - **Lead Time Principle**: Assign tasks to [TOOL] 1-2 tasks ahead of current Kiro work
 - [TOOL] requires development time, so delegate future tasks early
-- Use `[[TOOL]-TASK]` tag in task lists
+- Use task tags: `[AMAZON-Q-TASK]`, `[CLINE-TASK]`, `[KIRO-TASK]`
 - Specify recommended model/configuration
 - Include complexity assessment
 - Set realistic time estimates
+
+### Tool Selection Priority
+1. **Amazon Q First**: For any QA, debugging, or problem resolution tasks
+2. **Cline Second**: For standard development implementation tasks
+3. **Kiro Last**: For architecture, complex logic, or multi-tool coordination
+
+## Direct Tool Communication Protocol
+
+### Cline ↔ Amazon Q Direct Handoffs
+When both tools are active, enable direct communication to reduce Kiro coordination overhead:
+
+#### Cline → Amazon Q Handoff Triggers
+- **Build Errors**: Cline encounters compilation/build failures during implementation
+- **Test Failures**: Cline's code fails existing or new tests
+- **Runtime Issues**: Cline's implementation causes runtime errors
+- **Performance Degradation**: Cline's changes impact performance metrics
+- **Integration Problems**: Cline's code breaks existing functionality
+
+#### Amazon Q → Cline Handoff Triggers  
+- **Fix Implementation**: Amazon Q identifies root cause and provides specific fix instructions
+- **Code Improvements**: Amazon Q suggests refactoring or optimization changes
+- **Test Updates**: Amazon Q recommends test modifications or additions
+- **Dependency Changes**: Amazon Q identifies needed package updates or additions
+
+### Direct Communication Format
+```markdown
+## DIRECT HANDOFF: [CLINE/AMAZON-Q] → [AMAZON-Q/CLINE]
+
+**Context:** [Brief description of current task/issue]
+**Handoff Reason:** [Why this needs the other tool]
+**Current State:** [What has been completed/attempted]
+**Specific Request:** [Exact action needed from receiving tool]
+**Success Criteria:** [How to verify completion]
+**Return Conditions:** [When to hand back to original tool]
+
+**Files Involved:**
+- [List of relevant files]
+
+**Priority:** High/Medium/Low
+**Estimated Time:** [X minutes/hours]
+```
+
+### Communication Rules
+1. **Direct Handoffs Only**: Use direct communication when both tools are actively working
+2. **Clear Context**: Always provide complete context for seamless transition
+3. **Specific Requests**: Make precise, actionable requests to avoid confusion
+4. **Status Updates**: Provide brief status updates during long-running tasks
+5. **Completion Confirmation**: Confirm task completion before handing back
+6. **Escalation Path**: Escalate to Kiro only for complex architectural decisions
+
+### Kiro Intervention Triggers
+- **Tool Disagreement**: Cline and Amazon Q have conflicting approaches
+- **Scope Expansion**: Task grows beyond original specification
+- **Architecture Impact**: Changes affect system design or patterns
+- **Resource Constraints**: Task exceeds time/complexity estimates
+- **Quality Concerns**: Multiple iterations without satisfactory resolution
 
 ### 3. Progress Monitoring
 - Regular check-ins on task progress
@@ -97,20 +162,22 @@ This steering document provides guidelines for delegating tasks to external tool
 
 ## Model Selection Guidelines
 
-### For Complex Logic Tasks
-- **Recommended**: Larger models (70B+ parameters)
-- **Use Cases**: Complex form generation, advanced filtering, state management
-- **Examples**: llama-3.3-70b, Claude-3.5-Sonnet
+### Amazon Q (Claude 3.7) - QA & Debugging
+- **Model**: Claude 3.7 (built-in to Amazon Q)
+- **Strengths**: Advanced reasoning, debugging expertise, code analysis
+- **Use Cases**: Error diagnosis, test failures, performance issues, security analysis
+- **Best For**: Complex debugging scenarios requiring deep code understanding
 
-### For Standard Implementation Tasks
-- **Recommended**: Medium models (7B-32B parameters)
-- **Use Cases**: Data display, simple forms, utility functions
-- **Examples**: Qwen-3-32b, CodeLlama-34B
+### Cline - Development Implementation
+- **Recommended**: Medium to large models (32B-70B parameters)
+- **Use Cases**: Component development, API integration, standard implementations
+- **Examples**: Qwen-3-32b, llama-3.3-70b, Claude-3.5-Sonnet
+- **Best For**: Structured development tasks with clear specifications
 
-### For Testing and Documentation
-- **Recommended**: Efficient models optimized for code analysis
-- **Use Cases**: Unit tests, integration tests, documentation
-- **Examples**: Specialized code models, smaller efficient models
+### Kiro - Architecture & Strategy
+- **Model**: Built-in advanced reasoning capabilities
+- **Use Cases**: System design, complex state management, multi-tool coordination
+- **Best For**: High-level planning and complex problem-solving
 
 ## Risk Mitigation
 
@@ -138,6 +205,68 @@ This steering document provides guidelines for delegating tasks to external tool
 - Don't introduce new dependencies without approval
 - Follow established import patterns
 - Maintain compatibility with existing code
+
+## Amazon Q Delegation Patterns
+
+### Immediate Delegation Triggers
+- **Terminal Errors**: Any command-line errors or build failures
+- **Test Failures**: Failed unit tests, integration tests, or CI/CD issues
+- **Runtime Exceptions**: Application crashes, API errors, database connection issues
+- **Performance Problems**: Slow queries, memory leaks, high CPU usage
+- **Security Alerts**: Vulnerability scans, authentication issues, permission errors
+
+### Amazon Q Task Format
+```markdown
+[AMAZON-Q-TASK] Problem Analysis: [Brief Description]
+
+**Error Context:**
+- Error message/stack trace
+- Steps to reproduce
+- Environment details
+
+**Expected Outcome:**
+- Root cause identification
+- Specific fix recommendations
+- Prevention strategies
+
+**Priority:** High/Medium/Low
+**Estimated Time:** [X hours]
+```
+
+### Quality Gates for Amazon Q
+- **Root Cause Analysis**: Must identify underlying cause, not just symptoms
+- **Fix Validation**: Provide testable solution with verification steps
+- **Documentation**: Document findings for future reference
+- **Prevention**: Suggest improvements to prevent similar issues
+
+## Workflow Optimization for Direct Communication
+
+### Autonomous Operation Mode
+When Cline and Amazon Q are both active, they should operate with minimal Kiro oversight:
+
+#### Self-Managing Workflows
+1. **Error Detection**: Cline automatically hands off errors to Amazon Q
+2. **Fix Implementation**: Amazon Q provides fixes directly to Cline
+3. **Validation Loop**: Tools iterate until success criteria are met
+4. **Status Reporting**: Brief progress updates to shared task log
+5. **Completion Handback**: Final results reported to Kiro for integration
+
+#### Efficiency Metrics
+- **Handoff Speed**: < 30 seconds between tool transitions
+- **Resolution Rate**: 80%+ of issues resolved without Kiro intervention
+- **Iteration Count**: Average < 3 iterations per issue resolution
+- **Context Preservation**: 100% of relevant context maintained across handoffs
+
+### Communication Channels
+- **Primary**: Direct tool-to-tool messaging via shared task documents
+- **Secondary**: Shared status logs for progress tracking
+- **Escalation**: Kiro notification only when intervention required
+
+### Success Indicators
+- Reduced Kiro coordination messages by 70%+
+- Faster issue resolution through direct communication
+- Maintained code quality and project standards
+- Clear audit trail of tool interactions and decisions
 
 ## Continuous Improvement
 

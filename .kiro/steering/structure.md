@@ -37,6 +37,17 @@ backend/
 ```
 frontend/
 ├── src/                   # Source code
+│   ├── api/              # API client functions and type definitions
+│   ├── components/       # React components library
+│   │   ├── auth/         # Authentication components
+│   │   ├── charts/       # Chart components (BarChart, LineChart)
+│   │   ├── nodes/        # Workflow node components
+│   │   └── __tests__/    # Component test files
+│   ├── contexts/         # React context providers (Auth, Error)
+│   ├── hooks/            # Custom React hooks
+│   ├── pages/            # Page-level components
+│   ├── types/            # TypeScript type definitions
+│   ├── utils/            # Utility functions and helpers
 │   ├── App.tsx           # Main application component
 │   ├── main.tsx          # Application entry point
 │   ├── App.css           # Application styles

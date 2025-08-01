@@ -3,7 +3,7 @@
  */
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach, Mock } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '../../contexts/AuthContext';
 import { ErrorProvider } from '../../contexts/ErrorContext';
@@ -120,29 +120,29 @@ describe('End-to-End Workflow Integration Tests', () => {
     vi.clearAllMocks();
     
     // Setup default auth mock
-    (authApi.getCurrentUser as any).mockResolvedValue(mockUser);
-    (authApi.login as any).mockResolvedValue({ 
+    (authApi.getCurrentUser as Mock).mockResolvedValue(mockUser);
+    (authApi.login as Mock).mockResolvedValue({ 
       access_token: 'mock-token',
       token_type: 'bearer',
       user: mockUser 
     });
     
     // Setup default API mocks
-    (workflowsApi.getWorkflows as any).mockResolvedValue([mockWorkflow]);
-    (workflowsApi.getWorkflow as any).mockResolvedValue(mockWorkflow);
-    (workflowsApi.createWorkflow as any).mockResolvedValue(mockWorkflow);
-    (workflowsApi.executeWorkflow as any).mockResolvedValue(mockExecution);
-    (workflowsApi.getExecution as any).mockResolvedValue(mockExecution);
-    (workflowsApi.getExecutionHistory as any).mockResolvedValue({
+    (workflowsApi.getWorkflows as Mock).mockResolvedValue([mockWorkflow]);
+    (workflowsApi.getWorkflow as Mock).mockResolvedValue(mockWorkflow);
+    (workflowsApi.createWorkflow as Mock).mockResolvedValue(mockWorkflow);
+    (workflowsApi.executeWorkflow as Mock).mockResolvedValue(mockExecution);
+    (workflowsApi.getExecution as Mock).mockResolvedValue(mockExecution);
+    (workflowsApi.getExecutionHistory as Mock).mockResolvedValue({
       executions: [mockExecution],
       total: 1,
       page: 1,
       size: 10
     });
     
-    (templatesApi.getTemplates as any).mockResolvedValue([mockTemplate]);
-    (templatesApi.getTemplate as any).mockResolvedValue(mockTemplate);
-    (templatesApi.instantiateTemplate as any).mockResolvedValue(mockWorkflow);
+    (templatesApi.getTemplates as Mock).mockResolvedValue([mockTemplate]);
+    (templatesApi.getTemplate as Mock).mockResolvedValue(mockTemplate);
+    (templatesApi.instantiateTemplate as Mock).mockResolvedValue(mockWorkflow);
   });
 
   afterEach(() => {
@@ -226,7 +226,7 @@ describe('End-to-End Workflow Integration Tests', () => {
 
     it('should handle workflow execution errors gracefully', async () => {
       // Mock API to return error
-      (workflowsApi.executeWorkflow as any).mockRejectedValue(
+      (workflowsApi.executeWorkflow as Mock).mockRejectedValue(
         new Error('Workflow execution failed')
       );
 
@@ -356,7 +356,7 @@ describe('End-to-End Workflow Integration Tests', () => {
   describe('Authentication Integration', () => {
     it('should redirect unauthenticated users to login', async () => {
       // Mock auth to return no user
-      (authApi.getCurrentUser as any).mockRejectedValue(new Error('Not authenticated'));
+      (authApi.getCurrentUser as Mock).mockRejectedValue(new Error('Not authenticated'));
 
       render(
         <TestWrapper>
@@ -372,7 +372,7 @@ describe('End-to-End Workflow Integration Tests', () => {
 
     it('should allow user to login and access protected routes', async () => {
       // Start with no user
-      (authApi.getCurrentUser as any).mockRejectedValue(new Error('Not authenticated'));
+      (authApi.getCurrentUser as Mock).mockRejectedValue(new Error('Not authenticated'));
 
       render(
         <TestWrapper>
@@ -419,7 +419,7 @@ describe('End-to-End Workflow Integration Tests', () => {
         input_data: { input: `Test input ${i}` }
       }));
 
-      (workflowsApi.executeWorkflow as any).mockImplementation(() => 
+      (workflowsApi.executeWorkflow as Mock).mockImplementation(() => 
         Promise.resolve(executions[Math.floor(Math.random() * executions.length)])
       );
 
@@ -469,7 +469,7 @@ describe('End-to-End Workflow Integration Tests', () => {
         description: `Description for workflow ${i}`
       }));
 
-      (workflowsApi.getWorkflows as any).mockResolvedValue(manyWorkflows);
+      (workflowsApi.getWorkflows as Mock).mockResolvedValue(manyWorkflows);
 
       const startTime = performance.now();
 
@@ -505,7 +505,7 @@ describe('End-to-End Workflow Integration Tests', () => {
     it('should handle API errors gracefully and allow retry', async () => {
       // Mock API to fail first, then succeed
       let callCount = 0;
-      (workflowsApi.getWorkflows as any).mockImplementation(() => {
+      (workflowsApi.getWorkflows as Mock).mockImplementation(() => {
         callCount++;
         if (callCount === 1) {
           return Promise.reject(new Error('Network error'));

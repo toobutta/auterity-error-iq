@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { getExecutionLogs } from '../api/workflows';
 
 interface InputData {
@@ -39,11 +39,11 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
   const [filterLevel, setFilterLevel] = useState<'all' | 'info' | 'warning' | 'error'>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     try {
       setError(null);
       setLoading(true);
-const data: ExecutionLog[] = await getExecutionLogs(executionId);
+      const data: ExecutionLog[] = await getExecutionLogs(executionId);
       // Transform API response to match our interface
       const transformedLogs: ExecutionLog[] = data.map((log: ExecutionLog) => ({
         ...log,
@@ -57,7 +57,7 @@ const data: ExecutionLog[] = await getExecutionLogs(executionId);
     } finally {
       setLoading(false);
     }
-  };
+  }, [executionId]);
 
   useEffect(() => {
     if (executionId) {

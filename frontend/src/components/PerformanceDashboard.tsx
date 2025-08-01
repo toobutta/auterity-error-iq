@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense, lazy } from 'react';
+import React, { useEffect, useState, Suspense, lazy, useCallback } from 'react';
 import { getWorkflowPerformance, getSystemPerformance } from '../api/workflows';
 import { PerformanceMetrics } from '../types/performance';
 
@@ -30,7 +30,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'execution-time' | 'success-rate' | 'resource-usage'>('execution-time');
 
-  const fetchMetrics = async () => {
+  const fetchMetrics = useCallback(async () => {
     try {
       setError(null);
       setLoading(true);
@@ -52,10 +52,10 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [workflowId, showSystemMetrics, generateMockData]);
 
   // Generate mock data for demonstration
-  const generateMockData = (): PerformanceMetrics[] => {
+  const generateMockData = useCallback((): PerformanceMetrics[] => {
     const now = new Date();
     const data: PerformanceMetrics[] = [];
     
@@ -75,7 +75,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
     }
     
     return data;
-  };
+  }, [workflowId]);
 
   useEffect(() => {
     fetchMetrics();

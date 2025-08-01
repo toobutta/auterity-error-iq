@@ -2,6 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { getWorkflow, executeWorkflow } from '../api/workflows';
 import { WorkflowDefinition } from '../types/workflow';
 
+// Interface for API error responses
+interface ApiErrorResponse {
+  response?: {
+    data?: {
+      detail?: string;
+    };
+  };
+}
+
 interface WorkflowExecutionFormProps {
   workflowId: string;
   onExecutionStart?: (executionId: string) => void;
@@ -50,7 +59,8 @@ const WorkflowExecutionForm: React.FC<WorkflowExecutionFormProps> = ({
         setFormData(initialData);
         
       } catch (err: unknown) {
-        const errorMessage = (err as any)?.response?.data?.detail || (err instanceof Error ? err.message : 'Failed to load workflow');
+        const apiError = err as ApiErrorResponse;
+        const errorMessage = apiError?.response?.data?.detail || (err instanceof Error ? err.message : 'Failed to load workflow');
         setError(errorMessage);
         onError?.(errorMessage);
       } finally {
@@ -200,7 +210,8 @@ const WorkflowExecutionForm: React.FC<WorkflowExecutionFormProps> = ({
       setFormData(resetData);
       
     } catch (err: unknown) {
-      const errorMessage = (err as any)?.response?.data?.detail || (err instanceof Error ? err.message : 'Failed to execute workflow');
+      const apiError = err as ApiErrorResponse;
+      const errorMessage = apiError?.response?.data?.detail || (err instanceof Error ? err.message : 'Failed to execute workflow');
       setError(errorMessage);
       onError?.(errorMessage);
     } finally {

@@ -2,6 +2,18 @@ import { useCallback, useState, useRef } from 'react';
 import { AppError, ErrorCategory, ErrorSeverity, ErrorContext, ErrorReportData } from '../types/error';
 import { createAppError } from '../utils/errorUtils';
 
+// Interface for processed API errors
+interface ProcessedApiError {
+  code?: string;
+  message?: string;
+  details?: string;
+  stack?: string;
+  correlationId?: string;
+  category?: string;
+  severity?: string;
+  retryable?: boolean;
+}
+
 export interface ErrorHandlerOptions {
   maxErrors?: number;
   defaultAutoHide?: boolean;
@@ -19,6 +31,17 @@ export const useErrorHandler = (options: ErrorHandlerOptions = {}) => {
 
   const [errors, setErrors] = useState<AppError[]>([]);
   const timeoutRefs = useRef<Map<string, NodeJS.Timeout>>(new Map());
+
+  const removeError = useCallback((error: AppError) => {
+    setErrors(prev => prev.filter(e => e.id !== error.id));
+    
+    // Clear timeout if exists
+    const timeoutId = timeoutRefs.current.get(error.id);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutRefs.current.delete(error.id);
+    }
+  }, []);
 
   const addError = useCallback((
     errorInput: Partial<AppError> | string,
@@ -65,18 +88,7 @@ export const useErrorHandler = (options: ErrorHandlerOptions = {}) => {
     console.error('Error added:', appError);
 
     return appError;
-  }, [maxErrors, defaultAutoHide, defaultHideAfter]);
-
-  const removeError = useCallback((error: AppError) => {
-    setErrors(prev => prev.filter(e => e.id !== error.id));
-    
-    // Clear timeout if exists
-    const timeoutId = timeoutRefs.current.get(error.id);
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      timeoutRefs.current.delete(error.id);
-    }
-  }, []);
+  }, [maxErrors, defaultAutoHide, defaultHideAfter, removeError]);
 
   const clearErrors = useCallback(() => {
     // Clear all timeouts
@@ -91,7 +103,7 @@ export const useErrorHandler = (options: ErrorHandlerOptions = {}) => {
 
     if (error && typeof error === 'object' && 'code' in error && 'message' in error) {
       // Already processed API error with correlation ID
-      const apiError = error as any;
+      const apiError = error as ProcessedApiError;
       appError = createAppError(
         apiError.code || 'API_ERROR',
         apiError.message || 'API request failed',

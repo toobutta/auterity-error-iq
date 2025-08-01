@@ -2,7 +2,7 @@
  * Retry utilities for error recovery mechanisms
  */
 
-import { AppError, ErrorCategory } from '../types/error';
+import { ErrorCategory } from '../types/error';
 import { logWarn, logError, logInfo } from './logger';
 
 export interface RetryOptions {
@@ -11,9 +11,9 @@ export interface RetryOptions {
   maxDelay: number;
   exponentialBackoff: boolean;
   jitter: boolean;
-  retryCondition?: (error: any) => boolean;
-  onRetry?: (attempt: number, error: any) => void;
-  onMaxAttemptsReached?: (error: any) => void;
+  retryCondition?: (error: unknown) => boolean;
+  onRetry?: (attempt: number, error: unknown) => void;
+  onMaxAttemptsReached?: (error: unknown) => void;
 }
 
 export interface CircuitBreakerOptions {
@@ -143,7 +143,7 @@ export async function retryWithBackoff<T>(
     ...options
   };
 
-  let lastError: any;
+  let lastError: unknown;
   
   for (let attempt = 1; attempt <= config.maxAttempts; attempt++) {
     try {
@@ -308,7 +308,7 @@ export class CircuitBreaker {
 /**
  * Automatic retry wrapper for API calls
  */
-export function withRetry<T extends (...args: any[]) => Promise<any>>(
+export function withRetry<T extends (...args: unknown[]) => Promise<unknown>>(
   fn: T,
   options: Partial<RetryOptions> = {},
   context?: { component?: string; action?: string }

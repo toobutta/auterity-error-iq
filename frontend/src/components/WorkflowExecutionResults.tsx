@@ -3,14 +3,19 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { WorkflowExecution } from '../types/workflow';
 import { getExecution } from '../api/workflows';
+import WorkflowErrorDisplay from './WorkflowErrorDisplay';
 
 interface WorkflowExecutionResultsProps {
   executionId: string;
+  workflowId?: string;
+  onRetrySuccess?: (newExecutionId: string) => void;
   className?: string;
 }
 
 const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({ 
-  executionId, 
+  executionId,
+  workflowId,
+  onRetrySuccess,
   className = '' 
 }) => {
   const [execution, setExecution] = useState<WorkflowExecution | null>(null);
@@ -119,6 +124,18 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
 
   const hasOutputData = execution.outputData && Object.keys(execution.outputData).length > 0;
   const hasInputData = execution.inputData && Object.keys(execution.inputData).length > 0;
+
+  // Show comprehensive error display for failed executions
+  if (execution.status === 'failed') {
+    return (
+      <WorkflowErrorDisplay
+        executionId={executionId}
+        workflowId={workflowId}
+        onRetrySuccess={onRetrySuccess}
+        className={className}
+      />
+    );
+  }
 
   return (
     <div className={`bg-white border border-gray-200 rounded-lg ${className}`}>

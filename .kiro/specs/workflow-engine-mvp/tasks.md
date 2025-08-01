@@ -80,7 +80,7 @@
   - Write component tests for workflow builder interactions
   - _Requirements: 1.1, 1.2, 1.3, 1.4_
 
-- [ ] 11. Create workflow execution interface
+- [x] 11. Create workflow execution interface
   - Build workflow execution trigger UI with input parameter forms
   - Implement real-time execution status monitoring with polling
   - Create execution results display with formatted output
@@ -89,19 +89,46 @@
   - Write component tests for execution interface functionality
   - _Requirements: 2.1, 2.3, 3.2, 3.3, 3.4_
 
-- [x] **CLINE-TASK-1: Critical TypeScript & Linting Fixes** [[TOOL]-TASK] 🔥 **[IN PROGRESS - CLINE]**
-  - Fix all 50 linting issues (46 errors + 4 warnings) currently blocking clean development
+- [ ] **CLINE-TASK-SECURITY: URGENT Security Vulnerability Fixes** [[TOOL]-TASK] 🔴 **[CRITICAL - READY FOR CLINE]**
+  - Fix 7 moderate security vulnerabilities identified in project health audit
+  - Update esbuild ≤0.24.2 (development server vulnerability) via vite@7.0.6
+  - Update prismjs <1.30.0 (DOM Clobbering vulnerability) via react-syntax-highlighter
+  - Handle 5 additional moderate severity vulnerabilities with npm audit fix
+  - Test all breaking changes and update component usage as needed
+  - Ensure zero security vulnerabilities remain in npm audit report
+  - **CRITICAL**: Must complete before any other development work
+  - _Requirements: Security, Production Readiness, Dependency Management_
+  - _Assigned to: [TOOL] Cline (Cerebras Qwen-3-32b)_
+  - _Complexity: Medium-High - Breaking changes with testing required_
+  - _Status: 🚀 **READY** - HIGHEST PRIORITY - Must fix before other development_
+  - _Specification: .kiro/specs/workflow-engine-mvp/cline-security-fixes-urgent.md_
+
+- [ ] **CLINE-TASK-BACKEND: Backend Code Quality Emergency Fix** [[TOOL]-TASK] 🔴 **[CRITICAL - READY FOR CLINE]**
+  - Fix 500+ backend linting violations making codebase unmaintainable
+  - Resolve 100+ unused imports (F401) and 200+ whitespace violations (W293, W291)
+  - Fix 50+ import organization issues (E402) and line length violations (E501)
+  - Critical: Fix undefined name references (F821) that break functionality
+  - Apply black formatting, isort import organization, and autoflake cleanup
+  - Ensure flake8 passes with 0 violations while preserving all functionality
+  - _Requirements: Code Quality, Production Readiness, Maintainability_
+  - _Assigned to: [TOOL] Cline (Cerebras Qwen-3-32b)_
+  - _Complexity: Medium - Systematic cleanup with functionality preservation_
+  - _Status: 🚀 **READY** - CRITICAL for production deployment_
+  - _Specification: .kiro/specs/workflow-engine-mvp/cline-backend-quality-fix.md_
+
+- [ ] **CLINE-TASK-1: Critical TypeScript & Linting Fixes** [[TOOL]-TASK] 🟡 **[HIGH PRIORITY - AFTER SECURITY]**
+  - Fix all 19 TypeScript linting issues currently blocking clean development
   - Replace all `any` types with proper TypeScript interfaces using existing type definitions
   - Fix React Hook dependency arrays (useEffect missing dependencies)
   - Remove unused variables and imports throughout codebase
   - Fix HTML entity escaping issues (use &quot;, &apos;, etc.)
   - Ensure `npm run lint` passes with 0 errors, 0 warnings
   - Preserve all existing functionality and component behavior
-  - _Priority Files: TemplateInstantiationForm.tsx (9 issues), TemplatePreviewModal.tsx (8 issues), ExecutionLogViewer.tsx (6 issues)_
+  - _Priority Files: Test files with mock typing issues, retryUtils.ts_
   - _Requirements: Code Quality, TypeScript Compliance, Development Workflow_
   - _Assigned to: [TOOL] Cline (Cerebras Qwen-3-32b)_
   - _Complexity: Medium - Systematic fixes, no architecture changes_
-  - _Status: 🚀 **DELEGATED** - Task assigned to Cline for immediate execution_
+  - _Status: 🟡 **READY** - Execute after security fixes complete_
   - _Specification: .kiro/specs/workflow-engine-mvp/cline-task-1-typescript-fixes.md_
 
 - [x] 11.1 Build workflow execution trigger form component [[TOOL]-TASK]
@@ -149,14 +176,19 @@
   - _Assigned to: [TOOL] (Cerebras llama-3.3-70b)_
   - _Complexity: High - Complex filtering, pagination, and data management_
 
-- [ ] 11.5 Build comprehensive error display interface [HUMAN-TASK]
-  - Create detailed error display for failed workflow executions
-  - Show error messages, stack traces, and failure points in workflow
-  - Provide retry functionality with option to modify inputs
-  - Add error categorization (validation, runtime, AI service, etc.)
-  - Implement error reporting and feedback collection
+- [ ] **CLINE-TASK-4: Comprehensive Error Display Interface** [[TOOL]-TASK] 🔥 **[READY FOR CLINE]**
+  - Create detailed error display for failed workflow executions with categorization
+  - Show error messages, stack traces, and failure points in workflow visualization
+  - Provide retry functionality with option to modify inputs before retry
+  - Add error categorization (validation, runtime, AI service, timeout, system)
+  - Implement error reporting and feedback collection with user forms
+  - Build RetryWorkflowModal and ErrorReportModal components
+  - Ensure accessibility compliance and responsive design
   - _Requirements: 3.4_
-  - _Assigned to: Human/Kiro - Requires UX decisions for error presentation_
+  - _Assigned to: [TOOL] Cline (Cerebras Qwen-3-32b)_
+  - _Complexity: Medium - UI/UX with error handling logic_
+  - _Status: 🚀 **READY** - Specification complete, ready for immediate delegation_
+  - _Specification: .kiro/specs/workflow-engine-mvp/cline-task-error-display.md_
 
 - [x] 11.6 Write component tests for execution interface [[TOOL]-TASK]
   - Write unit tests for WorkflowExecutionForm component
@@ -204,7 +236,7 @@
   - _Assigned to: [TOOL] (Cerebras Qwen-3-32b)_
   - _Complexity: Medium - Log display and filtering logic_
 
-- [-] 13. Build template library interface [MIXED-TASK]
+- [x] 13. Build template library interface [MIXED-TASK]
   - Create template browsing interface with category filtering
   - Implement template preview functionality with workflow visualization
   - Build template instantiation form with parameter input
@@ -308,7 +340,7 @@
   - _Requirements: All requirements for production readiness_
   - _Assigned to: Kiro - Requires infrastructure and deployment expertise_
 
-- [ ] **CLINE-TASK-3: Project Health Audit** [[TOOL]-TASK] 🔧 **[READY FOR CLINE]**
+- [x] **CLINE-TASK-3: Project Health Audit** [[TOOL]-TASK] ✅ **[COMPLETED]**
   - Comprehensive dependency analysis and security vulnerability scan
   - TypeScript compliance check across entire codebase
   - Test coverage analysis and quality assessment
@@ -318,19 +350,61 @@
   - _Requirements: Code Quality, Security, Performance, Maintainability_
   - _Assigned to: [TOOL] Cline (Cerebras Qwen-3-32b)_
   - _Complexity: Low-Medium - Analysis and documentation_
-  - _Status: 🚀 **READY** - Specification complete, ready for immediate delegation_
-  - _Specification: .kiro/specs/workflow-engine-mvp/cline-delegation-project-audit.md_
+  - _Status: ✅ **COMPLETED** - Audit report generated, critical issues identified_
+  - _Deliverable: PROJECT_HEALTH_AUDIT_REPORT.md with actionable recommendations_
 
-- [ ] **AMAZON Q TASK: Production Deployment Architecture** [[AMAZON-Q]-TASK] 🚀 **[READY FOR AMAZON Q]**
-  - Design complete AWS production deployment architecture
-  - Container orchestration analysis (ECS vs EKS vs App Runner)
-  - Database strategy (RDS vs Aurora) with cost optimization
-  - Infrastructure as Code templates (CloudFormation/CDK/Terraform)
-  - CI/CD pipeline design with GitHub Actions integration
-  - Security architecture with IAM, VPC, and compliance considerations
-  - Cost optimization strategy and monitoring setup
+- [ ] **CLINE-TASK-TESTS: Test Infrastructure Repair** [[TOOL]-TASK] 🟡 **[HIGH PRIORITY - AFTER CRITICAL]**
+  - Fix 35 failed tests out of 250 total (14% failure rate)
+  - Resolve JS heap out of memory errors during test execution
+  - Fix mock configuration issues and missing mock exports
+  - Resolve vitest coverage dependency conflicts for coverage reporting
+  - Standardize mock setup patterns across all test files
+  - Ensure all tests pass reliably with proper memory management
+  - _Requirements: Test Infrastructure, Development Workflow, CI/CD Pipeline_
+  - _Assigned to: [TOOL] Cline (Cerebras Qwen-3-32b)_
+  - _Complexity: Medium-High - Test infrastructure and memory optimization_
+  - _Status: 🟡 **READY** - Execute after critical security and backend fixes_
+  - _Specification: .kiro/specs/workflow-engine-mvp/cline-test-infrastructure-spec.md_
+
+- [ ] **CLINE-TASK-BUNDLE: Bundle Size Optimization Analysis** [[TOOL]-TASK] 🟡 **[MEDIUM PRIORITY]**
+  - Analyze and optimize 1.5MB bundle size with focus on performance impact
+  - Reduce syntax-highlighter chunk from 631kB to <200kB via dynamic loading
+  - Optimize chart library chunk from 323kB to <200kB via tree shaking
+  - Implement code splitting for heavy components and lazy loading strategies
+  - Add bundle analysis tooling and performance measurement
+  - Deliver 30%+ bundle size reduction while preserving all functionality
+  - _Requirements: Performance, User Experience, Bundle Optimization_
+  - _Assigned to: [TOOL] Cline (Cerebras Qwen-3-32b)_
+  - _Complexity: Medium - Performance optimization and code splitting_
+  - _Status: 🟡 **READY** - Execute after critical fixes and test infrastructure_
+  - _Specification: .kiro/specs/workflow-engine-mvp/cline-bundle-optimization-spec.md_
+
+- [ ] **AMAZON-Q-TASK-SSO: Enterprise SSO Implementation** [[AMAZON-Q]-TASK] 🚀 **[DELEGATED TO AMAZON Q]**
+  - Implement comprehensive Enterprise Single Sign-On using AWS Cognito and IAM Identity Center
+  - Support SAML 2.0 and OIDC enterprise identity provider integration
+  - Configure role-based access control with enterprise group mapping
+  - Build dual authentication system (enterprise SSO + legacy JWT fallback)
+  - Implement comprehensive audit logging with CloudTrail integration
+  - Create frontend SSO flows with Cognito Hosted UI integration
+  - Develop backend authentication middleware for Cognito JWT verification
+  - Ensure backward compatibility with existing authentication system
+  - _Requirements: Enterprise Authentication, Security, Compliance, Multi-tenant Support_
+  - _Assigned to: [AMAZON-Q] Claude 3.7 - Leveraging deep AWS and enterprise auth expertise_
+  - _Complexity: High - Enterprise authentication architecture and AWS integration_
+  - _Status: 🚀 **DELEGATED** - Task assigned to Amazon Q for immediate execution_
+  - _Specification: .kiro/specs/workflow-engine-mvp/amazon-q-enterprise-sso-task.md_
+
+- [ ] **AMAZON-Q-TASK-1: Production Deployment Architecture** [[AMAZON-Q]-TASK] 🟡 **[READY AFTER SSO]**
+  - Design complete AWS production deployment architecture with cost analysis
+  - Container orchestration analysis (ECS vs EKS vs App Runner) with recommendations
+  - Database strategy (RDS vs Aurora) with performance and cost optimization
+  - Infrastructure as Code templates (CloudFormation/CDK/Terraform) ready for deployment
+  - CI/CD pipeline design with GitHub Actions integration and automated testing
+  - Security architecture with IAM, VPC, compliance, and threat detection
+  - Monitoring, logging, and observability stack with CloudWatch integration
+  - Disaster recovery and high availability implementation
   - _Requirements: Production Readiness, Scalability, Security, Cost Optimization_
-  - _Assigned to: [AMAZON-Q] - Leveraging deep AWS expertise_
+  - _Assigned to: [AMAZON-Q] Claude 3.7 - Leveraging deep AWS expertise_
   - _Complexity: High - AWS architecture and deployment strategy_
-  - _Status: 🚀 **READY** - Specification complete, ready for Amazon Q delegation_
+  - _Status: 🟡 **READY** - Execute after SSO implementation complete_
   - _Specification: .kiro/specs/workflow-engine-mvp/amazon-q-task-production-deployment.md_

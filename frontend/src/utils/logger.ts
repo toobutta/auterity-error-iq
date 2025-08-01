@@ -14,7 +14,7 @@ export interface LogEntry {
   level: LogLevel;
   message: string;
   correlationId?: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   component?: string;
   action?: string;
   userId?: string;
@@ -73,7 +73,7 @@ class Logger {
   private createLogEntry(
     level: LogLevel,
     message: string,
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
     correlationId?: string
   ): LogEntry {
     return {
@@ -82,8 +82,8 @@ class Logger {
       message,
       correlationId,
       context,
-      component: context?.component,
-      action: context?.action,
+      component: typeof context?.component === 'string' ? context.component : undefined,
+      action: typeof context?.action === 'string' ? context.action : undefined,
       userId: this.getUserId(),
       sessionId: this.getSessionId(),
       url: window.location.href,
@@ -106,7 +106,7 @@ class Logger {
 
   private addToBuffer(entry: LogEntry): void {
     this.logBuffer.push(entry);
-    
+
     // Remove old entries if buffer is full
     if (this.logBuffer.length > this.config.maxLogEntries) {
       this.logBuffer = this.logBuffer.slice(-this.config.maxLogEntries);
@@ -147,39 +147,39 @@ class Logger {
     }
   }
 
-  public debug(message: string, context?: Record<string, any>, correlationId?: string): void {
+  public debug(message: string, context?: Record<string, unknown>, correlationId?: string): void {
     if (!this.shouldLog(LogLevel.DEBUG)) return;
-    
+
     const entry = this.createLogEntry(LogLevel.DEBUG, message, context, correlationId);
     this.logToConsole(entry);
     this.addToBuffer(entry);
   }
 
-  public info(message: string, context?: Record<string, any>, correlationId?: string): void {
+  public info(message: string, context?: Record<string, unknown>, correlationId?: string): void {
     if (!this.shouldLog(LogLevel.INFO)) return;
-    
+
     const entry = this.createLogEntry(LogLevel.INFO, message, context, correlationId);
     this.logToConsole(entry);
     this.addToBuffer(entry);
   }
 
-  public warn(message: string, context?: Record<string, any>, correlationId?: string): void {
+  public warn(message: string, context?: Record<string, unknown>, correlationId?: string): void {
     if (!this.shouldLog(LogLevel.WARN)) return;
-    
+
     const entry = this.createLogEntry(LogLevel.WARN, message, context, correlationId);
     this.logToConsole(entry);
     this.addToBuffer(entry);
   }
 
-  public error(message: string, context?: Record<string, any>, correlationId?: string): void {
+  public error(message: string, context?: Record<string, unknown>, correlationId?: string): void {
     if (!this.shouldLog(LogLevel.ERROR)) return;
-    
+
     const entry = this.createLogEntry(LogLevel.ERROR, message, context, correlationId);
     this.logToConsole(entry);
     this.addToBuffer(entry);
   }
 
-  public logUserAction(action: string, component: string, context?: Record<string, any>): void {
+  public logUserAction(action: string, component: string, context?: Record<string, unknown>): void {
     this.info(`User action: ${action}`, {
       component,
       action,
@@ -190,7 +190,7 @@ class Logger {
   public logApiCall(method: string, url: string, status?: number, duration?: number, correlationId?: string): void {
     const level = status && status >= 400 ? LogLevel.ERROR : LogLevel.INFO;
     const message = `API ${method} ${url} - ${status || 'pending'}`;
-    
+
     this[level](message, {
       component: 'ApiClient',
       action: 'api_call',
@@ -201,7 +201,7 @@ class Logger {
     }, correlationId);
   }
 
-  public logWorkflowEvent(event: string, workflowId: string, executionId?: string, context?: Record<string, any>): void {
+  public logWorkflowEvent(event: string, workflowId: string, executionId?: string, context?: Record<string, unknown>): void {
     this.info(`Workflow ${event}`, {
       component: 'WorkflowEngine',
       action: event,
@@ -275,23 +275,23 @@ class Logger {
 export const logger = new Logger();
 
 // Export convenience functions
-export const logDebug = (message: string, context?: Record<string, any>, correlationId?: string) => 
+export const logDebug = (message: string, context?: Record<string, unknown>, correlationId?: string) =>
   logger.debug(message, context, correlationId);
 
-export const logInfo = (message: string, context?: Record<string, any>, correlationId?: string) => 
+export const logInfo = (message: string, context?: Record<string, unknown>, correlationId?: string) =>
   logger.info(message, context, correlationId);
 
-export const logWarn = (message: string, context?: Record<string, any>, correlationId?: string) => 
+export const logWarn = (message: string, context?: Record<string, unknown>, correlationId?: string) =>
   logger.warn(message, context, correlationId);
 
-export const logError = (message: string, context?: Record<string, any>, correlationId?: string) => 
+export const logError = (message: string, context?: Record<string, unknown>, correlationId?: string) =>
   logger.error(message, context, correlationId);
 
-export const logUserAction = (action: string, component: string, context?: Record<string, any>) => 
+export const logUserAction = (action: string, component: string, context?: Record<string, unknown>) =>
   logger.logUserAction(action, component, context);
 
-export const logApiCall = (method: string, url: string, status?: number, duration?: number, correlationId?: string) => 
+export const logApiCall = (method: string, url: string, status?: number, duration?: number, correlationId?: string) =>
   logger.logApiCall(method, url, status, duration, correlationId);
 
-export const logWorkflowEvent = (event: string, workflowId: string, executionId?: string, context?: Record<string, any>) => 
+export const logWorkflowEvent = (event: string, workflowId: string, executionId?: string, context?: Record<string, unknown>) =>
   logger.logWorkflowEvent(event, workflowId, executionId, context);

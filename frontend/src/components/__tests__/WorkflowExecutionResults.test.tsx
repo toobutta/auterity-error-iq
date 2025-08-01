@@ -1,7 +1,8 @@
-// React import removed as it's not needed in this test file
+import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import WorkflowExecutionResults from '../WorkflowExecutionResults';
+import { ErrorProvider } from '../../contexts/ErrorContext';
 import * as workflowsApi from '../../api/workflows';
 
 // Mock the API
@@ -30,13 +31,21 @@ describe('WorkflowExecutionResults Component', () => {
     }
   };
 
+  const renderWithErrorProvider = (component: React.ReactElement) => {
+    return render(
+      <ErrorProvider>
+        {component}
+      </ErrorProvider>
+    );
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
-    (workflowsApi.getExecution as jest.MockedFunction<typeof workflowsApi.getExecution>).mockResolvedValue(mockExecution);
+    (workflowsApi.getExecution as any).mockResolvedValue(mockExecution);
   });
 
   it('renders component with completed status', async () => {
-    render(<WorkflowExecutionResults executionId="exec-123" />);
+    renderWithErrorProvider(<WorkflowExecutionResults executionId="exec-123" />);
     
     await waitFor(() => {
       expect(screen.getByText('Execution Results')).toBeInTheDocument();
@@ -47,7 +56,7 @@ describe('WorkflowExecutionResults Component', () => {
   });
 
   it('copies output to clipboard when button is clicked', async () => {
-    render(<WorkflowExecutionResults executionId="exec-123" />);
+    renderWithErrorProvider(<WorkflowExecutionResults executionId="exec-123" />);
     
     await waitFor(() => {
       expect(screen.getByText('Execution Results')).toBeInTheDocument();
@@ -59,19 +68,20 @@ describe('WorkflowExecutionResults Component', () => {
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(JSON.stringify(mockExecution.outputData, null, 2));
   });
 
-  it('renders error status when execution fails', async () => {
+  it('renders error display when execution fails', async () => {
     const errorExecution = {
       ...mockExecution,
       status: 'failed',
       errorMessage: 'Test error message'
     };
     
-    (workflowsApi.getExecution as jest.MockedFunction<typeof workflowsApi.getExecution>).mockResolvedValue(errorExecution);
+    (workflowsApi.getExecution as any).mockResolvedValue(errorExecution);
+    (workflowsApi.getExecutionLogs as any).mockResolvedValue([]);
     
-    render(<WorkflowExecutionResults executionId="exec-123" />);
+    renderWithErrorProvider(<WorkflowExecutionResults executionId="exec-123" />);
     
     await waitFor(() => {
-      expect(screen.getByText('failed')).toBeInTheDocument();
+      expect(screen.getByText('Workflow Execution Failed')).toBeInTheDocument();
       expect(screen.getByText('Test error message')).toBeInTheDocument();
     });
   });
@@ -82,9 +92,9 @@ describe('WorkflowExecutionResults Component', () => {
       outputData: 42
     };
     
-    (workflowsApi.getExecution as jest.MockedFunction<typeof workflowsApi.getExecution>).mockResolvedValue(primitiveExecution);
+    (workflowsApi.getExecution as any).mockResolvedValue(primitiveExecution);
     
-    render(<WorkflowExecutionResults executionId="exec-123" />);
+    renderWithErrorProvider(<WorkflowExecutionResults executionId="exec-123" />);
     
     await waitFor(() => {
       expect(screen.getByText('Output Data')).toBeInTheDocument();
@@ -97,9 +107,9 @@ describe('WorkflowExecutionResults Component', () => {
       outputData: 'Test string output'
     };
     
-    (workflowsApi.getExecution as jest.MockedFunction<typeof workflowsApi.getExecution>).mockResolvedValue(stringExecution);
+    (workflowsApi.getExecution as any).mockResolvedValue(stringExecution);
     
-    render(<WorkflowExecutionResults executionId="exec-123" />);
+    renderWithErrorProvider(<WorkflowExecutionResults executionId="exec-123" />);
     
     await waitFor(() => {
       expect(screen.getByText('Output Data')).toBeInTheDocument();
@@ -107,7 +117,7 @@ describe('WorkflowExecutionResults Component', () => {
   });
 
   it('shows loading state initially', () => {
-    render(<WorkflowExecutionResults executionId="exec-123" />);
+    renderWithErrorProvider(<WorkflowExecutionResults executionId="exec-123" />);
     
     expect(screen.getByText('Loading execution results...')).toBeInTheDocument();
   });
