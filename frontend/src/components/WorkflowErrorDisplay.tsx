@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { WorkflowExecution } from '../types/workflow';
-import { getExecution, getExecutionLogs, executeWorkflow } from '../api/workflows';
+import { getExecution, getExecutionLogs, retryWorkflowExecution } from '../api/workflows';
 import { useError } from '../contexts/ErrorContext';
 import { ErrorCategory, ErrorSeverity } from '../types/error';
 import { createAppError } from '../utils/errorUtils';
+import RetryWorkflowModal from './RetryWorkflowModal';
+import ErrorReportModal from './ErrorReportModal';
 
 interface WorkflowErrorDisplayProps {
   executionId: string;
@@ -24,12 +26,7 @@ interface ExecutionLog {
   error_message?: string;
 }
 
-interface ErrorReport {
-  userFeedback: string;
-  reproductionSteps: string;
-  expectedBehavior: string;
-  actualBehavior: string;
-}
+
 
 const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
   executionId,
@@ -41,20 +38,11 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
   const [execution, setExecution] = useState<WorkflowExecution | null>(null);
   const [logs, setLogs] = useState<ExecutionLog[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showRetryForm, setShowRetryForm] = useState(false);
-  const [showReportForm, setShowReportForm] = useState(false);
-  const [retryInputs, setRetryInputs] = useState<Record<string, unknown>>({});
-  const [isRetrying, setIsRetrying] = useState(false);
-  const [errorReport, setErrorReport] = useState<ErrorReport>({
-    userFeedback: '',
-    reproductionSteps: '',
-    expectedBehavior: '',
-    actualBehavior: ''
-  });
-  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+  const [showRetryModal, setShowRetryModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['overview']));
 
-  const { addError, reportError } = useError();
+  const { addError } = useError();
 
   useEffect(() => {
     const fetchExecutionData = async () => {
@@ -62,7 +50,6 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
         setLoading(true);
         const executionData = await getExecution(executionId);
         setExecution(executionData);
-        setRetryInputs(executionData.inputData || {});
 
         // Fetch execution logs for detailed error analysis
         try {
@@ -156,70 +143,23 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
     return null;
   };
 
-  const handleRetry = async () => {
-    if (!execution || !workflowId) return;
-
-    setIsRetrying(true);
+  const handleRetrySuccess = async (modifiedInputs: Record<string, unknown>) => {
     try {
-      const newExecution = await executeWorkflow(workflowId, retryInputs);
-      setShowRetryForm(false);
+      // Execute retry with modified inputs
+      const response = await retryWorkflowExecution(executionId, modifiedInputs);
+      setShowRetryModal(false);
       if (onRetrySuccess) {
-        onRetrySuccess(newExecution.id);
+        onRetrySuccess(response.executionId);
       }
     } catch (error) {
-      addError('Failed to retry workflow execution', {
-        workflowId,
-        executionId,
-        component: 'WorkflowErrorDisplay'
-      });
-    } finally {
-      setIsRetrying(false);
+      console.error('Retry failed:', error);
+      // Error handling is done within the modal
     }
   };
 
-  const handleSubmitReport = async () => {
-    if (!execution) return;
-
-    setIsSubmittingReport(true);
-    try {
-      const appError = createAppError(
-        'WORKFLOW_EXECUTION_FAILED',
-        execution.errorMessage || 'Workflow execution failed',
-        {
-          workflowId,
-          executionId,
-          component: 'WorkflowErrorDisplay'
-        },
-        JSON.stringify({ logs, execution }),
-        undefined,
-        execution.id
-      );
-
-      await reportError({
-        error: appError,
-        userFeedback: errorReport.userFeedback,
-        reproductionSteps: errorReport.reproductionSteps,
-        expectedBehavior: errorReport.expectedBehavior,
-        actualBehavior: errorReport.actualBehavior
-      });
-
-      setShowReportForm(false);
-      setErrorReport({
-        userFeedback: '',
-        reproductionSteps: '',
-        expectedBehavior: '',
-        actualBehavior: ''
-      });
-
-      addError('Error report submitted successfully', {}, false);
-    } catch (error) {
-      addError('Failed to submit error report', {
-        executionId,
-        component: 'WorkflowErrorDisplay'
-      });
-    } finally {
-      setIsSubmittingReport(false);
-    }
+  const handleReportSubmit = async () => {
+    // The ErrorReportModal handles the submission internally
+    setShowReportModal(false);
   };
 
   const toggleSection = (section: string) => {
@@ -302,7 +242,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
         <div className="flex gap-3 mt-4">
           {workflowId && (
             <button
-              onClick={() => setShowRetryForm(true)}
+              onClick={() => setShowRetryModal(true)}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -312,7 +252,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
             </button>
           )}
           <button
-            onClick={() => setShowReportForm(true)}
+            onClick={() => setShowReportModal(true)}
             className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -523,157 +463,45 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
         )}
       </div>
 
-      {/* Retry Form Modal */}
-      {showRetryForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Retry Workflow Execution</h3>
-              <button
-                onClick={() => setShowRetryForm(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <p className="text-gray-600 mb-4">
-              You can modify the input parameters before retrying the workflow execution.
-            </p>
-
-            <div className="space-y-4">
-              <label className="block">
-                <span className="text-sm font-medium text-gray-700">Input Parameters (JSON)</span>
-                <textarea
-                  value={JSON.stringify(retryInputs, null, 2)}
-                  onChange={(e) => {
-                    try {
-                      setRetryInputs(JSON.parse(e.target.value));
-                    } catch {
-                      // Invalid JSON, keep the text as is for user to fix
-                    }
-                  }}
-                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3 font-mono text-sm"
-                  rows={10}
-                  placeholder="Enter input parameters as JSON..."
-                />
-              </label>
-            </div>
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => setShowRetryForm(false)}
-                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleRetry}
-                disabled={isRetrying}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center"
-              >
-                {isRetrying && (
-                  <svg className="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                )}
-                {isRetrying ? 'Retrying...' : 'Retry Execution'}
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Retry Modal */}
+      {showRetryModal && execution && workflowId && (
+        <RetryWorkflowModal
+          isOpen={showRetryModal}
+          onClose={() => setShowRetryModal(false)}
+          executionId={executionId}
+          workflowId={workflowId}
+          error={createAppError(
+            'WORKFLOW_EXECUTION_FAILED',
+            execution.errorMessage || 'Workflow execution failed',
+            {
+              workflowId,
+              executionId,
+              component: 'WorkflowErrorDisplay'
+            }
+          )}
+          onRetry={handleRetrySuccess}
+        />
       )}
 
-      {/* Error Report Form Modal */}
-      {showReportForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Report Error</h3>
-              <button
-                onClick={() => setShowReportForm(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <p className="text-gray-600 mb-4">
-              Help us improve by providing details about this error. Your feedback will be used to prevent similar issues.
-            </p>
-
-            <div className="space-y-4">
-              <label className="block">
-                <span className="text-sm font-medium text-gray-700">What were you trying to do?</span>
-                <textarea
-                  value={errorReport.userFeedback}
-                  onChange={(e) => setErrorReport(prev => ({ ...prev, userFeedback: e.target.value }))}
-                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-                  rows={3}
-                  placeholder="Describe what you were trying to accomplish..."
-                />
-              </label>
-
-              <label className="block">
-                <span className="text-sm font-medium text-gray-700">Steps to reproduce</span>
-                <textarea
-                  value={errorReport.reproductionSteps}
-                  onChange={(e) => setErrorReport(prev => ({ ...prev, reproductionSteps: e.target.value }))}
-                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-                  rows={3}
-                  placeholder="1. First I did...\n2. Then I clicked...\n3. The error occurred when..."
-                />
-              </label>
-
-              <label className="block">
-                <span className="text-sm font-medium text-gray-700">What did you expect to happen?</span>
-                <textarea
-                  value={errorReport.expectedBehavior}
-                  onChange={(e) => setErrorReport(prev => ({ ...prev, expectedBehavior: e.target.value }))}
-                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-                  rows={2}
-                  placeholder="I expected the workflow to..."
-                />
-              </label>
-
-              <label className="block">
-                <span className="text-sm font-medium text-gray-700">What actually happened?</span>
-                <textarea
-                  value={errorReport.actualBehavior}
-                  onChange={(e) => setErrorReport(prev => ({ ...prev, actualBehavior: e.target.value }))}
-                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-                  rows={2}
-                  placeholder="Instead, the workflow..."
-                />
-              </label>
-            </div>
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => setShowReportForm(false)}
-                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmitReport}
-                disabled={isSubmittingReport || !errorReport.userFeedback.trim()}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center"
-              >
-                {isSubmittingReport && (
-                  <svg className="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                )}
-                {isSubmittingReport ? 'Submitting...' : 'Submit Report'}
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Error Report Modal */}
+      {showReportModal && execution && (
+        <ErrorReportModal
+          isOpen={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          error={createAppError(
+            'WORKFLOW_EXECUTION_FAILED',
+            execution.errorMessage || 'Workflow execution failed',
+            {
+              workflowId,
+              executionId,
+              component: 'WorkflowErrorDisplay'
+            },
+            JSON.stringify({ logs, execution }),
+            undefined,
+            execution.id
+          )}
+          onSubmit={handleReportSubmit}
+        />
       )}
     </div>
   );

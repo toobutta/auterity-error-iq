@@ -3,12 +3,21 @@ import { vi } from 'vitest';
 import WorkflowBuilder from '../WorkflowBuilder';
 import * as workflowApi from '../../api/workflows';
 
-// Mock the workflow API
+// Mock the workflow API with all required functions
 vi.mock('../../api/workflows', () => ({
   createWorkflow: vi.fn(),
   updateWorkflow: vi.fn(),
   getWorkflow: vi.fn(),
   executeWorkflow: vi.fn(),
+  getWorkflows: vi.fn(),
+  deleteWorkflow: vi.fn(),
+  getExecution: vi.fn(),
+  getExecutionLogs: vi.fn(),
+  cancelExecution: vi.fn(),
+  getExecutionHistory: vi.fn(),
+  getWorkflowPerformance: vi.fn(),
+  getSystemPerformance: vi.fn(),
+  getDashboardMetrics: vi.fn(),
 }));
 
 // Mock ReactFlow

@@ -4,10 +4,21 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { PerformanceDashboard } from '../PerformanceDashboard';
 import * as workflowsApi from '../../api/workflows';
 
-// Mock the API functions
+// Mock the API functions with all required exports
 vi.mock('../../api/workflows', () => ({
   getWorkflowPerformance: vi.fn(),
   getSystemPerformance: vi.fn(),
+  getExecution: vi.fn(),
+  getExecutionLogs: vi.fn(),
+  executeWorkflow: vi.fn(),
+  getWorkflows: vi.fn(),
+  getWorkflow: vi.fn(),
+  createWorkflow: vi.fn(),
+  updateWorkflow: vi.fn(),
+  deleteWorkflow: vi.fn(),
+  cancelExecution: vi.fn(),
+  getExecutionHistory: vi.fn(),
+  getDashboardMetrics: vi.fn(),
 }));
 
 // Mock Recharts components

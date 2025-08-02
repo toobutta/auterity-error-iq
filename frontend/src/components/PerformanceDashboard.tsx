@@ -30,6 +30,29 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'execution-time' | 'success-rate' | 'resource-usage'>('execution-time');
 
+  // Generate mock data for demonstration
+  const generateMockData = useCallback((): PerformanceMetrics[] => {
+    const now = new Date();
+    const data: PerformanceMetrics[] = [];
+    
+    for (let i = 23; i >= 0; i--) {
+      const timestamp = new Date(now.getTime() - i * 60 * 60 * 1000); // Last 24 hours
+      data.push({
+        executionTime: Math.random() * 5000 + 1000, // 1-6 seconds
+        resourceUsage: {
+          cpu: Math.random() * 80 + 10, // 10-90%
+          memory: Math.random() * 70 + 20, // 20-90%
+        },
+        workflowId: workflowId || 'system',
+        timestamp,
+        stepCount: Math.floor(Math.random() * 10) + 3,
+        successRate: Math.random() * 0.3 + 0.7, // 70-100%
+      });
+    }
+    
+    return data;
+  }, [workflowId]);
+
   const fetchMetrics = useCallback(async () => {
     try {
       setError(null);
@@ -54,32 +77,10 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
     }
   }, [workflowId, showSystemMetrics, generateMockData]);
 
-  // Generate mock data for demonstration
-  const generateMockData = useCallback((): PerformanceMetrics[] => {
-    const now = new Date();
-    const data: PerformanceMetrics[] = [];
-    
-    for (let i = 23; i >= 0; i--) {
-      const timestamp = new Date(now.getTime() - i * 60 * 60 * 1000); // Last 24 hours
-      data.push({
-        executionTime: Math.random() * 5000 + 1000, // 1-6 seconds
-        resourceUsage: {
-          cpu: Math.random() * 80 + 10, // 10-90%
-          memory: Math.random() * 70 + 20, // 20-90%
-        },
-        workflowId: workflowId || 'system',
-        timestamp,
-        stepCount: Math.floor(Math.random() * 10) + 3,
-        successRate: Math.random() * 0.3 + 0.7, // 70-100%
-      });
-    }
-    
-    return data;
-  }, [workflowId]);
 
   useEffect(() => {
     fetchMetrics();
-  }, [workflowId, showSystemMetrics, fetchMetrics]);
+  }, [fetchMetrics]);
 
   const tabs = [
     { id: 'execution-time' as const, label: 'Execution Time', icon: '⏱️' },

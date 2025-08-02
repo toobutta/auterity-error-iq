@@ -5,9 +5,21 @@ import WorkflowExecutionResults from '../WorkflowExecutionResults';
 import { ErrorProvider } from '../../contexts/ErrorContext';
 import * as workflowsApi from '../../api/workflows';
 
-// Mock the API
+// Mock the API with all required functions
 vi.mock('../../api/workflows', () => ({
   getExecution: vi.fn(),
+  getExecutionLogs: vi.fn(),
+  executeWorkflow: vi.fn(),
+  getWorkflows: vi.fn(),
+  getWorkflow: vi.fn(),
+  createWorkflow: vi.fn(),
+  updateWorkflow: vi.fn(),
+  deleteWorkflow: vi.fn(),
+  cancelExecution: vi.fn(),
+  getExecutionHistory: vi.fn(),
+  getWorkflowPerformance: vi.fn(),
+  getSystemPerformance: vi.fn(),
+  getDashboardMetrics: vi.fn(),
 }));
 
 // Mock clipboard API
@@ -123,9 +135,9 @@ describe('WorkflowExecutionResults Component', () => {
   });
 
   it('shows error state when API call fails', async () => {
-    (workflowsApi.getExecution as jest.MockedFunction<typeof workflowsApi.getExecution>).mockRejectedValue(new Error('API Error'));
+    (workflowsApi.getExecution as any).mockRejectedValue(new Error('API Error'));
     
-    render(<WorkflowExecutionResults executionId="exec-123" />);
+    renderWithErrorProvider(<WorkflowExecutionResults executionId="exec-123" />);
     
     await waitFor(() => {
       expect(screen.getByText('Error Loading Results')).toBeInTheDocument();

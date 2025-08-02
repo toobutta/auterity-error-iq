@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useErrorHandler } from '../hooks/useErrorHandler';
-import { AppError, ErrorContext as ErrorContextType, ErrorRecoveryAction, ErrorReportData } from '../types/error';
+import { AppError, ErrorContext as ErrorContextType, ErrorRecoveryAction, ErrorReportData, ErrorCategory, ErrorSeverity } from '../types/error';
 import { ErrorToast } from '../components/ErrorToast';
 
 interface ExtendedErrorContextType {
@@ -15,8 +15,8 @@ interface ExtendedErrorContextType {
   handleWorkflowError: (error: unknown, workflowId?: string, executionId?: string, context?: Partial<ErrorContextType>) => AppError;
   retryError: (error: AppError, retryAction: () => Promise<void>) => Promise<void>;
   reportError: (reportData: ErrorReportData) => Promise<void>;
-  getErrorsByCategory: (category: string) => AppError[];
-  getErrorsBySeverity: (severity: string) => AppError[];
+  getErrorsByCategory: (category: ErrorCategory) => AppError[];
+  getErrorsBySeverity: (severity: ErrorSeverity) => AppError[];
 }
 
 const ErrorContext = createContext<ExtendedErrorContextType | undefined>(undefined);
@@ -49,7 +49,7 @@ export const ErrorProvider: React.FC<ErrorProviderProps> = ({
 
   const handleRetry = async (error: AppError) => {
     // Default retry logic - can be overridden by specific components
-    if (error.category === 'network' || error.category === 'api') {
+    if (error.category === 'authentication' || error.category === 'api') {
       // For network/API errors, we could retry the last failed request
       // This would need to be implemented based on the specific use case
       console.log('Retrying error:', error);

@@ -4,9 +4,21 @@ import userEvent from '@testing-library/user-event';
 import WorkflowExecutionHistory from '../WorkflowExecutionHistory';
 import * as workflowsApi from '../../api/workflows';
 
-// Mock the workflows API
+// Mock the workflows API with all required functions
 vi.mock('../../api/workflows', () => ({
   getExecutionHistory: vi.fn(),
+  getExecution: vi.fn(),
+  getExecutionLogs: vi.fn(),
+  executeWorkflow: vi.fn(),
+  getWorkflows: vi.fn(),
+  getWorkflow: vi.fn(),
+  createWorkflow: vi.fn(),
+  updateWorkflow: vi.fn(),
+  deleteWorkflow: vi.fn(),
+  cancelExecution: vi.fn(),
+  getWorkflowPerformance: vi.fn(),
+  getSystemPerformance: vi.fn(),
+  getDashboardMetrics: vi.fn(),
 }));
 
 const mockGetExecutionHistory = vi.mocked(workflowsApi.getExecutionHistory);

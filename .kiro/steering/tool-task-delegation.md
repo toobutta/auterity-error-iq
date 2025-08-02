@@ -76,9 +76,54 @@ This steering document provides guidelines for delegating tasks to external tool
 - **Testing**: Comprehensive test coverage with reliable tests
 - **Documentation**: Clear documentation and code comments
 
+## Pre-Execution Delegation Check Protocol
+
+### MANDATORY: Before Any Task Execution
+Kiro MUST perform this delegation check before starting ANY task:
+
+#### 1. Task Content Analysis
+```markdown
+**DELEGATION CHECK REQUIRED**
+- [ ] Does task involve security vulnerabilities? → **AMAZON Q**
+- [ ] Does task involve debugging/error resolution? → **AMAZON Q** 
+- [ ] Does task involve QA/testing issues? → **AMAZON Q**
+- [ ] Does task involve standard component development? → **CLINE**
+- [ ] Does task involve API integration? → **CLINE**
+- [ ] Does task involve form generation? → **CLINE**
+- [ ] Does task involve architecture decisions? → **KIRO**
+- [ ] Does task involve UX/UI design decisions? → **KIRO**
+```
+
+#### 2. Automatic Delegation Triggers
+**IMMEDIATE DELEGATION REQUIRED** for tasks containing these keywords:
+- **Security**: vulnerability, audit, CVE, GHSA, dependency → **AMAZON Q**
+- **Debugging**: error, failure, broken, fix, debug → **AMAZON Q**
+- **Testing**: test failure, coverage, mock, vitest → **AMAZON Q**
+- **Development**: component, form, API, integration → **CLINE**
+- **Architecture**: design, system, architecture, planning → **KIRO**
+
+#### 3. Delegation Decision Matrix
+| Task Type | Primary Tool | Secondary | Kiro Only If |
+|-----------|-------------|-----------|--------------|
+| Security Vulnerabilities | **AMAZON Q** | Never | Never |
+| Debugging/Error Resolution | **AMAZON Q** | Never | Architecture Impact |
+| Test Infrastructure Issues | **AMAZON Q** | Never | Never |
+| Component Development | **CLINE** | Never | Complex UX Decisions |
+| API Integration | **CLINE** | Never | Architecture Changes |
+| Form Generation | **CLINE** | Never | Complex State Logic |
+| Architecture Planning | **KIRO** | N/A | Always |
+| UX/UI Design | **KIRO** | N/A | Always |
+
+#### 4. Violation Prevention Rules
+- **NEVER execute commands** for delegatable tasks
+- **NEVER start implementation** without delegation check
+- **ALWAYS create delegation specification** before handoff
+- **ALWAYS update task naming** to reflect correct tool assignment
+
 ## Task Assignment Process
 
 ### 1. Task Preparation
+- **MANDATORY**: Complete pre-execution delegation check
 - Create detailed specification document
 - Define clear acceptance criteria
 - Provide technical context and examples
@@ -281,3 +326,48 @@ When Cline and Amazon Q are both active, they should operate with minimal Kiro o
 - Improve task breakdown strategies
 - Enhance monitoring and feedback loops
 - Optimize model selection criteria
+## De
+legation Monitoring and Reporting System
+
+### Delegation Violation Tracking
+Create `.kiro/delegation-log.md` to track delegation decisions and violations:
+
+```markdown
+# Delegation Decision Log
+
+## [YYYY-MM-DD HH:MM] Task: [Task Name]
+- **Decision**: [DELEGATED/EXECUTED/VIOLATED]
+- **Tool Assigned**: [AMAZON-Q/CLINE/KIRO]
+- **Reasoning**: [Why this tool was chosen]
+- **Violation**: [If applicable, what rule was violated]
+- **Corrective Action**: [What was done to fix violation]
+
+## Delegation Success Metrics
+- **Delegation Rate**: X% of eligible tasks properly delegated
+- **Violation Count**: X violations per week
+- **Tool Efficiency**: Average task completion time by tool
+- **Quality Impact**: Defect rate by tool assignment
+```
+
+### Automatic Delegation Validation
+Before executing any task, Kiro must:
+
+1. **Log the delegation decision**
+2. **Justify why Kiro is executing vs delegating**
+3. **Document any exceptions or special circumstances**
+4. **Update delegation metrics**
+
+### Delegation Quality Gates
+- **Zero Tolerance**: Security tasks MUST go to Amazon Q
+- **High Priority**: Debugging tasks MUST go to Amazon Q  
+- **Standard Practice**: Component development MUST go to Cline
+- **Architecture Only**: Kiro executes only architecture/design tasks
+
+### Escalation Protocol
+If delegation rules are violated:
+1. **Immediate Stop**: Halt current execution
+2. **Proper Delegation**: Create specification and delegate
+3. **Log Violation**: Document in delegation log
+4. **Process Improvement**: Update rules to prevent recurrence
+
+This system ensures maximum tool efficiency and prevents future delegation violations.

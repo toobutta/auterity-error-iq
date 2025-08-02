@@ -56,3 +56,18 @@ export interface NodeData {
   isValid?: boolean;
   validationErrors?: string[];
 }
+
+export interface WorkflowExecutionError {
+  id: string;
+  type: 'validation' | 'runtime' | 'ai_service' | 'timeout' | 'system';
+  message: string;
+  details?: string;
+  stackTrace?: string;
+  failurePoint?: {
+    stepId: string;
+    stepName: string;
+    stepIndex: number;
+  };
+  timestamp: string;
+    context?: Record<string, unknown>;
+}

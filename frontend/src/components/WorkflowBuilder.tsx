@@ -48,10 +48,8 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
   const [validationErrors, setValidationErrors] = useState<WorkflowValidationError[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const [showNodePanel, setShowNodePanel] = useState(false);
 
-  const loadWorkflow = useCallback(async (id: string) => {
+  const loadWorkflow = async (id: string) => {
     setIsLoading(true);
     try {
       const workflow = await getWorkflow(id);
@@ -88,7 +86,7 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [setNodes, setEdges]);
+  };
 
   const initializeDefaultWorkflow = useCallback(() => {
     const startNode: Node<NodeData> = {
@@ -286,13 +284,6 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
     }
   };
 
-  const onNodeClick = useCallback((_event: React.MouseEvent, node: Node) => {
-    setSelectedNodeId(node.id);
-    setShowNodePanel(true);
-  }, []);
-
-  const selectedNode = nodes.find(node => node.id === selectedNodeId);
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -389,7 +380,6 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
-            onNodeClick={onNodeClick}
             nodeTypes={nodeTypes}
             fitView
             attributionPosition="bottom-left"
@@ -406,80 +396,6 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
             </Panel>
           </ReactFlow>
         </div>
-
-        {/* Node properties panel */}
-        {showNodePanel && selectedNode && (
-          <div className="w-80 bg-white border-l p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold">Node Properties</h3>
-              <button
-                onClick={() => setShowNodePanel(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  value={selectedNode.data.label}
-                  onChange={(e) => updateNodeData(selectedNode.id, { label: e.target.value })}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <textarea
-                  value={selectedNode.data.description || ''}
-                  onChange={(e) => updateNodeData(selectedNode.id, { description: e.target.value })}
-                  className="w-full p-2 border border-gray-300 rounded"
-                  rows={2}
-                />
-              </div>
-
-              {selectedNode.data.type === 'ai_process' && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    AI Prompt
-                  </label>
-                  <textarea
-                    value={selectedNode.data.config.prompt || ''}
-                    onChange={(e) => updateNodeData(selectedNode.id, {
-                      config: { ...selectedNode.data.config, prompt: e.target.value }
-                    })}
-                    className="w-full p-2 border border-gray-300 rounded"
-                    rows={4}
-                    placeholder="Enter the AI prompt for this step..."
-                  />
-                </div>
-              )}
-
-              {selectedNode.data.validationErrors && selectedNode.data.validationErrors.length > 0 && (
-                <div className="p-2 bg-red-50 border border-red-200 rounded">
-                  <div className="text-sm font-medium text-red-600 mb-1">Validation Errors:</div>
-                  {selectedNode.data.validationErrors.map((error: string, index: number) => (
-                    <div key={index} className="text-xs text-red-600">{error}</div>
-                  ))}
-                </div>
-              )}
-
-              <button
-                onClick={() => deleteNode(selectedNode.id)}
-                className="w-full p-2 bg-red-500 text-white rounded hover:bg-red-600"
-              >
-                Delete Node
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

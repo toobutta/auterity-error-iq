@@ -112,4 +112,15 @@ export const getDashboardMetrics = async (): Promise<DashboardMetrics> => {
   return response.data;
 };
 
-
+/**
+ * Retry a failed workflow execution with optional modified inputs
+ */
+export const retryWorkflowExecution = async (
+  executionId: string,
+  modifiedInputs?: Record<string, unknown>
+): Promise<{ executionId: string }> => {
+  const response = await client.post(`/api/executions/${executionId}/retry`, {
+    inputs: modifiedInputs
+  });
+  return response.data;
+};

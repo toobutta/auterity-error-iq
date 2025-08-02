@@ -6,9 +6,8 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LoginForm from './components/auth/LoginForm';
 import RegisterForm from './components/auth/RegisterForm';
-import Dashboard from './pages/Dashboard';
-
 // Lazy load heavy components
+const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Workflows = lazy(() => import('./pages/Workflows'));
 const Templates = lazy(() => import('./pages/Templates'));
 const WorkflowBuilderPage = lazy(() => import('./pages/WorkflowBuilderPage'));
@@ -56,7 +55,9 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <ErrorBoundary component="Dashboard">
-                        <Dashboard />
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <Dashboard />
+                        </Suspense>
                       </ErrorBoundary>
                     </ProtectedRoute>
                   }

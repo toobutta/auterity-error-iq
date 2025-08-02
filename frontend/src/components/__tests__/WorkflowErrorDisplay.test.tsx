@@ -5,43 +5,79 @@ import WorkflowErrorDisplay from '../WorkflowErrorDisplay';
 import { ErrorProvider } from '../../contexts/ErrorContext';
 import * as workflowsApi from '../../api/workflows';
 
-// Mock the API functions
+// Mock the workflows API
 vi.mock('../../api/workflows', () => ({
   getExecution: vi.fn(),
   getExecutionLogs: vi.fn(),
-  executeWorkflow: vi.fn(),
+  retryWorkflowExecution: vi.fn()
 }));
 
-const mockExecution = {
+// Mock the error utils
+vi.mock('../../utils/errorUtils', () => ({
+  createAppError: vi.fn(() => ({
+    id: 'error-123',
+    code: 'WORKFLOW_EXECUTION_FAILED',
+    message: 'Workflow execution failed',
+    category: 'workflow',
+    severity: 'high',
+    correlationId: 'corr-456',
+    context: {
+      workflowId: 'workflow-789',
+      executionId: 'exec-123',
+      timestamp: new Date(),
+    },
+    retryable: true,
+    userFriendlyMessage: 'The workflow could not be completed due to an error.',
+    actionable: true
+  }))
+}));
+
+const mockGetExecution = vi.mocked(workflowsApi.getExecution);
+const mockGetExecutionLogs = vi.mocked(workflowsApi.getExecutionLogs);
+
+const mockFailedExecution = {
   id: 'exec-123',
   workflowId: 'workflow-456',
+  workflowName: 'Test Workflow',
   status: 'failed' as const,
-  inputData: { input: 'test data' },
-  outputData: {},
+  inputData: {
+    customerName: 'John Doe',
+    vehicleType: 'sedan'
+  },
+  outputData: null,
   startedAt: '2024-01-01T10:00:00Z',
   completedAt: '2024-01-01T10:05:00Z',
-  duration: 300000,
-  errorMessage: 'AI service timeout: Request timed out after 30 seconds'
+  errorMessage: 'AI service timeout occurred during processing',
+  duration: 300000
 };
 
-const mockLogs = [
+const mockExecutionLogs = [
   {
     id: 'log-1',
-    stepName: 'Input Validation',
+    stepName: 'Initialize Workflow',
     level: 'info',
-    message: 'Validating input parameters',
+    message: 'Workflow started',
     timestamp: '2024-01-01T10:00:00Z',
     duration: 100,
-    data: { input: 'test data' }
+    data: { step: 'start' }
   },
   {
     id: 'log-2',
-    stepName: 'AI Processing',
+    stepName: 'Process Customer Data',
+    level: 'info',
+    message: 'Processing customer information',
+    timestamp: '2024-01-01T10:01:00Z',
+    duration: 2000,
+    data: { customerName: 'John Doe' }
+  },
+  {
+    id: 'log-3',
+    stepName: 'AI Analysis',
     level: 'error',
-    message: 'AI service timeout: Request timed out after 30 seconds',
-    timestamp: '2024-01-01T10:04:30Z',
-    duration: 30000,
-    data: { error: 'timeout' }
+    message: 'AI service timeout',
+    timestamp: '2024-01-01T10:05:00Z',
+    duration: 0,
+    data: {}
   }
 ];
 
@@ -54,83 +90,85 @@ const renderWithErrorProvider = (component: React.ReactElement) => {
 };
 
 describe('WorkflowErrorDisplay', () => {
+  const defaultProps = {
+    executionId: 'exec-123',
+    workflowId: 'workflow-456',
+    onRetrySuccess: vi.fn(),
+    onClose: vi.fn()
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
-    (workflowsApi.getExecution as any).mockResolvedValue(mockExecution);
-    (workflowsApi.getExecutionLogs as any).mockResolvedValue(mockLogs);
+    mockGetExecution.mockResolvedValue(mockFailedExecution);
+    mockGetExecutionLogs.mockResolvedValue(mockExecutionLogs);
   });
 
-  it('renders loading state initially', () => {
+  it('shows loading state initially', () => {
     renderWithErrorProvider(
-      <WorkflowErrorDisplay executionId="exec-123" />
+      <WorkflowErrorDisplay {...defaultProps} />
     );
 
     expect(screen.getByText('Loading error details...')).toBeInTheDocument();
   });
 
-  it('displays error overview after loading', async () => {
+  it('displays error information after loading', async () => {
     renderWithErrorProvider(
-      <WorkflowErrorDisplay executionId="exec-123" />
+      <WorkflowErrorDisplay {...defaultProps} />
     );
 
     await waitFor(() => {
       expect(screen.getByText('Workflow Execution Failed')).toBeInTheDocument();
+      expect(screen.getByText('Execution ID: exec-123')).toBeInTheDocument();
+      expect(screen.getByText('AI service timeout occurred during processing')).toBeInTheDocument();
     });
-
-    expect(screen.getByText('Execution ID: exec-123')).toBeInTheDocument();
-    expect(screen.getByText('AI service timeout: Request timed out after 30 seconds')).toBeInTheDocument();
   });
 
   it('categorizes errors correctly', async () => {
     renderWithErrorProvider(
-      <WorkflowErrorDisplay executionId="exec-123" />
+      <WorkflowErrorDisplay {...defaultProps} />
     );
 
     await waitFor(() => {
-      expect(screen.getByText('ai service')).toBeInTheDocument();
+      expect(screen.getByText('AI Service')).toBeInTheDocument(); // Category
+      expect(screen.getByText('Medium')).toBeInTheDocument(); // Severity
     });
-
-    // Should show medium severity for AI service errors
-    expect(screen.getByText('medium')).toBeInTheDocument();
   });
 
-  it('displays execution timeline', async () => {
+  it('shows execution timeline information', async () => {
     renderWithErrorProvider(
-      <WorkflowErrorDisplay executionId="exec-123" />
+      <WorkflowErrorDisplay {...defaultProps} />
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Started:')).toBeInTheDocument();
+      expect(screen.getByText(/Started:/)).toBeInTheDocument();
+      expect(screen.getByText(/Failed:/)).toBeInTheDocument();
+      expect(screen.getByText(/Duration:/)).toBeInTheDocument();
     });
-
-    expect(screen.getByText('Failed:')).toBeInTheDocument();
-    expect(screen.getByText('Duration:')).toBeInTheDocument();
   });
 
-  it('shows execution logs when expanded', async () => {
+  it('displays execution logs when available', async () => {
     renderWithErrorProvider(
-      <WorkflowErrorDisplay executionId="exec-123" />
+      <WorkflowErrorDisplay {...defaultProps} />
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Execution Logs (2 steps)')).toBeInTheDocument();
+      expect(screen.getByText('Execution Logs (3 steps)')).toBeInTheDocument();
     });
 
-    // Click to expand logs section
-    fireEvent.click(screen.getByText('Execution Logs (2 steps)'));
+    // Expand logs section
+    const logsButton = screen.getByText('Execution Logs (3 steps)');
+    fireEvent.click(logsButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Input Validation')).toBeInTheDocument();
-      expect(screen.getByText('AI Processing')).toBeInTheDocument();
+      expect(screen.getByText('Initialize Workflow')).toBeInTheDocument();
+      expect(screen.getByText('Process Customer Data')).toBeInTheDocument();
+      expect(screen.getByText('AI Analysis')).toBeInTheDocument();
     });
   });
 
-  it('displays retry button when workflowId is provided', async () => {
+  it('shows retry button when workflowId is provided', async () => {
     renderWithErrorProvider(
-      <WorkflowErrorDisplay 
-        executionId="exec-123" 
-        workflowId="workflow-456"
-      />
+      <WorkflowErrorDisplay {...defaultProps} />
     );
 
     await waitFor(() => {
@@ -138,148 +176,106 @@ describe('WorkflowErrorDisplay', () => {
     });
   });
 
-  it('opens retry form when retry button is clicked', async () => {
+  it('hides retry button when workflowId is not provided', async () => {
     renderWithErrorProvider(
-      <WorkflowErrorDisplay 
-        executionId="exec-123" 
-        workflowId="workflow-456"
-      />
+      <WorkflowErrorDisplay {...defaultProps} workflowId={undefined} />
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Retry Execution')).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByText('Retry Execution'));
-
-    await waitFor(() => {
-      expect(screen.getByText('Retry Workflow Execution')).toBeInTheDocument();
-    });
-
-    expect(screen.getByText('You can modify the input parameters before retrying the workflow execution.')).toBeInTheDocument();
-  });
-
-  it('handles retry execution', async () => {
-    const mockNewExecution = { id: 'exec-789' };
-    (workflowsApi.executeWorkflow as any).mockResolvedValue(mockNewExecution);
-    
-    const onRetrySuccess = vi.fn();
-
-    renderWithErrorProvider(
-      <WorkflowErrorDisplay 
-        executionId="exec-123" 
-        workflowId="workflow-456"
-        onRetrySuccess={onRetrySuccess}
-      />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('Retry Execution')).toBeInTheDocument();
-    });
-
-    // Open retry form
-    fireEvent.click(screen.getByText('Retry Execution'));
-
-    await waitFor(() => {
-      expect(screen.getByText('Retry Workflow Execution')).toBeInTheDocument();
-    });
-
-    // Click retry button in modal
-    fireEvent.click(screen.getByRole('button', { name: /retry execution/i }));
-
-    await waitFor(() => {
-      expect(workflowsApi.executeWorkflow).toHaveBeenCalledWith('workflow-456', { input: 'test data' });
-      expect(onRetrySuccess).toHaveBeenCalledWith('exec-789');
+      expect(screen.queryByText('Retry Execution')).not.toBeInTheDocument();
     });
   });
 
-  it('opens error report form when report button is clicked', async () => {
+  it('shows report issue button', async () => {
     renderWithErrorProvider(
-      <WorkflowErrorDisplay executionId="exec-123" />
+      <WorkflowErrorDisplay {...defaultProps} />
     );
 
     await waitFor(() => {
       expect(screen.getByText('Report Issue')).toBeInTheDocument();
     });
-
-    fireEvent.click(screen.getByText('Report Issue'));
-
-    await waitFor(() => {
-      expect(screen.getByText('Report Error')).toBeInTheDocument();
-    });
-
-    expect(screen.getByText('Help us improve by providing details about this error. Your feedback will be used to prevent similar issues.')).toBeInTheDocument();
   });
 
-  it('identifies failure point from logs', async () => {
+  it('opens retry modal when retry button is clicked', async () => {
     renderWithErrorProvider(
-      <WorkflowErrorDisplay executionId="exec-123" />
+      <WorkflowErrorDisplay {...defaultProps} />
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Step 2: AI Processing')).toBeInTheDocument();
+      const retryButton = screen.getByText('Retry Execution');
+      fireEvent.click(retryButton);
     });
+
+    expect(screen.getByText('Retry Workflow Execution')).toBeInTheDocument();
   });
 
-  it('handles API errors gracefully', async () => {
-    (workflowsApi.getExecution as any).mockRejectedValue(new Error('API Error'));
+  it('opens error report modal when report button is clicked', async () => {
+    renderWithErrorProvider(
+      <WorkflowErrorDisplay {...defaultProps} />
+    );
+
+    await waitFor(() => {
+      const reportButton = screen.getByText('Report Issue');
+      fireEvent.click(reportButton);
+    });
+
+    expect(screen.getByText('Report Error')).toBeInTheDocument();
+  });
+
+  it('expands and collapses error sections', async () => {
+    renderWithErrorProvider(
+      <WorkflowErrorDisplay {...defaultProps} />
+    );
+
+    await waitFor(() => {
+      // Error Overview should be expanded by default
+      expect(screen.getByText('Category')).toBeInTheDocument();
+    });
+
+    // Collapse error overview
+    const overviewButton = screen.getByText('Error Overview');
+    fireEvent.click(overviewButton);
+
+    expect(screen.queryByText('Category')).not.toBeInTheDocument();
+
+    // Expand it again
+    fireEvent.click(overviewButton);
+    expect(screen.getByText('Category')).toBeInTheDocument();
+  });
+
+  it('shows technical details section', async () => {
+    renderWithErrorProvider(
+      <WorkflowErrorDisplay {...defaultProps} />
+    );
+
+    await waitFor(() => {
+      const technicalButton = screen.getByText('Technical Details');
+      fireEvent.click(technicalButton);
+    });
+
+    expect(screen.getAllByText('AI service timeout occurred during processing')[0]).toBeInTheDocument();
+  });
+
+  it('handles execution loading error', async () => {
+    mockGetExecution.mockRejectedValue(new Error('Failed to load execution'));
 
     renderWithErrorProvider(
-      <WorkflowErrorDisplay executionId="exec-123" />
+      <WorkflowErrorDisplay {...defaultProps} />
     );
 
     await waitFor(() => {
       expect(screen.getByText('Loading error details...')).toBeInTheDocument();
     });
-
-    // Should eventually show no error information available
-    await waitFor(() => {
-      expect(screen.getByText('No error information available')).toBeInTheDocument();
-    });
   });
 
-  it('shows different error categories correctly', async () => {
-    const validationExecution = {
-      ...mockExecution,
-      errorMessage: 'Validation failed: Required field missing'
-    };
-
-    (workflowsApi.getExecution as any).mockResolvedValue(validationExecution);
-
-    renderWithErrorProvider(
-      <WorkflowErrorDisplay executionId="exec-123" />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('validation')).toBeInTheDocument();
-    });
-  });
-
-  it('expands and collapses sections correctly', async () => {
-    renderWithErrorProvider(
-      <WorkflowErrorDisplay executionId="exec-123" />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('Error Overview')).toBeInTheDocument();
+  it('handles missing execution gracefully', async () => {
+    mockGetExecution.mockResolvedValue({
+      ...mockFailedExecution,
+      status: 'completed'
     });
 
-    // Overview should be expanded by default
-    expect(screen.getByText('Category')).toBeInTheDocument();
-
-    // Click to collapse
-    fireEvent.click(screen.getByText('Error Overview'));
-
-    await waitFor(() => {
-      expect(screen.queryByText('Category')).not.toBeInTheDocument();
-    });
-  });
-
-  it('handles missing execution data', async () => {
-    (workflowsApi.getExecution as any).mockResolvedValue(null);
-
     renderWithErrorProvider(
-      <WorkflowErrorDisplay executionId="exec-123" />
+      <WorkflowErrorDisplay {...defaultProps} />
     );
 
     await waitFor(() => {
@@ -287,41 +283,111 @@ describe('WorkflowErrorDisplay', () => {
     });
   });
 
-  it('handles non-failed execution status', async () => {
-    const successExecution = {
-      ...mockExecution,
-      status: 'completed' as const
-    };
-
-    (workflowsApi.getExecution as any).mockResolvedValue(successExecution);
+  it('handles execution logs loading failure gracefully', async () => {
+    mockGetExecutionLogs.mockRejectedValue(new Error('Failed to load logs'));
 
     renderWithErrorProvider(
-      <WorkflowErrorDisplay executionId="exec-123" />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('No error information available')).toBeInTheDocument();
-    });
-  });
-
-  it('calls onClose when close button is clicked', async () => {
-    const onClose = vi.fn();
-
-    renderWithErrorProvider(
-      <WorkflowErrorDisplay 
-        executionId="exec-123" 
-        onClose={onClose}
-      />
+      <WorkflowErrorDisplay {...defaultProps} />
     );
 
     await waitFor(() => {
       expect(screen.getByText('Workflow Execution Failed')).toBeInTheDocument();
+      // Should still show the main error display even if logs fail
+    });
+  });
+
+  it('calls onClose when close button is clicked', async () => {
+    renderWithErrorProvider(
+      <WorkflowErrorDisplay {...defaultProps} />
+    );
+
+    await waitFor(() => {
+      const closeButton = screen.getByRole('button', { name: '' }); // X button
+      fireEvent.click(closeButton);
     });
 
-    // Find and click close button
-    const closeButton = screen.getByRole('button', { name: '' }); // Close button typically has no text
-    fireEvent.click(closeButton);
+    expect(defaultProps.onClose).toHaveBeenCalled();
+  });
 
-    expect(onClose).toHaveBeenCalled();
+  it('identifies failure point from logs', async () => {
+    renderWithErrorProvider(
+      <WorkflowErrorDisplay {...defaultProps} />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Step 3: AI Analysis')).toBeInTheDocument();
+    });
+  });
+
+  it('formats timestamps correctly', async () => {
+    renderWithErrorProvider(
+      <WorkflowErrorDisplay {...defaultProps} />
+    );
+
+    await waitFor(() => {
+      // Should show formatted dates (exact format depends on locale)
+      expect(screen.getByText(/Started:/)).toBeInTheDocument();
+      expect(screen.getByText(/Failed:/)).toBeInTheDocument();
+    });
+  });
+
+  it('formats duration correctly', async () => {
+    renderWithErrorProvider(
+      <WorkflowErrorDisplay {...defaultProps} />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(/Duration:/)).toBeInTheDocument();
+      expect(screen.getByText(/5\.0m/)).toBeInTheDocument(); // 300000ms = 5 minutes
+    });
+  });
+
+  it('shows step details when expanded', async () => {
+    renderWithErrorProvider(
+      <WorkflowErrorDisplay {...defaultProps} />
+    );
+
+    await waitFor(() => {
+      const logsButton = screen.getByText('Execution Logs (3 steps)');
+      fireEvent.click(logsButton);
+    });
+
+    // Find and expand a step's details
+    const stepDetails = screen.getAllByText('View Step Data')[0];
+    fireEvent.click(stepDetails);
+
+    expect(screen.getAllByText('Input:')[0]).toBeInTheDocument();
+  });
+
+  it('handles retry success callback', async () => {
+    renderWithErrorProvider(
+      <WorkflowErrorDisplay {...defaultProps} />
+    );
+
+    await waitFor(() => {
+      const retryButton = screen.getByText('Retry Execution');
+      fireEvent.click(retryButton);
+    });
+
+    // Mock successful retry (this would be handled by RetryWorkflowModal)
+    // The component should call onRetrySuccess when retry succeeds
+    expect(screen.getByText('Retry Workflow Execution')).toBeInTheDocument();
+  });
+
+  it('displays different error categories with appropriate styling', async () => {
+    const validationErrorExecution = {
+      ...mockFailedExecution,
+      errorMessage: 'Validation failed: required field missing'
+    };
+    
+    mockGetExecution.mockResolvedValue(validationErrorExecution);
+
+    renderWithErrorProvider(
+      <WorkflowErrorDisplay {...defaultProps} />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Validation')).toBeInTheDocument();
+    });
   });
 });

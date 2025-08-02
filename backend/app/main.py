@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth, logs, monitoring, templates, workflows
+from app.api import auth, logs, monitoring, templates, workflows, websockets
 from app.middleware.logging import StructuredLoggingMiddleware
 from app.middleware.error_handler import GlobalErrorHandlerMiddleware, ErrorReportingMiddleware
 
@@ -42,6 +42,9 @@ app.include_router(workflows.router, prefix="/api")
 app.include_router(templates.router, prefix="/api")
 app.include_router(logs.router, prefix="/api")
 app.include_router(monitoring.router, prefix="/api")
+
+# Include WebSocket routes (no prefix for WebSocket endpoints)
+app.include_router(websockets.router)
 
 
 @app.get("/")

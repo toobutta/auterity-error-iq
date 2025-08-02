@@ -6,15 +6,15 @@ interface LazyWrapperProps {
   className?: string;
 }
 
-const DefaultFallback = () => (
-  <div className="flex items-center justify-center p-8">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-    <span className="ml-3 text-gray-600">Loading...</span>
+const DefaultFallback: React.FC = () => (
+  <div className="flex items-center justify-center p-4 bg-gray-50 rounded">
+    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
+    <span className="text-gray-600">Loading component...</span>
   </div>
 );
 
-export const LazyWrapper: React.FC<LazyWrapperProps> = ({ 
-  children, 
+export const LazyWrapper: React.FC<LazyWrapperProps> = ({
+  children,
   fallback = <DefaultFallback />,
   className = ''
 }) => {
@@ -26,3 +26,5 @@ export const LazyWrapper: React.FC<LazyWrapperProps> = ({
     </div>
   );
 };
+
+export default LazyWrapper;

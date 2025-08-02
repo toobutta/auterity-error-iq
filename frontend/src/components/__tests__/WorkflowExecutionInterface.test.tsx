@@ -7,13 +7,21 @@ import { ErrorProvider } from '../../contexts/ErrorContext';
 import { AuthProvider } from '../../contexts/AuthContext';
 import * as workflowsApi from '../../api/workflows';
 
-// Mock the API modules
+// Mock the API modules with all required exports
 vi.mock('../../api/workflows', () => ({
   getWorkflows: vi.fn(),
   executeWorkflow: vi.fn(),
   getExecution: vi.fn(),
   getExecutionHistory: vi.fn(),
-  getExecutionLogs: vi.fn()
+  getExecutionLogs: vi.fn(),
+  getWorkflow: vi.fn(),
+  createWorkflow: vi.fn(),
+  updateWorkflow: vi.fn(),
+  deleteWorkflow: vi.fn(),
+  cancelExecution: vi.fn(),
+  getWorkflowPerformance: vi.fn(),
+  getSystemPerformance: vi.fn(),
+  getDashboardMetrics: vi.fn(),
 }));
 
 // Mock the child components to focus on integration

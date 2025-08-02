@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { getExecutionLogs } from '../api/workflows';
+import { useWebSocketLogs } from '../hooks/useWebSocketLogs';
 
 interface InputData {
   [key: string]: string | number | boolean | null;
@@ -25,12 +26,14 @@ interface ExecutionLogViewerProps {
   executionId: string;
   className?: string;
   maxHeight?: string;
+  enableRealTime?: boolean;
 }
 
 export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
   executionId,
   className = '',
-  maxHeight = 'max-h-96'
+  maxHeight = 'max-h-96',
+  enableRealTime = true
 }) => {
   const [logs, setLogs] = useState<ExecutionLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,16 +41,38 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
   const [expandedLogs, setExpandedLogs] = useState<Set<string>>(new Set());
   const [filterLevel, setFilterLevel] = useState<'all' | 'info' | 'warning' | 'error'>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [autoScroll, setAutoScroll] = useState(true);
+  
+  // Refs for auto-scroll functionality
+  const logsContainerRef = useRef<HTMLDivElement>(null);
+  const logsEndRef = useRef<HTMLDivElement>(null);
+  
+  // WebSocket hook for real-time logs
+  const {
+    logs: realtimeLogs,
+    connectionStatus,
+    error: wsError,
+    reconnect,
+    clearLogs: clearRealtimeLogs
+  } = useWebSocketLogs(executionId, { enabled: enableRealTime });
 
   const fetchLogs = useCallback(async () => {
     try {
       setError(null);
       setLoading(true);
-      const data: ExecutionLog[] = await getExecutionLogs(executionId);
+      const data = await getExecutionLogs(executionId);
       // Transform API response to match our interface
-      const transformedLogs: ExecutionLog[] = data.map((log: ExecutionLog) => ({
-        ...log,
-        level: log.error_message ? 'error' : log.step_type === 'warning' ? 'warning' : 'info'
+      const transformedLogs: ExecutionLog[] = data.map((log) => ({
+        id: log.id,
+        execution_id: log.executionId,
+        step_name: log.stepName || 'Unknown Step',
+        step_type: log.stepName ? 'step' : 'system',
+        input_data: (log.data || {}) as InputData,
+        output_data: (log.data || {}) as OutputData,
+        duration_ms: log.duration || 0,
+        timestamp: log.timestamp,
+        error_message: log.level === 'error' ? log.message : undefined,
+        level: log.level === 'debug' ? 'info' : log.level as 'info' | 'warning' | 'error'
       }));
       
       setLogs(transformedLogs);
@@ -59,11 +84,53 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
     }
   }, [executionId]);
 
+  // Merge real-time logs with existing logs
+  useEffect(() => {
+    if (enableRealTime && realtimeLogs.length > 0) {
+      setLogs(prevLogs => {
+        // Create a map of existing logs by ID to avoid duplicates
+        const existingLogsMap = new Map(prevLogs.map(log => [log.id, log]));
+        
+        // Add new real-time logs that don't already exist
+        const newLogs = realtimeLogs.filter(log => !existingLogsMap.has(log.id));
+        
+        if (newLogs.length > 0) {
+          const mergedLogs = [...prevLogs, ...newLogs];
+          // Sort by timestamp to maintain chronological order
+          return mergedLogs.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+        }
+        
+        return prevLogs;
+      });
+    }
+  }, [realtimeLogs, enableRealTime]);
+
+  // Auto-scroll to bottom when new logs arrive
+  useEffect(() => {
+    if (autoScroll && logsEndRef.current) {
+      logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [logs, autoScroll]);
+
+  // Handle scroll to detect if user has scrolled up (disable auto-scroll)
+  const handleScroll = useCallback(() => {
+    if (logsContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = logsContainerRef.current;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10; // 10px threshold
+      setAutoScroll(isAtBottom);
+    }
+  }, []);
+
   useEffect(() => {
     if (executionId) {
-      fetchLogs();
+      // Only fetch initial logs if real-time is disabled or as fallback
+      if (!enableRealTime) {
+        fetchLogs();
+      } else {
+        setLoading(false); // Real-time logs will populate the component
+      }
     }
-  }, [executionId, fetchLogs]);
+  }, [executionId, fetchLogs, enableRealTime]);
 
   const toggleLogExpansion = (logId: string) => {
     const newExpanded = new Set(expandedLogs);
@@ -77,13 +144,29 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
 
   const filteredLogs = logs.filter(log => {
     const matchesLevel = filterLevel === 'all' || log.level === filterLevel;
-    const matchesSearch = searchTerm === '' || 
+    const matchesSearch = searchTerm === '' ||
       log.step_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.step_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (log.error_message && log.error_message.toLowerCase().includes(searchTerm.toLowerCase()));
     
     return matchesLevel && matchesSearch;
   });
+
+  // Get connection status display info
+  const getConnectionStatusInfo = () => {
+    switch (connectionStatus) {
+      case 'connected':
+        return { color: 'bg-green-500', text: 'Live', icon: '🟢' };
+      case 'connecting':
+        return { color: 'bg-yellow-500', text: 'Connecting...', icon: '🟡' };
+      case 'error':
+        return { color: 'bg-red-500', text: 'Error', icon: '🔴' };
+      default:
+        return { color: 'bg-gray-500', text: 'Disconnected', icon: '⚫' };
+    }
+  };
+
+  const connectionInfo = getConnectionStatusInfo();
 
   const getLevelIcon = (level: string) => {
     switch (level) {
@@ -160,22 +243,85 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
     <div className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className}`}>
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200">
+        {/* Connection Status Bar */}
+        {enableRealTime && (
+          <div className="flex items-center justify-between mb-3 p-2 bg-gray-50 rounded-md">
+            <div className="flex items-center space-x-2">
+              <div className={`w-2 h-2 rounded-full ${connectionInfo.color}`} />
+              <span className="text-sm text-gray-600">
+                {connectionInfo.text}
+              </span>
+              {wsError && (
+                <span className="text-xs text-red-600 ml-2">
+                  {wsError}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center space-x-2">
+              {connectionStatus === 'error' && (
+                <button
+                  onClick={reconnect}
+                  className="inline-flex items-center px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Reconnect
+                </button>
+              )}
+              <button
+                onClick={() => setAutoScroll(!autoScroll)}
+                className={`inline-flex items-center px-2 py-1 border shadow-sm text-xs font-medium rounded focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                  autoScroll
+                    ? 'border-blue-300 text-blue-700 bg-blue-50 hover:bg-blue-100'
+                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                }`}
+              >
+                <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+                Auto-scroll
+              </button>
+            </div>
+          </div>
+        )}
+        
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Execution Logs</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            Execution Logs
+            {enableRealTime && (
+              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                Real-time
+              </span>
+            )}
+          </h3>
           <div className="flex items-center space-x-2">
             <span className="text-sm text-gray-600">
               {filteredLogs.length} of {logs.length} logs
             </span>
-            <button
-              onClick={fetchLogs}
-              disabled={loading}
-              className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              Refresh
-            </button>
+            {!enableRealTime && (
+              <button
+                onClick={fetchLogs}
+                disabled={loading}
+                className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              >
+                <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Refresh
+              </button>
+            )}
+            {enableRealTime && (
+              <button
+                onClick={clearRealtimeLogs}
+                className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Clear
+              </button>
+            )}
           </div>
         </div>
 
@@ -216,7 +362,11 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
       </div>
 
       {/* Logs List */}
-      <div className={`${maxHeight} overflow-y-auto`}>
+      <div
+        ref={logsContainerRef}
+        className={`${maxHeight} overflow-y-auto`}
+        onScroll={handleScroll}
+      >
         {filteredLogs.length === 0 ? (
           <div className="text-center py-8">
             <div className="text-gray-400 text-4xl mb-4">📝</div>
@@ -301,6 +451,8 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
             ))}
           </div>
         )}
+        {/* Auto-scroll anchor */}
+        <div ref={logsEndRef} />
       </div>
     </div>
   );

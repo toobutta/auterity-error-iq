@@ -4,9 +4,21 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { ExecutionLogViewer } from '../ExecutionLogViewer';
 import * as workflowsApi from '../../api/workflows';
 
-// Mock the API functions
+// Mock the API functions with all required exports
 vi.mock('../../api/workflows', () => ({
   getExecutionLogs: vi.fn(),
+  getExecution: vi.fn(),
+  executeWorkflow: vi.fn(),
+  getWorkflows: vi.fn(),
+  getWorkflow: vi.fn(),
+  createWorkflow: vi.fn(),
+  updateWorkflow: vi.fn(),
+  deleteWorkflow: vi.fn(),
+  cancelExecution: vi.fn(),
+  getExecutionHistory: vi.fn(),
+  getWorkflowPerformance: vi.fn(),
+  getSystemPerformance: vi.fn(),
+  getDashboardMetrics: vi.fn(),
 }));
 
 const mockLogData = [

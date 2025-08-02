@@ -12,10 +12,43 @@ import * as workflowsApi from '../../api/workflows';
 import * as templatesApi from '../../api/templates';
 import * as authApi from '../../api/auth';
 
-// Mock API modules
-vi.mock('../../api/workflows');
-vi.mock('../../api/templates');
-vi.mock('../../api/auth');
+// Mock API modules with complete exports
+vi.mock('../../api/workflows', () => ({
+  getWorkflows: vi.fn(),
+  getWorkflow: vi.fn(),
+  createWorkflow: vi.fn(),
+  updateWorkflow: vi.fn(),
+  deleteWorkflow: vi.fn(),
+  executeWorkflow: vi.fn(),
+  getExecution: vi.fn(),
+  getExecutionLogs: vi.fn(),
+  cancelExecution: vi.fn(),
+  getExecutionHistory: vi.fn(),
+  getWorkflowPerformance: vi.fn(),
+  getSystemPerformance: vi.fn(),
+  getDashboardMetrics: vi.fn(),
+}));
+
+vi.mock('../../api/templates', () => ({
+  getTemplates: vi.fn(),
+  getTemplate: vi.fn(),
+  getTemplateCategories: vi.fn(),
+  instantiateTemplate: vi.fn(),
+}));
+
+vi.mock('../../api/auth', () => ({
+  AuthApi: {
+    login: vi.fn(),
+    register: vi.fn(),
+    getCurrentUser: vi.fn(),
+    logout: vi.fn(),
+  },
+  // Also export individual functions for compatibility
+  login: vi.fn(),
+  register: vi.fn(),
+  getCurrentUser: vi.fn(),
+  logout: vi.fn(),
+}));
 
 // Mock React Flow to avoid canvas issues in tests
 vi.mock('reactflow', () => ({
@@ -119,7 +152,15 @@ describe('End-to-End Workflow Integration Tests', () => {
     // Reset all mocks
     vi.clearAllMocks();
     
-    // Setup default auth mock
+    // Setup default auth mock - use AuthApi class methods
+    (authApi.AuthApi.getCurrentUser as Mock).mockResolvedValue(mockUser);
+    (authApi.AuthApi.login as Mock).mockResolvedValue({ 
+      access_token: 'mock-token',
+      token_type: 'bearer',
+      user: mockUser 
+    });
+    
+    // Also mock individual functions for compatibility
     (authApi.getCurrentUser as Mock).mockResolvedValue(mockUser);
     (authApi.login as Mock).mockResolvedValue({ 
       access_token: 'mock-token',
@@ -356,6 +397,7 @@ describe('End-to-End Workflow Integration Tests', () => {
   describe('Authentication Integration', () => {
     it('should redirect unauthenticated users to login', async () => {
       // Mock auth to return no user
+      (authApi.AuthApi.getCurrentUser as Mock).mockRejectedValue(new Error('Not authenticated'));
       (authApi.getCurrentUser as Mock).mockRejectedValue(new Error('Not authenticated'));
 
       render(
@@ -372,6 +414,7 @@ describe('End-to-End Workflow Integration Tests', () => {
 
     it('should allow user to login and access protected routes', async () => {
       // Start with no user
+      (authApi.AuthApi.getCurrentUser as Mock).mockRejectedValue(new Error('Not authenticated'));
       (authApi.getCurrentUser as Mock).mockRejectedValue(new Error('Not authenticated'));
 
       render(
@@ -397,7 +440,7 @@ describe('End-to-End Workflow Integration Tests', () => {
       fireEvent.click(loginButton);
 
       await waitFor(() => {
-        expect(authApi.login).toHaveBeenCalledWith({
+        expect(authApi.AuthApi.login).toHaveBeenCalledWith({
           email: 'test@example.com',
           password: 'password123'
         });
