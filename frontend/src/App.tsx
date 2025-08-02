@@ -12,6 +12,7 @@ const Workflows = lazy(() => import('./pages/Workflows'));
 const Templates = lazy(() => import('./pages/Templates'));
 const WorkflowBuilderPage = lazy(() => import('./pages/WorkflowBuilderPage'));
 const ErrorDisplayDemo = lazy(() => import('./pages/ErrorDisplayDemo'));
+const KiroTestPage = lazy(() => import('./pages/KiroTestPage'));
 
 // Loading component for lazy-loaded routes
 const LoadingSpinner = () => (
@@ -117,6 +118,18 @@ function App() {
                       <ErrorBoundary component="ErrorDisplayDemo">
                         <Suspense fallback={<LoadingSpinner />}>
                           <ErrorDisplayDemo />
+                        </Suspense>
+                      </ErrorBoundary>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/kiro-test"
+                  element={
+                    <ProtectedRoute>
+                      <ErrorBoundary component="KiroTestPage">
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <KiroTestPage />
                         </Suspense>
                       </ErrorBoundary>
                     </ProtectedRoute>

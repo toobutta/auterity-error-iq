@@ -107,6 +107,54 @@ async def submit_frontend_logs(
         )
 
 
+@router.post("/client-error", status_code=status.HTTP_201_CREATED)
+async def log_client_error(
+    request: Request,
+    error_data: dict,
+    db: Session = Depends(get_db),
+):
+    """
+    Log client-side errors from Kiro hooks.
+    
+    This endpoint receives error data from Kiro error intelligence hooks
+    for centralized logging and monitoring.
+    """
+    correlation_id = get_correlation_id(request)
+    
+    try:
+        # Enhance error data with server-side information
+        enhanced_error = {
+            "event": "kiro_client_error",
+            "correlation_id": correlation_id,
+            "timestamp": datetime.utcnow().isoformat(),
+            "source": error_data.get("source", "kiro_hook"),
+            "workflow_id": error_data.get("workflowId"),
+            "error_type": error_data.get("errorType"),
+            "stack_trace": error_data.get("stackTrace"),
+            "client_timestamp": error_data.get("timestamp"),
+        }
+        
+        # Log to structured logging system
+        log_structured(
+            event="kiro_client_error",
+            correlation_id=correlation_id,
+            level="error",
+            **enhanced_error
+        )
+        
+        return {
+            "message": "Client error logged successfully",
+            "correlation_id": correlation_id
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to log client error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to log client error"
+        )
+
+
 @router.get("/health")
 async def logs_health_check():
     """Health check endpoint for log collection service."""

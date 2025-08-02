@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { KiroStatusIndicator } from './KiroStatusIndicator';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -48,11 +49,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 >
                   Templates
                 </Link>
+                <Link
+                  to="/kiro-test"
+                  className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Kiro Test
+                </Link>
               </div>
             </div>
 
             {/* User Menu */}
             <div className="flex items-center space-x-4">
+              <KiroStatusIndicator />
               <span className="text-sm text-gray-700">
                 Welcome, {user?.name}
               </span>

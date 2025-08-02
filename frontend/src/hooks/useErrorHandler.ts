@@ -1,6 +1,7 @@
 import { useCallback, useState, useRef } from 'react';
 import { AppError, ErrorCategory, ErrorSeverity, ErrorContext, ErrorReportData } from '../types/error';
 import { createAppError } from '../utils/errorUtils';
+import { useKiroIntegration } from './useKiroIntegration';
 
 // Interface for processed API errors
 interface ProcessedApiError {
@@ -31,6 +32,7 @@ export const useErrorHandler = (options: ErrorHandlerOptions = {}) => {
 
   const [errors, setErrors] = useState<AppError[]>([]);
   const timeoutRefs = useRef<Map<string, NodeJS.Timeout>>(new Map());
+  const { triggerKiroHook, getErrorRoute } = useKiroIntegration();
 
   const removeError = useCallback((error: AppError) => {
     setErrors(prev => prev.filter(e => e.id !== error.id));
@@ -145,8 +147,15 @@ export const useErrorHandler = (options: ErrorHandlerOptions = {}) => {
       component: 'WorkflowEngine'
     };
 
-    return handleApiError(error, workflowContext);
-  }, [handleApiError]);
+    const appError = handleApiError(error, workflowContext);
+    
+    // Trigger Kiro hook for workflow errors
+    if (workflowId) {
+      triggerKiroHook(workflowId, appError).catch(console.error);
+    }
+    
+    return appError;
+  }, [handleApiError, triggerKiroHook]);
 
   const retryError = useCallback(async (error: AppError, retryAction: () => Promise<void>) => {
     if (!error.retryable) {
