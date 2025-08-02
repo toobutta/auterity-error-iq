@@ -29,7 +29,13 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
         const executionData = await getExecution(executionId);
         setExecution(executionData);
       } catch (err: unknown) {
-        console.error('Execution fetch failed:', { executionId, timestamp: new Date().toISOString() });
+        const errorContext = {
+          operation: 'fetchExecution',
+          executionId,
+          timestamp: new Date().toISOString(),
+          errorType: err instanceof Error ? err.constructor.name : 'UnknownError'
+        };
+        console.error('Execution fetch failed:', errorContext);
         setError('Failed to fetch execution results');
       } finally {
         setLoading(false);
@@ -76,8 +82,13 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
     
     try {
       await navigator.clipboard.writeText(formatValue(execution.outputData));
-    } catch {
-      console.error('Clipboard operation failed:', { timestamp: new Date().toISOString() });
+    } catch (err) {
+      const errorContext = {
+        operation: 'copyToClipboard',
+        timestamp: new Date().toISOString(),
+        hasOutputData: !!execution?.outputData
+      };
+      console.error('Clipboard operation failed:', errorContext);
       // Could add user notification here if needed
     }
   };
