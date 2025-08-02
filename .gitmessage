@@ -1,0 +1,39 @@
+# <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+
+# Type should be one of the following:
+# * feat: A new feature
+# * fix: A bug fix
+# * docs: Documentation only changes
+# * style: Changes that do not affect the meaning of the code
+# * refactor: A code change that neither fixes a bug nor adds a feature
+# * perf: A code change that improves performance
+# * test: Adding missing tests or correcting existing tests
+# * build: Changes that affect the build system or external dependencies
+# * ci: Changes to our CI configuration files and scripts
+# * chore: Other changes that don't modify src or test files
+# * revert: Reverts a previous commit
+
+# Scope should be one of the following:
+# * backend: Backend related changes
+# * frontend: Frontend related changes
+# * api: API related changes
+# * ui: UI related changes
+# * auth: Authentication related changes
+# * workflow: Workflow engine related changes
+# * template: Template system related changes
+# * infra: Infrastructure related changes
+# * docs: Documentation related changes
+
+# Subject line should:
+# * use the imperative, present tense: "change" not "changed" nor "changes"
+# * not capitalize the first letter
+# * not end with a dot (.)
+# * be no more than 50 characters
+
+# Body should include the motivation for the change and contrast this with previous behavior
+
+# Footer should contain any information about Breaking Changes and is also the place to reference GitHub issues

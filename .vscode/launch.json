@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "type": "chrome",
+            "name": "http:///Users/andrew-thompson/Documents/Documents - Andrew’s MacBook Air/Dryva_HQ/Dryva-IDE/Dryva/PRD",
+            "request": "launch",
+            "url": "http:///Users/andrew-thompson/Documents/Documents - Andrew’s MacBook Air/Dryva_HQ/Dryva-IDE/Dryva/PRD"
+        }
+    ]
+}

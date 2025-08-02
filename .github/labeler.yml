@@ -1,0 +1,32 @@
+backend:
+  - backend/**/*
+  - '**/*.py'
+
+frontend:
+  - frontend/**/*
+  - '**/*.tsx'
+  - '**/*.ts'
+  - '**/*.jsx'
+  - '**/*.js'
+
+documentation:
+  - docs/**/*
+  - '**/*.md'
+  - README.md
+
+infrastructure:
+  - infrastructure/**/*
+  - docker-compose*.yml
+  - Dockerfile*
+  - '**/*.tf'
+
+ci/cd:
+  - .github/**/*
+
+security:
+  - any: ['security', 'vulnerability', 'auth', 'jwt']
+
+dependencies:
+  - package*.json
+  - requirements.txt
+  - pyproject.toml
