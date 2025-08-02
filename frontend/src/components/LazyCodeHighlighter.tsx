@@ -74,7 +74,8 @@ class SyntaxHighlighterErrorBoundary extends React.Component<
   }
 
   componentDidCatch() {
-    // Error boundary caught an error - no logging to prevent injection
+    // Log error occurrence without exposing sensitive data
+    console.error('SyntaxHighlighter component error boundary triggered');
   }
 
   render() {
