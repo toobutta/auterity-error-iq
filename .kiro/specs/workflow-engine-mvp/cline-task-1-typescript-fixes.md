@@ -1,139 +1,180 @@
-# CLINE TASK 1: Critical TypeScript & Linting Fixes
+# TypeScript Linting Fixes - Task Specification
 
 ## Task Overview
-**Priority**: 🔥 URGENT  
-**Estimated Time**: 2-3 hours  
-**Recommended Model**: Cerebras Qwen-3-32b  
-**Status**: Ready for Assignment
+Fix all 108 TypeScript linting errors currently blocking clean development workflow. This is a systematic code quality improvement task that requires no architectural changes, only proper typing and cleanup.
 
-## Objective
-Fix all 54 linting issues currently blocking clean development, focusing on TypeScript compliance and code quality standards.
+## Current Status
+- **Total Errors**: 108 errors, 1 warning
+- **Lint Command**: `npm run lint` (currently failing)
+- **Target**: 0 errors, 0 warnings
+- **Priority**: HIGH - Blocking clean development workflow
 
-## Current State Analysis
-- `npm run lint` shows 50 errors and 4 warnings
-- `npm run build` succeeds but with bundle size warnings
-- Multiple `any` types throughout codebase
-- Missing React Hook dependencies
-- Unused variables and imports
-- HTML entity escaping issues
+## Error Categories & Counts
+
+### 1. `any` Type Violations (78 errors)
+**Most Critical Issue** - Replace all `any` types with proper TypeScript interfaces
+- **Files Affected**: 15 files
+- **Existing Types Available**: Use types from `/src/types/` directory
+  - `workflow.ts` - WorkflowStep, WorkflowDefinition, NodeData, etc.
+  - `execution.ts` - ExecutionLogEntry, ExecutionDetails, ExecutionStep
+  - `workflow-builder.ts` - Custom workflow builder types
+  - `error.ts`, `template.ts`, `performance.ts`
+
+### 2. Unused Variables/Imports (21 errors)
+- Remove unused imports and variables
+- Follow ESLint rule: unused args must match `/^_/u` pattern
+- **Key Files**: Test files, workflow-builder components
+
+### 3. React Hook Dependencies (1 warning)
+- Fix useEffect dependency arrays
+- Move functions inside useEffect or wrap in useCallback
+
+### 4. HTML Entity Escaping (4 errors)
+- Replace unescaped quotes with proper HTML entities
+- Use `&quot;` instead of `"`
+- **Files**: NodePalette.tsx, WorkflowTester.tsx
+
+### 5. React Props Issues (1 error)
+- Fix children prop passing in LazyCodeHighlighter.tsx
+
+## Priority Files (Fix First)
+
+### 1. Test Files with Mock Typing Issues
+```
+src/components/__tests__/WorkflowExecutionInterface.test.tsx
+src/components/__tests__/WorkflowExecutionResults.test.tsx  
+src/hooks/__tests__/useWebSocketLogs.test.ts
+src/components/__tests__/setup.ts
+```
+
+### 2. retryUtils.ts
+```
+src/utils/retryUtils.ts
+```
+
+### 3. Workflow Builder Components
+```
+src/components/workflow-builder/EnhancedWorkflowBuilder.tsx
+src/components/workflow-builder/NodeEditor.tsx
+src/components/workflow-builder/WorkflowCanvas.tsx
+src/components/workflow-builder/WorkflowTester.tsx
+src/components/workflow-builder/templates/workflow-templates.ts
+```
+
+## Specific Fix Requirements
+
+### Type Replacements
+Replace `any` with appropriate types:
+- **Event handlers**: `React.ChangeEvent<HTMLInputElement>`, `React.FormEvent`
+- **Node data**: Use `NodeData` interface from workflow.ts
+- **Execution data**: Use `ExecutionDetails`, `ExecutionStep` from execution.ts
+- **Workflow data**: Use `WorkflowDefinition`, `WorkflowStep` from workflow.ts
+- **Generic objects**: `Record<string, unknown>` instead of `any`
+
+### Import Cleanup
+- Remove unused imports: `WorkflowConnection`, `ErrorCategory`, `Edge`, etc.
+- Remove unused variables: `deleteNode`, `updateNodeData`, `execution`, etc.
+- Prefix unused function parameters with `_` (e.g., `_data` instead of `data`)
+
+### HTML Entity Fixes
+```typescript
+// Replace this:
+"Create a new workflow"
+// With this:
+&quot;Create a new workflow&quot;
+```
+
+### React Hook Dependencies
+```typescript
+// Fix useEffect dependencies
+useEffect(() => {
+  // Move loadWorkflow inside or use useCallback
+}, [/* add missing dependencies */]);
+```
+
+## Project Context
+
+### Technology Stack
+- **Frontend**: React 18.2.0 + TypeScript 5.2.2
+- **Build Tool**: Vite 7.0.6
+- **Linting**: ESLint 8.53.0 + @typescript-eslint
+- **Testing**: Vitest 3.2.4
+
+### ESLint Configuration
+```json
+{
+  "extends": [
+    "eslint:recommended",
+    "@typescript-eslint/recommended", 
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
+  ],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+  }
+}
+```
+
+### TypeScript Configuration
+- **Target**: ES2020
+- **Strict Mode**: Enabled
+- **No Unused Locals**: Enabled
+- **No Unused Parameters**: Enabled
 
 ## Success Criteria
-- [ ] `npm run lint` passes with 0 errors, 0 warnings
-- [ ] `npm run build` succeeds without TypeScript errors
-- [ ] All `any` types replaced with proper TypeScript interfaces
-- [ ] All React Hook dependency arrays are complete
-- [ ] No unused variables or imports remain
-- [ ] All functionality preserved (no breaking changes)
 
-## Technical Requirements
+1. **Zero Linting Errors**: `npm run lint` passes with 0 errors, 0 warnings
+2. **Proper Typing**: All `any` types replaced with specific interfaces
+3. **Clean Imports**: No unused variables or imports
+4. **Functional Preservation**: All existing functionality maintained
+5. **React Compliance**: Proper hook dependencies and prop usage
 
-### TypeScript Standards
-- Use existing type definitions from `frontend/src/types/`
-- Create new interfaces when needed following existing patterns
-- No `any` types allowed - use proper typing
-- Maintain strict TypeScript compliance
+## Implementation Strategy
 
-### React Standards  
-- Fix all useEffect dependency arrays
-- Use useCallback for functions passed to dependencies when needed
-- Follow existing React patterns in codebase
+### Phase 1: Type Definitions (Priority Files)
+1. Fix test files - replace mock `any` types with proper interfaces
+2. Fix retryUtils.ts - add proper function parameter types
+3. Fix workflow-builder components - use existing workflow types
 
-### Code Quality
-- Remove all unused variables and imports
-- Fix HTML entity escaping (use `&quot;`, `&apos;`, etc.)
-- Maintain existing functionality and behavior
+### Phase 2: Systematic Cleanup
+1. Remove unused imports and variables across all files
+2. Fix HTML entity escaping issues
+3. Resolve React hook dependency warnings
+4. Fix React prop usage issues
 
-## Files to Fix (Priority Order)
+### Phase 3: Validation
+1. Run `npm run lint` - must pass with 0 errors/warnings
+2. Run `npm run test` - ensure no functionality broken
+3. Verify all components render correctly
 
-### High Priority (5+ issues each)
-1. **ExecutionLogViewer.tsx** - 5 `any` types + 1 hook dependency warning
-2. **TemplateInstantiationForm.tsx** - 6 `any` types + unused vars + HTML entities  
-3. **TemplatePreviewModal.tsx** - 8 `any` types + HTML entities
-
-### Medium Priority (2-4 issues each)
-4. **WorkflowExecutionForm.tsx** - 3 `any` types
-5. **TemplateComparison.tsx** - unused import + 1 `any` type
-6. **WorkflowExecutionHistory.tsx** - 2 `any` types
-
-### Test Files (multiple `any` types in mocks)
-7. **PerformanceDashboard.test.tsx** - 10 `any` types in mocks
-8. **WorkflowExecutionResults.test.tsx** - 6 `any` types in mocks
-
-### Low Priority (1-2 issues each)
-9. **TemplateLibrary.tsx** - HTML entity escaping
-10. **Templates.tsx** - 1 `any` type
-11. **WorkflowBuilderPage.tsx** - unused variable
-12. **PerformanceDashboard.tsx** - 1 hook dependency warning
-
-## Implementation Guidelines
-
-### For `any` Type Replacements
-```typescript
-// Instead of:
-const data: any = response.data;
-
-// Use proper typing:
-interface ApiResponse {
-  id: string;
-  name: string;
-  // ... other properties
-}
-const data: ApiResponse = response.data;
+## File Structure Reference
+```
+frontend/src/
+├── types/
+│   ├── workflow.ts          # WorkflowStep, WorkflowDefinition, NodeData
+│   ├── execution.ts         # ExecutionDetails, ExecutionStep, ExecutionLogEntry  
+│   ├── workflow-builder.ts  # Custom builder types
+│   ├── error.ts            # Error types
+│   ├── template.ts         # Template types
+│   └── performance.ts      # Performance types
+├── components/
+│   ├── workflow-builder/   # Main focus area
+│   └── __tests__/         # Test files needing type fixes
+├── hooks/
+│   └── __tests__/         # Hook test files
+├── utils/
+│   └── retryUtils.ts      # Priority file
+└── api/
+    └── websocket.ts       # WebSocket typing issues
 ```
 
-### For React Hook Dependencies
-```typescript
-// Fix missing dependencies:
-useEffect(() => {
-  fetchData();
-}, []); // ❌ Missing fetchData dependency
+## Notes for Cline
 
-useEffect(() => {
-  fetchData();
-}, [fetchData]); // ✅ Include dependency
+- **No Architecture Changes**: Only fix typing and cleanup, preserve all functionality
+- **Use Existing Types**: Leverage comprehensive type definitions already in `/src/types/`
+- **Batch Similar Fixes**: Group similar error types for efficient resolution
+- **Test After Changes**: Verify functionality preserved with `npm run test`
+- **Incremental Approach**: Fix priority files first, then systematic cleanup
 
-// Or use useCallback if function changes frequently:
-const fetchData = useCallback(() => {
-  // implementation
-}, [dependency]);
-```
-
-### For HTML Entity Escaping
-```typescript
-// Instead of:
-<span>User's "special" content</span>
-
-// Use:
-<span>User&apos;s &quot;special&quot; content</span>
-```
-
-## Existing Type Definitions to Use
-- Check `frontend/src/types/performance.ts` for performance-related types
-- Check `frontend/src/api/workflows.d.ts` for workflow-related types
-- Follow patterns in existing components for consistency
-
-## Testing Requirements
-- Run `npm run lint` after each file fix to verify progress
-- Run `npm run build` to ensure no build errors
-- Test key functionality manually if making significant changes
-- Ensure all existing tests still pass
-
-## Validation Steps
-1. Clone current branch and run initial `npm run lint` to confirm baseline
-2. Fix files in priority order listed above
-3. Run `npm run lint` after each file to track progress
-4. Final validation: `npm run lint && npm run build` both succeed
-5. Spot check that key components still render correctly
-
-## Notes
-- Focus on fixing issues without changing functionality
-- When in doubt about types, check similar existing code patterns
-- Some `any` types in test mocks can be replaced with `unknown` or proper mock types
-- Preserve all existing component behavior and props interfaces
-
-## Completion Criteria
-Task is complete when:
-- All 54 linting issues are resolved
-- `npm run lint` returns clean (0 errors, 0 warnings)
-- `npm run build` succeeds without TypeScript errors
-- No functionality is broken or changed
+## Expected Outcome
+Clean, properly typed TypeScript codebase that passes all linting checks and maintains full functionality, enabling smooth development workflow.

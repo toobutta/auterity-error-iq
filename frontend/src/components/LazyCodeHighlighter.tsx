@@ -3,20 +3,33 @@ import React, { Suspense, lazy } from 'react';
 // Dynamically import syntax highlighter with style bundled together
 const SyntaxHighlighterWithStyle = lazy(() => 
   Promise.all([
-    import('react-syntax-highlighter').then(m => m.Prism),
-    import('react-syntax-highlighter/dist/styles/dark')
-  ]).then(([SyntaxHighlighter, { default: darkStyle }]) => ({
-    default: ({ language, children, className, showLineNumbers }: LazyCodeHighlighterProps) => (
-      <SyntaxHighlighter
-        language={language}
-        style={darkStyle}
-        className={className}
-        showLineNumbers={showLineNumbers}
-      >
-        {children}
-      </SyntaxHighlighter>
-    )
-  }))
+    import('react-syntax-highlighter/dist/esm/languages/prism/javascript'),
+    import('react-syntax-highlighter/dist/esm/languages/prism/json'),
+    import('react-syntax-highlighter/dist/esm/languages/prism/markup'),
+    import('react-syntax-highlighter/dist/esm/styles/prism/dark')
+  ]).then(([jsLang, jsonLang, markupLang, { default: darkStyle }]) => {
+    // Import the main Prism component
+    return import('react-syntax-highlighter/dist/esm/prism-light').then(({ default: SyntaxHighlighter }) => {
+      // Register languages
+      SyntaxHighlighter.registerLanguage('javascript', jsLang.default);
+      SyntaxHighlighter.registerLanguage('json', jsonLang.default);
+      SyntaxHighlighter.registerLanguage('text', markupLang.default);
+      SyntaxHighlighter.registerLanguage('markup', markupLang.default);
+      
+      return {
+        default: ({ language, children, className, showLineNumbers }: LazyCodeHighlighterProps) => (
+          <SyntaxHighlighter
+            language={language === 'text' ? 'markup' : language}
+            style={darkStyle}
+            className={className}
+            showLineNumbers={showLineNumbers}
+          >
+            {children}
+          </SyntaxHighlighter>
+        )
+      };
+    });
+  })
 );
 
 interface LazyCodeHighlighterProps {

@@ -1,0 +1,105 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS Cognito User Pool for AutoMatrix Enterprise SSO'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues: [development, staging, production]
+  
+  DomainName:
+    Type: String
+    Description: Domain name for Cognito hosted UI
+    Default: autrix-auth
+
+Resources:
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub 'autrix-${Environment}'
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 12
+          RequireUppercase: true
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+      MfaConfiguration: OPTIONAL
+      EnabledMfas:
+        - SOFTWARE_TOKEN_MFA
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Required: true
+          Mutable: true
+        - Name: given_name
+          AttributeDataType: String
+          Required: true
+        - Name: family_name
+          AttributeDataType: String
+          Required: true
+        - Name: department
+          AttributeDataType: String
+          Required: false
+          Mutable: true
+        - Name: role
+          AttributeDataType: String
+          Required: false
+          Mutable: true
+
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref CognitoUserPool
+      ClientName: !Sub 'autrix-client-${Environment}'
+      GenerateSecret: true
+      SupportedIdentityProviders:
+        - COGNITO
+        - SAML
+        - OIDC
+      CallbackURLs:
+        - !Sub 'https://${DomainName}.auth.${AWS::Region}.amazoncognito.com/oauth2/idpresponse'
+        - 'http://localhost:3000/auth/callback'
+      LogoutURLs:
+        - 'http://localhost:3000/auth/logout'
+      AllowedOAuthFlows:
+        - authorization_code
+      AllowedOAuthScopes:
+        - openid
+        - email
+        - profile
+      ExplicitAuthFlows:
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      TokenValidityUnits:
+        AccessToken: hours
+        IdToken: hours
+        RefreshToken: days
+      AccessTokenValidity: 8
+      IdTokenValidity: 8
+      RefreshTokenValidity: 30
+
+  CognitoUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Sub '${DomainName}-${Environment}'
+      UserPoolId: !Ref CognitoUserPool
+
+Outputs:
+  UserPoolId:
+    Description: Cognito User Pool ID
+    Value: !Ref CognitoUserPool
+    Export:
+      Name: !Sub '${AWS::StackName}-UserPoolId'
+  
+  UserPoolClientId:
+    Description: Cognito User Pool Client ID
+    Value: !Ref CognitoUserPoolClient
+    Export:
+      Name: !Sub '${AWS::StackName}-ClientId'
+  
+  UserPoolDomain:
+    Description: Cognito User Pool Domain
+    Value: !Sub '${DomainName}-${Environment}.auth.${AWS::Region}.amazoncognito.com'
+    Export:
+      Name: !Sub '${AWS::StackName}-Domain'
