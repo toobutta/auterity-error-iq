@@ -73,8 +73,8 @@ class SyntaxHighlighterErrorBoundary extends React.Component<
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Syntax highlighter error:', { message: error.message, stack: error.stack?.substring(0, 500) });
+  componentDidCatch(error: Error) {
+    console.error('Syntax highlighter error occurred');
   }
 
   render() {
