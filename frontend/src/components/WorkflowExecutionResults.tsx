@@ -29,8 +29,8 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
         const executionData = await getExecution(executionId);
         setExecution(executionData);
       } catch (err: unknown) {
-        console.error('Failed to fetch execution:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch execution results');
+        console.error('Failed to fetch execution');
+        setError('Failed to fetch execution results');
       } finally {
         setLoading(false);
       }
@@ -76,9 +76,8 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
     
     try {
       await navigator.clipboard.writeText(formatValue(execution.outputData));
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      console.error('Failed to copy to clipboard:', errorMessage);
+    } catch {
+      console.error('Failed to copy to clipboard');
       // Could add user notification here if needed
     }
   };

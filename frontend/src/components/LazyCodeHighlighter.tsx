@@ -49,10 +49,10 @@ const LoadingFallback: React.FC<{ children: string }> = ({ children }) => (
   </div>
 );
 
-const ErrorFallback: React.FC<{ children: string; error?: Error }> = ({ children, error }) => (
+const ErrorFallback: React.FC<{ children: string }> = ({ children }) => (
   <div className="bg-gray-100 border border-gray-300 p-4 rounded">
     <div className="text-red-600 text-sm mb-2">
-      Failed to load syntax highlighter: {error?.message || 'Unknown error'}
+      Failed to load syntax highlighter
     </div>
     <pre className="whitespace-pre-wrap text-gray-800 font-mono text-sm overflow-x-auto">
       {children}
@@ -61,26 +61,26 @@ const ErrorFallback: React.FC<{ children: string; error?: Error }> = ({ children
 );
 
 class SyntaxHighlighterErrorBoundary extends React.Component<
-  { children: React.ReactNode; fallback: React.ComponentType<{ children: string; error?: Error }>; code: string },
-  { hasError: boolean; error?: Error }
+  { children: React.ReactNode; fallback: React.ComponentType<{ children: string }>; code: string },
+  { hasError: boolean }
 > {
   constructor(props: any) {
     super(props);
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
+  static getDerivedStateFromError() {
+    return { hasError: true };
   }
 
-  componentDidCatch(error: Error) {
-    console.error('Syntax highlighter error occurred');
+  componentDidCatch() {
+    // Error boundary caught an error - no logging to prevent injection
   }
 
   render() {
     if (this.state.hasError) {
       const FallbackComponent = this.props.fallback;
-      return <FallbackComponent children={this.props.code} error={this.state.error} />;
+      return <FallbackComponent children={this.props.code} />;
     }
 
     return this.props.children;
