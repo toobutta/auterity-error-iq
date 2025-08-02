@@ -1,0 +1,37 @@
+{
+  "gitlens.advanced.messages": {
+    "suppressCommitHasNoPreviousCommitWarning": false,
+    "suppressCommitNotFoundWarning": false,
+    "suppressFileNotUnderSourceControlWarning": false,
+    "suppressGitVersionWarning": false,
+    "suppressLineUncommittedWarning": false,
+    "suppressNoRepositoryWarning": false
+  },
+  "gitlens.blame.format": "${message|50?} ${agoOrDate|14-}",
+  "gitlens.blame.heatmap.enabled": true,
+  "gitlens.codeLens.enabled": true,
+  "gitlens.currentLine.enabled": true,
+  "gitlens.hovers.enabled": true,
+  "gitlens.statusBar.enabled": true,
+  "gitlens.views.repositories.files.layout": "tree",
+  "gitlens.views.fileHistory.enabled": true,
+  "gitlens.views.lineHistory.enabled": true,
+  "git.enableCommitSigning": false,
+  "git.fetchOnPull": true,
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+  "git.suggestSmartCommit": true,
+  "conventionalCommits.emojiFormat": "emoji",
+  "conventionalCommits.showEditor": true,
+  "conventionalCommits.scopes": [
+    "backend",
+    "frontend", 
+    "api",
+    "auth",
+    "workflow",
+    "template",
+    "infra",
+    "docs"
+  ]
+}
