@@ -11,11 +11,11 @@ interface WorkflowExecutionResultsProps {
   className?: string;
 }
 
-const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({ 
+const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
   executionId,
   workflowId,
   onRetrySuccess,
-  className = '' 
+  className = ''
 }) => {
   const [execution, setExecution] = useState<WorkflowExecution | null>(null);
   const [loading, setLoading] = useState(true);
@@ -77,7 +77,9 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
     try {
       await navigator.clipboard.writeText(formatValue(execution.outputData));
     } catch (err) {
-      console.error('Failed to copy to clipboard:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      console.error('Failed to copy to clipboard:', errorMessage);
+      // Could add user notification here if needed
     }
   };
 
