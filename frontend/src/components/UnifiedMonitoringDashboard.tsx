@@ -87,7 +87,7 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
   const [showAlertSettings, setShowAlertSettings] = useState(false);
 
   // Use WebSocket for real-time updates
-  const { logs, isConnected } = useWebSocketLogs();
+  const { logs: _logs, isConnected } = useWebSocketLogs();
 
   // Generate mock data for demonstration
   const generateMockMetrics = useCallback((): SystemMetrics[] => {
