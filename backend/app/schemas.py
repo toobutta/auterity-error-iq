@@ -2,9 +2,14 @@
 
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
 
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel
+from pydantic import EmailStr
+from pydantic import validator
 
 
 # Authentication schemas

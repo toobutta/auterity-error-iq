@@ -387,7 +387,14 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
 // Overview Tab Component
 const OverviewTab: React.FC<{
   metrics: SystemMetrics[];
-  stats: any;
+  stats: {
+    totalRequests: number;
+    totalCosts: number;
+    avgResponseTime: number;
+    avgErrorRate: number;
+    activeAlerts: number;
+    criticalAlerts: number;
+  };
   alerts: Alert[];
 }> = ({ metrics, stats, alerts }) => (
   <div className="space-y-6">

@@ -3,11 +3,16 @@
 import json
 import re
 import uuid
-from typing import Any, Dict, List, Optional
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from app.models import Template, TemplateParameter, Workflow
+from app.models import Template
+from app.models import TemplateParameter
+from app.models import Workflow
 
 
 class TemplateEngine:
@@ -18,7 +23,7 @@ class TemplateEngine:
 
     async def get_templates(self, category: Optional[str] = None) -> List[Template]:
         """Get all active templates, optionally filtered by category."""
-        query = self.db.query(Template).filter(Template.is_active == True)
+        query = self.db.query(Template).filter(Template.is_active  is True)
 
         if category:
             query = query.filter(Template.category == category.lower())
@@ -29,7 +34,7 @@ class TemplateEngine:
         """Get a specific template by ID."""
         return (
             self.db.query(Template)
-            .filter(Template.id == template_id, Template.is_active == True)
+            .filter(Template.id == template_id, Template.is_active  is True)
             .first()
         )
 

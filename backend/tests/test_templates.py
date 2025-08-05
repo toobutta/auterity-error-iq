@@ -9,7 +9,9 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from app.main import app
-from app.models import Template, TemplateParameter, User
+from app.models import Template
+from app.models import TemplateParameter
+from app.models import User
 from app.services.template_engine import TemplateEngine
 
 

@@ -3,9 +3,11 @@
 
 import logging
 import os
+
 from app.database import get_db_session
 from app.init_db import init_database
-from app.models import Template, User
+from app.models import Template
+from app.models import User
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)

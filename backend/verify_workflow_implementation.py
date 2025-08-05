@@ -25,7 +25,8 @@ def verify_imports():
 def verify_database_setup():
     """Verify database setup works."""
     try:
-        from app.models.base import Base, engine
+        from app.models.base import Base
+        from app.models.base import engine
 
         # Create tables
         Base.metadata.create_all(bind=engine)
@@ -40,7 +41,8 @@ def verify_model_creation():
     """Verify that models can be created."""
     try:
         from app.models.base import SessionLocal
-        from app.models.execution import ExecutionStatus, WorkflowExecution
+        from app.models.execution import ExecutionStatus
+        from app.models.execution import WorkflowExecution
         from app.models.user import User
         from app.models.workflow import Workflow
 
@@ -117,7 +119,8 @@ async def verify_workflow_engine():
 async def verify_execution_flow(workflow_id):
     """Verify basic execution flow."""
     try:
-        from app.services.workflow_engine import ExecutionStatus, WorkflowEngine
+        from app.services.workflow_engine import ExecutionStatus
+        from app.services.workflow_engine import WorkflowEngine
 
         engine = WorkflowEngine()
 

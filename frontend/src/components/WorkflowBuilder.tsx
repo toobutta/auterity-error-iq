@@ -225,20 +225,20 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
     setNodes((nds) => [...nds, newNode]);
   };
 
-  const deleteNode = (nodeId: string) => {
-    setNodes((nds) => nds.filter((node) => node.id !== nodeId));
-    setEdges((eds) => eds.filter((edge) => edge.source !== nodeId && edge.target !== nodeId));
-  };
+  // const deleteNode = (nodeId: string) => {
+  //   setNodes((nds) => nds.filter((node) => node.id !== nodeId));
+  //   setEdges((eds) => eds.filter((edge) => edge.source !== nodeId && edge.target !== nodeId));
+  // };
 
-  const updateNodeData = (nodeId: string, updates: Partial<NodeData>) => {
-    setNodes((nds) =>
-      nds.map((node) =>
-        node.id === nodeId
-          ? { ...node, data: { ...node.data, ...updates } }
-          : node
-      )
-    );
-  };
+  // const updateNodeData = (nodeId: string, updates: Partial<NodeData>) => {
+  //   setNodes((nds) =>
+  //     nds.map((node) =>
+  //       node.id === nodeId
+  //         ? { ...node, data: { ...node.data, ...updates } }
+  //         : node
+  //     )
+  //   );
+  // };
 
   const saveWorkflow = async () => {
     if (validationErrors.length > 0) {

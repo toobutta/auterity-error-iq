@@ -1,7 +1,8 @@
 """Unit tests for database operations."""
 
 import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 from sqlalchemy.exc import SQLAlchemyError
@@ -9,13 +10,11 @@ from sqlalchemy.exc import SQLAlchemyError
 # Set test environment before importing models
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 
-from app.database import (
-    check_database_connection,
-    create_tables,
-    drop_tables,
-    get_db,
-    get_db_session,
-)
+from app.database import check_database_connection
+from app.database import create_tables
+from app.database import drop_tables
+from app.database import get_db
+from app.database import get_db_session
 
 
 class TestDatabaseUtilities:

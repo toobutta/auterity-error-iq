@@ -9,9 +9,8 @@ export const RelayCoreAdminInterface: React.FC<RelayCoreAdminInterfaceProps> = (
   onBudgetUpdate,
   onProviderChange,
 }) => {
-  const [selectedProvider, setSelectedProvider] = useState<string>('openai');
   const [budgetLimit, setBudgetLimit] = useState<number>(1000);
-  const [currentUsage, setCurrentUsage] = useState<number>(650);
+  const [currentUsage] = useState<number>(650);
 
   const providers = [
     { id: 'openai', name: 'OpenAI', cost: 0.002, status: 'active' },
@@ -19,10 +18,7 @@ export const RelayCoreAdminInterface: React.FC<RelayCoreAdminInterfaceProps> = (
     { id: 'google', name: 'Google', cost: 0.001, status: 'active' },
   ];
 
-  const handleProviderChange = (providerId: string) => {
-    setSelectedProvider(providerId);
-    onProviderChange?.(providerId);
-  };
+
 
   const handleBudgetUpdate = (newBudget: number) => {
     setBudgetLimit(newBudget);

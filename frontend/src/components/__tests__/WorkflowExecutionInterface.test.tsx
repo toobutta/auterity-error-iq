@@ -5,7 +5,6 @@ import { BrowserRouter } from 'react-router-dom';
 import Workflows from '../../pages/Workflows';
 import { ErrorProvider } from '../../contexts/ErrorContext';
 import { AuthProvider } from '../../contexts/AuthContext';
-import * as workflowsApi from '../../api/workflows';
 
 // Mock the API modules with all required exports
 vi.mock('../../api/workflows', () => ({
@@ -26,7 +25,7 @@ vi.mock('../../api/workflows', () => ({
 
 // Mock the child components to focus on integration
 vi.mock('../../components/WorkflowExecutionForm', () => ({
-  default: ({ onExecutionStart, className }: any) => (
+  default: ({ onExecutionStart, className }: unknown) => (
     <div data-testid="workflow-execution-form" className={className}>
       <button 
         onClick={() => onExecutionStart?.('test-execution-id')}
@@ -39,7 +38,7 @@ vi.mock('../../components/WorkflowExecutionForm', () => ({
 }));
 
 vi.mock('../../components/ExecutionStatus', () => ({
-  default: ({ executionId, onComplete }: any) => (
+  default: ({ executionId, onComplete }: unknown) => (
     <div data-testid="execution-status">
       <span>Execution ID: {executionId}</span>
       <button 
@@ -53,7 +52,7 @@ vi.mock('../../components/ExecutionStatus', () => ({
 }));
 
 vi.mock('../../components/WorkflowExecutionResults', () => ({
-  default: ({ executionId, workflowId }: any) => (
+  default: ({ executionId, workflowId }: unknown) => (
     <div data-testid="execution-results">
       <span>Results for execution: {executionId}</span>
       <span>Workflow: {workflowId}</span>
@@ -62,7 +61,7 @@ vi.mock('../../components/WorkflowExecutionResults', () => ({
 }));
 
 vi.mock('../../components/WorkflowExecutionHistory', () => ({
-  default: ({ onExecutionSelect }: any) => (
+  default: ({ onExecutionSelect }: unknown) => (
     <div data-testid="execution-history">
       <button 
         onClick={() => onExecutionSelect?.({ 
@@ -79,7 +78,7 @@ vi.mock('../../components/WorkflowExecutionHistory', () => ({
 }));
 
 vi.mock('../../components/WorkflowErrorDisplay', () => ({
-  default: ({ executionId, onRetrySuccess }: any) => (
+  default: ({ executionId, onRetrySuccess }: unknown) => (
     <div data-testid="error-display">
       <span>Error for execution: {executionId}</span>
       <button 

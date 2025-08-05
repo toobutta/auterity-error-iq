@@ -3,14 +3,19 @@
 import logging
 import time
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
 from uuid import UUID
 
 from sqlalchemy.orm import Session
 
 from app.database import get_db_session
 from app.exceptions import WorkflowExecutionError
-from app.models.execution import ExecutionLog, ExecutionStatus, WorkflowExecution
+from app.models.execution import ExecutionLog
+from app.models.execution import ExecutionStatus
+from app.models.execution import WorkflowExecution
 from app.models.workflow import Workflow
 
 logger = logging.getLogger(__name__)
@@ -70,7 +75,7 @@ class WorkflowEngine:
                 # Get workflow definition
                 workflow = (
                     db.query(Workflow)
-                    .filter(Workflow.id == workflow_id, Workflow.is_active == True)
+                    .filter(Workflow.id == workflow_id, Workflow.is_active  is True)
                     .first()
                 )
 
@@ -484,7 +489,8 @@ class WorkflowEngine:
         self, node: Dict[str, Any], input_data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Execute an AI processing step."""
-        from app.services.ai_service import AIServiceError, get_ai_service
+        from app.services.ai_service import AIServiceError
+        from app.services.ai_service import get_ai_service
 
         node_data = node.get("data", {})
         prompt = node_data.get("prompt", "Process this data")

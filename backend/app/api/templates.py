@@ -3,20 +3,23 @@
 import uuid
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import HTTPException
+from fastapi import Query
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_user
 from app.database import get_db
-from app.models import Template, TemplateParameter, User
-from app.schemas import (
-    TemplateCreate,
-    TemplateInstantiateRequest,
-    TemplateListResponse,
-    TemplateResponse,
-    TemplateUpdate,
-    WorkflowResponse,
-)
+from app.models import Template
+from app.models import TemplateParameter
+from app.models import User
+from app.schemas import TemplateCreate
+from app.schemas import TemplateInstantiateRequest
+from app.schemas import TemplateListResponse
+from app.schemas import TemplateResponse
+from app.schemas import TemplateUpdate
+from app.schemas import WorkflowResponse
 from app.services.template_engine import TemplateEngine
 
 router = APIRouter(prefix="/templates", tags=["templates"])
@@ -31,7 +34,7 @@ async def list_templates(
     current_user: User = Depends(get_current_user),
 ):
     """List all available templates with optional filtering."""
-    query = db.query(Template).filter(Template.is_active == True)
+    query = db.query(Template).filter(Template.is_active  is True)
 
     if category:
         query = query.filter(Template.category == category.lower())
@@ -57,7 +60,7 @@ async def get_template(
     """Get a specific template by ID."""
     template = (
         db.query(Template)
-        .filter(Template.id == template_id, Template.is_active == True)
+        .filter(Template.id == template_id, Template.is_active  is True)
         .first()
     )
 
@@ -157,7 +160,7 @@ async def instantiate_template(
     """Create a new workflow from a template."""
     template = (
         db.query(Template)
-        .filter(Template.id == template_id, Template.is_active == True)
+        .filter(Template.id == template_id, Template.is_active  is True)
         .first()
     )
 
@@ -187,7 +190,7 @@ async def list_categories(
 ):
     """Get list of available template categories."""
     categories = (
-        db.query(Template.category).filter(Template.is_active == True).distinct().all()
+        db.query(Template.category).filter(Template.is_active  is True).distinct().all()
     )
 
     return {"categories": [cat[0] for cat in categories]}

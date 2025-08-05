@@ -6,19 +6,20 @@ import logging
 import os
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
 
 import openai
 from openai import AsyncOpenAI
 
 from app.exceptions import AIServiceError
-from app.services.relaycore_client import (
-    RelayCoreChatClient,
-    RelayCoreCostOptimizer,
-    RelayCoreFallbackHandler,
-    RelayCoreFallbackMode,
-    get_relaycore_client,
-)
+from app.services.relaycore_client import RelayCoreChatClient
+from app.services.relaycore_client import RelayCoreCostOptimizer
+from app.services.relaycore_client import RelayCoreFallbackHandler
+from app.services.relaycore_client import RelayCoreFallbackMode
+from app.services.relaycore_client import get_relaycore_client
 
 logger = logging.getLogger(__name__)
 

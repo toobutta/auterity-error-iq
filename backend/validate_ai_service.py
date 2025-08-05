@@ -15,46 +15,37 @@ sys.modules["openai.RateLimitError"] = Exception
 sys.modules["openai.APIError"] = Exception
 
 # Import after mocking
-from app.services.ai_service import (  # noqa: E402
-    AIResponse,
-    AIService,
-    AIServiceError,
-    PromptTemplate,
-)
+from app.services.ai_service import AIResponse  # noqa: E402
+from app.services.ai_service import AIService
+from app.services.ai_service import AIServiceError
+from app.services.ai_service import PromptTemplate
 
 
 def validate_ai_service_class():
     """Validate AIService class with OpenAI GPT integration."""
     print(
-        "✓ Task requirement: Implement AIService class with OpenAI GPT "
-        "integration"
+        "✓ Task requirement: Implement AIService class with OpenAI GPT " "integration"
     )
 
     # Check class exists and has required methods
-    assert hasattr(AIService, "__init__"), (
-        "AIService should have __init__ method"
-    )
-    assert hasattr(AIService, "process_text"), (
-        "AIService should have process_text method"
-    )
-    assert hasattr(AIService, "process_with_template"), (
-        "AIService should have process_with_template method"
-    )
-    assert hasattr(AIService, "validate_response"), (
-        "AIService should have validate_response method"
-    )
+    assert hasattr(AIService, "__init__"), "AIService should have __init__ method"
+    assert hasattr(
+        AIService, "process_text"
+    ), "AIService should have process_text method"
+    assert hasattr(
+        AIService, "process_with_template"
+    ), "AIService should have process_with_template method"
+    assert hasattr(
+        AIService, "validate_response"
+    ), "AIService should have validate_response method"
 
     # Check OpenAI integration
     with __import__("unittest.mock").mock.patch.dict(
         "os.environ", {"OPENAI_API_KEY": "test-key"}
     ):
         service = AIService()
-        assert hasattr(service, "client"), (
-            "AIService should have OpenAI client"
-        )
-        assert hasattr(service, "model"), (
-            "AIService should have model configuration"
-        )
+        assert hasattr(service, "client"), "AIService should have OpenAI client"
+        assert hasattr(service, "model"), "AIService should have model configuration"
 
     print("  - AIService class implemented with OpenAI integration")
     print(

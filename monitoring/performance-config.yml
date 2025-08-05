@@ -1,0 +1,17 @@
+performance:
+  metrics:
+    - response_time
+    - memory_usage
+    - cpu_usage
+    - database_queries
+  
+  thresholds:
+    response_time_ms: 2000
+    memory_usage_percent: 85
+    cpu_usage_percent: 80
+    
+  alerts:
+    email: true
+    slack: false
+    
+  retention_days: 30

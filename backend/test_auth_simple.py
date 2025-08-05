@@ -3,12 +3,11 @@
 
 import os
 import sys
-from app.auth import (
-    create_access_token,
-    get_password_hash,
-    verify_password,
-    verify_token,
-)
+
+from app.auth import create_access_token
+from app.auth import get_password_hash
+from app.auth import verify_password
+from app.auth import verify_token
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -23,12 +22,8 @@ def test_password_hashing():
     hashed = get_password_hash(password)
 
     assert hashed != password, "Hash should be different from password"
-    assert verify_password(password, hashed), (
-        "Password verification should succeed"
-    )
-    assert not verify_password("wrongpassword", hashed), (
-        "Wrong password should fail"
-    )
+    assert verify_password(password, hashed), "Password verification should succeed"
+    assert not verify_password("wrongpassword", hashed), "Wrong password should fail"
     print("✓ Password hashing tests passed")
 
 
@@ -43,9 +38,7 @@ def test_jwt_tokens():
 
     payload = verify_token(token)
     assert payload is not None, "Token should be verifiable"
-    assert payload["sub"] == "test@example.com", (
-        "Token should contain correct data"
-    )
+    assert payload["sub"] == "test@example.com", "Token should contain correct data"
     assert "exp" in payload, "Token should have expiration"
 
     # Test invalid token

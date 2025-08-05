@@ -3,7 +3,6 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useParams } from 'react-router-dom';
 
-import { WorkflowCanvasProps, Workflow, WorkflowNode } from '../../types/workflow-builder';
 import { AUTOMOTIVE_NODE_CATEGORIES } from './templates/automotive-templates';
 import { executeWorkflow, createWorkflow, updateWorkflow, getWorkflow } from '../../api/workflows';
 

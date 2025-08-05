@@ -19,7 +19,9 @@ def test_auth_endpoints():
         print("✓ Auth router imported successfully")
 
         # Test that we can import schemas
-        from app.schemas import Token, UserLogin, UserRegister
+        from app.schemas import Token
+        from app.schemas import UserLogin
+        from app.schemas import UserRegister
 
         print("✓ Auth schemas imported successfully")
 

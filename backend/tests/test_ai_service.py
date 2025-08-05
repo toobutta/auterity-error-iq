@@ -1,20 +1,21 @@
 """Tests for AI service functionality."""
 
 import json
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
-from openai import APIError, RateLimitError
+from openai import APIError
+from openai import RateLimitError
 
-from app.services.ai_service import (
-    AIModelType,
-    AIResponse,
-    AIService,
-    AIServiceError,
-    PromptTemplate,
-    get_ai_service,
-    set_ai_service,
-)
+from app.services.ai_service import AIModelType
+from app.services.ai_service import AIResponse
+from app.services.ai_service import AIService
+from app.services.ai_service import AIServiceError
+from app.services.ai_service import PromptTemplate
+from app.services.ai_service import get_ai_service
+from app.services.ai_service import set_ai_service
 
 
 class TestPromptTemplate:

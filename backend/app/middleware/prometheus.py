@@ -3,14 +3,13 @@
 import time
 from typing import Callable
 
-from fastapi import Request, Response
-from prometheus_client import (
-    CONTENT_TYPE_LATEST,
-    Counter,
-    Gauge,
-    Histogram,
-    generate_latest,
-)
+from fastapi import Request
+from fastapi import Response
+from prometheus_client import CONTENT_TYPE_LATEST
+from prometheus_client import Counter
+from prometheus_client import Gauge
+from prometheus_client import Histogram
+from prometheus_client import generate_latest
 
 # HTTP Metrics
 http_requests_total = Counter(

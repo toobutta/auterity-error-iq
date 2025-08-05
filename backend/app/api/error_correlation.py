@@ -5,18 +5,22 @@ API endpoints for cross-system error correlation and handling.
 import json
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi import APIRouter
+from fastapi import BackgroundTasks
+from fastapi import Depends
+from fastapi import HTTPException
 
 from ..auth import get_current_user
 from ..models.user import User
-from ..services.error_correlation import (
-    CorrelationPattern,
-    ErrorCorrelation,
-    ErrorCorrelationService,
-    get_correlation_service,
-)
+from ..services.error_correlation import CorrelationPattern
+from ..services.error_correlation import ErrorCorrelation
+from ..services.error_correlation import ErrorCorrelationService
+from ..services.error_correlation import get_correlation_service
 
 router = APIRouter(prefix="/api/v1/error-correlation", tags=["error-correlation"])
 logger = logging.getLogger(__name__)

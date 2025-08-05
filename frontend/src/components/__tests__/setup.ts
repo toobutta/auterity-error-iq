@@ -1,6 +1,5 @@
 import { vi } from 'vitest';
 import { createAppError } from '../../utils/errorUtils';
-import { ErrorCategory, ErrorSeverity } from '../../types/error';
 
 // Mock the error utils
 export const mockAppError = createAppError(

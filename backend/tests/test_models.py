@@ -10,16 +10,14 @@ from sqlalchemy.pool import StaticPool
 # Set test environment before importing models
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 
-from app.models import (
-    Base,
-    ExecutionLog,
-    ExecutionStatus,
-    Template,
-    TemplateParameter,
-    User,
-    Workflow,
-    WorkflowExecution,
-)
+from app.models import Base
+from app.models import ExecutionLog
+from app.models import ExecutionStatus
+from app.models import Template
+from app.models import TemplateParameter
+from app.models import User
+from app.models import Workflow
+from app.models import WorkflowExecution
 
 # Test database setup
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"

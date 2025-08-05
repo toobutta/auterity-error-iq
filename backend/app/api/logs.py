@@ -2,15 +2,22 @@
 
 import logging
 from datetime import datetime
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel, Field
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import HTTPException
+from fastapi import Request
+from fastapi import status
+from pydantic import BaseModel
+from pydantic import Field
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_active_user
 from app.database import get_db
-from app.middleware.logging import get_correlation_id, log_structured
+from app.middleware.logging import get_correlation_id
+from app.middleware.logging import log_structured
 from app.models.user import User
 
 logger = logging.getLogger(__name__)

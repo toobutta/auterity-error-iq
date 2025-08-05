@@ -3,7 +3,8 @@
 
 import sys
 import traceback
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
 from jose import jwt
 from passlib.context import CryptContext
@@ -20,12 +21,8 @@ try:
     hashed = pwd_context.hash(password)
 
     assert hashed != password, "Hash should be different from password"
-    assert pwd_context.verify(password, hashed), (
-        "Password verification should succeed"
-    )
-    assert not pwd_context.verify("wrongpassword", hashed), (
-        "Wrong password should fail"
-    )
+    assert pwd_context.verify(password, hashed), "Password verification should succeed"
+    assert not pwd_context.verify("wrongpassword", hashed), "Wrong password should fail"
     print("   ✓ Password hashing works correctly")
 
     # Test JWT tokens
@@ -47,9 +44,7 @@ try:
     # Verify token
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        assert payload["sub"] == "test@example.com", (
-            "Token should contain correct data"
-        )
+        assert payload["sub"] == "test@example.com", "Token should contain correct data"
         assert "exp" in payload, "Token should have expiration"
         print("   ✓ Token verification works")
     except Exception as e:
@@ -69,9 +64,7 @@ try:
 
 except ImportError as e:
     print(f"Missing dependency: {e}")
-    print(
-        "Please install: pip3 install 'passlib[bcrypt]' 'python-jose[cryptography]'"
-    )
+    print("Please install: pip3 install 'passlib[bcrypt]' 'python-jose[cryptography]'")
     sys.exit(1)
 except Exception as e:
     print(f"Test failed: {e}")

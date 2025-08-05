@@ -5,7 +5,9 @@ import asyncio
 import os
 import sys
 import traceback
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 # Add the app directory to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "app"))
@@ -15,13 +17,11 @@ sys.modules["openai"] = MagicMock()
 sys.modules["openai.RateLimitError"] = Exception
 sys.modules["openai.APIError"] = Exception
 
-from app.services.ai_service import (  # noqa: E402
-    AIModelType,
-    AIResponse,
-    AIService,
-    AIServiceError,
-    PromptTemplate,
-)
+from app.services.ai_service import AIModelType  # noqa: E402
+from app.services.ai_service import AIResponse
+from app.services.ai_service import AIService
+from app.services.ai_service import AIServiceError
+from app.services.ai_service import PromptTemplate
 
 
 async def test_prompt_template():
@@ -30,8 +30,7 @@ async def test_prompt_template():
 
     # Test basic template
     template = PromptTemplate(
-        "Hello {name}, your order {order_id} is ready.",
-        variables=["name", "order_id"]
+        "Hello {name}, your order {order_id} is ready.", variables=["name", "order_id"]
     )
 
     result = template.format(name="John", order_id="12345")
@@ -55,9 +54,7 @@ async def test_ai_service_init():
     # Test with API key
     with patch.dict("os.environ", {"OPENAI_API_KEY": "test-key"}):
         with patch("services.ai_service.AsyncOpenAI"):
-            service = AIService(
-                model=AIModelType.GPT_4, max_retries=5, retry_delay=2.0
-            )
+            service = AIService(model=AIModelType.GPT_4, max_retries=5, retry_delay=2.0)
 
             assert service.model == AIModelType.GPT_4
             assert service.max_retries == 5
@@ -90,9 +87,7 @@ async def test_ai_service_process_text():
             mock_response.choices[0].message.content = "AI processed response"
             mock_response.choices[0].finish_reason = "stop"
             mock_response.usage = MagicMock()
-            mock_response.usage.model_dump.return_value = {
-                "total_tokens": 50
-            }
+            mock_response.usage.model_dump.return_value = {"total_tokens": 50}
 
             mock_client.chat.completions.create.return_value = mock_response
 
@@ -138,18 +133,14 @@ async def test_ai_service_templates():
                 "context": "Dealership information",
             }
 
-            result = await service.process_with_template(
-                "customer_inquiry", variables
-            )
+            result = await service.process_with_template("customer_inquiry", variables)
 
             assert result.content == "Template response"
             assert result.is_success
 
             # Test with non-existent template
             try:
-                await service.process_with_template(
-                    "nonexistent", {"var": "value"}
-                )
+                await service.process_with_template("nonexistent", {"var": "value"})
                 assert False, "Should have raised AIServiceError"
             except AIServiceError as e:
                 assert "Template 'nonexistent' not found" in str(e)

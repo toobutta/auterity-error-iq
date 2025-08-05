@@ -243,10 +243,10 @@ export const connectToExecutionStatus = (executionId: string) => {
   return wsClient.connect(`/ws/executions/${executionId}/status`);
 };
 
-export const subscribeToLogs = (handler: (log: any) => void) => {
-  return wsClient.subscribe('log', handler);
+export const subscribeToLogs = (handler: (log: LogMessage) => void) => {
+  return wsClient.subscribe('log', handler as (data: unknown) => void);
 };
 
-export const subscribeToStatusUpdates = (handler: (status: any) => void) => {
-  return wsClient.subscribe('status_update', handler);
+export const subscribeToStatusUpdates = (handler: (status: StatusUpdate) => void) => {
+  return wsClient.subscribe('status_update', handler as (data: unknown) => void);
 };

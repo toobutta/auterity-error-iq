@@ -1,10 +1,15 @@
 """Migration utility to replace direct OpenAI calls with RelayCore integration."""
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
 
 from app.services.ai_service import AIService as LegacyAIService
-from app.services.ai_service_relaycore import AIModelType, AIResponse, EnhancedAIService
+from app.services.ai_service_relaycore import AIModelType
+from app.services.ai_service_relaycore import AIResponse
+from app.services.ai_service_relaycore import EnhancedAIService
 
 logger = logging.getLogger(__name__)
 

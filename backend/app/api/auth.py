@@ -1,36 +1,39 @@
 """Authentication API endpoints."""
 
 from datetime import timedelta
-from typing import Annotated, List
+from typing import Annotated
+from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import HTTPException
+from fastapi import status
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
+from sqlalchemy.orm import joinedload
 
-from app.auth import (
-    ACCESS_TOKEN_EXPIRE_MINUTES,
-    RoleManager,
-    authenticate_user,
-    create_access_token,
-    create_cross_system_token,
-    get_current_active_user,
-    get_password_hash,
-    require_admin_access,
-)
+from app.auth import ACCESS_TOKEN_EXPIRE_MINUTES
+from app.auth import RoleManager
+from app.auth import authenticate_user
+from app.auth import create_access_token
+from app.auth import create_cross_system_token
+from app.auth import get_current_active_user
+from app.auth import get_password_hash
+from app.auth import require_admin_access
 from app.database import get_db
-from app.models.user import Permission, Role, User
-from app.schemas import (
-    CrossSystemTokenRequest,
-    CrossSystemTokenResponse,
-    PermissionResponse,
-    RoleCreate,
-    RoleResponse,
-    Token,
-    UserLogin,
-    UserRegister,
-    UserResponse,
-    UserRoleAssignment,
-)
+from app.models.user import Permission
+from app.models.user import Role
+from app.models.user import User
+from app.schemas import CrossSystemTokenRequest
+from app.schemas import CrossSystemTokenResponse
+from app.schemas import PermissionResponse
+from app.schemas import RoleCreate
+from app.schemas import RoleResponse
+from app.schemas import Token
+from app.schemas import UserLogin
+from app.schemas import UserRegister
+from app.schemas import UserResponse
+from app.schemas import UserRoleAssignment
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 

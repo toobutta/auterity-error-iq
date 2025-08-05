@@ -369,7 +369,8 @@ class TestAuthenticationIntegration:
     ):
         """Test that users can only access their own workflows."""
 
-        from app.auth import create_access_token, get_password_hash
+        from app.auth import create_access_token
+        from app.auth import get_password_hash
         from app.models.user import User
 
         # Create two test users

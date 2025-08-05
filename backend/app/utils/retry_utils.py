@@ -7,15 +7,18 @@ import time
 from datetime import datetime
 from enum import Enum
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Type
 
-from app.exceptions import (
-    AIServiceError,
-    BaseAppException,
-    DatabaseError,
-    ErrorCategory,
-    ExternalAPIError,
-)
+from app.exceptions import AIServiceError
+from app.exceptions import BaseAppException
+from app.exceptions import DatabaseError
+from app.exceptions import ErrorCategory
+from app.exceptions import ExternalAPIError
 
 logger = logging.getLogger(__name__)
 

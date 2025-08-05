@@ -4,6 +4,7 @@
 import asyncio
 import os
 import sys
+
 from app.database import SessionLocal
 from app.models import Template
 from seed_templates import seed_templates

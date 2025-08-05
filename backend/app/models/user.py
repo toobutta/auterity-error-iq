@@ -3,7 +3,13 @@
 import uuid
 from enum import Enum
 
-from sqlalchemy import UUID, Boolean, Column, DateTime, ForeignKey, String, Table
+from sqlalchemy import UUID
+from sqlalchemy import Boolean
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import String
+from sqlalchemy import Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 

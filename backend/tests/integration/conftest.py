@@ -1,7 +1,8 @@
 """Integration test configuration and fixtures."""
 
 import os
-from typing import AsyncGenerator, Generator
+from typing import AsyncGenerator
+from typing import Generator
 
 import pytest
 import pytest_asyncio
@@ -14,7 +15,8 @@ from sqlalchemy.pool import StaticPool
 # Set test environment before importing models
 os.environ["PYTEST_CURRENT_TEST"] = "true"
 
-from app.auth import create_access_token, get_password_hash
+from app.auth import create_access_token
+from app.auth import get_password_hash
 from app.database import get_db
 from app.main import app
 from app.models.base import Base

@@ -13,7 +13,8 @@ def test_core_auth_functions():
     print("1. Testing core authentication functions...")
 
     try:
-        from datetime import datetime, timedelta
+        from datetime import datetime
+        from datetime import timedelta
 
         from jose import jwt
         from passlib.context import CryptContext
