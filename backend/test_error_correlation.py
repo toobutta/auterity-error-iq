@@ -4,13 +4,9 @@ Test script for cross-system error correlation and handling.
 """
 
 import asyncio
-import json
 import logging
 from datetime import datetime
 from datetime import timedelta
-from typing import Any
-from typing import Dict
-from typing import List
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

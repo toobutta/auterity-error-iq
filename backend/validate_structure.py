@@ -5,7 +5,6 @@ Validates that all Python files can be parsed and have proper structure.
 """
 
 import ast
-import os
 import sys
 from pathlib import Path
 

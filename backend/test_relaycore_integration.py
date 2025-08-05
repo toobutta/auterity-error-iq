@@ -4,15 +4,12 @@ import asyncio
 import logging
 import os
 import sys
-from typing import Any
-from typing import Dict
 
 # Add the app directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "app"))
 
 from app.config.relaycore import get_relaycore_config
 from app.services.ai_service_migration import AIServiceMigrationWrapper
-from app.services.ai_service_relaycore import AIModelType
 from app.services.ai_service_relaycore import EnhancedAIService
 from app.services.relaycore_client import RelayCoreChatClient
 from app.services.relaycore_client import RelayCoreFallbackHandler

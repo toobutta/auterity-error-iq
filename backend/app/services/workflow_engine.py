@@ -1,4 +1,5 @@
-"""Workflow execution engine for processing workflows step by step."""
+"""Workflow execution engine for processing
+workflows step by step."""
 
 import logging
 import time
@@ -12,6 +13,8 @@ from app.database import get_db_session
 from app.exceptions import WorkflowExecutionError
 from app.models.execution import ExecutionLog, ExecutionStatus, WorkflowExecution
 from app.models.workflow import Workflow
+import jsonschema
+from jsonschema import Draft7Validator
 
 logger = logging.getLogger(__name__)
 
@@ -428,10 +431,12 @@ class WorkflowEngine:
             return await self._execute_output_step(node, input_data)
         elif step_type == "ai":
             return await self._execute_ai_step(node, input_data)
+        elif step_type == "data_validation":
+            return await self._execute_data_validation_step(node, input_data)
         else:
             # Default processing for unknown types
             return await self._execute_default_step(node, input_data)
-
+        
     async def _execute_input_step(
         self, node: Dict[str, Any], input_data: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -550,3 +555,30 @@ class WorkflowEngine:
         """Execute a default step for unknown types."""
         # Default behavior - pass through data
         return input_data
+
+    async def _execute_data_validation_step(
+        self, node: Dict[str, Any], input_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Execute data validation step using schema from node definition."""
+        node_data = node.get("data", {})
+        validation_schema = node_data.get("validation_schema")
+        
+        if not validation_schema:
+            raise WorkflowStepError("No validation schema defined for data validation step")
+            
+        try:
+            # Validate input data against schema
+            validator = Draft7Validator(validation_schema)
+            if not validator.is_valid(input_data):
+                errors = sorted(validator.iter_errors(input_data), key=lambda e: e.absolute_path)
+                error_messages = [
+                    f"Field {list(error.absolute_path)}: {error.message}" for error in errors
+                ]
+                raise WorkflowStepError(f"Data validation failed: {'; '.join(error_messages)}")
+            
+            return {"validation_result": "success", "validated_data": input_data}
+            
+        except jsonschema.exceptions.ValidationError as e:
+            raise WorkflowStepError(f"Data validation failed: {str(e)}")
+        except Exception as e:
+            raise WorkflowStepError(f"Data validation step failed: {str(e)}")
