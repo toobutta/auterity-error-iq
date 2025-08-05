@@ -1,0 +1,16 @@
+#!/bin/sh
+# Pre-commit hook to enforce code quality standards
+
+# Check for merge conflicts
+if grep -r "<<<<<<<" . --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=venv312 --exclude=.githooks/pre-commit | grep -v "pre-commit" | grep -v "node_modules" | grep -v "venv312"; then
+    echo "❌ Merge conflict markers found"
+    exit 1
+fi
+
+# Check for debug statements
+if git diff --cached --name-only | grep -E '\.(py|js|ts|tsx)$' | xargs grep -l 'console\.log\|debugger\|pdb\.set_trace' 2>/dev/null; then
+    echo "❌ Debug statements found in staged files"
+    exit 1
+fi
+
+echo "✅ Pre-commit checks passed"

@@ -1,0 +1,13 @@
+#!/bin/sh
+# Commit message hook to enforce conventional commits
+
+commit_regex='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .{1,50}$'
+
+if ! grep -qE "$commit_regex" "$1"; then
+    echo "❌ Invalid commit message format"
+    echo "Format: type(scope): subject"
+    echo "Example: feat(auth): add JWT authentication"
+    exit 1
+fi
+
+echo "✅ Commit message format valid"

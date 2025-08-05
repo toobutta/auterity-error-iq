@@ -1,0 +1,23 @@
+# Global ownership
+* @toobutta
+
+# Backend specific
+backend/ @toobutta
+*.py @toobutta
+
+# Frontend specific  
+frontend/ @toobutta
+*.tsx @toobutta
+*.ts @toobutta
+
+# Infrastructure
+docker-compose*.yml @toobutta
+Dockerfile* @toobutta
+infrastructure/ @toobutta
+
+# Documentation
+docs/ @toobutta
+*.md @toobutta
+
+# CI/CD
+.github/ @toobutta

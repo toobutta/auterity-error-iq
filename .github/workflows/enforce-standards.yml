@@ -1,0 +1,36 @@
+name: Enforce Standards
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  validate-commits:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Validate commit messages
+      run: |
+        commits=$(git log --format="%s" origin/${{ github.base_ref }}..HEAD)
+        regex='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .{1,50}$'
+        while IFS= read -r commit; do
+          if ! echo "$commit" | grep -qE "$regex"; then
+            echo "❌ Invalid commit: $commit"
+            exit 1
+          fi
+        done <<< "$commits"
+        echo "✅ All commits follow conventional format"
+
+  check-quality:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Check for debug statements
+      run: |
+        if grep -r "console\.log\|debugger\|pdb\.set_trace" . --exclude-dir=.git --include="*.py" --include="*.js" --include="*.ts" --include="*.tsx"; then
+          echo "❌ Debug statements found"
+          exit 1
+        fi
+        echo "✅ No debug statements found"
