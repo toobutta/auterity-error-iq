@@ -22,7 +22,8 @@ from app.schemas import (
     WorkflowResponse,
     WorkflowUpdate,
 )
-from app.services.workflow_engine import WorkflowEngine, WorkflowExecutionError
+from app.services.workflow_engine import WorkflowExecutionError
+from app.config.workflow_config import create_workflow_engine
 
 router = APIRouter(prefix="/workflows", tags=["workflows"])
 
@@ -294,7 +295,7 @@ async def execute_workflow(
 
     try:
         # Initialize workflow engine and execute
-        engine = WorkflowEngine()
+        engine = create_workflow_engine()
         result = await engine.execute_workflow(
             workflow_id=workflow_id, input_data=execution_request.input_data
         )
@@ -448,7 +449,7 @@ async def cancel_execution(
 
     try:
         # Use workflow engine to cancel execution
-        engine = WorkflowEngine()
+        engine = create_workflow_engine()
         success = await engine.cancel_execution(execution_id)
 
         if not success:

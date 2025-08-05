@@ -44,7 +44,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['overview']));
 
   const { addError } = useError();
-  const { hasPermission, getErrorRoute } = useKiroIntegration('admin'); // TODO: Get actual user role
+  const { hasPermission: _hasPermission, getErrorRoute: _getErrorRoute } = useKiroIntegration('admin'); // TODO: Get actual user role
 
   useEffect(() => {
     const fetchExecutionData = async () => {

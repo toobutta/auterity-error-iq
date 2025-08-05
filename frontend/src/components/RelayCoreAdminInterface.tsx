@@ -7,7 +7,7 @@ interface RelayCoreAdminInterfaceProps {
 
 export const RelayCoreAdminInterface: React.FC<RelayCoreAdminInterfaceProps> = ({
   onBudgetUpdate,
-  onProviderChange,
+  _onProviderChange,
 }) => {
   const [budgetLimit, setBudgetLimit] = useState<number>(1000);
   const [currentUsage] = useState<number>(650);

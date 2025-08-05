@@ -1,8 +1,9 @@
 """Workflow execution engine for processing
 workflows step by step."""
 
+import asyncio
 import logging
-import time
+from collections import defaultdict, deque
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 from uuid import UUID
@@ -13,8 +14,14 @@ from app.database import get_db_session
 from app.exceptions import WorkflowExecutionError
 from app.models.execution import ExecutionLog, ExecutionStatus, WorkflowExecution
 from app.models.workflow import Workflow
-import jsonschema
-from jsonschema import Draft7Validator
+from app.types.workflow import WorkflowNode, WorkflowEdge, StepExecutionResult, RetryConfig
+from app.interfaces.step_executor import StepExecutorFactory
+from app.executors.step_executors import (
+    InputStepExecutor, ProcessStepExecutor, OutputStepExecutor,
+    AIStepExecutor, DataValidationStepExecutor, DefaultStepExecutor
+)
+from app.handlers.error_handler import ErrorHandler
+from app.monitoring.performance import PerformanceMonitor
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +49,27 @@ class ExecutionResult:
 class WorkflowEngine:
     """Core workflow execution engine."""
 
-    def __init__(self):
+    def __init__(
+        self,
+        step_factory: Optional[StepExecutorFactory] = None,
+        retry_config: Optional[RetryConfig] = None,
+        performance_monitor: Optional[PerformanceMonitor] = None
+    ):
         self.logger = logging.getLogger(__name__)
+        self.step_factory = step_factory or self._create_default_factory()
+        self.error_handler = ErrorHandler(retry_config or RetryConfig())
+        self.performance_monitor = performance_monitor or PerformanceMonitor()
+    
+    def _create_default_factory(self) -> StepExecutorFactory:
+        """Create default step executor factory."""
+        factory = StepExecutorFactory()
+        factory.register_executor("input", InputStepExecutor())
+        factory.register_executor("process", ProcessStepExecutor())
+        factory.register_executor("output", OutputStepExecutor())
+        factory.register_executor("ai", AIStepExecutor())
+        factory.register_executor("data_validation", DataValidationStepExecutor())
+        factory.register_executor("default", DefaultStepExecutor())
+        return factory
 
     async def execute_workflow(
         self, workflow_id: UUID, input_data: Optional[Dict[str, Any]] = None
@@ -290,11 +316,15 @@ class WorkflowEngine:
         Returns:
             Final output data from workflow execution
         """
-        nodes = workflow_definition.get("nodes", [])
-        edges = workflow_definition.get("edges", [])
+        raw_nodes = workflow_definition.get("nodes", [])
+        raw_edges = workflow_definition.get("edges", [])
 
-        if not nodes:
+        if not raw_nodes:
             raise WorkflowExecutionError("Workflow has no nodes to execute")
+
+        # Convert to typed objects
+        nodes = [WorkflowNode(id=n["id"], type=n["type"], data=n.get("data", {})) for n in raw_nodes]
+        edges = [WorkflowEdge(id=e["id"], source=e["source"], target=e["target"]) for e in raw_edges]
 
         # Build execution order based on edges
         execution_order = self._build_execution_order(nodes, edges)
@@ -303,43 +333,84 @@ class WorkflowEngine:
         current_data = input_data.copy()
 
         for node_id in execution_order:
-            node = next((n for n in nodes if n["id"] == node_id), None)
+            node = next((n for n in nodes if n.id == node_id), None)
             if not node:
                 raise WorkflowExecutionError(
                     f"Node {node_id} not found in workflow definition"
                 )
 
-            # Execute the step
-            step_output = await self._execute_step(db, execution, node, current_data)
+            # Execute the step with retry logic
+            step_output = await self._execute_step_with_retry(db, execution, node, current_data)
 
             # Update current data with step output
             current_data.update(step_output)
 
         return current_data
 
-    def _build_execution_order(
-        self, nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]
-    ) -> List[str]:
-        """
-        Build the execution order for workflow nodes based on edges.
-        For MVP, we'll use a simple sequential approach based on node order.
+    def _build_execution_order(self, nodes: List[WorkflowNode], edges: List[WorkflowEdge]) -> List[str]:
+        """Build execution order using topological sort."""
+        # Build adjacency list and in-degree count
+        graph = defaultdict(list)
+        in_degree = defaultdict(int)
+        
+        # Initialize all nodes with 0 in-degree
+        for node in nodes:
+            in_degree[node.id] = 0
+        
+        # Build graph and calculate in-degrees
+        for edge in edges:
+            source, target = edge.source, edge.target
+            graph[source].append(target)
+            in_degree[target] += 1
+        
+        # Find nodes with no incoming edges (start nodes)
+        queue = deque([node_id for node_id, degree in in_degree.items() if degree == 0])
+        execution_order = []
+        
+        while queue:
+            current = queue.popleft()
+            execution_order.append(current)
+            
+            # Reduce in-degree for all neighbors
+            for neighbor in graph[current]:
+                in_degree[neighbor] -= 1
+                if in_degree[neighbor] == 0:
+                    queue.append(neighbor)
+        
+        # Check for cycles
+        if len(execution_order) != len(nodes):
+            raise WorkflowExecutionError("Workflow contains cycles and cannot be executed")
+        
+        return execution_order
 
-        Args:
-            nodes: List of workflow nodes
-            edges: List of workflow edges
-
-        Returns:
-            List of node IDs in execution order
-        """
-        # For MVP, execute nodes in the order they appear
-        # In a full implementation, this would do topological sorting
-        return [node["id"] for node in nodes]
+    async def _execute_step_with_retry(
+        self,
+        db: Session,
+        execution: WorkflowExecution,
+        node: WorkflowNode,
+        input_data: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """Execute step with retry logic."""
+        last_error = None
+        
+        for attempt in range(1, self.error_handler.retry_config.max_attempts + 1):
+            try:
+                return await self._execute_step(db, execution, node, input_data)
+            except Exception as e:
+                last_error = e
+                self.logger.warning(f"Step {node.id} failed on attempt {attempt}: {e}")
+                
+                should_retry = await self.error_handler.handle_step_error(e, node, attempt)
+                if not should_retry:
+                    break
+        
+        raise WorkflowStepError(f"Step {node.id} failed after {attempt} attempts: {last_error}")
 
     async def _execute_step(
         self,
         db: Session,
         execution: WorkflowExecution,
-        node: Dict[str, Any],
+        node: WorkflowNode,
         input_data: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
@@ -354,19 +425,24 @@ class WorkflowEngine:
         Returns:
             Output data from the step
         """
-        step_name = node.get("data", {}).get("label", node["id"])
-        step_type = node.get("type", "unknown")
+        step_name = node.data.get("label", node.id)
+        step_type = node.type
 
-        start_time = time.time()
+        start_time = asyncio.get_event_loop().time()
 
         try:
             self.logger.info(f"Executing step '{step_name}' of type '{step_type}'")
 
-            # Execute step based on type
-            output_data = await self._execute_step_by_type(step_type, node, input_data)
+            # Execute step using factory pattern with performance monitoring
+            async with self.performance_monitor.measure_step_execution(step_type, step_name):
+                executor = self.step_factory.get_executor(step_type)
+                result = await executor.execute_step(node, input_data)
+
+            if not result.success:
+                raise WorkflowStepError(result.error_message or "Step execution failed")
 
             # Calculate duration
-            duration_ms = int((time.time() - start_time) * 1000)
+            duration_ms = int((asyncio.get_event_loop().time() - start_time) * 1000)
 
             # Log successful step execution
             log_entry = ExecutionLog(
@@ -374,19 +450,17 @@ class WorkflowEngine:
                 step_name=step_name,
                 step_type=step_type,
                 input_data=input_data,
-                output_data=output_data,
+                output_data=result.output_data,
                 duration_ms=duration_ms,
             )
             db.add(log_entry)
             db.commit()
 
-            self.logger.info(f"Step '{step_name}' completed in {duration_ms}ms")
-
-            return output_data
+            return result.output_data
 
         except Exception as e:
             # Calculate duration even for failed steps
-            duration_ms = int((time.time() - start_time) * 1000)
+            duration_ms = int((asyncio.get_event_loop().time() - start_time) * 1000)
 
             error_message = str(e)
             self.logger.error(
@@ -408,177 +482,4 @@ class WorkflowEngine:
 
             raise WorkflowStepError(f"Step '{step_name}' failed: {error_message}")
 
-    async def _execute_step_by_type(
-        self, step_type: str, node: Dict[str, Any], input_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """
-        Execute a step based on its type.
 
-        Args:
-            step_type: Type of the step
-            node: Node definition
-            input_data: Input data for the step
-
-        Returns:
-            Output data from the step
-        """
-        # For MVP, implement basic step types
-        if step_type == "input":
-            return await self._execute_input_step(node, input_data)
-        elif step_type == "process":
-            return await self._execute_process_step(node, input_data)
-        elif step_type == "output":
-            return await self._execute_output_step(node, input_data)
-        elif step_type == "ai":
-            return await self._execute_ai_step(node, input_data)
-        elif step_type == "data_validation":
-            return await self._execute_data_validation_step(node, input_data)
-        else:
-            # Default processing for unknown types
-            return await self._execute_default_step(node, input_data)
-        
-    async def _execute_input_step(
-        self, node: Dict[str, Any], input_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """Execute an input step."""
-        # Input steps typically just pass through data
-        node_data = node.get("data", {})
-        field_name = node_data.get("field", "input")
-
-        return {field_name: input_data}
-
-    async def _execute_process_step(
-        self, node: Dict[str, Any], input_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """Execute a processing step."""
-        # Basic processing step - could transform data
-        node_data = node.get("data", {})
-        operation = node_data.get("operation", "passthrough")
-
-        if operation == "passthrough":
-            return input_data
-        elif operation == "uppercase":
-            # Example transformation
-            result = {}
-            for key, value in input_data.items():
-                if isinstance(value, str):
-                    result[key] = value.upper()
-                else:
-                    result[key] = value
-            return result
-        else:
-            return input_data
-
-    async def _execute_output_step(
-        self, node: Dict[str, Any], input_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """Execute an output step."""
-        # Output steps format the final result
-        node_data = node.get("data", {})
-        format_type = node_data.get("format", "json")
-
-        if format_type == "json":
-            return {"result": input_data}
-        else:
-            return input_data
-
-    async def _execute_ai_step(
-        self, node: Dict[str, Any], input_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """Execute an AI processing step."""
-        from app.services.ai_service import AIServiceError, get_ai_service
-
-        node_data = node.get("data", {})
-        prompt = node_data.get("prompt", "Process this data")
-        template_name = node_data.get("template")
-        model = node_data.get("model")
-
-        try:
-            ai_service = get_ai_service()
-
-            # Use template if specified, otherwise use direct prompt
-            if template_name:
-                # Extract template variables from input_data
-                template_vars = node_data.get("template_variables", {})
-                # Merge with input_data for dynamic variables
-                all_vars = {**input_data, **template_vars}
-
-                response = await ai_service.process_with_template(
-                    template_name=template_name,
-                    variables=all_vars,
-                    context=input_data,
-                    model=model,
-                )
-            else:
-                # Format prompt with input data
-                formatted_prompt = (
-                    prompt.format(**input_data) if "{" in prompt else prompt
-                )
-
-                response = await ai_service.process_text(
-                    prompt=formatted_prompt, context=input_data, model=model
-                )
-
-            if not response.is_success:
-                raise WorkflowStepError(f"AI processing failed: {response.error}")
-
-            # Validate response if schema provided
-            response_schema = node_data.get("response_schema")
-            required_fields = node_data.get("required_fields")
-
-            if response_schema or required_fields:
-                is_valid = await ai_service.validate_response(
-                    response.content,
-                    schema=response_schema,
-                    required_fields=required_fields,
-                )
-                if not is_valid:
-                    self.logger.warning(
-                        "AI response validation failed, proceeding anyway"
-                    )
-
-            return {
-                "ai_response": response.content,
-                "ai_model": response.model,
-                "ai_usage": response.usage,
-                "processed_data": input_data,
-            }
-
-        except AIServiceError as e:
-            raise WorkflowStepError(f"AI service error: {str(e)}")
-        except Exception as e:
-            raise WorkflowStepError(f"AI step execution failed: {str(e)}")
-
-    async def _execute_default_step(
-        self, node: Dict[str, Any], input_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """Execute a default step for unknown types."""
-        # Default behavior - pass through data
-        return input_data
-
-    async def _execute_data_validation_step(
-        self, node: Dict[str, Any], input_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """Execute data validation step using schema from node definition."""
-        node_data = node.get("data", {})
-        validation_schema = node_data.get("validation_schema")
-        
-        if not validation_schema:
-            raise WorkflowStepError("No validation schema defined for data validation step")
-            
-        try:
-            # Validate input data against schema
-            validator = Draft7Validator(validation_schema)
-            if not validator.is_valid(input_data):
-                errors = sorted(validator.iter_errors(input_data), key=lambda e: e.absolute_path)
-                error_messages = [
-                    f"Field {list(error.absolute_path)}: {error.message}" for error in errors
-                ]
-                raise WorkflowStepError(f"Data validation failed: {'; '.join(error_messages)}")
-            
-            return {"validation_result": "success", "validated_data": input_data}
-            
-        except jsonschema.exceptions.ValidationError as e:
-            raise WorkflowStepError(f"Data validation failed: {str(e)}")
-        except Exception as e:
-            raise WorkflowStepError(f"Data validation step failed: {str(e)}")
