@@ -1,4 +1,8 @@
 {
-  "enabled": false,
-  "hooksDirectory": ".kiro/hooks"
+  "enabled": true,
+  "hooksDirectory": ".kiro/hooks",
+  "gitIntegration": {
+    "blockCommits": false,
+    "allowBypass": true
+  }
 }
