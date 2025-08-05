@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Simple Test",
+  "description": "Simple test hook",
+  "version": "1",
+  "when": {
+    "type": "manual"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "echo \"Hello from Kiro hook!\""
+  }
+}

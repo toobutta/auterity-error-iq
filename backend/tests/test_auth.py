@@ -16,7 +16,7 @@ from app.auth import (
 from app.database import get_db
 from app.main import app
 from app.models.user import User
-from tests.conftest import override_get_db, test_db
+from tests.conftest import override_get_db
 
 client = TestClient(app)
 

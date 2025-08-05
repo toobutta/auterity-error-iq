@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Auto Cline Task Delegator",
+  "description": "Automatically delegate tasks marked as [CLINE-TASK] to Cline when ready",
+  "version": "1",
+  "when": {
+    "type": "manual"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Scan for CLINE-TASK items that are ready for delegation. Check .kiro/specs/workflow-engine-mvp/tasks.md for tasks marked as 'ready for delegation' or 'not_started' with complete specifications. For each ready task: 1) Verify specification document exists, 2) Check dependencies are satisfied, 3) Select appropriate model (llama-3.3-70b for complex/form tasks, Qwen-3-32b for display/test tasks), 4) Generate delegation message with task overview, requirements, acceptance criteria, and files to modify. Current priority queue: SECURITY fixes (urgent), BACKEND quality (urgent), TESTS infrastructure (high), BUNDLE optimization (medium)."
+  }
+}

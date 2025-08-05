@@ -1,0 +1,401 @@
+metadata:
+  name: "dealership_operations"
+  description: "Template for dealership management and operations"
+  category: "automotive"
+  version: "1.0.0"
+  author: "TuneDev"
+  created_date: "2025-08-02"
+  updated_date: "2025-08-02"
+  tags:
+    - "automotive"
+    - "dealership"
+    - "operations"
+    - "management"
+
+template:
+  task: "vertical-tune"
+  vertical: "automotive"
+  specialization: "dealership_operations"
+  model: "${model}"
+  method: "${method}"
+  dataset: "${dataset}"
+  parameters:
+    epochs: "${epochs}"
+    learning_rate: "${learning_rate}"
+    batch_size: "${batch_size}"
+    lora_r: "${lora_r}"
+    lora_alpha: "${lora_alpha}"
+    lora_dropout: "${lora_dropout}"
+    warmup_steps: "${warmup_steps}"
+    weight_decay: "${weight_decay}"
+    gradient_accumulation_steps: "${gradient_accumulation_steps}"
+    max_grad_norm: "${max_grad_norm}"
+  evaluation:
+    metrics: "${metrics}"
+    test_split: "${test_split}"
+    validation_split: "${validation_split}"
+    eval_steps: "${eval_steps}"
+    eval_strategy: "${eval_strategy}"
+  output:
+    dir: "${output_dir}"
+    format: "${output_format}"
+    save_steps: "${save_steps}"
+    save_strategy: "${save_strategy}"
+  deployment:
+    endpoint_type: "${endpoint_type}"
+    quantization: "${quantization}"
+    instance_type: "${instance_type}"
+    instance_count: "${instance_count}"
+    scaling_policy: "${scaling_policy}"
+    min_instances: "${min_instances}"
+    max_instances: "${max_instances}"
+    auto_scaling_metrics: "${auto_scaling_metrics}"
+    inference_timeout: "${inference_timeout}"
+
+example:
+  task: "vertical-tune"
+  vertical: "automotive"
+  specialization: "dealership_operations"
+  model: "mistral-7b"
+  method: "QLoRA"
+  dataset: "./datasets/dealership_qa.jsonl"
+  parameters:
+    epochs: 3
+    learning_rate: 2e-4
+    batch_size: 8
+    lora_r: 16
+    lora_alpha: 32
+    lora_dropout: 0.05
+    warmup_steps: 100
+    weight_decay: 0.01
+    gradient_accumulation_steps: 4
+    max_grad_norm: 1.0
+  evaluation:
+    metrics: ["accuracy", "f1"]
+    test_split: 0.1
+    validation_split: 0.1
+    eval_steps: 200
+    eval_strategy: "steps"
+  output:
+    dir: "./checkpoints/mistral-dealership"
+    format: "safetensors"
+    save_steps: 500
+    save_strategy: "steps"
+  deployment:
+    endpoint_type: "vllm"
+    quantization: "int8"
+    instance_type: "g4dn.xlarge"
+    instance_count: 1
+    scaling_policy: "request-count-based"
+    min_instances: 1
+    max_instances: 5
+    auto_scaling_metrics: ["RequestCount", "CPUUtilization"]
+    inference_timeout: 30
+
+variables:
+  - name: "model"
+    description: "Base model to fine-tune"
+    type: "string"
+    options: ["mistral-7b", "llama-7b", "llama-13b", "gpt-j-6b", "phi-2", "gemma-7b"]
+    default: "mistral-7b"
+    required: true
+    
+  - name: "method"
+    description: "Fine-tuning method"
+    type: "string"
+    options: ["QLoRA", "LoRA", "Full-Finetune", "Adapter"]
+    default: "QLoRA"
+    required: true
+    
+  - name: "dataset"
+    description: "Path to dataset"
+    type: "string"
+    default: "./datasets/dealership_qa.jsonl"
+    required: true
+    
+  - name: "epochs"
+    description: "Number of training epochs"
+    type: "integer"
+    default: 3
+    min: 1
+    max: 10
+    required: true
+    
+  - name: "learning_rate"
+    description: "Learning rate"
+    type: "number"
+    default: 2e-4
+    min: 1e-6
+    max: 1e-2
+    required: true
+    
+  - name: "batch_size"
+    description: "Batch size"
+    type: "integer"
+    default: 8
+    options: [1, 2, 4, 8, 16, 32]
+    required: true
+    
+  - name: "lora_r"
+    description: "LoRA r parameter (rank)"
+    type: "integer"
+    default: 16
+    options: [4, 8, 16, 32, 64]
+    required: true
+    
+  - name: "lora_alpha"
+    description: "LoRA alpha parameter (scaling)"
+    type: "integer"
+    default: 32
+    options: [8, 16, 32, 64, 128]
+    required: true
+    
+  - name: "lora_dropout"
+    description: "LoRA dropout"
+    type: "number"
+    default: 0.05
+    min: 0
+    max: 0.5
+    required: true
+    
+  - name: "warmup_steps"
+    description: "Number of warmup steps"
+    type: "integer"
+    default: 100
+    min: 0
+    max: 1000
+    required: false
+    
+  - name: "weight_decay"
+    description: "Weight decay for AdamW optimizer"
+    type: "number"
+    default: 0.01
+    min: 0
+    max: 0.1
+    required: false
+    
+  - name: "gradient_accumulation_steps"
+    description: "Number of gradient accumulation steps"
+    type: "integer"
+    default: 4
+    min: 1
+    max: 32
+    required: false
+    
+  - name: "max_grad_norm"
+    description: "Maximum gradient norm for gradient clipping"
+    type: "number"
+    default: 1.0
+    min: 0.1
+    max: 10.0
+    required: false
+    
+  - name: "metrics"
+    description: "Evaluation metrics"
+    type: "array"
+    items:
+      type: "string"
+      options: ["accuracy", "f1", "precision", "recall", "rouge", "bleu"]
+    default: ["accuracy", "f1"]
+    required: true
+    
+  - name: "test_split"
+    description: "Test split ratio"
+    type: "number"
+    default: 0.1
+    min: 0.05
+    max: 0.3
+    required: true
+    
+  - name: "validation_split"
+    description: "Validation split ratio"
+    type: "number"
+    default: 0.1
+    min: 0.05
+    max: 0.3
+    required: false
+    
+  - name: "eval_steps"
+    description: "Evaluation steps"
+    type: "integer"
+    default: 200
+    min: 50
+    max: 1000
+    required: false
+    
+  - name: "eval_strategy"
+    description: "Evaluation strategy"
+    type: "string"
+    options: ["steps", "epoch", "no"]
+    default: "steps"
+    required: false
+    
+  - name: "output_dir"
+    description: "Output directory for checkpoints"
+    type: "string"
+    default: "./checkpoints/mistral-dealership"
+    required: true
+    
+  - name: "output_format"
+    description: "Output format"
+    type: "string"
+    options: ["safetensors", "pytorch", "onnx"]
+    default: "safetensors"
+    required: true
+    
+  - name: "save_steps"
+    description: "Save checkpoint steps"
+    type: "integer"
+    default: 500
+    min: 100
+    max: 5000
+    required: false
+    
+  - name: "save_strategy"
+    description: "Save checkpoint strategy"
+    type: "string"
+    options: ["steps", "epoch", "no"]
+    default: "steps"
+    required: false
+    
+  - name: "endpoint_type"
+    description: "Inference endpoint type"
+    type: "string"
+    options: ["vllm", "triton", "tensorrt", "onnx", "tgi"]
+    default: "vllm"
+    required: true
+    
+  - name: "quantization"
+    description: "Quantization method"
+    type: "string"
+    options: ["none", "int8", "int4", "gptq", "awq"]
+    default: "int8"
+    required: true
+    
+  - name: "instance_type"
+    description: "Instance type for deployment"
+    type: "string"
+    options: ["g4dn.xlarge", "g5.xlarge", "c5.2xlarge", "p3.2xlarge", "p4d.24xlarge"]
+    default: "g4dn.xlarge"
+    required: true
+    
+  - name: "instance_count"
+    description: "Number of instances"
+    type: "integer"
+    default: 1
+    min: 1
+    max: 10
+    required: true
+    
+  - name: "scaling_policy"
+    description: "Auto-scaling policy"
+    type: "string"
+    options: ["request-count-based", "latency-based", "cpu-based", "none"]
+    default: "request-count-based"
+    required: false
+    
+  - name: "min_instances"
+    description: "Minimum number of instances for auto-scaling"
+    type: "integer"
+    default: 1
+    min: 1
+    max: 5
+    required: false
+    
+  - name: "max_instances"
+    description: "Maximum number of instances for auto-scaling"
+    type: "integer"
+    default: 5
+    min: 1
+    max: 20
+    required: false
+    
+  - name: "auto_scaling_metrics"
+    description: "Metrics for auto-scaling"
+    type: "array"
+    items:
+      type: "string"
+      options: ["RequestCount", "CPUUtilization", "GPUUtilization", "MemoryUtilization", "Latency"]
+    default: ["RequestCount", "CPUUtilization"]
+    required: false
+    
+  - name: "inference_timeout"
+    description: "Inference timeout in seconds"
+    type: "integer"
+    default: 30
+    min: 5
+    max: 300
+    required: false
+
+use_cases:
+  - name: "Customer Service Automation"
+    description: "Automate responses to common customer inquiries across departments"
+    dataset_requirements: "Customer service conversations, FAQ responses, department-specific knowledge"
+    recommended_parameters:
+      model: "mistral-7b"
+      method: "QLoRA"
+      batch_size: 8
+      lora_r: 16
+      
+  - name: "Inventory Management"
+    description: "Assist with vehicle inventory management, reporting, and forecasting"
+    dataset_requirements: "Inventory reports, sales history, vehicle specifications, pricing data"
+    recommended_parameters:
+      model: "llama-7b"
+      method: "QLoRA"
+      batch_size: 4
+      lora_r: 32
+      
+  - name: "Multi-Department Coordination"
+    description: "Facilitate communication and coordination between sales, service, and parts departments"
+    dataset_requirements: "Inter-department communications, process documentation, workflow examples"
+    recommended_parameters:
+      model: "mistral-7b"
+      method: "QLoRA"
+      batch_size: 8
+      lora_r: 16
+      
+  - name: "Dealership Analytics"
+    description: "Generate insights and reports from dealership operational data"
+    dataset_requirements: "Sales reports, service metrics, customer satisfaction data, financial data"
+    recommended_parameters:
+      model: "llama-13b"
+      method: "QLoRA"
+      batch_size: 4
+      lora_r: 32
+
+integration_points:
+  - system: "DMS (Dealership Management System)"
+    description: "Integration with dealership management systems for inventory, customer, and sales data"
+    requirements: "API access, data mapping, authentication credentials"
+    
+  - system: "RelayCore"
+    description: "Integration with RelayCore platform for automotive data exchange"
+    requirements: "RelayCore API credentials, connector configuration, data synchronization setup"
+    
+  - system: "CRM Systems"
+    description: "Integration with customer relationship management systems"
+    requirements: "API access, customer data mapping, event triggers"
+    
+  - system: "Parts Inventory Systems"
+    description: "Integration with parts inventory and ordering systems"
+    requirements: "API access, inventory data mapping, order processing workflows"
+
+deployment_recommendations:
+  development:
+    instance_type: "g4dn.xlarge"
+    quantization: "int8"
+    scaling_policy: "none"
+    
+  testing:
+    instance_type: "g4dn.xlarge"
+    quantization: "int8"
+    scaling_policy: "none"
+    
+  production:
+    instance_type: "g5.xlarge"
+    quantization: "int8"
+    scaling_policy: "request-count-based"
+    min_instances: 2
+    max_instances: 10
+    auto_scaling_metrics: ["RequestCount", "CPUUtilization", "Latency"]

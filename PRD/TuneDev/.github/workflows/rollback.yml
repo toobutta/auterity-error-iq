@@ -1,0 +1,62 @@
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to rollback'
+        required: true
+        type: choice
+        options:
+        - development
+        - testing
+        - staging
+        - production
+      version:
+        description: 'Version to rollback to'
+        required: true
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: ${{ github.event.inputs.environment }}
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+    
+    - name: Setup Helm
+      uses: azure/setup-helm@v3
+      with:
+        version: 'latest'
+    
+    - name: Rollback deployment
+      run: |
+        helm rollback neuroweaver ${{ github.event.inputs.version }} \
+          --namespace neuroweaver-${{ github.event.inputs.environment }}
+    
+    - name: Verify rollback
+      run: |
+        kubectl rollout status deployment/neuroweaver-api -n neuroweaver-${{ github.event.inputs.environment }}
+        kubectl rollout status deployment/neuroweaver-frontend -n neuroweaver-${{ github.event.inputs.environment }}
+    
+    - name: Send rollback notification
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+        slack-message: "Rollback to version ${{ github.event.inputs.version }} in ${{ github.event.inputs.environment }} completed."
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

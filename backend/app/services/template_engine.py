@@ -19,18 +19,19 @@ class TemplateEngine:
     async def get_templates(self, category: Optional[str] = None) -> List[Template]:
         """Get all active templates, optionally filtered by category."""
         query = self.db.query(Template).filter(Template.is_active == True)
-        
+
         if category:
             query = query.filter(Template.category == category.lower())
-        
+
         return query.all()
 
     async def get_template(self, template_id: uuid.UUID) -> Optional[Template]:
         """Get a specific template by ID."""
-        return self.db.query(Template).filter(
-            Template.id == template_id,
-            Template.is_active == True
-        ).first()
+        return (
+            self.db.query(Template)
+            .filter(Template.id == template_id, Template.is_active == True)
+            .first()
+        )
 
     async def instantiate_template(
         self,
@@ -57,10 +58,11 @@ class TemplateEngine:
         # Create the new workflow
         workflow = Workflow(
             name=name,
-            description=description or f"Workflow created from template: {template.name}",
+            description=description
+            or f"Workflow created from template: {template.name}",
             user_id=user_id,
             definition=workflow_definition,
-            is_active=True
+            is_active=True,
         )
 
         self.db.add(workflow)
@@ -194,7 +196,9 @@ class TemplateEngine:
         try:
             return json.loads(definition_str)
         except json.JSONDecodeError as e:
-            raise ValueError(f"Failed to parse template definition after parameter substitution: {e}")
+            raise ValueError(
+                f"Failed to parse template definition after parameter substitution: {e}"
+            )
 
     async def create_template(
         self,
@@ -210,7 +214,7 @@ class TemplateEngine:
             description=description,
             category=category.lower(),
             definition=definition,
-            is_active=True
+            is_active=True,
         )
 
         self.db.add(template)
@@ -226,7 +230,7 @@ class TemplateEngine:
                     parameter_type=param_data["parameter_type"],
                     is_required=param_data.get("is_required", False),
                     default_value=param_data.get("default_value"),
-                    validation_rules=param_data.get("validation_rules")
+                    validation_rules=param_data.get("validation_rules"),
                 )
                 self.db.add(parameter)
 

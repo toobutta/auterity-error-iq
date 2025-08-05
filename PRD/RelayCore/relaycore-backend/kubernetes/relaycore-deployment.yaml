@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: relaycore
+  labels:
+    app: relaycore
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: relaycore
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: relaycore
+    spec:
+      containers:
+      - name: relaycore
+        image: relaycore/relaycore:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3000"
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: relaycore-secrets
+              key: redis-url
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: relaycore-secrets
+              key: openai-api-key
+        - name: ANTHROPIC_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: relaycore-secrets
+              key: anthropic-api-key
+        - name: MISTRAL_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: relaycore-secrets
+              key: mistral-api-key
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: relaycore-secrets
+              key: jwt-secret
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: relaycore-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: relaycore
+  labels:
+    app: relaycore
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  selector:
+    app: relaycore
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: relaycore
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+spec:
+  tls:
+  - hosts:
+    - api.relaycore.ai
+    secretName: relaycore-tls
+  rules:
+  - host: api.relaycore.ai
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: relaycore
+            port:
+              number: 80

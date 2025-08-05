@@ -1,0 +1,100 @@
+# Lisp Interpreter
+
+A simple Lisp (Scheme-like) interpreter implemented in Rust.
+
+> Created by [Eleanor Berger](https://ai.intellectronica.net/) using Cline and Qwen 3 Coder, for less than $1 and in 10 minutes.
+
+## Features
+
+- REPL (Read-Eval-Print Loop) interface
+- Basic data types: numbers, booleans, strings, symbols, lists
+- Arithmetic operations: `+`, `-`, `*`, `/`
+- Comparison operations: `=`, `<`, `>`
+- List operations: `cons`, `car`, `cdr`, `list`
+- Type predicates: `number?`, `symbol?`, `boolean?`, `list?`, `null?`
+- Control structures: `if`, `define`, `lambda`, `begin`
+- Quoting: `'expr` syntax
+- Variables and function definitions
+
+## Usage
+
+### Running the Interpreter
+
+To run the interpreter, use:
+
+```bash
+cargo run
+```
+
+This will start the REPL where you can enter Lisp expressions.
+
+### Exiting the Interpreter
+
+Press `Ctrl+D` to exit the interpreter.
+
+### Getting Help
+
+Type `(help)` in the interpreter to display a help message with usage examples.
+
+## Examples
+
+```lisp
+;; Arithmetic
+(+ 1 2 3)  ; => 6
+(- 10 3)   ; => 7
+(* 2 3 4)  ; => 24
+(/ 20 2)   ; => 10
+
+;; Comparisons
+(= 5 5)    ; => true
+(< 3 5)    ; => true
+(> 7 2)    ; => true
+
+;; Lists
+(cons 1 '(2 3))     ; => (1 2 3)
+(car '(1 2 3))      ; => 1
+(cdr '(1 2 3))      ; => (2 3)
+(list 1 2 3)        ; => (1 2 3)
+
+;; Quoting
+'hello              ; => hello
+'(1 2 3)            ; => (1 2 3)
+
+;; Variables
+(define x 10)       ; => x
+x                   ; => 10
+
+;; Functions
+((lambda (x) (* x 2)) 5)  ; => 10
+
+;; Conditionals
+(if (> x 5) "big" "small")  ; => "big"
+
+;; Sequences
+(begin 1 2 3)       ; => 3
+```
+
+## Building
+
+To build the project, use:
+
+```bash
+cargo build
+```
+
+## Running Tests
+
+To run the project with a test file, use:
+
+```bash
+cargo run < test-file.lisp
+```
+
+## Project Structure
+
+- `src/main.rs` - Entry point with REPL implementation
+- `src/ast.rs` - Abstract Syntax Tree definitions
+- `src/environment.rs` - Variable and function storage
+- `src/parser.rs` - Lexer and parser for Scheme expressions
+- `src/builtins.rs` - Built-in functions implementation
+- `src/evaluator.rs` - Expression evaluation engine

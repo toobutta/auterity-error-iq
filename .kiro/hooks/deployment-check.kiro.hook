@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "🚀 Pre-Deploy Check",
+  "description": "Run comprehensive checks before deployment",
+  "version": "1",
+  "when": {
+    "type": "manual"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "echo \"🚀 Running pre-deployment checks...\" && OVERALL_EXIT=0 && cd backend && echo \"📋 Running backend tests...\" && python -m pytest tests/ --tb=short && echo \"🔍 Checking code quality...\" && black --check . && flake8 . && echo \"🗄️  Checking database migrations...\" && alembic check && echo \"🤖 Validating AI service...\" && python validate_ai_service.py && echo \"⚙️  Validating workflow engine...\" && python validate_workflow_engine.py && cd ../frontend && echo \"⚛️  Building frontend...\" && npm run build && echo \"🧪 Running frontend tests...\" && npm test -- --run && echo \"🔧 Checking TypeScript compilation...\" && npx tsc --noEmit && cd .. && echo \"🌍 Checking environment configuration...\" && [ -f \".env\" ] && echo \"🐳 Validating Docker configuration...\" && docker-compose config > /dev/null 2>&1 && echo \"🎉 All pre-deployment checks passed! Ready to deploy. 🚀 You can now safely run: docker-compose up -d\""
+  }
+}

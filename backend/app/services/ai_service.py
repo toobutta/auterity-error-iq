@@ -11,14 +11,7 @@ from typing import Any, Dict, List, Optional
 import openai
 from openai import AsyncOpenAI
 
-from app.utils.retry_utils import (
-    RetryConfig,
-    get_default_retry_config,
-    with_retry,
-    with_circuit_breaker,
-    ai_service_circuit_breaker,
-)
-from app.exceptions import AIServiceError, ErrorCategory
+from app.exceptions import AIServiceError
 
 logger = logging.getLogger(__name__)
 
@@ -49,8 +42,6 @@ class AIResponse:
 
 class AIServiceError(Exception):
     """Custom exception for AI service errors."""
-
-    pass
 
 
 class PromptTemplate:

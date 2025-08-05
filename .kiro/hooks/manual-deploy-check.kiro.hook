@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Manual Deploy Check",
+  "description": "Manual hook to run pre-deployment checks",
+  "version": "1",
+  "when": {
+    "type": "manual"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "echo \"🚀 Running deployment checks...\" && cd backend && python -m pytest tests/ --tb=short && echo \"✅ Tests completed\""
+  }
+}

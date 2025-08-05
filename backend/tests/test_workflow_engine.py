@@ -1,21 +1,17 @@
 """Tests for the workflow execution engine."""
 
-import asyncio
 from datetime import datetime
-from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
 import pytest
-from sqlalchemy.orm import Session
 
-from app.models.execution import ExecutionLog, ExecutionStatus, WorkflowExecution
+from app.models.execution import ExecutionStatus, WorkflowExecution
 from app.models.user import User
 from app.models.workflow import Workflow
 from app.services.workflow_engine import (
     ExecutionResult,
     WorkflowEngine,
     WorkflowExecutionError,
-    WorkflowStepError,
 )
 
 

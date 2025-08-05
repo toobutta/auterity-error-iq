@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RelayCore VS Code Plugin</title>
+    <style>
+        :root {
+            --background-color: var(--vscode-editor-background);
+            --foreground-color: var(--vscode-editor-foreground);
+            --primary-color: var(--vscode-button-background);
+            --primary-hover-color: var(--vscode-button-hoverBackground);
+            --secondary-color: var(--vscode-button-secondaryBackground);
+            --secondary-hover-color: var(--vscode-button-secondaryHoverBackground);
+            --border-color: var(--vscode-panel-border);
+            --input-background: var(--vscode-input-background);
+            --input-foreground: var(--vscode-input-foreground);
+            --input-border: var(--vscode-input-border);
+            --dropdown-background: var(--vscode-dropdown-background);
+            --dropdown-foreground: var(--vscode-dropdown-foreground);
+            --dropdown-border: var(--vscode-dropdown-border);
+            --widget-shadow: var(--vscode-widget-shadow);
+            
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            
+            --border-radius: 4px;
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--foreground-color);
+            padding: var(--spacing-md);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        h1 {
+            font-size: 18px;
+        }
+        
+        h2 {
+            font-size: 16px;
+        }
+        
+        h3 {
+            font-size: 14px;
+        }
+        
+        p {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 24px;
+            margin-right: var(--spacing-sm);
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: var(--spacing-xs);
+        }
+        
+        .status-connected {
+            background-color: #4caf50;
+        }
+        
+        .status-disconnected {
+            background-color: #f44336;
+        }
+        
+        .section {
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background-color: var(--input-background);
+            color: var(--input-foreground);
+            border: 1px solid var(--input-border);
+            border-radius: var(--border-radius);
+            font-family: var(--font-family);
+            font-size: 13px;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-xs) var(--spacing-md);
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-family: var(--font-family);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-hover-color);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--secondary-hover-color);
+        }
+        
+        .btn-icon {
+            margin-right: var(--spacing-xs);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .tab {
+            padding: var(--spacing-xs) var(--spacing-md);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .model-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .model-option {
+            flex: 1;
+            min-width: 120px;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .model-option:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .model-option.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+        }
+        
+        .model-name {
+            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .model-provider {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+        }
+        
+        .checkbox-group input {
+            width: auto;
+            margin-right: var(--spacing-xs);
+        }
+        
+        .history-item {
+            padding: var(--spacing-sm);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .history-model {
+            font-weight: 500;
+        }
+        
+        .history-time {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .history-prompt {
+            margin-bottom: var(--spacing-xs);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .history-actions {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+        
+        .token-display {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius);
+            margin-top: var(--spacing-xs);
+        }
+        
+        .token-label {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .token-count {
+            font-weight: 500;
+        }
+        
+        .optimization-options {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+        
+        .optimization-option {
+            display: flex;
+            align-items: center;
+        }
+        
+        .optimization-option input {
+            width: auto;
+            margin-right: var(--spacing-xs);
+        }
+    </style>
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="https://via.placeholder.com/24x24?text=RC" alt="RelayCore Logo">
+                <h1>RelayCore</h1>
+            </div>
+            <div class="status">
+                <div class="status-indicator status-connected"></div>
+                Connected
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="prompt">Prompt</div>
+            <div class="tab" data-tab="history">History</div>
+            <div class="tab" data-tab="settings">Settings</div>
+        </div>
+        
+        <div class="tab-content active" id="prompt">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Model Selection</h2>
+                </div>
+                <div class="model-selector">
+                    <div class="model-option selected">
+                        <div class="model-name">GPT-4</div>
+                        <div class="model-provider">OpenAI</div>
+                    </div>
+                    <div class="model-option">
+                        <div class="model-name">GPT-3.5</div>
+                        <div class="model-provider">OpenAI</div>
+                    </div>
+                    <div class="model-option">
+                        <div class="model-name">Claude-3-Opus</div>
+                        <div class="model-provider">Anthropic</div>
+                    </div>
+                    <div class="model-option">
+                        <div class="model-name">Claude-3-Sonnet</div>
+                        <div class="model-provider">Anthropic</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="system-message">System Message</label>
+                    <textarea id="system-message" placeholder="You are a helpful coding assistant...">You are a helpful coding assistant that provides clear, concise, and correct code examples.</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="user-prompt">Your Prompt</label>
+                    <textarea id="user-prompt" placeholder="Enter your prompt here..."></textarea>
+                </div>
+                
+                <div class="token-display">
+                    <span class="token-label">Estimated Tokens:</span>
+                    <span class="token-count">0</span>
+                </div>
+                
+                <div class="form-group">
+                    <div class="optimization-options">
+                        <div class="optimization-option">
+                            <input type="checkbox" id="use-cache" checked>
+                            <label for="use-cache">Use Cache</label>
+                        </div>
+                        <div class="optimization-option">
+                            <input type="checkbox" id="optimize-tokens" checked>
+                            <label for="optimize-tokens">Optimize Tokens</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn">
+                        <span class="btn-icon">▶</span>
+                        Send
+                    </button>
+                    <button class="btn btn-secondary">
+                        <span class="btn-icon">⟳</span>
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="history">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Request History</h2>
+                    <button class="btn btn-secondary">Clear</button>
+                </div>
+                
+                <div class="history-list">
+                    <div class="history-item">
+                        <div class="history-header">
+                            <span class="history-model">GPT-4</span>
+                            <span class="history-time">2 mins ago</span>
+                        </div>
+                        <div class="history-prompt">Write a function to calculate Fibonacci sequence in JavaScript</div>
+                        <div class="history-actions">
+                            <button class="btn btn-secondary">Reuse</button>
+                            <button class="btn btn-secondary">View</button>
+                        </div>
+                    </div>
+                    
+                    <div class="history-item">
+                        <div class="history-header">
+                            <span class="history-model">Claude-3-Opus</span>
+                            <span class="history-time">15 mins ago</span>
+                        </div>
+                        <div class="history-prompt">Explain the difference between Promise.all and Promise.allSettled</div>
+                        <div class="history-actions">
+                            <button class="btn btn-secondary">Reuse</button>
+                            <button class="btn btn-secondary">View</button>
+                        </div>
+                    </div>
+                    
+                    <div class="history-item">
+                        <div class="history-header">
+                            <span class="history-model">GPT-3.5</span>
+                            <span class="history-time">1 hour ago</span>
+                        </div>
+                        <div class="history-prompt">How to implement a debounce function in TypeScript</div>
+                        <div class="history-actions">
+                            <button class="btn btn-secondary">Reuse</button>
+                            <button class="btn btn-secondary">View</button>
+                        </div>
+                    </div>
+                    
+                    <div class="history-item">
+                        <div class="history-header">
+                            <span class="history-model">GPT-4</span>
+                            <span class="history-time">3 hours ago</span>
+                        </div>
+                        <div class="history-prompt">Create a React component for a modal dialog with TypeScript</div>
+                        <div class="history-actions">
+                            <button class="btn btn-secondary">Reuse</button>
+                            <button class="btn btn-secondary">View</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="settings">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Connection Settings</h2>
+                </div>
+                
+                <div class="form-group">
+                    <label for="relay-url">RelayCore URL</label>
+                    <input type="text" id="relay-url" value="http://localhost:3000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="api-key">API Key</label>
+                    <input type="password" id="api-key" value="••••••••••••••••">
+                </div>
+                
+                <button class="btn">Test Connection</button>
+            </div>
+            
+            <div class="section">
+                <div class="section-header">
+                    <h2>Default Settings</h2>
+                </div>
+                
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label for="default-model">Default Model</label>
+                        <select id="default-model">
+                            <option value="gpt-4">GPT-4 (OpenAI)</option>
+                            <option value="gpt-3.5-turbo">GPT-3.5 (OpenAI)</option>
+                            <option value="claude-3-opus">Claude-3-Opus (Anthropic)</option>
+                            <option value="claude-3-sonnet">Claude-3-Sonnet (Anthropic)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="max-tokens">Max Tokens</label>
+                        <input type="number" id="max-tokens" value="2048">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="temperature">Temperature</label>
+                        <input type="number" id="temperature" value="0.7" step="0.1" min="0" max="2">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="top-p">Top P</label>
+                        <input type="number" id="top-p" value="1" step="0.1" min="0" max="1">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="auto-format" checked>
+                        <label for="auto-format">Auto-format code in responses</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="auto-insert" checked>
+                        <label for="auto-insert">Auto-insert code at cursor position</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="include-context" checked>
+                        <label for="include-context">Include file context in prompts</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-header">
+                    <h2>Optimization Settings</h2>
+                </div>
+                
+                <div class="form-group">
+                    <label for="optimization-level">Optimization Level</label>
+                    <select id="optimization-level">
+                        <option value="none">None</option>
+                        <option value="light">Light</option>
+                        <option value="moderate" selected>Moderate</option>
+                        <option value="aggressive">Aggressive</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cache-ttl">Cache TTL (seconds)</label>
+                    <input type="number" id="cache-ttl" value="3600">
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="similarity-cache" checked>
+                        <label for="similarity-cache">Use similarity-based caching</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="token-optimization" checked>
+                        <label for="token-optimization">Enable token optimization</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs and content
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Show corresponding content
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Model selection
+            const modelOptions = document.querySelectorAll('.model-option');
+            modelOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    modelOptions.forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                });
+            });
+            
+            // Token estimation
+            const systemMessage = document.getElementById('system-message');
+            const userPrompt = document.getElementById('user-prompt');
+            const tokenCount = document.querySelector('.token-count');
+            
+            function updateTokenCount() {
+                // Simple estimation: 1 token ≈ 4 characters
+                const systemTokens = Math.ceil((systemMessage.value || '').length / 4);
+                const promptTokens = Math.ceil((userPrompt.value || '').length / 4);
+                tokenCount.textContent = systemTokens + promptTokens;
+            }
+            
+            systemMessage.addEventListener('input', updateTokenCount);
+            userPrompt.addEventListener('input', updateTokenCount);
+            
+            // Initial token count
+            updateTokenCount();
+        });
+    </script>
+</body>
+</html>

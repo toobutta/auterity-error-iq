@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Workflow Engine Validation",
+  "description": "Validate workflow engine and AI service functionality",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["backend/app/services/workflow_engine.py", "backend/app/services/ai_service.py"]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "cd backend && echo \"⚙️  Validating workflow engine...\" && python validate_workflow_engine.py && python validate_ai_service.py && python -m pytest tests/test_workflow_engine.py tests/test_ai_service.py -v && echo \"✅ All workflow validations passed\""
+  }
+}

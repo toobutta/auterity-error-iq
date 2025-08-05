@@ -36,6 +36,33 @@ class TokenData(BaseModel):
     email: Optional[str] = None
 
 
+class RoleResponse(BaseModel):
+    """Schema for role response."""
+
+    id: uuid.UUID
+    name: str
+    description: Optional[str]
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+
+class PermissionResponse(BaseModel):
+    """Schema for permission response."""
+
+    id: uuid.UUID
+    name: str
+    description: Optional[str]
+    system: str
+    resource: str
+    action: str
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+
 class UserResponse(BaseModel):
     """Schema for user response (without password)."""
 
@@ -44,9 +71,24 @@ class UserResponse(BaseModel):
     name: str
     is_active: bool
     created_at: datetime
+    roles: List[RoleResponse] = []
+    permissions: List[str] = []
 
     class Config:
         from_attributes = True
+
+    @classmethod
+    def from_user(cls, user):
+        """Create UserResponse from User model with computed permissions."""
+        return cls(
+            id=user.id,
+            email=user.email,
+            name=user.name,
+            is_active=user.is_active,
+            created_at=user.created_at,
+            roles=[RoleResponse.from_attributes(role) for role in user.roles],
+            permissions=user.get_permissions(),
+        )
 
 
 class UserUpdate(BaseModel):
@@ -55,6 +97,55 @@ class UserUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[EmailStr] = None
     is_active: Optional[bool] = None
+
+
+class RoleCreate(BaseModel):
+    """Schema for role creation request."""
+
+    name: str
+    description: Optional[str] = None
+    permission_ids: List[uuid.UUID] = []
+
+
+class RoleUpdate(BaseModel):
+    """Schema for role update request."""
+
+    name: Optional[str] = None
+    description: Optional[str] = None
+    is_active: Optional[bool] = None
+    permission_ids: Optional[List[uuid.UUID]] = None
+
+
+class UserRoleAssignment(BaseModel):
+    """Schema for assigning roles to users."""
+
+    user_id: uuid.UUID
+    role_names: List[str]
+
+
+class CrossSystemTokenRequest(BaseModel):
+    """Schema for cross-system token request."""
+
+    target_system: str
+
+    @validator("target_system")
+    def validate_target_system(cls, v):
+        allowed_systems = ["autmatrix", "relaycore", "neuroweaver"]
+        if v not in allowed_systems:
+            raise ValueError(
+                f"Target system must be one of: {', '.join(allowed_systems)}"
+            )
+        return v
+
+
+class CrossSystemTokenResponse(BaseModel):
+    """Schema for cross-system token response."""
+
+    access_token: str
+    token_type: str
+    target_system: str
+    permissions: List[str]
+    expires_in: int
 
 
 # Workflow schemas
@@ -270,7 +361,9 @@ class TemplateParameterCreate(BaseModel):
     def validate_parameter_type(cls, v):
         allowed_types = ["string", "number", "boolean", "array", "object"]
         if v not in allowed_types:
-            raise ValueError(f"Parameter type must be one of: {', '.join(allowed_types)}")
+            raise ValueError(
+                f"Parameter type must be one of: {', '.join(allowed_types)}"
+            )
         return v
 
 
@@ -311,7 +404,9 @@ class TemplateCreate(BaseModel):
     def validate_category(cls, v):
         allowed_categories = ["sales", "service", "parts", "general"]
         if v.lower() not in allowed_categories:
-            raise ValueError(f"Category must be one of: {', '.join(allowed_categories)}")
+            raise ValueError(
+                f"Category must be one of: {', '.join(allowed_categories)}"
+            )
         return v.lower()
 
     @validator("definition")
@@ -360,7 +455,9 @@ class TemplateUpdate(BaseModel):
         if v is not None:
             allowed_categories = ["sales", "service", "parts", "general"]
             if v.lower() not in allowed_categories:
-                raise ValueError(f"Category must be one of: {', '.join(allowed_categories)}")
+                raise ValueError(
+                    f"Category must be one of: {', '.join(allowed_categories)}"
+                )
             return v.lower()
         return v
 

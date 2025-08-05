@@ -1,0 +1,10 @@
+torch>=2.0.0
+transformers>=4.30.0
+accelerate>=0.20.3
+vllm>=0.1.4
+fastapi>=0.95.2
+uvicorn>=0.22.0
+pydantic>=1.10.8
+prometheus-client>=0.17.0
+pytest>=7.3.1
+pytest-cov>=4.1.0

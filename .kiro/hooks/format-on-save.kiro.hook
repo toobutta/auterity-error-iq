@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Auto-Format Python Code",
+  "description": "Automatically format Python code using Black and organize imports with isort",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["backend/**/*.py"]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "cd backend && black \"${file}\" && isort \"${file}\" && flake8 \"${file}\" --max-line-length=88 && echo \"✅ Code formatted successfully\""
+  }
+}

@@ -1,0 +1,213 @@
+# NeuroWeaver Workflow Configuration
+# Automotive Service Advisor Model
+
+# Metadata
+metadata:
+  name: "Automotive Service Advisor"
+  version: "1.0.0"
+  description: "Fine-tuned model for automotive service department applications"
+  author: "Auterity AI Team"
+  created_at: "2025-08-01"
+  tags:
+    - automotive
+    - service
+    - maintenance
+    - advisor
+
+# Task Configuration
+task: "vertical-tune"
+vertical: "automotive"
+specialization: "service_advisor"
+
+# Base Model Configuration
+model:
+  name: "mistral-7b"
+  revision: "v0.1"
+  source: "huggingface"
+  repository: "mistralai/Mistral-7B-v0.1"
+
+# Dataset Configuration
+dataset:
+  primary: "./datasets/maintenance_procedures.jsonl"
+  supplementary:
+    - "./datasets/vehicle_specs.csv"
+    - "./datasets/service_conversations.jsonl"
+  validation_split: 0.1
+  test_split: 0.1
+  preprocessing:
+    - clean_text: true
+    - remove_duplicates: true
+    - balance_classes: true
+    - augmentation: "minimal"
+
+# Fine-tuning Configuration
+fine_tuning:
+  method: "QLoRA"
+  parameters:
+    epochs: 3
+    learning_rate: 2e-4
+    batch_size: 8
+    lora_r: 16
+    lora_alpha: 32
+    lora_dropout: 0.05
+    weight_decay: 0.01
+    warmup_steps: 100
+    gradient_accumulation_steps: 4
+    max_seq_length: 2048
+  optimization:
+    mixed_precision: "bf16"
+    gradient_checkpointing: true
+    flash_attention: true
+
+# Evaluation Configuration
+evaluation:
+  metrics:
+    - "accuracy"
+    - "f1"
+    - "precision"
+    - "recall"
+    - "rouge"
+  benchmarks:
+    - name: "service_recommendation"
+      dataset: "./benchmarks/service_recommendation.jsonl"
+      metric: "f1"
+      threshold: 0.85
+    - name: "maintenance_procedure"
+      dataset: "./benchmarks/maintenance_procedure.jsonl"
+      metric: "rouge"
+      threshold: 0.75
+    - name: "customer_interaction"
+      dataset: "./benchmarks/customer_interaction.jsonl"
+      metric: "accuracy"
+      threshold: 0.9
+
+# Auto-RLAIF Configuration
+auto_rlaif:
+  enabled: true
+  feedback_model: "gpt-3.5-turbo"
+  criteria:
+    - "technical_accuracy"
+    - "completeness"
+    - "helpfulness"
+    - "safety"
+  threshold_score: 7.0
+  verification:
+    trust_threshold: 0.7
+    consistency_samples: 3
+    audit_frequency: 0.1
+
+# Output Configuration
+output:
+  dir: "./checkpoints/mistral-service-advisor"
+  format: "safetensors"
+  save_strategy: "epoch"
+  save_steps: 500
+  save_total_limit: 3
+  export_formats:
+    - "onnx"
+    - "pytorch"
+
+# Deployment Configuration
+deployment:
+  endpoint_type: "vllm"
+  quantization: "int8"
+  instance_type: "g4dn.xlarge"
+  instance_count: 1
+  auto_scaling:
+    min_instances: 1
+    max_instances: 3
+    scale_up_threshold: 70
+    scale_down_threshold: 30
+  monitoring:
+    latency_threshold_ms: 100
+    success_rate_threshold: 0.99
+    drift_detection: true
+    cost_alerts: true
+
+# RelayCore Integration
+relaycore:
+  enabled: true
+  sync_interval: 3600
+  data_sources:
+    - type: "vehicles"
+      params:
+        limit: 1000
+        updated_since: "7d"
+    - type: "service_records"
+      params:
+        limit: 5000
+        updated_since: "30d"
+    - type: "customers"
+      params:
+        limit: 1000
+        updated_since: "30d"
+  data_exports:
+    - type: "model_outputs"
+      destination: "service_recommendations"
+    - type: "analytics"
+      destination: "service_analytics"
+
+# Prompt Templates
+prompt_templates:
+  - name: "service_recommendation"
+    template: |
+      [SYSTEM]
+      You are an automotive service advisor assistant. Your task is to provide helpful recommendations based on the vehicle information and service history.
+      [/SYSTEM]
+      
+      [USER]
+      Vehicle: {make} {model} {year}
+      Mileage: {mileage}
+      Last Service: {last_service_date}
+      Last Service Mileage: {last_service_mileage}
+      Customer Concern: {customer_concern}
+      
+      What service recommendations would you provide?
+      [/USER]
+      
+      [ASSISTANT]
+      {response}
+      [/ASSISTANT]
+  
+  - name: "maintenance_procedure"
+    template: |
+      [SYSTEM]
+      You are an automotive service advisor assistant. Your task is to provide detailed maintenance procedure information.
+      [/SYSTEM]
+      
+      [USER]
+      Vehicle: {make} {model} {year}
+      Procedure: {procedure_name}
+      
+      Please provide the detailed steps for this maintenance procedure.
+      [/USER]
+      
+      [ASSISTANT]
+      {response}
+      [/ASSISTANT]
+
+# Logging Configuration
+logging:
+  level: "info"
+  save_path: "./logs/service_advisor"
+  metrics_tracking: true
+  experiment_tracking:
+    provider: "wandb"
+    project: "automotive-service-advisor"
+    tags:
+      - "production"
+      - "service"
+      - "automotive"
+
+# Notifications
+notifications:
+  on_completion: true
+  on_failure: true
+  on_benchmark_below_threshold: true
+  channels:
+    - type: "email"
+      recipients:
+        - "ai-team@auterity.com"
+    - type: "slack"
+      webhook: "https://hooks.slack.com/services/TXXXXXXXX/BXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXX"
+      channel: "#ai-model-alerts"

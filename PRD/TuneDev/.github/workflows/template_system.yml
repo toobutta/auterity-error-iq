@@ -1,0 +1,88 @@
+name: Template System
+
+on:
+  push:
+    paths:
+      - 'src/template-system/**'
+      - 'vertical_kits/**'
+  pull_request:
+    paths:
+      - 'src/template-system/**'
+      - 'vertical_kits/**'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyyaml jsonschema
+    
+    - name: Validate templates
+      run: |
+        python src/template-system/tools/validate_templates.py --directory vertical_kits/automotive/templates
+    
+    - name: Test templates with sample data
+      run: |
+        python src/template-system/tools/test_templates.py --directory vertical_kits/automotive/templates
+    
+    - name: Generate template documentation
+      run: |
+        python src/template-system/tools/generate_docs.py --directory vertical_kits/automotive/templates --output docs/generated
+    
+    - name: Upload template documentation
+      uses: actions/upload-artifact@v3
+      with:
+        name: template-documentation
+        path: docs/generated
+
+  build:
+    needs: validate
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements/template-system.txt
+        pip install pytest pytest-cov pyyaml
+    
+    - name: Test with pytest
+      run: |
+        pytest src/template-system/tests/ --cov=src/template-system --cov-report=xml
+    
+    - name: Upload coverage report
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: template-system
+    
+    - name: Build Docker image
+      run: |
+        docker build -t neuroweaver/template-system:${{ github.sha }} -f docker/template-system/Dockerfile .
+    
+    - name: Push to ECR
+      if: github.event_name != 'pull_request'
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        registry: ${{ secrets.AWS_ECR_REGISTRY }}
+      run: |
+        docker tag neuroweaver/template-system:${{ github.sha }} ${{ secrets.AWS_ECR_REGISTRY }}/neuroweaver/template-system:${{ github.sha }}
+        docker push ${{ secrets.AWS_ECR_REGISTRY }}/neuroweaver/template-system:${{ github.sha }}

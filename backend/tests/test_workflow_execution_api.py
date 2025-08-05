@@ -1,16 +1,13 @@
 """Integration tests for workflow execution API endpoints."""
 
-import asyncio
-import json
 from datetime import datetime
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app.main import app
 from app.models.execution import ExecutionStatus, WorkflowExecution
 from app.models.user import User
 from app.models.workflow import Workflow
@@ -48,7 +45,9 @@ class TestWorkflowExecutionAPI:
         }
 
     @pytest.fixture
-    def test_workflow(self, db_session: Session, test_user: User, test_workflow_definition):
+    def test_workflow(
+        self, db_session: Session, test_user: User, test_workflow_definition
+    ):
         """Create a test workflow."""
         workflow = Workflow(
             name="Test Execution Workflow",
@@ -121,9 +120,7 @@ class TestWorkflowExecutionAPI:
                 workflow_id=test_workflow.id, input_data=None
             )
 
-    def test_execute_workflow_not_found(
-        self, client: TestClient, auth_headers: dict
-    ):
+    def test_execute_workflow_not_found(self, client: TestClient, auth_headers: dict):
         """Test executing non-existent workflow."""
         fake_workflow_id = uuid4()
         execution_data = {"input_data": {"message": "test"}}
@@ -419,9 +416,7 @@ class TestWorkflowExecutionAPI:
             assert response.status_code == 400
             assert "cannot be cancelled" in response.json()["detail"]
 
-    def test_cancel_execution_not_found(
-        self, client: TestClient, auth_headers: dict
-    ):
+    def test_cancel_execution_not_found(self, client: TestClient, auth_headers: dict):
         """Test cancelling non-existent execution."""
         fake_execution_id = uuid4()
 

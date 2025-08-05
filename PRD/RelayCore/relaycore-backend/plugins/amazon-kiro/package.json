@@ -1,0 +1,215 @@
+{
+  "name": "relaycore-kiro",
+  "displayName": "RelayCore for Amazon Kiro IDE",
+  "description": "Connect Amazon Kiro IDE to AI models through RelayCore for code assistance, documentation generation, and AWS-specific features",
+  "version": "0.1.0",
+  "publisher": "relaycore",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Machine Learning",
+    "AWS",
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:relaycore.configureApiKey",
+    "onCommand:relaycore.explainCode",
+    "onCommand:relaycore.generateDocumentation",
+    "onCommand:relaycore.optimizeCode",
+    "onCommand:relaycore.askQuestion",
+    "onCommand:relaycore.showSettings",
+    "onCommand:relaycore.generateTests",
+    "onCommand:relaycore.findBugs",
+    "onCommand:relaycore.suggestRefactoring",
+    "onCommand:relaycore.kiro.navigateToImplementation",
+    "onCommand:relaycore.kiro.explainAwsService",
+    "onCommand:relaycore.kiro.generateCloudFormation",
+    "onCommand:relaycore.kiro.generateCdkCode",
+    "onCommand:relaycore.kiro.generateLambdaFunction"
+  ],
+  "main": "./kiro-relay.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "relaycore.configureApiKey",
+        "title": "RelayCore: Configure API Key"
+      },
+      {
+        "command": "relaycore.explainCode",
+        "title": "RelayCore: Explain Selected Code"
+      },
+      {
+        "command": "relaycore.generateDocumentation",
+        "title": "RelayCore: Generate Documentation"
+      },
+      {
+        "command": "relaycore.optimizeCode",
+        "title": "RelayCore: Optimize Code"
+      },
+      {
+        "command": "relaycore.askQuestion",
+        "title": "RelayCore: Ask Question About Code"
+      },
+      {
+        "command": "relaycore.showSettings",
+        "title": "RelayCore: Show Settings"
+      },
+      {
+        "command": "relaycore.generateTests",
+        "title": "RelayCore: Generate Tests"
+      },
+      {
+        "command": "relaycore.findBugs",
+        "title": "RelayCore: Find Bugs"
+      },
+      {
+        "command": "relaycore.suggestRefactoring",
+        "title": "RelayCore: Suggest Refactoring"
+      },
+      {
+        "command": "relaycore.kiro.navigateToImplementation",
+        "title": "RelayCore: Navigate to Implementation"
+      },
+      {
+        "command": "relaycore.kiro.explainAwsService",
+        "title": "RelayCore: Explain AWS Service"
+      },
+      {
+        "command": "relaycore.kiro.generateCloudFormation",
+        "title": "RelayCore: Generate CloudFormation Template"
+      },
+      {
+        "command": "relaycore.kiro.generateCdkCode",
+        "title": "RelayCore: Generate CDK Code"
+      },
+      {
+        "command": "relaycore.kiro.generateLambdaFunction",
+        "title": "RelayCore: Generate Lambda Function"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "editorHasSelection",
+          "command": "relaycore.explainCode",
+          "group": "relaycore"
+        },
+        {
+          "when": "editorHasSelection",
+          "command": "relaycore.generateDocumentation",
+          "group": "relaycore"
+        },
+        {
+          "when": "editorHasSelection",
+          "command": "relaycore.optimizeCode",
+          "group": "relaycore"
+        },
+        {
+          "when": "editorHasSelection",
+          "command": "relaycore.askQuestion",
+          "group": "relaycore"
+        },
+        {
+          "when": "editorHasSelection",
+          "command": "relaycore.generateTests",
+          "group": "relaycore"
+        },
+        {
+          "when": "editorHasSelection",
+          "command": "relaycore.findBugs",
+          "group": "relaycore"
+        },
+        {
+          "when": "editorHasSelection",
+          "command": "relaycore.suggestRefactoring",
+          "group": "relaycore"
+        },
+        {
+          "when": "editorTextFocus",
+          "command": "relaycore.kiro.navigateToImplementation",
+          "group": "relaycore.kiro"
+        },
+        {
+          "command": "relaycore.kiro.explainAwsService",
+          "group": "relaycore.kiro"
+        },
+        {
+          "command": "relaycore.kiro.generateCloudFormation",
+          "group": "relaycore.kiro"
+        },
+        {
+          "command": "relaycore.kiro.generateCdkCode",
+          "group": "relaycore.kiro"
+        },
+        {
+          "command": "relaycore.kiro.generateLambdaFunction",
+          "group": "relaycore.kiro"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "RelayCore",
+      "properties": {
+        "relaycore.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API Key for RelayCore"
+        },
+        "relaycore.endpoint": {
+          "type": "string",
+          "default": "http://localhost:3000",
+          "description": "RelayCore API endpoint"
+        },
+        "relaycore.defaultModel": {
+          "type": "string",
+          "default": "gpt-4",
+          "description": "Default AI model to use"
+        },
+        "relaycore.defaultProvider": {
+          "type": "string",
+          "enum": ["openai", "anthropic", "mistral"],
+          "default": "openai",
+          "description": "Default AI provider to use"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.60.0",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "eslint": "^8.39.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "typescript": "^5.0.4",
+    "@vscode/test-electron": "^2.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/relaycore/relaycore-kiro"
+  },
+  "keywords": [
+    "ai",
+    "code",
+    "assistant",
+    "documentation",
+    "optimization",
+    "relaycore",
+    "aws",
+    "kiro",
+    "amazon"
+  ],
+  "author": "RelayCore",
+  "license": "MIT"
+}

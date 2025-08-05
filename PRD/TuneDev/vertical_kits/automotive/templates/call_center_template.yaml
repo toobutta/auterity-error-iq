@@ -1,0 +1,788 @@
+metadata:
+  name: "call_center_template"
+  description: "Template for dealership Call Center and Business Development Center (BDC) operations"
+  category: "automotive"
+  version: "1.0.0"
+  author: "TuneDev"
+  created_date: "2025-08-03"
+  updated_date: "2025-08-03"
+  tags:
+    - "automotive"
+    - "dealership"
+    - "call center"
+    - "BDC"
+    - "customer communication"
+
+template:
+  task: "vertical-tune"
+  vertical: "automotive"
+  specialization: "call_center"
+  model: "${model}"
+  method: "${method}"
+  dataset: "${dataset}"
+  parameters:
+    epochs: "${epochs}"
+    learning_rate: "${learning_rate}"
+    batch_size: "${batch_size}"
+    lora_r: "${lora_r}"
+    lora_alpha: "${lora_alpha}"
+    lora_dropout: "${lora_dropout}"
+    warmup_steps: "${warmup_steps}"
+    weight_decay: "${weight_decay}"
+    gradient_accumulation_steps: "${gradient_accumulation_steps}"
+    max_grad_norm: "${max_grad_norm}"
+  evaluation:
+    metrics: "${metrics}"
+    test_split: "${test_split}"
+    validation_split: "${validation_split}"
+    eval_steps: "${eval_steps}"
+    eval_strategy: "${eval_strategy}"
+  output:
+    dir: "${output_dir}"
+    format: "${output_format}"
+    save_steps: "${save_steps}"
+    save_strategy: "${save_strategy}"
+  deployment:
+    endpoint_type: "${endpoint_type}"
+    quantization: "${quantization}"
+    instance_type: "${instance_type}"
+    instance_count: "${instance_count}"
+    scaling_policy: "${scaling_policy}"
+    min_instances: "${min_instances}"
+    max_instances: "${max_instances}"
+    auto_scaling_metrics: "${auto_scaling_metrics}"
+    inference_timeout: "${inference_timeout}"
+
+example:
+  task: "vertical-tune"
+  vertical: "automotive"
+  specialization: "call_center"
+  model: "mistral-7b"
+  method: "QLoRA"
+  dataset: "./datasets/call_center_conversations.jsonl"
+  parameters:
+    epochs: 3
+    learning_rate: 2e-4
+    batch_size: 8
+    lora_r: 16
+    lora_alpha: 32
+    lora_dropout: 0.05
+    warmup_steps: 100
+    weight_decay: 0.01
+    gradient_accumulation_steps: 4
+    max_grad_norm: 1.0
+  evaluation:
+    metrics: ["accuracy", "f1", "precision", "recall", "rouge"]
+    test_split: 0.1
+    validation_split: 0.1
+    eval_steps: 200
+    eval_strategy: "steps"
+  output:
+    dir: "./checkpoints/mistral-call-center"
+    format: "safetensors"
+    save_steps: 500
+    save_strategy: "steps"
+  deployment:
+    endpoint_type: "vllm"
+    quantization: "int8"
+    instance_type: "g4dn.xlarge"
+    instance_count: 1
+    scaling_policy: "request-count-based"
+    min_instances: 1
+    max_instances: 5
+    auto_scaling_metrics: ["RequestCount", "CPUUtilization"]
+    inference_timeout: 30
+
+variables:
+  - name: "model"
+    description: "Base model to fine-tune"
+    type: "string"
+    options: ["mistral-7b", "llama-7b", "llama-13b", "gpt-j-6b", "phi-2", "gemma-7b"]
+    default: "mistral-7b"
+    required: true
+    
+  - name: "method"
+    description: "Fine-tuning method"
+    type: "string"
+    options: ["QLoRA", "LoRA", "Full-Finetune", "Adapter"]
+    default: "QLoRA"
+    required: true
+    
+  - name: "dataset"
+    description: "Path to dataset"
+    type: "string"
+    default: "./datasets/call_center_conversations.jsonl"
+    required: true
+    
+  - name: "epochs"
+    description: "Number of training epochs"
+    type: "integer"
+    default: 3
+    min: 1
+    max: 10
+    required: true
+    
+  - name: "learning_rate"
+    description: "Learning rate"
+    type: "number"
+    default: 2e-4
+    min: 1e-6
+    max: 1e-2
+    required: true
+    
+  - name: "batch_size"
+    description: "Batch size"
+    type: "integer"
+    default: 8
+    options: [1, 2, 4, 8, 16, 32]
+    required: true
+    
+  - name: "lora_r"
+    description: "LoRA r parameter (rank)"
+    type: "integer"
+    default: 16
+    options: [4, 8, 16, 32, 64]
+    required: true
+    
+  - name: "lora_alpha"
+    description: "LoRA alpha parameter (scaling)"
+    type: "integer"
+    default: 32
+    options: [8, 16, 32, 64, 128]
+    required: true
+    
+  - name: "lora_dropout"
+    description: "LoRA dropout"
+    type: "number"
+    default: 0.05
+    min: 0
+    max: 0.5
+    required: true
+    
+  - name: "warmup_steps"
+    description: "Number of warmup steps"
+    type: "integer"
+    default: 100
+    min: 0
+    max: 1000
+    required: false
+    
+  - name: "weight_decay"
+    description: "Weight decay for AdamW optimizer"
+    type: "number"
+    default: 0.01
+    min: 0
+    max: 0.1
+    required: false
+    
+  - name: "gradient_accumulation_steps"
+    description: "Number of gradient accumulation steps"
+    type: "integer"
+    default: 4
+    min: 1
+    max: 32
+    required: false
+    
+  - name: "max_grad_norm"
+    description: "Maximum gradient norm for gradient clipping"
+    type: "number"
+    default: 1.0
+    min: 0.1
+    max: 10.0
+    required: false
+    
+  - name: "metrics"
+    description: "Evaluation metrics"
+    type: "array"
+    items:
+      type: "string"
+      options: ["accuracy", "f1", "precision", "recall", "rouge", "bleu"]
+    default: ["accuracy", "f1", "precision", "recall", "rouge"]
+    required: true
+    
+  - name: "test_split"
+    description: "Test split ratio"
+    type: "number"
+    default: 0.1
+    min: 0.05
+    max: 0.3
+    required: true
+    
+  - name: "validation_split"
+    description: "Validation split ratio"
+    type: "number"
+    default: 0.1
+    min: 0.05
+    max: 0.3
+    required: false
+    
+  - name: "eval_steps"
+    description: "Evaluation steps"
+    type: "integer"
+    default: 200
+    min: 50
+    max: 1000
+    required: false
+    
+  - name: "eval_strategy"
+    description: "Evaluation strategy"
+    type: "string"
+    options: ["steps", "epoch", "no"]
+    default: "steps"
+    required: false
+    
+  - name: "output_dir"
+    description: "Output directory for checkpoints"
+    type: "string"
+    default: "./checkpoints/mistral-call-center"
+    required: true
+    
+  - name: "output_format"
+    description: "Output format"
+    type: "string"
+    options: ["safetensors", "pytorch", "onnx"]
+    default: "safetensors"
+    required: true
+    
+  - name: "save_steps"
+    description: "Save checkpoint steps"
+    type: "integer"
+    default: 500
+    min: 100
+    max: 5000
+    required: false
+    
+  - name: "save_strategy"
+    description: "Save checkpoint strategy"
+    type: "string"
+    options: ["steps", "epoch", "no"]
+    default: "steps"
+    required: false
+    
+  - name: "endpoint_type"
+    description: "Inference endpoint type"
+    type: "string"
+    options: ["vllm", "triton", "tensorrt", "onnx", "tgi"]
+    default: "vllm"
+    required: true
+    
+  - name: "quantization"
+    description: "Quantization method"
+    type: "string"
+    options: ["none", "int8", "int4", "gptq", "awq"]
+    default: "int8"
+    required: true
+    
+  - name: "instance_type"
+    description: "Instance type for deployment"
+    type: "string"
+    options: ["g4dn.xlarge", "g5.xlarge", "c5.2xlarge", "p3.2xlarge", "p4d.24xlarge"]
+    default: "g4dn.xlarge"
+    required: true
+    
+  - name: "instance_count"
+    description: "Number of instances"
+    type: "integer"
+    default: 1
+    min: 1
+    max: 10
+    required: true
+    
+  - name: "scaling_policy"
+    description: "Auto-scaling policy"
+    type: "string"
+    options: ["request-count-based", "latency-based", "cpu-based", "none"]
+    default: "request-count-based"
+    required: false
+    
+  - name: "min_instances"
+    description: "Minimum number of instances for auto-scaling"
+    type: "integer"
+    default: 1
+    min: 1
+    max: 5
+    required: false
+    
+  - name: "max_instances"
+    description: "Maximum number of instances for auto-scaling"
+    type: "integer"
+    default: 5
+    min: 1
+    max: 20
+    required: false
+    
+  - name: "auto_scaling_metrics"
+    description: "Metrics for auto-scaling"
+    type: "array"
+    items:
+      type: "string"
+      options: ["RequestCount", "CPUUtilization", "GPUUtilization", "MemoryUtilization", "Latency"]
+    default: ["RequestCount", "CPUUtilization"]
+    required: false
+    
+  - name: "inference_timeout"
+    description: "Inference timeout in seconds"
+    type: "integer"
+    default: 30
+    min: 5
+    max: 300
+    required: false
+
+use_cases:
+  - name: "Inbound Sales Calls"
+    description: "Handle incoming sales inquiries and convert to appointments"
+    dataset_requirements: "Sales call recordings, inquiry types, appointment setting techniques, objection handling"
+    recommended_parameters:
+      model: "mistral-7b"
+      method: "QLoRA"
+      batch_size: 8
+      lora_r: 16
+      
+  - name: "Service Appointment Scheduling"
+    description: "Schedule and manage service appointments efficiently"
+    dataset_requirements: "Service scheduling calls, appointment types, service advisor interactions, scheduling conflicts"
+    recommended_parameters:
+      model: "llama-7b"
+      method: "QLoRA"
+      batch_size: 8
+      lora_r: 16
+      
+  - name: "Customer Follow-up"
+    description: "Conduct effective follow-up calls with prospects and customers"
+    dataset_requirements: "Follow-up call scripts, customer responses, objection handling, next steps"
+    recommended_parameters:
+      model: "mistral-7b"
+      method: "QLoRA"
+      batch_size: 8
+      lora_r: 16
+      
+  - name: "Lead Qualification"
+    description: "Qualify leads effectively to improve sales team efficiency"
+    dataset_requirements: "Lead qualification questions, customer responses, qualification criteria, lead scoring"
+    recommended_parameters:
+      model: "llama-13b"
+      method: "QLoRA"
+      batch_size: 4
+      lora_r: 32
+      
+  - name: "Customer Satisfaction Surveys"
+    description: "Conduct post-sale and post-service satisfaction surveys"
+    dataset_requirements: "Survey questions, customer responses, satisfaction metrics, feedback handling"
+    recommended_parameters:
+      model: "mistral-7b"
+      method: "QLoRA"
+      batch_size: 8
+      lora_r: 16
+
+integration_points:
+  - system: "Customer Relationship Management (CRM)"
+    description: "Integration with CRM for customer data and interaction tracking"
+    requirements: "API access, customer records, interaction history, lead management"
+    
+  - system: "Dealership Management System (DMS)"
+    description: "Integration with DMS for vehicle and deal information"
+    requirements: "API access, inventory data, deal structure, customer history"
+    
+  - system: "Telephony System"
+    description: "Integration with phone system for call management"
+    requirements: "Call routing, recording, metrics, IVR integration"
+    
+  - system: "Service Scheduling System"
+    description: "Integration with service department scheduling"
+    requirements: "Appointment availability, technician scheduling, service types"
+    
+  - system: "Marketing Automation"
+    description: "Integration with marketing systems for campaign management"
+    requirements: "Campaign data, lead sources, marketing metrics, automation triggers"
+
+deployment_recommendations:
+  development:
+    instance_type: "g4dn.xlarge"
+    quantization: "int8"
+    scaling_policy: "none"
+    
+  testing:
+    instance_type: "g4dn.xlarge"
+    quantization: "int8"
+    scaling_policy: "none"
+    
+  production:
+    instance_type: "g5.xlarge"
+    quantization: "int8"
+    scaling_policy: "request-count-based"
+    min_instances: 2
+    max_instances: 10
+    auto_scaling_metrics: ["RequestCount", "CPUUtilization", "Latency"]
+
+call_types:
+  - name: "New Vehicle Inquiry"
+    description: "Customer inquiring about new vehicle inventory"
+    key_information_to_gather:
+      - "Vehicle preferences (make, model, trim, color)"
+      - "Timeline for purchase"
+      - "Trade-in information"
+      - "Financing needs"
+      - "Contact information"
+    script_elements:
+      - "Greeting and dealership introduction"
+      - "Discovery questions about vehicle needs"
+      - "Inventory availability check"
+      - "Appointment setting"
+      - "Confirmation and next steps"
+    
+  - name: "Used Vehicle Inquiry"
+    description: "Customer inquiring about pre-owned vehicle inventory"
+    key_information_to_gather:
+      - "Vehicle preferences (type, make, model, year range)"
+      - "Budget constraints"
+      - "Must-have features"
+      - "Timeline for purchase"
+      - "Contact information"
+    script_elements:
+      - "Greeting and dealership introduction"
+      - "Discovery questions about vehicle needs"
+      - "Pre-owned inventory discussion"
+      - "Vehicle history report mention"
+      - "Appointment setting"
+    
+  - name: "Service Appointment"
+    description: "Customer calling to schedule service"
+    key_information_to_gather:
+      - "Vehicle information (make, model, year, VIN)"
+      - "Service needed"
+      - "Symptoms or issues"
+      - "Preferred appointment time"
+      - "Transportation needs during service"
+    script_elements:
+      - "Greeting and department identification"
+      - "Service need discovery"
+      - "Appointment availability check"
+      - "Additional service recommendations"
+      - "Confirmation and service reminders"
+    
+  - name: "Parts Inquiry"
+    description: "Customer inquiring about parts availability"
+    key_information_to_gather:
+      - "Vehicle information (make, model, year)"
+      - "Part description or part number"
+      - "Urgency of need"
+      - "Installation requirements"
+      - "Contact information"
+    script_elements:
+      - "Greeting and department identification"
+      - "Part identification confirmation"
+      - "Availability and pricing check"
+      - "Installation options discussion"
+      - "Order processing or appointment setting"
+    
+  - name: "Follow-up Call"
+    description: "Proactive follow-up with prospect or customer"
+    key_information_to_gather:
+      - "Current status in buying process"
+      - "Additional questions or concerns"
+      - "Competitive shopping status"
+      - "Decision timeline updates"
+      - "Next step preferences"
+    script_elements:
+      - "Greeting and reference to previous interaction"
+      - "Status check questions"
+      - "Value reinforcement"
+      - "Objection handling"
+      - "Next step commitment"
+
+call_center_processes:
+  - name: "Call Routing"
+    description: "Process for directing calls to appropriate staff"
+    best_practices:
+      - "Clear IVR menu options"
+      - "Minimal hold times"
+      - "Skill-based routing"
+      - "Overflow procedures"
+      - "Call back options for peak times"
+    
+  - name: "Lead Management"
+    description: "Process for handling and distributing leads"
+    best_practices:
+      - "Immediate lead acknowledgment"
+      - "Consistent lead qualification process"
+      - "Equitable lead distribution"
+      - "Lead scoring implementation"
+      - "Lead nurturing for long-term prospects"
+    
+  - name: "Appointment Setting"
+    description: "Process for scheduling customer appointments"
+    best_practices:
+      - "Confirm vehicle availability before appointment"
+      - "Block appropriate time based on customer needs"
+      - "Send confirmation via preferred method"
+      - "Set expectations for appointment"
+      - "Reminder system implementation"
+    
+  - name: "Call Documentation"
+    description: "Process for recording call information"
+    best_practices:
+      - "Real-time note taking during calls"
+      - "Standardized notation system"
+      - "Complete contact information verification"
+      - "Next steps documentation"
+      - "Follow-up task creation"
+    
+  - name: "Quality Monitoring"
+    description: "Process for ensuring call quality"
+    best_practices:
+      - "Regular call recording review"
+      - "Scorecard evaluation system"
+      - "Peer review sessions"
+      - "Coaching based on call monitoring"
+      - "Best practices sharing"
+
+key_performance_indicators:
+  - name: "Appointment Set Rate"
+    description: "Percentage of calls resulting in appointments"
+    calculation: "Appointments set ÷ Total calls"
+    target_range: "30-40%"
+    improvement_strategies:
+      - "Script optimization"
+      - "Objection handling training"
+      - "Value proposition enhancement"
+      - "Appointment setting techniques training"
+    
+  - name: "Appointment Show Rate"
+    description: "Percentage of appointments that show up"
+    calculation: "Appointments shown ÷ Appointments set"
+    target_range: "70-80%"
+    improvement_strategies:
+      - "Confirmation process enhancement"
+      - "Reminder system implementation"
+      - "Value building before appointment"
+      - "Pre-appointment preparation"
+    
+  - name: "Lead Response Time"
+    description: "Average time to respond to new leads"
+    calculation: "Sum of response times ÷ Number of leads"
+    target_range: "<5 minutes"
+    improvement_strategies:
+      - "Automated initial response"
+      - "Lead notification system"
+      - "Staff scheduling optimization"
+      - "Response time monitoring"
+    
+  - name: "Call Conversion Rate"
+    description: "Percentage of calls resulting in desired outcome"
+    calculation: "Calls with desired outcome ÷ Total calls"
+    target_range: "40-50%"
+    improvement_strategies:
+      - "Call script optimization"
+      - "Staff training on conversion techniques"
+      - "Call flow improvement"
+      - "Value proposition enhancement"
+    
+  - name: "Average Handle Time"
+    description: "Average duration of calls"
+    calculation: "Total call time ÷ Number of calls"
+    target_range: "4-7 minutes"
+    improvement_strategies:
+      - "Call efficiency training"
+      - "Script optimization"
+      - "System navigation training"
+      - "Call flow improvement"
+    
+  - name: "Customer Satisfaction"
+    description: "Customer rating of call experience"
+    calculation: "Survey results on 1-10 scale"
+    target_range: "8.5-10"
+    improvement_strategies:
+      - "Customer service training"
+      - "Call quality monitoring"
+      - "Process improvement based on feedback"
+      - "Personalization techniques"
+
+call_scripts:
+  - name: "Inbound Sales Call Script"
+    description: "Script for handling incoming sales inquiries"
+    script_sections:
+      - section: "Introduction"
+        content: "Thank you for calling [Dealership Name], this is [Your Name]. How may I help you today?"
+      
+      - section: "Discovery"
+        content: "I'd be happy to help you with information about [Vehicle]. To better assist you, may I ask a few quick questions about what you're looking for in your next vehicle?"
+      
+      - section: "Qualification"
+        content: "Great! And when were you thinking of making your purchase? Are you considering trading in your current vehicle? Have you already started researching financing options?"
+      
+      - section: "Appointment Setting"
+        content: "Based on what you've shared, I think we have several options that would be perfect for you. The best way to find your ideal vehicle is to come in for a personalized consultation. We have appointments available [offer specific times]. Which would work better for you?"
+      
+      - section: "Confirmation"
+        content: "Excellent! I've scheduled you for [day/time] with [sales consultant]. Can I send you a confirmation text or email with the details? Do you know where we're located or would you like directions?"
+      
+      - section: "Close"
+        content: "Thank you for choosing [Dealership Name]. We look forward to seeing you on [day/time]. If anything changes or you have any questions before then, please don't hesitate to call me directly at [phone number]. Have a great day!"
+    
+  - name: "Service Appointment Script"
+    description: "Script for scheduling service appointments"
+    script_sections:
+      - section: "Introduction"
+        content: "Thank you for calling [Dealership Name] Service Department, this is [Your Name]. How may I help you today?"
+      
+      - section: "Service Need Identification"
+        content: "I'd be happy to schedule your [service type]. To get you in our system, may I have the year, make, and model of your vehicle? And do you have your VIN or license plate number handy?"
+      
+      - section: "Appointment Scheduling"
+        content: "Thank you. For a [service type], we'll need about [time estimate]. We have availability on [offer specific times]. Which would work best for your schedule?"
+      
+      - section: "Transportation Options"
+        content: "While your vehicle is being serviced, we offer a complimentary shuttle service within 10 miles, or we have loaner vehicles available for $25 per day. Would either of these options be helpful for you?"
+      
+      - section: "Additional Recommendations"
+        content: "I see that your vehicle [might be due for/is approaching] [additional service]. Would you like us to take care of that during the same visit? It would only add about [time] to your service."
+      
+      - section: "Confirmation"
+        content: "Great! I've scheduled you for [service type] on [day/time]. Please plan to arrive about 10 minutes early to complete the check-in process. Can I send you a confirmation text or email with these details?"
+      
+      - section: "Close"
+        content: "Thank you for choosing [Dealership Name] for your service needs. We look forward to seeing you on [day/time]. If anything changes, please call us at [phone number]. Have a great day!"
+    
+  - name: "Follow-up Call Script"
+    description: "Script for following up with prospects"
+    script_sections:
+      - section: "Introduction"
+        content: "Hello [Customer Name], this is [Your Name] from [Dealership Name]. I'm calling to follow up on your recent visit/inquiry about the [Vehicle]. Is this a good time to talk briefly?"
+      
+      - section: "Status Check"
+        content: "I wanted to check in to see if you had any additional questions about the [Vehicle] we discussed, or if there's any other information I can provide to help with your decision."
+      
+      - section: "Objection Handling"
+        content: "I understand [restate objection]. Many customers have similar concerns. What we've found is that [address objection with benefit]. How does that sound to you?"
+      
+      - section: "Value Reinforcement"
+        content: "Just to remind you, the [Vehicle] you're interested in comes with [key features/benefits], and we're currently offering [special incentives] that expire [date]."
+      
+      - section: "Next Step"
+        content: "Based on our conversation, it sounds like the next best step would be [proposed next step]. Would you like to [specific action] on [day/time]?"
+      
+      - section: "Close"
+        content: "Thank you for your time today, [Customer Name]. I'll [specific follow-up action] as we discussed. If you have any questions before then, please don't hesitate to call me directly at [phone number]. Have a great day!"
+    
+  - name: "Unsold Customer Follow-up Script"
+    description: "Script for following up with customers who didn't purchase"
+    script_sections:
+      - section: "Introduction"
+        content: "Hello [Customer Name], this is [Your Name] from [Dealership Name]. I wanted to thank you for visiting our dealership recently. Do you have a moment to chat?"
+      
+      - section: "Feedback Request"
+        content: "I'm calling because we value your feedback and want to ensure we're providing the best possible experience. May I ask what led you to decide against the [Vehicle] you were considering?"
+      
+      - section: "Situation Reassessment"
+        content: "Thank you for sharing that. Has anything changed in your situation or requirements since we last spoke? We've recently [new inventory/incentives/etc.] that might better align with your needs."
+      
+      - section: "New Opportunity"
+        content: "Based on what you've shared, I think [alternative vehicle/solution] might be a better fit for you. It addresses [specific concern] while still providing [key benefit customer wanted]."
+      
+      - section: "Invitation"
+        content: "I'd like to invite you back to take a look at this option. We could schedule a time that's convenient for you, or I could even bring the vehicle to your home or office for a test drive. Which would you prefer?"
+      
+      - section: "Close"
+        content: "Thank you for your time, [Customer Name]. Even if this isn't the right time to move forward, we appreciate your consideration and hope you'll think of us for your future automotive needs. Have a great day!"
+
+objection_handling:
+  - objection: "I'm just looking/researching right now."
+    effective_responses:
+      - "I understand completely. Research is an important part of the process. To help with your research, what specific information are you looking for today?"
+      - "Many of our customers start with research. Would it be helpful if I sent you some detailed information about the models you're interested in? Then when you're ready to see them in person, we can schedule a time that works for you."
+      - "Research is crucial for making the right decision. Our dealership offers a no-pressure consultation where we can answer your questions and provide information to help with your research. Would that be valuable to you?"
+    
+  - objection: "Your price is higher than Competitor X."
+    effective_responses:
+      - "I appreciate you sharing that information. There are often differences in vehicle equipment, warranty coverage, and included services that affect pricing. Could you share the exact vehicle and offer you're comparing to so I can ensure we're comparing apples to apples?"
+      - "Thank you for letting me know. We strive to be competitive in the market. Beyond price, what other factors are important in your decision? We often find we can provide better value in areas like service, warranty, and customer experience."
+      - "I understand price is important. We price our vehicles based on market value, condition, and the reconditioning we perform. That said, we want to earn your business. If I could demonstrate the additional value we provide, would that be worth a brief conversation?"
+    
+  - objection: "I need to think about it/discuss with spouse."
+    effective_responses:
+      - "That makes perfect sense. Important decisions should be made together. To help with your discussion, what specific information would be most helpful for me to provide?"
+      - "I completely understand. Many customers need to discuss such an important decision. Would it be helpful if I prepared a detailed quote with all numbers clearly explained that you could review together? I could email it to you within the hour."
+      - "That's a very reasonable approach. To make the most of your discussion, may I ask what factors will be most important in your decision? That way, when you call back, I can have answers ready for any questions that might come up."
+    
+  - objection: "I don't have time to come in right now."
+    effective_responses:
+      - "I understand you have a busy schedule. We offer flexible appointment times, including evenings and weekends. Is there a particular day or time that typically works better for you?"
+      - "I respect your time constraints. Would it be helpful if we started the process online? I can send you detailed information, videos of the vehicle, and even start paperwork electronically to save time when you do come in."
+      - "Many of our customers have busy schedules. We offer a concierge service where we can bring the vehicle to your home or office for a test drive. Would that be a more convenient option for you?"
+    
+  - objection: "I had a bad experience at a dealership before."
+    effective_responses:
+      - "I'm truly sorry to hear about your previous experience. That's not how car buying should be. Our dealership specifically trains our team to provide a transparent, pressure-free experience. Would you share what specifically happened so I can ensure we address those concerns?"
+      - "That's unfortunate, and I understand why you'd be hesitant. Our dealership has implemented several processes specifically to create a better experience, including [specific differentiators]. Would you be willing to give us a chance to show you how car buying should be?"
+      - "I completely understand your concern. Many of our customers came to us after disappointing experiences elsewhere. We'd welcome the opportunity to show you our different approach. We could start with a quick, no-obligation visit just to experience our dealership culture. How does that sound?"
+
+training_modules:
+  - name: "Phone Skills Fundamentals"
+    description: "Basic telephone communication techniques"
+    key_topics:
+      - "Professional greeting and introduction"
+      - "Active listening techniques"
+      - "Clear articulation and pacing"
+      - "Positive language patterns"
+      - "Call control strategies"
+    learning_objectives:
+      - "Demonstrate proper phone etiquette"
+      - "Implement active listening techniques"
+      - "Maintain call control professionally"
+      - "Project a positive dealership image"
+    
+  - name: "CRM Utilization"
+    description: "Effective use of CRM system"
+    key_topics:
+      - "Customer record management"
+      - "Activity logging best practices"
+      - "Follow-up task creation"
+      - "Lead status management"
+      - "CRM reporting and analytics"
+    learning_objectives:
+      - "Navigate CRM efficiently during calls"
+      - "Create complete customer records"
+      - "Manage follow-up tasks effectively"
+      - "Generate useful CRM reports"
+    
+  - name: "Appointment Setting Mastery"
+    description: "Techniques for securing appointments"
+    key_topics:
+      - "Value building techniques"
+      - "Overcoming scheduling objections"
+      - "Alternative appointment options"
+      - "Confirmation processes"
+      - "Calendar management"
+    learning_objectives:
+      - "Increase appointment set rate"
+      - "Improve appointment show rate"
+      - "Handle scheduling objections effectively"
+      - "Implement proper confirmation procedures"
+    
+  - name: "Product Knowledge"
+    description: "Vehicle and dealership knowledge"
+    key_topics:
+      - "Current inventory familiarity"
+      - "Vehicle feature knowledge"
+      - "Competitive comparisons"
+      - "Dealership differentiators"
+      - "Special programs and incentives"
+    learning_objectives:
+      - "Discuss vehicle features confidently"
+      - "Match vehicles to customer needs"
+      - "Explain dealership advantages"
+      - "Communicate current promotions accurately"
+    
+  - name: "Call Quality Monitoring"
+    description: "Call evaluation and improvement"
+    key_topics:
+      - "Call recording review techniques"
+      - "Performance scorecard metrics"
+      - "Self-evaluation methods"
+      - "Peer review processes"
+      - "Continuous improvement strategies"
+    learning_objectives:
+      - "Evaluate call performance objectively"
+      - "Identify improvement opportunities"
+      - "Implement feedback effectively"
+      - "Develop personal improvement plans"

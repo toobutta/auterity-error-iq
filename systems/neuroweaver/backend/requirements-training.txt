@@ -1,0 +1,33 @@
+# NeuroWeaver Training Pipeline Requirements
+# Additional dependencies for QLoRA and RLAIF training
+
+# Core ML/AI libraries
+torch>=2.0.0
+transformers>=4.35.0
+datasets>=2.14.0
+accelerate>=0.24.0
+peft>=0.6.0
+bitsandbytes>=0.41.0
+
+# Training and optimization
+deepspeed>=0.12.0
+flash-attn>=2.3.0
+xformers>=0.0.22
+
+# Experiment tracking
+wandb>=0.16.0
+tensorboard>=2.15.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+scikit-learn>=1.3.0
+
+# RLAIF dependencies
+openai>=1.0.0
+anthropic>=0.7.0
+
+# Utilities
+tqdm>=4.66.0
+pyyaml>=6.0
+jsonlines>=4.0.0

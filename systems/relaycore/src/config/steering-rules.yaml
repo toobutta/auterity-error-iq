@@ -1,0 +1,72 @@
+routing_rules:
+  - name: "automotive_context"
+    priority: 100
+    conditions:
+      - field: "context.automotive_context"
+        operator: "exists"
+    action:
+      provider: "neuroweaver"
+      model: "automotive-specialist-v1"
+      cost_multiplier: 0.8
+      max_latency: 2000
+
+  - name: "high_priority"
+    priority: 90
+    conditions:
+      - field: "context.priority"
+        operator: "equals"
+        value: "high"
+    action:
+      provider: "openai"
+      model: "gpt-4"
+      cost_multiplier: 1.5
+      max_latency: 5000
+
+  - name: "cost_optimization"
+    priority: 50
+    conditions:
+      - field: "prompt"
+        operator: "length_less_than"
+        value: 100
+      - field: "context.budget_constraint"
+        operator: "equals"
+        value: "low"
+    action:
+      provider: "openai"
+      model: "gpt-3.5-turbo"
+      cost_multiplier: 0.5
+      max_latency: 1500
+
+  - name: "complex_reasoning"
+    priority: 80
+    conditions:
+      - field: "context.task_type"
+        operator: "equals"
+        value: "reasoning"
+      - field: "prompt"
+        operator: "length_greater_than"
+        value: 500
+    action:
+      provider: "anthropic"
+      model: "claude-3-opus"
+      cost_multiplier: 1.2
+      max_latency: 4000
+
+  - name: "default"
+    priority: 1
+    conditions: []
+    action:
+      provider: "openai"
+      model: "gpt-3.5-turbo"
+      cost_multiplier: 1.0
+      max_latency: 2000
+
+cost_constraints:
+  daily_budget: 100.0
+  per_request_max: 0.50
+  emergency_threshold: 0.90
+
+performance_thresholds:
+  max_latency: 10000
+  min_success_rate: 0.95
+  max_error_rate: 0.05

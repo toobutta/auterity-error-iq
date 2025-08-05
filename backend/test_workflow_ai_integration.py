@@ -4,7 +4,6 @@
 import asyncio
 import os
 import sys
-from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
@@ -28,8 +27,13 @@ sys.modules["app.models.workflow"] = MagicMock()
 sys.modules["app.models.execution"] = MagicMock()
 sys.modules["app.database"] = MagicMock()
 
-from services.ai_service import AIResponse, AIService, set_ai_service
-from services.workflow_engine import ExecutionResult, ExecutionStatus, WorkflowEngine
+# Import after mocking
+from app.services.ai_service import AIResponse, AIService  # noqa: E402
+from app.services.workflow_engine import (  # noqa: E402
+    ExecutionResult,
+    ExecutionStatus,
+    WorkflowEngine,
+)
 
 
 async def test_workflow_ai_integration():
@@ -64,14 +68,19 @@ async def test_workflow_ai_integration():
                 {
                     "id": "input_node",
                     "type": "input",
-                    "data": {"label": "Customer Input", "field": "customer_inquiry"},
+                    "data": {
+                        "label": "Customer Input",
+                        "field": "customer_inquiry",
+                    },
                 },
                 {
                     "id": "ai_node",
                     "type": "ai",
                     "data": {
                         "label": "AI Processing",
-                        "prompt": "Process customer inquiry: {customer_inquiry}",
+                        "prompt": (
+                            "Process customer inquiry: {customer_inquiry}"
+                        ),
                         "model": "gpt-3.5-turbo",
                     },
                 },
@@ -88,9 +97,8 @@ async def test_workflow_ai_integration():
         }
         mock_workflow.is_active = True
 
-        mock_db.query.return_value.filter.return_value.first.return_value = (
-            mock_workflow
-        )
+        mock_db.query.return_value.filter.return_value.first.\
+            return_value = mock_workflow
 
         # Mock execution
         mock_execution = MagicMock()
@@ -107,10 +115,13 @@ async def test_workflow_ai_integration():
 
         # Mock the get_ai_service function at the import location
         with patch(
-            "app.services.ai_service.get_ai_service", return_value=mock_ai_service
+            "app.services.ai_service.get_ai_service",
+            return_value=mock_ai_service
         ):
             try:
-                result = await engine.execute_workflow(mock_workflow.id, input_data)
+                result = await engine.execute_workflow(
+                    mock_workflow.id, input_data
+                )
 
                 # Verify the result
                 assert isinstance(result, ExecutionResult)
@@ -152,14 +163,18 @@ async def test_workflow_ai_template_integration():
         "data": {
             "label": "AI Template Processing",
             "template": "customer_inquiry",
-            "template_variables": {"context": "Dealership hours and contact info"},
+            "template_variables": {
+                "context": "Dealership hours and contact info"
+            },
         },
     }
 
     input_data = {"inquiry": "When are you open?"}
 
     # Mock the get_ai_service function at the import location
-    with patch("app.services.ai_service.get_ai_service", return_value=mock_ai_service):
+    with patch(
+        "app.services.ai_service.get_ai_service", return_value=mock_ai_service
+    ):
         try:
             result = await engine._execute_ai_step(node, input_data)
 
@@ -211,7 +226,9 @@ async def test_workflow_ai_error_handling():
     input_data = {"test": "data"}
 
     # Mock the get_ai_service function at the import location
-    with patch("app.services.ai_service.get_ai_service", return_value=mock_ai_service):
+    with patch(
+        "app.services.ai_service.get_ai_service", return_value=mock_ai_service
+    ):
         try:
             await engine._execute_ai_step(node, input_data)
             assert False, "Should have raised WorkflowStepError"

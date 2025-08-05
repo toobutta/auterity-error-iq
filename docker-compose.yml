@@ -1,22 +1,41 @@
 version: '3.8'
 
 services:
+  # Shared Infrastructure Services
   postgres:
     image: postgres:15
     environment:
-      POSTGRES_DB: workflow_engine
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-workflow_engine}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-unified-db.sql:/docker-entrypoint-initdb.d/init-unified-db.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - ai-platform
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ai-platform
+
+  # AutoMatrix Services (Existing)
   backend:
     build:
       context: ./backend
@@ -24,14 +43,31 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/workflow_engine
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-workflow_engine}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      SECRET_KEY: ${SECRET_KEY}
+      RELAYCORE_URL: ${RELAYCORE_URL:-http://relaycore:3001}
+      NEUROWEAVER_BACKEND_URL: ${NEUROWEAVER_BACKEND_URL:-http://neuroweaver-backend:8001}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      DEBUG: ${DEBUG:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     volumes:
       - ./backend:/app
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ai-platform
 
   frontend:
     build:
@@ -39,10 +75,210 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    environment:
+      VITE_API_URL: ${EXTERNAL_AUTMATRIX_BACKEND_URL:-http://localhost:8000}
+      VITE_RELAYCORE_URL: ${EXTERNAL_RELAYCORE_URL:-http://localhost:3001}
+      VITE_NEUROWEAVER_URL: ${EXTERNAL_NEUROWEAVER_FRONTEND_URL:-http://localhost:3002}
     volumes:
       - ./frontend:/app
       - /app/node_modules
     command: npm run dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ai-platform
+
+  # RelayCore Service (AI Routing Hub)
+  relaycore:
+    build:
+      context: ./systems/relaycore
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-workflow_engine}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      CLAUDE_API_KEY: ${CLAUDE_API_KEY}
+      SECRET_KEY: ${SECRET_KEY}
+      NEUROWEAVER_BACKEND_URL: ${NEUROWEAVER_BACKEND_URL:-http://neuroweaver-backend:8001}
+      DEFAULT_MODEL: ${RELAYCORE_DEFAULT_MODEL:-gpt-3.5-turbo}
+      COST_THRESHOLD: ${RELAYCORE_COST_THRESHOLD:-10.00}
+      ENABLE_STEERING: ${RELAYCORE_ENABLE_STEERING:-true}
+      DEBUG: ${DEBUG:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./systems/relaycore:/app
+      - /app/node_modules
+    command: npm run dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ai-platform
+
+  # NeuroWeaver Backend (Model Specialization)
+  neuroweaver-backend:
+    build:
+      context: ./systems/neuroweaver/backend
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-workflow_engine}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      SECRET_KEY: ${SECRET_KEY}
+      RELAYCORE_URL: ${RELAYCORE_URL:-http://relaycore:3001}
+      MODEL_STORAGE_PATH: ${NEUROWEAVER_MODEL_STORAGE_PATH:-/app/models}
+      TRAINING_ENABLED: ${NEUROWEAVER_TRAINING_ENABLED:-true}
+      AUTO_DEPLOY: ${NEUROWEAVER_AUTO_DEPLOY:-false}
+      DEBUG: ${DEBUG:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./systems/neuroweaver/backend:/app
+      - neuroweaver_models:/app/models
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ai-platform
+
+  # NeuroWeaver Frontend (Model Management UI)
+  neuroweaver-frontend:
+    build:
+      context: ./systems/neuroweaver/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      NEXT_PUBLIC_API_URL: ${EXTERNAL_NEUROWEAVER_BACKEND_URL:-http://localhost:8001}
+      NEXT_PUBLIC_RELAYCORE_URL: ${EXTERNAL_RELAYCORE_URL:-http://localhost:3001}
+      NEXT_PUBLIC_AUTMATRIX_URL: ${EXTERNAL_AUTMATRIX_FRONTEND_URL:-http://localhost:3000}
+    volumes:
+      - ./systems/neuroweaver/frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ai-platform
+
+  # Monitoring Services
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - ai-platform
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3003:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin123}
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ai-platform
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager:/etc/alertmanager
+    networks:
+      - ai-platform
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    environment:
+      COLLECTOR_OTLP_ENABLED: true
+    networks:
+      - ai-platform
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    ports:
+      - "9100:9100"
+    networks:
+      - ai-platform
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    environment:
+      DATA_SOURCE_NAME: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-workflow_engine}?sslmode=disable
+    ports:
+      - "9187:9187"
+    depends_on:
+      - postgres
+    networks:
+      - ai-platform
+
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    environment:
+      REDIS_ADDR: redis://redis:6379
+    ports:
+      - "9121:9121"
+    depends_on:
+      - redis
+    networks:
+      - ai-platform
 
 volumes:
   postgres_data:
+  redis_data:
+  grafana_data:
+  prometheus_data:
+  neuroweaver_models:
+
+networks:
+  ai-platform:
+    driver: bridge

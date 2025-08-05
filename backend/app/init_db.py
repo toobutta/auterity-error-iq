@@ -1,8 +1,6 @@
 """Database initialization script with seed data."""
 
-import asyncio
 import logging
-from typing import Any, Dict
 
 from passlib.context import CryptContext
 

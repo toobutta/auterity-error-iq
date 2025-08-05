@@ -1,8 +1,6 @@
 """Unit tests for data models."""
 
 import os
-import uuid
-from datetime import datetime
 
 import pytest
 from sqlalchemy import create_engine

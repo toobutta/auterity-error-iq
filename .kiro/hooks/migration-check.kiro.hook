@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Database Migration Check",
+  "description": "Check if database models have changed and suggest creating migrations",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["backend/app/models/*.py"]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "cd backend && echo \"🗄️  Checking for model changes...\" && alembic check && echo \"✅ Database schema is up to date\" || echo \"⚠️  Model changes detected. Consider running: alembic revision --autogenerate -m 'describe your changes' && alembic upgrade head\""
+  }
+}

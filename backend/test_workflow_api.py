@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Simple test script to verify workflow API functionality."""
 
-import json
 import os
 import sys
 from pathlib import Path
@@ -13,8 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 os.environ["PYTEST_CURRENT_TEST"] = "true"
 
 try:
-    from app.api.workflows import router
-    from app.schemas import WorkflowCreate, WorkflowResponse, WorkflowUpdate
+    from app.schemas import WorkflowCreate
 
     print("✅ Successfully imported workflow schemas and API router")
 

@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Frontend Lint & Type Check",
+  "description": "Run ESLint and TypeScript type checking on frontend files",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["frontend/src/**/*.ts", "frontend/src/**/*.tsx"]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "cd frontend && npx eslint \"${file}\" --fix && npx tsc --noEmit && echo \"✅ Frontend code looks good\""
+  }
+}

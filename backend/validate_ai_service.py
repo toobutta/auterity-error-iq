@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
-"""Validation script to verify AI service implementation meets task requirements."""
+"""Validation script to verify AI service implementation meets task \
+requirements."""
 
 import os
 import sys
+from unittest.mock import MagicMock
 
 # Add the app directory to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "app"))
 
 # Mock openai module before importing
-sys.modules["openai"] = __import__("unittest.mock").mock.MagicMock()
+sys.modules["openai"] = MagicMock()
 sys.modules["openai.RateLimitError"] = Exception
 sys.modules["openai.APIError"] = Exception
 
-from services.ai_service import (
-    AIModelType,
+# Import after mocking
+from app.services.ai_service import (  # noqa: E402
     AIResponse,
     AIService,
     AIServiceError,
@@ -23,27 +25,36 @@ from services.ai_service import (
 
 def validate_ai_service_class():
     """Validate AIService class with OpenAI GPT integration."""
-    print("✓ Task requirement: Implement AIService class with OpenAI GPT integration")
+    print(
+        "✓ Task requirement: Implement AIService class with OpenAI GPT "
+        "integration"
+    )
 
     # Check class exists and has required methods
-    assert hasattr(AIService, "__init__"), "AIService should have __init__ method"
-    assert hasattr(
-        AIService, "process_text"
-    ), "AIService should have process_text method"
-    assert hasattr(
-        AIService, "process_with_template"
-    ), "AIService should have process_with_template method"
-    assert hasattr(
-        AIService, "validate_response"
-    ), "AIService should have validate_response method"
+    assert hasattr(AIService, "__init__"), (
+        "AIService should have __init__ method"
+    )
+    assert hasattr(AIService, "process_text"), (
+        "AIService should have process_text method"
+    )
+    assert hasattr(AIService, "process_with_template"), (
+        "AIService should have process_with_template method"
+    )
+    assert hasattr(AIService, "validate_response"), (
+        "AIService should have validate_response method"
+    )
 
     # Check OpenAI integration
     with __import__("unittest.mock").mock.patch.dict(
         "os.environ", {"OPENAI_API_KEY": "test-key"}
     ):
         service = AIService()
-        assert hasattr(service, "client"), "AIService should have OpenAI client"
-        assert hasattr(service, "model"), "AIService should have model configuration"
+        assert hasattr(service, "client"), (
+            "AIService should have OpenAI client"
+        )
+        assert hasattr(service, "model"), (
+            "AIService should have model configuration"
+        )
 
     print("  - AIService class implemented with OpenAI integration")
     print(
@@ -55,7 +66,8 @@ def validate_ai_service_class():
 def validate_prompt_template_system():
     """Validate prompt template system for consistent AI interactions."""
     print(
-        "\n✓ Task requirement: Create prompt template system for consistent AI interactions"
+        "\n✓ Task requirement: Create prompt template system for "
+        "consistent AI interactions"
     )
 
     # Check PromptTemplate class

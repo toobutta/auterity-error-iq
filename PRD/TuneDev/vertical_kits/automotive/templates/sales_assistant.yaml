@@ -1,0 +1,514 @@
+metadata:
+  name: "sales_assistant"
+  description: "Template for sales and customer relationship"
+  category: "automotive"
+  version: "1.0.0"
+  author: "TuneDev"
+  created_date: "2025-08-02"
+  updated_date: "2025-08-02"
+  tags:
+    - "automotive"
+    - "sales"
+    - "customer"
+    - "relationship"
+    - "finance"
+
+template:
+  task: "vertical-tune"
+  vertical: "automotive"
+  specialization: "sales_assistant"
+  model: "${model}"
+  method: "${method}"
+  dataset: "${dataset}"
+  parameters:
+    epochs: "${epochs}"
+    learning_rate: "${learning_rate}"
+    batch_size: "${batch_size}"
+    lora_r: "${lora_r}"
+    lora_alpha: "${lora_alpha}"
+    lora_dropout: "${lora_dropout}"
+    warmup_steps: "${warmup_steps}"
+    weight_decay: "${weight_decay}"
+    gradient_accumulation_steps: "${gradient_accumulation_steps}"
+    max_grad_norm: "${max_grad_norm}"
+  evaluation:
+    metrics: "${metrics}"
+    test_split: "${test_split}"
+    validation_split: "${validation_split}"
+    eval_steps: "${eval_steps}"
+    eval_strategy: "${eval_strategy}"
+  output:
+    dir: "${output_dir}"
+    format: "${output_format}"
+    save_steps: "${save_steps}"
+    save_strategy: "${save_strategy}"
+  deployment:
+    endpoint_type: "${endpoint_type}"
+    quantization: "${quantization}"
+    instance_type: "${instance_type}"
+    instance_count: "${instance_count}"
+    scaling_policy: "${scaling_policy}"
+    min_instances: "${min_instances}"
+    max_instances: "${max_instances}"
+    auto_scaling_metrics: "${auto_scaling_metrics}"
+    inference_timeout: "${inference_timeout}"
+
+example:
+  task: "vertical-tune"
+  vertical: "automotive"
+  specialization: "sales_assistant"
+  model: "mistral-7b"
+  method: "QLoRA"
+  dataset: "./datasets/sales_conversations.jsonl"
+  parameters:
+    epochs: 3
+    learning_rate: 2e-4
+    batch_size: 8
+    lora_r: 16
+    lora_alpha: 32
+    lora_dropout: 0.05
+    warmup_steps: 100
+    weight_decay: 0.01
+    gradient_accumulation_steps: 4
+    max_grad_norm: 1.0
+  evaluation:
+    metrics: ["accuracy", "f1", "rouge"]
+    test_split: 0.1
+    validation_split: 0.1
+    eval_steps: 200
+    eval_strategy: "steps"
+  output:
+    dir: "./checkpoints/mistral-sales-assistant"
+    format: "safetensors"
+    save_steps: 500
+    save_strategy: "steps"
+  deployment:
+    endpoint_type: "vllm"
+    quantization: "int8"
+    instance_type: "g4dn.xlarge"
+    instance_count: 1
+    scaling_policy: "request-count-based"
+    min_instances: 1
+    max_instances: 5
+    auto_scaling_metrics: ["RequestCount", "CPUUtilization"]
+    inference_timeout: 30
+
+variables:
+  - name: "model"
+    description: "Base model to fine-tune"
+    type: "string"
+    options: ["mistral-7b", "llama-7b", "llama-13b", "gpt-j-6b", "phi-2", "gemma-7b"]
+    default: "mistral-7b"
+    required: true
+    
+  - name: "method"
+    description: "Fine-tuning method"
+    type: "string"
+    options: ["QLoRA", "LoRA", "Full-Finetune", "Adapter"]
+    default: "QLoRA"
+    required: true
+    
+  - name: "dataset"
+    description: "Path to dataset"
+    type: "string"
+    default: "./datasets/sales_conversations.jsonl"
+    required: true
+    
+  - name: "epochs"
+    description: "Number of training epochs"
+    type: "integer"
+    default: 3
+    min: 1
+    max: 10
+    required: true
+    
+  - name: "learning_rate"
+    description: "Learning rate"
+    type: "number"
+    default: 2e-4
+    min: 1e-6
+    max: 1e-2
+    required: true
+    
+  - name: "batch_size"
+    description: "Batch size"
+    type: "integer"
+    default: 8
+    options: [1, 2, 4, 8, 16, 32]
+    required: true
+    
+  - name: "lora_r"
+    description: "LoRA r parameter (rank)"
+    type: "integer"
+    default: 16
+    options: [4, 8, 16, 32, 64]
+    required: true
+    
+  - name: "lora_alpha"
+    description: "LoRA alpha parameter (scaling)"
+    type: "integer"
+    default: 32
+    options: [8, 16, 32, 64, 128]
+    required: true
+    
+  - name: "lora_dropout"
+    description: "LoRA dropout"
+    type: "number"
+    default: 0.05
+    min: 0
+    max: 0.5
+    required: true
+    
+  - name: "warmup_steps"
+    description: "Number of warmup steps"
+    type: "integer"
+    default: 100
+    min: 0
+    max: 1000
+    required: false
+    
+  - name: "weight_decay"
+    description: "Weight decay for AdamW optimizer"
+    type: "number"
+    default: 0.01
+    min: 0
+    max: 0.1
+    required: false
+    
+  - name: "gradient_accumulation_steps"
+    description: "Number of gradient accumulation steps"
+    type: "integer"
+    default: 4
+    min: 1
+    max: 32
+    required: false
+    
+  - name: "max_grad_norm"
+    description: "Maximum gradient norm for gradient clipping"
+    type: "number"
+    default: 1.0
+    min: 0.1
+    max: 10.0
+    required: false
+    
+  - name: "metrics"
+    description: "Evaluation metrics"
+    type: "array"
+    items:
+      type: "string"
+      options: ["accuracy", "f1", "precision", "recall", "rouge", "bleu"]
+    default: ["accuracy", "f1", "rouge"]
+    required: true
+    
+  - name: "test_split"
+    description: "Test split ratio"
+    type: "number"
+    default: 0.1
+    min: 0.05
+    max: 0.3
+    required: true
+    
+  - name: "validation_split"
+    description: "Validation split ratio"
+    type: "number"
+    default: 0.1
+    min: 0.05
+    max: 0.3
+    required: false
+    
+  - name: "eval_steps"
+    description: "Evaluation steps"
+    type: "integer"
+    default: 200
+    min: 50
+    max: 1000
+    required: false
+    
+  - name: "eval_strategy"
+    description: "Evaluation strategy"
+    type: "string"
+    options: ["steps", "epoch", "no"]
+    default: "steps"
+    required: false
+    
+  - name: "output_dir"
+    description: "Output directory for checkpoints"
+    type: "string"
+    default: "./checkpoints/mistral-sales-assistant"
+    required: true
+    
+  - name: "output_format"
+    description: "Output format"
+    type: "string"
+    options: ["safetensors", "pytorch", "onnx"]
+    default: "safetensors"
+    required: true
+    
+  - name: "save_steps"
+    description: "Save checkpoint steps"
+    type: "integer"
+    default: 500
+    min: 100
+    max: 5000
+    required: false
+    
+  - name: "save_strategy"
+    description: "Save checkpoint strategy"
+    type: "string"
+    options: ["steps", "epoch", "no"]
+    default: "steps"
+    required: false
+    
+  - name: "endpoint_type"
+    description: "Inference endpoint type"
+    type: "string"
+    options: ["vllm", "triton", "tensorrt", "onnx", "tgi"]
+    default: "vllm"
+    required: true
+    
+  - name: "quantization"
+    description: "Quantization method"
+    type: "string"
+    options: ["none", "int8", "int4", "gptq", "awq"]
+    default: "int8"
+    required: true
+    
+  - name: "instance_type"
+    description: "Instance type for deployment"
+    type: "string"
+    options: ["g4dn.xlarge", "g5.xlarge", "c5.2xlarge", "p3.2xlarge", "p4d.24xlarge"]
+    default: "g4dn.xlarge"
+    required: true
+    
+  - name: "instance_count"
+    description: "Number of instances"
+    type: "integer"
+    default: 1
+    min: 1
+    max: 10
+    required: true
+    
+  - name: "scaling_policy"
+    description: "Auto-scaling policy"
+    type: "string"
+    options: ["request-count-based", "latency-based", "cpu-based", "none"]
+    default: "request-count-based"
+    required: false
+    
+  - name: "min_instances"
+    description: "Minimum number of instances for auto-scaling"
+    type: "integer"
+    default: 1
+    min: 1
+    max: 5
+    required: false
+    
+  - name: "max_instances"
+    description: "Maximum number of instances for auto-scaling"
+    type: "integer"
+    default: 5
+    min: 1
+    max: 20
+    required: false
+    
+  - name: "auto_scaling_metrics"
+    description: "Metrics for auto-scaling"
+    type: "array"
+    items:
+      type: "string"
+      options: ["RequestCount", "CPUUtilization", "GPUUtilization", "MemoryUtilization", "Latency"]
+    default: ["RequestCount", "CPUUtilization"]
+    required: false
+    
+  - name: "inference_timeout"
+    description: "Inference timeout in seconds"
+    type: "integer"
+    default: 30
+    min: 5
+    max: 300
+    required: false
+
+use_cases:
+  - name: "Customer Interaction"
+    description: "Handle customer inquiries, questions, and objections during the sales process"
+    dataset_requirements: "Sales conversations, customer inquiries, objection handling examples, product knowledge"
+    recommended_parameters:
+      model: "mistral-7b"
+      method: "QLoRA"
+      batch_size: 8
+      lora_r: 16
+      
+  - name: "Vehicle Feature Explanation"
+    description: "Explain vehicle features, specifications, and technologies to customers"
+    dataset_requirements: "Vehicle specifications, feature descriptions, technical explanations, comparison data"
+    recommended_parameters:
+      model: "llama-7b"
+      method: "QLoRA"
+      batch_size: 8
+      lora_r: 16
+      
+  - name: "Financing Options"
+    description: "Explain financing options, lease vs. buy comparisons, and payment calculations"
+    dataset_requirements: "Financing terms, lease explanations, payment calculations, credit information"
+    recommended_parameters:
+      model: "mistral-7b"
+      method: "QLoRA"
+      batch_size: 8
+      lora_r: 16
+      
+  - name: "Competitive Comparison"
+    description: "Compare vehicles to competitor models highlighting strengths and differences"
+    dataset_requirements: "Competitive vehicle data, comparison points, market positioning, feature differentiators"
+    recommended_parameters:
+      model: "llama-13b"
+      method: "QLoRA"
+      batch_size: 4
+      lora_r: 32
+      
+  - name: "Follow-up Communication"
+    description: "Generate personalized follow-up communications with customers"
+    dataset_requirements: "Follow-up emails, text messages, call scripts, personalization examples"
+    recommended_parameters:
+      model: "mistral-7b"
+      method: "QLoRA"
+      batch_size: 8
+      lora_r: 16
+
+integration_points:
+  - system: "CRM System"
+    description: "Integration with customer relationship management systems"
+    requirements: "API access, customer data, interaction history, follow-up scheduling"
+    
+  - system: "Inventory Management"
+    description: "Integration with vehicle inventory systems"
+    requirements: "API access, real-time inventory data, vehicle specifications, pricing information"
+    
+  - system: "Finance and Insurance System"
+    description: "Integration with F&I systems for financing options and calculations"
+    requirements: "API access, rate information, program eligibility, payment calculation"
+    
+  - system: "DMS (Dealership Management System)"
+    description: "Integration with dealership management system"
+    requirements: "API access, customer records, deal structure, documentation"
+    
+  - system: "RelayCore"
+    description: "Integration with RelayCore platform for sales data exchange"
+    requirements: "RelayCore API credentials, connector configuration, data synchronization setup"
+
+deployment_recommendations:
+  development:
+    instance_type: "g4dn.xlarge"
+    quantization: "int8"
+    scaling_policy: "none"
+    
+  testing:
+    instance_type: "g4dn.xlarge"
+    quantization: "int8"
+    scaling_policy: "none"
+    
+  production:
+    instance_type: "g5.xlarge"
+    quantization: "int8"
+    scaling_policy: "request-count-based"
+    min_instances: 2
+    max_instances: 10
+    auto_scaling_metrics: ["RequestCount", "CPUUtilization", "Latency"]
+
+sales_process_stages:
+  - name: "Prospecting"
+    description: "Identifying and reaching out to potential customers"
+    ai_capabilities:
+      - "Lead qualification based on customer data"
+      - "Personalized outreach message generation"
+      - "Follow-up scheduling and reminders"
+      
+  - name: "Initial Contact"
+    description: "First interaction with potential customers"
+    ai_capabilities:
+      - "Personalized greeting and rapport building"
+      - "Needs assessment question generation"
+      - "Appointment scheduling assistance"
+      
+  - name: "Needs Assessment"
+    description: "Understanding customer requirements and preferences"
+    ai_capabilities:
+      - "Structured question generation based on customer profile"
+      - "Response analysis and vehicle matching"
+      - "Budget and financing preference determination"
+      
+  - name: "Vehicle Presentation"
+    description: "Showcasing vehicles that match customer needs"
+    ai_capabilities:
+      - "Feature highlighting based on customer preferences"
+      - "Technical specification explanation"
+      - "Competitive advantage articulation"
+      
+  - name: "Test Drive"
+    description: "Managing the test drive experience"
+    ai_capabilities:
+      - "Test drive route suggestions based on customer interests"
+      - "Feature demonstration prompts during drive"
+      - "Post-drive feedback collection and analysis"
+      
+  - name: "Negotiation"
+    description: "Discussing pricing and terms"
+    ai_capabilities:
+      - "Value proposition reinforcement"
+      - "Objection handling assistance"
+      - "Alternative package suggestion"
+      
+  - name: "Closing"
+    description: "Finalizing the sale"
+    ai_capabilities:
+      - "Documentation preparation assistance"
+      - "Financing option explanation"
+      - "Delivery scheduling coordination"
+      
+  - name: "Follow-up"
+    description: "Post-sale customer engagement"
+    ai_capabilities:
+      - "Personalized thank you message generation"
+      - "Review request optimization"
+      - "Service reminder scheduling"
+      - "Referral request optimization"
+
+customer_types:
+  - name: "First-time Buyer"
+    description: "Customers purchasing their first vehicle"
+    approach_recommendations:
+      - "Focus on education about the buying process"
+      - "Emphasize warranty and reliability"
+      - "Provide clear financing explanations"
+      - "Offer post-purchase support information"
+      
+  - name: "Return Customer"
+    description: "Previous customers returning for another purchase"
+    approach_recommendations:
+      - "Reference previous purchase experience"
+      - "Highlight new features and improvements"
+      - "Streamline the process based on known preferences"
+      - "Leverage existing relationship and trust"
+      
+  - name: "Family Buyer"
+    description: "Customers purchasing for family use"
+    approach_recommendations:
+      - "Emphasize safety features and ratings"
+      - "Focus on space, comfort, and convenience"
+      - "Highlight child-friendly features"
+      - "Discuss long-term reliability and value"
+      
+  - name: "Luxury Buyer"
+    description: "Customers focused on premium vehicles"
+    approach_recommendations:
+      - "Emphasize exclusive features and craftsmanship"
+      - "Focus on performance and technology"
+      - "Highlight ownership experience and services"
+      - "Discuss personalization options"
+      
+  - name: "Business/Fleet Customer"
+    description: "Customers purchasing for business use"
+    approach_recommendations:
+      - "Focus on total cost of ownership"
+      - "Highlight reliability and maintenance programs"
+      - "Discuss tax implications and business benefits"
+      - "Emphasize fleet management features"

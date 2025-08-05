@@ -1,10 +1,24 @@
 import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth, logs, monitoring, templates, workflows, websockets
+from app.api import (
+    auth,
+    error_correlation,
+    logs,
+    monitoring,
+    templates,
+    websockets,
+    workflows,
+)
+from app.middleware.error_handler import (
+    ErrorReportingMiddleware,
+    GlobalErrorHandlerMiddleware,
+)
 from app.middleware.logging import StructuredLoggingMiddleware
-from app.middleware.error_handler import GlobalErrorHandlerMiddleware, ErrorReportingMiddleware
+from app.middleware.prometheus import prometheus_middleware
+from app.middleware.tracing import setup_tracing
 
 # Environment configuration
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
@@ -22,10 +36,18 @@ app = FastAPI(
 
 # Add error handling middleware (order matters - add first to catch all errors)
 app.add_middleware(GlobalErrorHandlerMiddleware)
-app.add_middleware(ErrorReportingMiddleware, enable_reporting=ENVIRONMENT == "production")
+app.add_middleware(
+    ErrorReportingMiddleware, enable_reporting=ENVIRONMENT == "production"
+)
 
 # Add structured logging middleware
 app.add_middleware(StructuredLoggingMiddleware)
+
+# Add Prometheus metrics middleware
+app.middleware("http")(prometheus_middleware)
+
+# Setup distributed tracing
+setup_tracing(app)
 
 # CORS middleware for frontend integration
 app.add_middleware(
@@ -42,6 +64,7 @@ app.include_router(workflows.router, prefix="/api")
 app.include_router(templates.router, prefix="/api")
 app.include_router(logs.router, prefix="/api")
 app.include_router(monitoring.router, prefix="/api")
+app.include_router(error_correlation.router)
 
 # Include WebSocket routes (no prefix for WebSocket endpoints)
 app.include_router(websockets.router)

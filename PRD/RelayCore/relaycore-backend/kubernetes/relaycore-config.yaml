@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: relaycore-config
+data:
+  config.json: |
+    {
+      "server": {
+        "port": 3000,
+        "cors": {
+          "origin": "*",
+          "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+          "allowedHeaders": ["Content-Type", "Authorization"]
+        },
+        "rateLimit": {
+          "windowMs": 60000,
+          "max": 100
+        }
+      },
+      "cache": {
+        "enabled": true,
+        "ttl": 3600,
+        "semanticCaching": {
+          "enabled": true,
+          "similarityThreshold": 0.95
+        }
+      },
+      "optimization": {
+        "tokenOptimization": true,
+        "requestDeduplication": true,
+        "promptCompression": true,
+        "contextPruning": true
+      },
+      "providers": {
+        "openai": {
+          "enabled": true,
+          "priority": 1,
+          "models": {
+            "gpt-4": {
+              "enabled": true,
+              "costPerInputToken": 0.00003,
+              "costPerOutputToken": 0.00006
+            },
+            "gpt-3.5-turbo": {
+              "enabled": true,
+              "costPerInputToken": 0.000001,
+              "costPerOutputToken": 0.000002
+            }
+          }
+        },
+        "anthropic": {
+          "enabled": true,
+          "priority": 2,
+          "models": {
+            "claude-3-opus": {
+              "enabled": true,
+              "costPerInputToken": 0.00001,
+              "costPerOutputToken": 0.00003
+            },
+            "claude-3-sonnet": {
+              "enabled": true,
+              "costPerInputToken": 0.000003,
+              "costPerOutputToken": 0.000015
+            }
+          }
+        },
+        "mistral": {
+          "enabled": true,
+          "priority": 3,
+          "models": {
+            "mistral-large": {
+              "enabled": true,
+              "costPerInputToken": 0.000002,
+              "costPerOutputToken": 0.000008
+            },
+            "mistral-small": {
+              "enabled": true,
+              "costPerInputToken": 0.000001,
+              "costPerOutputToken": 0.000002
+            }
+          }
+        }
+      },
+      "logging": {
+        "level": "info",
+        "format": "json"
+      },
+      "analytics": {
+        "enabled": true,
+        "retention": 30
+      }
+    }
+---
+# This is a template for the secrets. In production, use a proper secrets management solution.
+# DO NOT commit actual secrets to version control.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: relaycore-secrets
+type: Opaque
+stringData:
+  redis-url: "redis://redis:6379"
+  openai-api-key: "sk-your-openai-api-key"
+  anthropic-api-key: "sk-ant-your-anthropic-api-key"
+  mistral-api-key: "your-mistral-api-key"
+  jwt-secret: "your-jwt-secret-key"

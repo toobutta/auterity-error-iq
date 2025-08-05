@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "🔒 Security Scan",
+  "description": "Run comprehensive security checks on the codebase",
+  "version": "1",
+  "when": {
+    "type": "manual"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "echo \"🔒 Running security scan...\" && cd backend && echo \"🐍 Scanning Python dependencies...\" && (command -v pip-audit >/dev/null && pip-audit --desc --format=json > ../security-report.json && echo \"✅ Dependency audit complete\" || echo \"⚠️  pip-audit not installed. Run: pip install pip-audit\") && echo \"🔍 Scanning Python code for security issues...\" && (command -v bandit >/dev/null && bandit -r app/ -f json -o ../bandit-report.json && echo \"✅ Code security scan complete\" || echo \"⚠️  bandit not installed. Run: pip install bandit\") && cd ../frontend && echo \"📦 Scanning Node.js dependencies...\" && npm audit --audit-level=moderate && echo \"🔒 Security scan complete! 📄 Check security-report.json and bandit-report.json for details\""
+  }
+}

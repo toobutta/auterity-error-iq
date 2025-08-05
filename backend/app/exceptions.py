@@ -6,6 +6,7 @@ from typing import Any, Dict, Optional
 
 class ErrorCategory(str, Enum):
     """Error categories for classification."""
+
     AUTHENTICATION = "authentication"
     AUTHORIZATION = "authorization"
     VALIDATION = "validation"
@@ -19,6 +20,7 @@ class ErrorCategory(str, Enum):
 
 class ErrorSeverity(str, Enum):
     """Error severity levels."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -27,7 +29,7 @@ class ErrorSeverity(str, Enum):
 
 class BaseAppException(Exception):
     """Base exception class for all application errors."""
-    
+
     def __init__(
         self,
         message: str,
@@ -46,22 +48,26 @@ class BaseAppException(Exception):
         self.details = details or {}
         self.retryable = retryable
         self.user_message = user_message or self._generate_user_message()
-    
+
     def _generate_user_message(self) -> str:
         """Generate user-friendly error message based on category."""
         user_messages = {
             ErrorCategory.AUTHENTICATION: "Authentication failed. Please log in again.",
-            ErrorCategory.AUTHORIZATION: "You don't have permission to perform this action.",
+            ErrorCategory.AUTHORIZATION: (
+                "You don't have permission to perform this action."
+            ),
             ErrorCategory.VALIDATION: "Please check your input and try again.",
             ErrorCategory.WORKFLOW: "There was a problem with the workflow execution.",
-            ErrorCategory.AI_SERVICE: "AI service is temporarily unavailable. Please try again.",
+            ErrorCategory.AI_SERVICE: (
+                "AI service is temporarily unavailable. Please try again."
+            ),
             ErrorCategory.DATABASE: "Database error occurred. Please try again later.",
             ErrorCategory.EXTERNAL_API: "External service is temporarily unavailable.",
             ErrorCategory.SYSTEM: "System error occurred. Our team has been notified.",
             ErrorCategory.BUSINESS_LOGIC: "Business rule validation failed.",
         }
         return user_messages.get(self.category, "An unexpected error occurred.")
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert exception to dictionary for API responses."""
         return {
@@ -77,58 +83,60 @@ class BaseAppException(Exception):
 
 class AuthenticationError(BaseAppException):
     """Authentication-related errors."""
-    
+
     def __init__(self, message: str = "Authentication failed", **kwargs):
         super().__init__(
             message=message,
             code="AUTHENTICATION_ERROR",
             category=ErrorCategory.AUTHENTICATION,
             severity=ErrorSeverity.HIGH,
-            **kwargs
+            **kwargs,
         )
 
 
 class AuthorizationError(BaseAppException):
     """Authorization-related errors."""
-    
+
     def __init__(self, message: str = "Access denied", **kwargs):
         super().__init__(
             message=message,
             code="AUTHORIZATION_ERROR",
             category=ErrorCategory.AUTHORIZATION,
             severity=ErrorSeverity.HIGH,
-            **kwargs
+            **kwargs,
         )
 
 
 class ValidationError(BaseAppException):
     """Input validation errors."""
-    
-    def __init__(self, message: str = "Validation failed", field: Optional[str] = None, **kwargs):
+
+    def __init__(
+        self, message: str = "Validation failed", field: Optional[str] = None, **kwargs
+    ):
         details = kwargs.get("details", {})
         if field:
             details["field"] = field
-        
+
         super().__init__(
             message=message,
             code="VALIDATION_ERROR",
             category=ErrorCategory.VALIDATION,
             severity=ErrorSeverity.MEDIUM,
             details=details,
-            **kwargs
+            **kwargs,
         )
 
 
 class WorkflowError(BaseAppException):
     """Workflow execution errors."""
-    
+
     def __init__(
-        self, 
-        message: str = "Workflow execution failed", 
+        self,
+        message: str = "Workflow execution failed",
         workflow_id: Optional[str] = None,
         execution_id: Optional[str] = None,
         step_name: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         details = kwargs.get("details", {})
         if workflow_id:
@@ -137,7 +145,7 @@ class WorkflowError(BaseAppException):
             details["execution_id"] = execution_id
         if step_name:
             details["step_name"] = step_name
-        
+
         super().__init__(
             message=message,
             code="WORKFLOW_ERROR",
@@ -145,13 +153,13 @@ class WorkflowError(BaseAppException):
             severity=ErrorSeverity.HIGH,
             details=details,
             retryable=True,
-            **kwargs
+            **kwargs,
         )
 
 
 class AIServiceError(BaseAppException):
     """AI service integration errors."""
-    
+
     def __init__(self, message: str = "AI service error", **kwargs):
         super().__init__(
             message=message,
@@ -159,13 +167,13 @@ class AIServiceError(BaseAppException):
             category=ErrorCategory.AI_SERVICE,
             severity=ErrorSeverity.MEDIUM,
             retryable=True,
-            **kwargs
+            **kwargs,
         )
 
 
 class DatabaseError(BaseAppException):
     """Database operation errors."""
-    
+
     def __init__(self, message: str = "Database operation failed", **kwargs):
         super().__init__(
             message=message,
@@ -173,18 +181,23 @@ class DatabaseError(BaseAppException):
             category=ErrorCategory.DATABASE,
             severity=ErrorSeverity.HIGH,
             retryable=True,
-            **kwargs
+            **kwargs,
         )
 
 
 class ExternalAPIError(BaseAppException):
     """External API integration errors."""
-    
-    def __init__(self, message: str = "External API error", api_name: Optional[str] = None, **kwargs):
+
+    def __init__(
+        self,
+        message: str = "External API error",
+        api_name: Optional[str] = None,
+        **kwargs,
+    ):
         details = kwargs.get("details", {})
         if api_name:
             details["api_name"] = api_name
-        
+
         super().__init__(
             message=message,
             code="EXTERNAL_API_ERROR",
@@ -192,44 +205,49 @@ class ExternalAPIError(BaseAppException):
             severity=ErrorSeverity.MEDIUM,
             details=details,
             retryable=True,
-            **kwargs
+            **kwargs,
         )
 
 
 class BusinessLogicError(BaseAppException):
     """Business logic validation errors."""
-    
-    def __init__(self, message: str = "Business rule validation failed", rule: Optional[str] = None, **kwargs):
+
+    def __init__(
+        self,
+        message: str = "Business rule validation failed",
+        rule: Optional[str] = None,
+        **kwargs,
+    ):
         details = kwargs.get("details", {})
         if rule:
             details["rule"] = rule
-        
+
         super().__init__(
             message=message,
             code="BUSINESS_LOGIC_ERROR",
             category=ErrorCategory.BUSINESS_LOGIC,
             severity=ErrorSeverity.MEDIUM,
-            **kwargs
+            **kwargs,
         )
 
 
 class SystemError(BaseAppException):
     """System-level errors."""
-    
+
     def __init__(self, message: str = "System error occurred", **kwargs):
         super().__init__(
             message=message,
             code="SYSTEM_ERROR",
             category=ErrorCategory.SYSTEM,
             severity=ErrorSeverity.CRITICAL,
-            **kwargs
+            **kwargs,
         )
 
 
 # Specific workflow execution errors
 class WorkflowNotFoundError(WorkflowError):
     """Workflow not found error."""
-    
+
     def __init__(self, workflow_id: str, **kwargs):
         super().__init__(
             message=f"Workflow {workflow_id} not found",
@@ -237,35 +255,35 @@ class WorkflowNotFoundError(WorkflowError):
             workflow_id=workflow_id,
             severity=ErrorSeverity.HIGH,
             retryable=False,
-            **kwargs
+            **kwargs,
         )
 
 
 class WorkflowExecutionError(WorkflowError):
     """Workflow execution failure."""
-    
+
     def __init__(self, execution_id: str, step_name: Optional[str] = None, **kwargs):
         message = f"Workflow execution {execution_id} failed"
         if step_name:
             message += f" at step '{step_name}'"
-        
+
         super().__init__(
             message=message,
             code="WORKFLOW_EXECUTION_FAILED",
             execution_id=execution_id,
             step_name=step_name,
-            **kwargs
+            **kwargs,
         )
 
 
 class WorkflowValidationError(WorkflowError):
     """Workflow definition validation error."""
-    
+
     def __init__(self, message: str = "Workflow validation failed", **kwargs):
         super().__init__(
             message=message,
             code="WORKFLOW_VALIDATION_ERROR",
             severity=ErrorSeverity.MEDIUM,
             retryable=False,
-            **kwargs
+            **kwargs,
         )

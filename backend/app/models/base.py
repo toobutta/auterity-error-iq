@@ -21,14 +21,14 @@ else:
     engine = create_engine(
         DATABASE_URL,
         # Connection pool settings for production performance
-        pool_size=10,          # Number of connections to maintain in pool
-        max_overflow=20,       # Additional connections beyond pool_size
-        pool_timeout=30,       # Seconds to wait for connection from pool
-        pool_recycle=3600,     # Recycle connections after 1 hour
-        pool_pre_ping=True,    # Validate connections before use
+        pool_size=10,  # Number of connections to maintain in pool
+        max_overflow=20,  # Additional connections beyond pool_size
+        pool_timeout=30,  # Seconds to wait for connection from pool
+        pool_recycle=3600,  # Recycle connections after 1 hour
+        pool_pre_ping=True,  # Validate connections before use
         # Performance optimizations
-        echo=False,            # Disable SQL logging in production
-        future=True            # Use SQLAlchemy 2.0 style
+        echo=False,  # Disable SQL logging in production
+        future=True,  # Use SQLAlchemy 2.0 style
     )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

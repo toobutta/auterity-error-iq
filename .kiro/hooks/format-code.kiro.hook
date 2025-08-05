@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Format Code",
+  "description": "Format Python code with Black",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["**/*.py"]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "cd backend && black \"${file}\" && echo \"Formatted ${file}\""
+  }
+}

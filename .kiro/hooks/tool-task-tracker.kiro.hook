@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Tool Task Tracker",
+  "description": "Track tool performance on delegated tasks to measure success rates",
+  "version": "1",
+  "when": {
+    "type": "manual"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Track and analyze tool task performance. Current assignments: Task 11.1 (Workflow Execution Form - assigned to tool with llama-3.3-70b, medium complexity, 2-3 hours estimated), Task 11.3 (Execution Results Display - planned), Task 11.4 (Execution History View - planned), Task 11.6 (Component Testing - planned). Record task assignment metadata, monitor progress, evaluate completion quality, and generate performance metrics including completion rate, quality score, effort accuracy, and independence score. Provide recommendations for future task delegation based on historical performance data."
+  }
+}

@@ -1,6 +1,5 @@
 """Integration test configuration and fixtures."""
 
-import asyncio
 import os
 from typing import AsyncGenerator, Generator
 
@@ -15,13 +14,13 @@ from sqlalchemy.pool import StaticPool
 # Set test environment before importing models
 os.environ["PYTEST_CURRENT_TEST"] = "true"
 
+from app.auth import create_access_token, get_password_hash
 from app.database import get_db
 from app.main import app
 from app.models.base import Base
+from app.models.template import Template
 from app.models.user import User
 from app.models.workflow import Workflow
-from app.models.template import Template
-from app.auth import create_access_token, get_password_hash
 
 # Create in-memory SQLite database for integration testing
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
@@ -39,7 +38,7 @@ def override_get_db():
     """Override database dependency for integration testing."""
     # Create tables
     Base.metadata.create_all(bind=engine)
-    
+
     # Create session
     db = TestingSessionLocal()
     try:
@@ -53,7 +52,7 @@ def db_session():
     """Create a fresh database session for each test."""
     # Create tables
     Base.metadata.create_all(bind=engine)
-    
+
     # Create session
     db = TestingSessionLocal()
     try:
@@ -93,7 +92,7 @@ def test_user(db_session):
         email="test@example.com",
         name="Test User",
         hashed_password=get_password_hash("testpassword123"),
-        is_active=True
+        is_active=True,
     )
     db_session.add(user)
     db_session.commit()
@@ -122,7 +121,7 @@ def test_workflow_definition():
                 "id": "start-1",
                 "type": "start",
                 "position": {"x": 100, "y": 100},
-                "data": {"label": "Start"}
+                "data": {"label": "Start"},
             },
             {
                 "id": "ai-1",
@@ -131,28 +130,20 @@ def test_workflow_definition():
                 "data": {
                     "label": "AI Process",
                     "prompt": "Process customer inquiry: {input}",
-                    "model": "gpt-4"
-                }
+                    "model": "gpt-4",
+                },
             },
             {
                 "id": "end-1",
                 "type": "end",
                 "position": {"x": 500, "y": 100},
-                "data": {"label": "End"}
-            }
+                "data": {"label": "End"},
+            },
         ],
         "edges": [
-            {
-                "id": "e1-2",
-                "source": "start-1",
-                "target": "ai-1"
-            },
-            {
-                "id": "e2-3",
-                "source": "ai-1",
-                "target": "end-1"
-            }
-        ]
+            {"id": "e1-2", "source": "start-1", "target": "ai-1"},
+            {"id": "e2-3", "source": "ai-1", "target": "end-1"},
+        ],
     }
 
 
@@ -165,7 +156,7 @@ def test_template_definition():
                 "id": "start-1",
                 "type": "start",
                 "position": {"x": 100, "y": 100},
-                "data": {"label": "Start"}
+                "data": {"label": "Start"},
             },
             {
                 "id": "ai-1",
@@ -174,28 +165,20 @@ def test_template_definition():
                 "data": {
                     "label": "Customer Service Response",
                     "prompt": "Respond to customer inquiry about {inquiry_type}: {customer_message}",
-                    "model": "gpt-4"
-                }
+                    "model": "gpt-4",
+                },
             },
             {
                 "id": "end-1",
                 "type": "end",
                 "position": {"x": 500, "y": 100},
-                "data": {"label": "End"}
-            }
+                "data": {"label": "End"},
+            },
         ],
         "edges": [
-            {
-                "id": "e1-2",
-                "source": "start-1",
-                "target": "ai-1"
-            },
-            {
-                "id": "e2-3",
-                "source": "ai-1",
-                "target": "end-1"
-            }
-        ]
+            {"id": "e1-2", "source": "start-1", "target": "ai-1"},
+            {"id": "e2-3", "source": "ai-1", "target": "end-1"},
+        ],
     }
 
 
@@ -215,7 +198,7 @@ def sample_template(db_session, test_template_definition):
                 "description": "Type of customer inquiry",
                 "isRequired": True,
                 "options": ["billing", "technical", "general"],
-                "defaultValue": "general"
+                "defaultValue": "general",
             },
             {
                 "name": "response_tone",
@@ -224,9 +207,9 @@ def sample_template(db_session, test_template_definition):
                 "description": "Tone of the response",
                 "isRequired": False,
                 "options": ["professional", "friendly", "formal"],
-                "defaultValue": "professional"
-            }
-        ]
+                "defaultValue": "professional",
+            },
+        ],
     )
     db_session.add(template)
     db_session.commit()
@@ -242,7 +225,7 @@ def sample_workflow(db_session, test_user, test_workflow_definition):
         description="A test workflow for processing customer inquiries",
         user_id=test_user.id,
         definition=test_workflow_definition,
-        is_active=True
+        is_active=True,
     )
     db_session.add(workflow)
     db_session.commit()
@@ -263,14 +246,10 @@ def mock_openai_response():
                 "index": 0,
                 "message": {
                     "role": "assistant",
-                    "content": "Thank you for your inquiry. I understand you're asking about billing. Let me help you with that."
+                    "content": "Thank you for your inquiry. I understand you're asking about billing. Let me help you with that.",
                 },
-                "finish_reason": "stop"
+                "finish_reason": "stop",
             }
         ],
-        "usage": {
-            "prompt_tokens": 50,
-            "completion_tokens": 25,
-            "total_tokens": 75
-        }
+        "usage": {"prompt_tokens": 50, "completion_tokens": 25, "total_tokens": 75},
     }

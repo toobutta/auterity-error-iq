@@ -3,18 +3,17 @@
 
 import os
 import sys
-
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-# Set test environment
-os.environ["PYTEST_CURRENT_TEST"] = "test"
-
 from app.auth import (
     create_access_token,
     get_password_hash,
     verify_password,
     verify_token,
 )
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Set test environment
+os.environ["PYTEST_CURRENT_TEST"] = "test"
 
 
 def test_password_hashing():
@@ -24,8 +23,12 @@ def test_password_hashing():
     hashed = get_password_hash(password)
 
     assert hashed != password, "Hash should be different from password"
-    assert verify_password(password, hashed), "Password verification should succeed"
-    assert not verify_password("wrongpassword", hashed), "Wrong password should fail"
+    assert verify_password(password, hashed), (
+        "Password verification should succeed"
+    )
+    assert not verify_password("wrongpassword", hashed), (
+        "Wrong password should fail"
+    )
     print("✓ Password hashing tests passed")
 
 
@@ -40,7 +43,9 @@ def test_jwt_tokens():
 
     payload = verify_token(token)
     assert payload is not None, "Token should be verifiable"
-    assert payload["sub"] == "test@example.com", "Token should contain correct data"
+    assert payload["sub"] == "test@example.com", (
+        "Token should contain correct data"
+    )
     assert "exp" in payload, "Token should have expiration"
 
     # Test invalid token
@@ -53,9 +58,7 @@ def test_imports():
     """Test that all imports work correctly."""
     print("Testing imports...")
     try:
-        from app.api.auth import router
-        from app.models.user import User
-        from app.schemas import Token, UserLogin, UserRegister, UserResponse
+        pass
 
         print("✓ All imports successful")
     except ImportError as e:

@@ -1,14 +1,14 @@
 """Template management API endpoints."""
 
 import uuid
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_user
 from app.database import get_db
-from app.models import Template, TemplateParameter, User, Workflow
+from app.models import Template, TemplateParameter, User
 from app.schemas import (
     TemplateCreate,
     TemplateInstantiateRequest,
@@ -32,22 +32,19 @@ async def list_templates(
 ):
     """List all available templates with optional filtering."""
     query = db.query(Template).filter(Template.is_active == True)
-    
+
     if category:
         query = query.filter(Template.category == category.lower())
-    
+
     # Get total count
     total = query.count()
-    
+
     # Apply pagination
     offset = (page - 1) * page_size
     templates = query.offset(offset).limit(page_size).all()
-    
+
     return TemplateListResponse(
-        templates=templates,
-        total=total,
-        page=page,
-        page_size=page_size
+        templates=templates, total=total, page=page, page_size=page_size
     )
 
 
@@ -58,14 +55,15 @@ async def get_template(
     current_user: User = Depends(get_current_user),
 ):
     """Get a specific template by ID."""
-    template = db.query(Template).filter(
-        Template.id == template_id,
-        Template.is_active == True
-    ).first()
-    
+    template = (
+        db.query(Template)
+        .filter(Template.id == template_id, Template.is_active == True)
+        .first()
+    )
+
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
-    
+
     return template
 
 
@@ -82,12 +80,12 @@ async def create_template(
         description=template_data.description,
         category=template_data.category,
         definition=template_data.definition,
-        is_active=True
+        is_active=True,
     )
-    
+
     db.add(template)
     db.flush()  # Get the template ID
-    
+
     # Create template parameters
     for param_data in template_data.parameters:
         parameter = TemplateParameter(
@@ -97,13 +95,13 @@ async def create_template(
             parameter_type=param_data.parameter_type,
             is_required=param_data.is_required,
             default_value=param_data.default_value,
-            validation_rules=param_data.validation_rules
+            validation_rules=param_data.validation_rules,
         )
         db.add(parameter)
-    
+
     db.commit()
     db.refresh(template)
-    
+
     return template
 
 
@@ -116,18 +114,18 @@ async def update_template(
 ):
     """Update an existing template."""
     template = db.query(Template).filter(Template.id == template_id).first()
-    
+
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
-    
+
     # Update template fields
     update_data = template_data.dict(exclude_unset=True)
     for field, value in update_data.items():
         setattr(template, field, value)
-    
+
     db.commit()
     db.refresh(template)
-    
+
     return template
 
 
@@ -139,13 +137,13 @@ async def delete_template(
 ):
     """Soft delete a template by setting is_active to False."""
     template = db.query(Template).filter(Template.id == template_id).first()
-    
+
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
-    
+
     template.is_active = False
     db.commit()
-    
+
     return {"message": "Template deleted successfully"}
 
 
@@ -157,24 +155,25 @@ async def instantiate_template(
     current_user: User = Depends(get_current_user),
 ):
     """Create a new workflow from a template."""
-    template = db.query(Template).filter(
-        Template.id == template_id,
-        Template.is_active == True
-    ).first()
-    
+    template = (
+        db.query(Template)
+        .filter(Template.id == template_id, Template.is_active == True)
+        .first()
+    )
+
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
-    
+
     # Use template engine to instantiate the template
     template_engine = TemplateEngine(db)
-    
+
     try:
         workflow = await template_engine.instantiate_template(
             template_id=template_id,
             name=instantiate_data.name,
             description=instantiate_data.description,
             parameter_values=instantiate_data.parameter_values,
-            user_id=current_user.id
+            user_id=current_user.id,
         )
         return workflow
     except ValueError as e:
@@ -187,8 +186,8 @@ async def list_categories(
     current_user: User = Depends(get_current_user),
 ):
     """Get list of available template categories."""
-    categories = db.query(Template.category).filter(
-        Template.is_active == True
-    ).distinct().all()
-    
+    categories = (
+        db.query(Template.category).filter(Template.is_active == True).distinct().all()
+    )
+
     return {"categories": [cat[0] for cat in categories]}

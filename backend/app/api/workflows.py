@@ -12,7 +12,6 @@ from app.database import get_db
 from app.models.execution import ExecutionLog, WorkflowExecution
 from app.models.user import User
 from app.models.workflow import Workflow
-from app.services.workflow_engine import WorkflowEngine, WorkflowExecutionError
 from app.schemas import (
     ExecutionLogResponse,
     ExecutionResultResponse,
@@ -23,6 +22,7 @@ from app.schemas import (
     WorkflowResponse,
     WorkflowUpdate,
 )
+from app.services.workflow_engine import WorkflowEngine, WorkflowExecutionError
 
 router = APIRouter(prefix="/workflows", tags=["workflows"])
 
@@ -360,7 +360,9 @@ async def get_execution_status(
 )
 async def get_execution_logs(
     execution_id: UUID,
-    limit: Optional[int] = Query(100, ge=1, le=1000, description="Maximum number of logs to return"),
+    limit: Optional[int] = Query(
+        100, ge=1, le=1000, description="Maximum number of logs to return"
+    ),
     step_type: Optional[str] = Query(None, description="Filter logs by step type"),
     step_name: Optional[str] = Query(None, description="Filter logs by step name"),
     has_error: Optional[bool] = Query(None, description="Filter logs by error status"),
@@ -402,11 +404,7 @@ async def get_execution_logs(
             query = query.filter(ExecutionLog.error_message.is_(None))
 
     # Apply ordering and limit
-    logs = (
-        query.order_by(ExecutionLog.timestamp)
-        .limit(limit)
-        .all()
-    )
+    logs = query.order_by(ExecutionLog.timestamp).limit(limit).all()
 
     return [
         ExecutionLogResponse(
@@ -471,8 +469,12 @@ async def cancel_execution(
 @router.get("/executions", response_model=List[ExecutionStatusResponse])
 async def list_executions(
     workflow_id: Optional[UUID] = Query(None, description="Filter by workflow ID"),
-    status_filter: Optional[str] = Query(None, description="Filter by execution status"),
-    limit: int = Query(50, ge=1, le=200, description="Maximum number of executions to return"),
+    status_filter: Optional[str] = Query(
+        None, description="Filter by execution status"
+    ),
+    limit: int = Query(
+        50, ge=1, le=200, description="Maximum number of executions to return"
+    ),
     offset: int = Query(0, ge=0, description="Number of executions to skip"),
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -507,6 +509,7 @@ async def list_executions(
     if status_filter:
         try:
             from app.models.execution import ExecutionStatus
+
             status_enum = ExecutionStatus(status_filter.lower())
             query = query.filter(WorkflowExecution.status == status_enum)
         except ValueError:

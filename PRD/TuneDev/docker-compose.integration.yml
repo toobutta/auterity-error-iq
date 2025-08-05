@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  template-system:
+    build:
+      context: .
+      dockerfile: docker/template-system/Dockerfile
+    volumes:
+      - ./src/template-system:/app/src/template-system
+      - ./vertical_kits:/app/vertical_kits
+    command: python -m src.template-system.tools.validate_templates --directory vertical_kits/automotive/templates
+
+  auto-specializer:
+    build:
+      context: .
+      dockerfile: docker/auto-specializer/Dockerfile
+    volumes:
+      - ./src/models/specializer:/app/src/models/specializer
+      - ./vertical_kits:/app/vertical_kits
+      - ./datasets:/app/datasets
+      - ./checkpoints:/app/checkpoints
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - TESTING=true
+
+  inference-weaver:
+    build:
+      context: .
+      dockerfile: docker/inference-weaver/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src/models/inference:/app/src/models/inference
+      - ./checkpoints:/app/checkpoints
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - TESTING=true
+
+  costguard-dashboard:
+    build:
+      context: .
+      dockerfile: docker/costguard-dashboard/Dockerfile
+    ports:
+      - "8050:8050"
+    volumes:
+      - ./src/frontend/components:/app/src/frontend/components
+    environment:
+      - TESTING=true
+    depends_on:
+      - inference-weaver
+
+  workflow-ui:
+    build:
+      context: .
+      dockerfile: docker/workflow-ui/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src/frontend/components:/app/src/frontend/components
+    environment:
+      - TESTING=true
+    depends_on:
+      - template-system
+      - auto-specializer
+
+  integration-tests:
+    build:
+      context: .
+      dockerfile: docker/integration-tests/Dockerfile
+    volumes:
+      - ./integration_tests:/app/integration_tests
+    depends_on:
+      - template-system
+      - auto-specializer
+      - inference-weaver
+      - costguard-dashboard
+      - workflow-ui
+    command: pytest integration_tests/ --junitxml=integration-results.xml

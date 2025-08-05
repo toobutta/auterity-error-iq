@@ -2,7 +2,6 @@
 """Simple validation script for workflow engine without database dependencies."""
 
 import ast
-import inspect
 import os
 import sys
 

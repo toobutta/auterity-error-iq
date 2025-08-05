@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-template-system
+  labels:
+    app: {{ .Release.Name }}-template-system
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    environment: {{ .Values.environment }}
+spec:
+  type: {{ .Values.service.templateSystem.type }}
+  ports:
+    - port: {{ .Values.service.templateSystem.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ .Release.Name }}-template-system
+    release: {{ .Release.Name }}

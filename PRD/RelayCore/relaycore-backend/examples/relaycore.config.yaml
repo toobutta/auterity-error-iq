@@ -1,0 +1,252 @@
+# RelayCore Configuration File
+# This file contains all configuration options for the RelayCore server
+
+# Server configuration
+server:
+  port: 3000
+  host: "0.0.0.0"
+  cors:
+    enabled: true
+    origins:
+      - "http://localhost:3001"
+      - "https://dashboard.relaycore.ai"
+  rateLimit:
+    enabled: true
+    windowMs: 60000  # 1 minute
+    max: 100  # requests per windowMs
+  logging:
+    level: "info"  # debug, info, warn, error
+    format: "json"  # json, text
+    destination: "stdout"  # stdout, file
+    file: "logs/relaycore.log"  # only used if destination is file
+
+# Authentication configuration
+auth:
+  apiKey:
+    enabled: true
+    headerName: "X-API-Key"
+  jwt:
+    enabled: false
+    secret: ""
+    expiresIn: "1d"
+  oauth:
+    enabled: false
+    providers: []
+
+# Cache configuration
+cache:
+  enabled: true
+  type: "redis"  # redis, memory, none
+  ttl: 3600  # default TTL in seconds
+  redis:
+    host: "localhost"
+    port: 6379
+    password: ""
+    db: 0
+  memory:
+    maxSize: "1GB"
+  similarityCache:
+    enabled: true
+    threshold: 0.92
+    ttl: 1800  # TTL for similarity matches
+  excludedPatterns:
+    - ".*sensitive.*"
+    - ".*personal.*"
+
+# Batch processing configuration
+batch:
+  enabled: true
+  maxBatchSize: 50
+  batchWindowMs: 200
+  queue:
+    type: "redis"  # redis, memory
+    concurrency: 5
+  priorityLevels:
+    high:
+      maxDelayMs: 50
+      maxBatchSize: 10
+    normal:
+      maxDelayMs: 200
+      maxBatchSize: 50
+    low:
+      maxDelayMs: 1000
+      maxBatchSize: 100
+
+# Optimization configuration
+optimization:
+  tokenOptimization:
+    enabled: true
+    level: "moderate"  # none, light, moderate, aggressive
+  promptCompression:
+    enabled: true
+    preserveFormatting: true
+  contextPruning:
+    enabled: true
+    maxContextLength: 4000
+  requestDeduplication:
+    enabled: true
+    window: 60  # seconds
+
+# Analytics configuration
+analytics:
+  enabled: true
+  storage:
+    type: "postgres"  # postgres, sqlite, none
+    postgres:
+      connectionString: "postgresql://user:password@localhost:5432/relaycore"
+    sqlite:
+      file: "data/analytics.db"
+  retention:
+    days: 30
+  sampling:
+    enabled: false
+    rate: 0.1  # 10% sampling
+
+# Provider configurations
+providers:
+  openai:
+    enabled: true
+    apiKey: "${OPENAI_API_KEY}"  # Environment variable
+    baseUrl: "https://api.openai.com"
+    organization: ""  # Optional
+    models:
+      "gpt-4":
+        enabled: true
+        maxTokens: 8192
+        costPerInputToken: 0.00003
+        costPerOutputToken: 0.00006
+      "gpt-3.5-turbo":
+        enabled: true
+        maxTokens: 4096
+        costPerInputToken: 0.0000015
+        costPerOutputToken: 0.000002
+    endpoints:
+      "chat/completions":
+        method: "POST"
+        requestTransform: "standardToOpenAI"
+        responseTransform: "openAIToStandard"
+        supportsBatching: true
+        supportsStreaming: true
+      "embeddings":
+        method: "POST"
+        requestTransform: "standardToOpenAIEmbeddings"
+        responseTransform: "openAIEmbeddingsToStandard"
+        supportsBatching: true
+        supportsStreaming: false
+    fallbacks:
+      - "anthropic"
+      - "mistral"
+
+  anthropic:
+    enabled: true
+    apiKey: "${ANTHROPIC_API_KEY}"  # Environment variable
+    baseUrl: "https://api.anthropic.com"
+    models:
+      "claude-3-opus":
+        enabled: true
+        maxTokens: 200000
+        costPerInputToken: 0.00001
+        costPerOutputToken: 0.00003
+      "claude-3-sonnet":
+        enabled: true
+        maxTokens: 200000
+        costPerInputToken: 0.000003
+        costPerOutputToken: 0.000015
+    endpoints:
+      "messages":
+        method: "POST"
+        requestTransform: "standardToAnthropic"
+        responseTransform: "anthropicToStandard"
+        supportsBatching: true
+        supportsStreaming: true
+    fallbacks:
+      - "openai"
+      - "mistral"
+
+  mistral:
+    enabled: true
+    apiKey: "${MISTRAL_API_KEY}"  # Environment variable
+    baseUrl: "https://api.mistral.ai"
+    models:
+      "mistral-large-latest":
+        enabled: true
+        maxTokens: 32000
+        costPerInputToken: 0.000002
+        costPerOutputToken: 0.000008
+      "mistral-small-latest":
+        enabled: true
+        maxTokens: 32000
+        costPerInputToken: 0.000002
+        costPerOutputToken: 0.000008
+    endpoints:
+      "chat/completions":
+        method: "POST"
+        requestTransform: "standardToMistral"
+        responseTransform: "mistralToStandard"
+        supportsBatching: false
+        supportsStreaming: true
+    fallbacks:
+      - "openai"
+      - "anthropic"
+
+# Plugin configuration
+plugins:
+  directory: "plugins"
+  enabled:
+    - "vscode"
+    - "claude-cli"
+    - "langchain"
+  vscode:
+    defaultModel: "gpt-3.5-turbo"
+    maxTokens: 2048
+    temperature: 0.7
+  claude-cli:
+    defaultModel: "claude-3-sonnet"
+    maxTokens: 4096
+    temperature: 0.7
+  langchain:
+    defaultProvider: "openai"
+    defaultModel: "gpt-3.5-turbo"
+
+# Smart routing configuration
+routing:
+  enabled: true
+  strategies:
+    cost:
+      enabled: true
+      weight: 0.4
+    performance:
+      enabled: true
+      weight: 0.3
+    capability:
+      enabled: true
+      weight: 0.3
+  rules:
+    - name: "Code generation"
+      pattern: ".*generate.*code.*|.*write.*function.*"
+      provider: "openai"
+      model: "gpt-4"
+    - name: "Creative writing"
+      pattern: ".*write.*story.*|.*creative.*|.*poem.*"
+      provider: "anthropic"
+      model: "claude-3-opus"
+    - name: "Simple queries"
+      pattern: ".*what.*is.*|.*how.*to.*|.*explain.*"
+      provider: "mistral"
+      model: "mistral-small-latest"
+
+# Dashboard configuration
+dashboard:
+  enabled: true
+  port: 3001
+  host: "0.0.0.0"
+  auth:
+    type: "basic"  # basic, oauth, none
+    users:
+      - username: "admin"
+        password: "${DASHBOARD_PASSWORD}"  # Environment variable
+  features:
+    requestLogs: true
+    costAnalytics: true
+    configEditor: true
+    userManagement: true

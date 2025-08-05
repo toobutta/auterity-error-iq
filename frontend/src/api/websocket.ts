@@ -11,8 +11,23 @@ export interface WebSocketConfig {
 
 export interface WebSocketMessage {
   type: string;
-  data: any;
+  data: unknown;
   timestamp?: string;
+}
+
+export interface LogMessage {
+  level: string;
+  message: string;
+  timestamp: string;
+  executionId?: string;
+}
+
+export interface StatusUpdate {
+  status: string;
+  progress?: number;
+  message?: string;
+  timestamp: string;
+  executionId: string;
 }
 
 export class WebSocketClient {
@@ -21,7 +36,7 @@ export class WebSocketClient {
   private reconnectCount = 0;
   private heartbeatTimer: NodeJS.Timeout | null = null;
   private reconnectTimer: NodeJS.Timeout | null = null;
-  private messageHandlers = new Map<string, Set<(data: any) => void>>();
+  private messageHandlers = new Map<string, Set<(data: unknown) => void>>();
   private statusHandlers = new Set<(status: 'connecting' | 'connected' | 'disconnected' | 'error') => void>();
 
   constructor(config: WebSocketConfig = {}) {
@@ -108,7 +123,7 @@ export class WebSocketClient {
   /**
    * Subscribe to messages of a specific type
    */
-  subscribe(messageType: string, handler: (data: any) => void): () => void {
+  subscribe(messageType: string, handler: (data: unknown) => void): () => void {
     if (!this.messageHandlers.has(messageType)) {
       this.messageHandlers.set(messageType, new Set());
     }

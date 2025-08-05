@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "🏥 Project Health Monitor",
+  "description": "Monitor project health metrics and alert on critical issues",
+  "version": "1",
+  "when": {
+    "type": "manual"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "echo \"🏥 Running project health check...\" && CRITICAL_ISSUES=0 && HIGH_ISSUES=0 && MEDIUM_ISSUES=0 && cd frontend && VULN_COUNT=$(npm audit --audit-level=moderate 2>&1 | grep -o '[0-9]* moderate' | head -1 | cut -d' ' -f1 || echo \"0\") && [ \"$VULN_COUNT\" -gt 0 ] && echo \"⚠️  Found $VULN_COUNT moderate+ vulnerabilities\" && CRITICAL_ISSUES=$((CRITICAL_ISSUES + VULN_COUNT)) && TS_ERRORS=$(npx tsc --noEmit 2>&1 | grep -c \"error TS\" || echo \"0\") && [ \"$TS_ERRORS\" -gt 0 ] && echo \"⚠️  Found $TS_ERRORS TypeScript errors\" && HIGH_ISSUES=$((HIGH_ISSUES + TS_ERRORS)) && LINT_ERRORS=$(npm run lint 2>&1 | grep -c \"error\" || echo \"0\") && [ \"$LINT_ERRORS\" -gt 0 ] && echo \"⚠️  Found $LINT_ERRORS linting errors\" && HIGH_ISSUES=$((HIGH_ISSUES + LINT_ERRORS)) && cd ../backend && BACKEND_LINT=$(python -m flake8 . 2>&1 | wc -l) && [ \"$BACKEND_LINT\" -gt 10 ] && echo \"⚠️  Found $BACKEND_LINT backend linting violations\" && HIGH_ISSUES=$((HIGH_ISSUES + 1)) && cd .. && TOTAL_ISSUES=$((CRITICAL_ISSUES + HIGH_ISSUES + MEDIUM_ISSUES)) && if [ \"$CRITICAL_ISSUES\" -gt 0 ]; then HEALTH_SCORE=\"CRITICAL 🔴\"; elif [ \"$HIGH_ISSUES\" -gt 5 ]; then HEALTH_SCORE=\"POOR 🟠\"; elif [ \"$HIGH_ISSUES\" -gt 0 ] || [ \"$MEDIUM_ISSUES\" -gt 5 ]; then HEALTH_SCORE=\"FAIR 🟡\"; else HEALTH_SCORE=\"GOOD 🟢\"; fi && echo \"📊 PROJECT HEALTH: $HEALTH_SCORE\" && echo \"Critical: $CRITICAL_ISSUES | High: $HIGH_ISSUES | Medium: $MEDIUM_ISSUES\""
+  }
+}
