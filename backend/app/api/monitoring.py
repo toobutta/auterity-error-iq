@@ -1,19 +1,14 @@
 """Performance monitoring and health check endpoints."""
 
 import time
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
-from fastapi import APIRouter
-from fastapi import Depends
-from fastapi import Query
-from sqlalchemy import func
-from sqlalchemy import text
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy import func, text
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models.execution import ExecutionStatus
-from app.models.execution import WorkflowExecution
+from app.models.execution import ExecutionStatus, WorkflowExecution
 from app.models.workflow import Workflow
 
 router = APIRouter(prefix="/monitoring", tags=["monitoring"])
@@ -186,7 +181,7 @@ async def get_system_metrics(db: Session = Depends(get_db)):
         total_workflows = db.query(func.count(Workflow.id)).scalar()
         active_workflows = (
             db.query(func.count(Workflow.id))
-            .filter(Workflow.is_active  is True)
+            .filter(Workflow.is_active is True)
             .scalar()
         )
 
@@ -263,7 +258,7 @@ async def get_workflow_metrics(
                 ).label("avg_duration_ms"),
             )
             .outerjoin(WorkflowExecution)
-            .filter(Workflow.is_active  is True)
+            .filter(Workflow.is_active is True)
             .group_by(Workflow.id, Workflow.name)
             .order_by(func.count(WorkflowExecution.id).desc())
             .limit(limit)

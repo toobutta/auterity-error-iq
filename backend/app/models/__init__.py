@@ -1,18 +1,9 @@
 """Models package for the workflow engine."""
 
-from .base import Base
-from .base import SessionLocal
-from .base import engine
-from .execution import ExecutionLog
-from .execution import ExecutionStatus
-from .execution import WorkflowExecution
-from .template import Template
-from .template import TemplateParameter
-from .user import Permission
-from .user import Role
-from .user import SystemPermission
-from .user import User
-from .user import UserRole
+from .base import Base, SessionLocal, engine
+from .execution import ExecutionLog, ExecutionStatus, WorkflowExecution
+from .template import Template, TemplateParameter
+from .user import Permission, Role, SystemPermission, User, UserRole
 from .workflow import Workflow
 
 __all__ = [

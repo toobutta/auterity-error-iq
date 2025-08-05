@@ -1,21 +1,13 @@
 """RelayCore integration API endpoints for AutoMatrix."""
 
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter
-from fastapi import Depends
-from fastapi import HTTPException
-from fastapi import status
-from pydantic import BaseModel
-from pydantic import Field
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 
 from app.auth import get_current_user
 from app.models.user import User
-from app.services.ai_service_relaycore import EnhancedAIService
-from app.services.ai_service_relaycore import get_enhanced_ai_service
+from app.services.ai_service_relaycore import EnhancedAIService, get_enhanced_ai_service
 
 router = APIRouter(prefix="/relaycore", tags=["relaycore"])
 

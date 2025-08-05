@@ -6,10 +6,7 @@ import logging
 import os
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 import openai
 from openai import AsyncOpenAI
@@ -41,10 +38,6 @@ class AIResponse:
     def is_success(self) -> bool:
         """Check if the response was successful."""
         return self.error is None
-
-
-class AIServiceError(Exception):
-    """Custom exception for AI service errors."""
 
 
 class PromptTemplate:
@@ -93,25 +86,26 @@ class AIService:
         "customer_inquiry": PromptTemplate(
             "You are a helpful automotive dealership assistant. "
             "A customer has submitted the following inquiry: '{inquiry}'. "
-            "Please provide a professional and helpful response that addresses their needs. "
-            "Context: {context}",
+            "Please provide a professional and helpful response that "
+            "addresses their needs. Context: {context}",
             variables=["inquiry", "context"],
         ),
         "lead_qualification": PromptTemplate(
-            "Analyze the following customer information and determine their qualification level "
-            "for automotive sales. Customer info: {customer_info}. "
-            "Provide a qualification score (1-10) and reasoning.",
+            "Analyze the following customer information and determine their "
+            "qualification level for automotive sales. Customer info: "
+            "{customer_info}. Provide a qualification score (1-10) and reasoning.",
             variables=["customer_info"],
         ),
         "service_recommendation": PromptTemplate(
-            "Based on the vehicle information and customer concerns, recommend appropriate "
-            "service actions. Vehicle: {vehicle_info}, Concerns: {concerns}. "
-            "Provide specific recommendations and estimated costs if applicable.",
+            "Based on the vehicle information and customer concerns, "
+            "recommend appropriate service actions. Vehicle: {vehicle_info}, "
+            "Concerns: {concerns}. Provide specific recommendations and "
+            "estimated costs if applicable.",
             variables=["vehicle_info", "concerns"],
         ),
         "generic_processing": PromptTemplate(
-            "Process the following data according to the instructions: {instructions}. "
-            "Data: {data}. Provide a structured response.",
+            "Process the following data according to the instructions: "
+            "{instructions}. Data: {data}. Provide a structured response.",
             variables=["instructions", "data"],
         ),
     }

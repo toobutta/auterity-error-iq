@@ -1,33 +1,28 @@
 """Workflow management API endpoints."""
 
-from typing import List
-from typing import Optional
+from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter
-from fastapi import Depends
-from fastapi import HTTPException
-from fastapi import Query
-from fastapi import status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_active_user
 from app.database import get_db
-from app.models.execution import ExecutionLog
-from app.models.execution import WorkflowExecution
+from app.models.execution import ExecutionLog, WorkflowExecution
 from app.models.user import User
 from app.models.workflow import Workflow
-from app.schemas import ExecutionLogResponse
-from app.schemas import ExecutionResultResponse
-from app.schemas import ExecutionStatusResponse
-from app.schemas import WorkflowCreate
-from app.schemas import WorkflowExecuteRequest
-from app.schemas import WorkflowListResponse
-from app.schemas import WorkflowResponse
-from app.schemas import WorkflowUpdate
-from app.services.workflow_engine import WorkflowEngine
-from app.services.workflow_engine import WorkflowExecutionError
+from app.schemas import (
+    ExecutionLogResponse,
+    ExecutionResultResponse,
+    ExecutionStatusResponse,
+    WorkflowCreate,
+    WorkflowExecuteRequest,
+    WorkflowListResponse,
+    WorkflowResponse,
+    WorkflowUpdate,
+)
+from app.services.workflow_engine import WorkflowEngine, WorkflowExecutionError
 
 router = APIRouter(prefix="/workflows", tags=["workflows"])
 
@@ -46,7 +41,7 @@ async def create_workflow(
             and_(
                 Workflow.user_id == current_user.id,
                 Workflow.name == workflow_data.name,
-                Workflow.is_active  is True,
+                Workflow.is_active is True,
             )
         )
         .first()
@@ -160,7 +155,7 @@ async def update_workflow(
                 and_(
                     Workflow.user_id == current_user.id,
                     Workflow.name == workflow_data.name,
-                    Workflow.is_active  is True,
+                    Workflow.is_active is True,
                     Workflow.id != workflow_id,
                 )
             )
@@ -243,7 +238,7 @@ async def duplicate_workflow(
             and_(
                 Workflow.user_id == current_user.id,
                 Workflow.name == duplicate_name,
-                Workflow.is_active  is True,
+                Workflow.is_active is True,
             )
         )
         .first()
@@ -286,7 +281,7 @@ async def execute_workflow(
             and_(
                 Workflow.id == workflow_id,
                 Workflow.user_id == current_user.id,
-                Workflow.is_active  is True,
+                Workflow.is_active is True,
             )
         )
         .first()

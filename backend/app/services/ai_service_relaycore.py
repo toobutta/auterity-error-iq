@@ -6,20 +6,16 @@ import logging
 import os
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 import openai
 from openai import AsyncOpenAI
 
 from app.exceptions import AIServiceError
-from app.services.relaycore_client import RelayCoreChatClient
-from app.services.relaycore_client import RelayCoreCostOptimizer
-from app.services.relaycore_client import RelayCoreFallbackHandler
-from app.services.relaycore_client import RelayCoreFallbackMode
-from app.services.relaycore_client import get_relaycore_client
+from app.services.relaycore_client import (
+    RelayCoreChatClient,
+    get_relaycore_client,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -78,25 +74,26 @@ class EnhancedAIService:
         "customer_inquiry": PromptTemplate(
             "You are a helpful automotive dealership assistant. "
             "A customer has submitted the following inquiry: '{inquiry}'. "
-            "Please provide a professional and helpful response that addresses their needs. "
-            "Context: {context}",
+            "Please provide a professional and helpful response that "
+            "addresses their needs. Context: {context}",
             variables=["inquiry", "context"],
         ),
         "lead_qualification": PromptTemplate(
-            "Analyze the following customer information and determine their qualification level "
-            "for automotive sales. Customer info: {customer_info}. "
-            "Provide a qualification score (1-10) and reasoning.",
+            "Analyze the following customer information and determine their "
+            "qualification level for automotive sales. Customer info: "
+            "{customer_info}. Provide a qualification score (1-10) and reasoning.",
             variables=["customer_info"],
         ),
         "service_recommendation": PromptTemplate(
-            "Based on the vehicle information and customer concerns, recommend appropriate "
-            "service actions. Vehicle: {vehicle_info}, Concerns: {concerns}. "
-            "Provide specific recommendations and estimated costs if applicable.",
+            "Based on the vehicle information and customer concerns, "
+            "recommend appropriate service actions. Vehicle: {vehicle_info}, "
+            "Concerns: {concerns}. Provide specific recommendations and "
+            "estimated costs if applicable.",
             variables=["vehicle_info", "concerns"],
         ),
         "generic_processing": PromptTemplate(
-            "Process the following data according to the instructions: {instructions}. "
-            "Data: {data}. Provide a structured response.",
+            "Process the following data according to the instructions: "
+            "{instructions}. Data: {data}. Provide a structured response.",
             variables=["instructions", "data"],
         ),
     }
@@ -133,12 +130,6 @@ class EnhancedAIService:
         if relaycore_client:
             self.relaycore_client = relaycore_client
         else:
-            fallback_handler = RelayCoreFallbackHandler(
-                mode=RelayCoreFallbackMode.DIRECT_OPENAI, openai_api_key=openai_api_key
-            )
-            cost_optimizer = RelayCoreCostOptimizer(
-                max_cost_per_request=cost_limit_per_request
-            )
             self.relaycore_client = get_relaycore_client()
 
         # Initialize direct OpenAI client for fallback
@@ -184,7 +175,8 @@ class EnhancedAIService:
         messages = [
             {
                 "role": "system",
-                "content": "You are a helpful AI assistant for automotive dealership workflows.",
+                "content": "You are a helpful AI assistant for automotive "
+                "dealership workflows.",
             },
             {"role": "user", "content": prompt},
         ]
@@ -355,7 +347,10 @@ class EnhancedAIService:
                     await asyncio.sleep(self.retry_delay)
                     continue
 
-        error_msg = f"Direct OpenAI call failed after {self.max_retries + 1} attempts: {last_error}"
+        error_msg = (
+            f"Direct OpenAI call failed after {self.max_retries + 1} attempts: "
+            f"{last_error}"
+        )
         self.logger.error(error_msg)
 
         return AIResponse(content="", model=model, error=error_msg, source="direct")
@@ -390,7 +385,7 @@ class EnhancedAIService:
         if self.openai_client:
             try:
                 # Simple test request
-                response = await self.openai_client.chat.completions.create(
+                await self.openai_client.chat.completions.create(
                     model="gpt-3.5-turbo",
                     messages=[{"role": "user", "content": "test"}],
                     max_tokens=1,

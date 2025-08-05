@@ -8,22 +8,13 @@ to identify patterns, correlate root causes, and implement automated recovery.
 import hashlib
 import json
 import logging
-from collections import Counter
-from collections import defaultdict
-from dataclasses import asdict
-from dataclasses import dataclass
-from datetime import datetime
-from datetime import timedelta
+from collections import Counter, defaultdict
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Set
+from typing import Any, Dict, List, Optional, Set
 
 import redis.asyncio as redis
-
-from ..exceptions import SystemError
 
 
 class SystemType(str, Enum):
@@ -129,7 +120,8 @@ class ErrorCorrelationService:
             await self._trigger_correlation_analysis(normalized_error)
 
             self.logger.info(
-                f"Aggregated error {normalized_error.id} from {normalized_error.system}"
+                f"Aggregated error {normalized_error.id} from "
+                f"{normalized_error.system}"
             )
             return normalized_error
 
@@ -374,7 +366,9 @@ class ErrorCorrelationService:
             return ErrorCorrelation(
                 id=f"cascade_{datetime.utcnow().timestamp()}",
                 pattern=CorrelationPattern.CASCADING_FAILURE,
-                root_cause=f"Cascading failure starting from {cascade_errors[0].system}",
+                root_cause=(
+                    f"Cascading failure starting from {cascade_errors[0].system}"
+                ),
                 affected_systems=affected_systems,
                 error_ids=[error.id for error in cascade_errors],
                 confidence=0.8,
@@ -619,7 +613,8 @@ class ErrorCorrelationService:
             await self._send_correlation_alert(correlation)
 
             self.logger.info(
-                f"Processed correlation {correlation.id} with pattern {correlation.pattern}"
+                f"Processed correlation {correlation.id} with pattern "
+                f"{correlation.pattern}"
             )
 
         except Exception as e:
@@ -658,7 +653,8 @@ class ErrorCorrelationService:
         """Execute a recovery action."""
         try:
             self.logger.info(
-                f"Executing recovery action {action.name} for correlation {correlation.id}"
+                f"Executing recovery action {action.name} for correlation "
+                f"{correlation.id}"
             )
 
             if action.action_type == "restart":
@@ -689,7 +685,6 @@ class ErrorCorrelationService:
         """Retry failed operations based on correlation context."""
         # Extract operation context from error details
         for error_id in correlation.error_ids:
-            error_key = f"error:*:{error_id}"
             # Implementation would retry specific operations based on error context
             self.logger.info(f"Retrying operations for error {error_id}")
 

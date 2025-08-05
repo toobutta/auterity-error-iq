@@ -4,10 +4,7 @@ import asyncio
 import logging
 import os
 from dataclasses import dataclass
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 import aiohttp
 from aiohttp import ClientTimeout

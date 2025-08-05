@@ -3,15 +3,19 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth
-from app.api import error_correlation
-from app.api import logs
-from app.api import monitoring
-from app.api import templates
-from app.api import websockets
-from app.api import workflows
-from app.middleware.error_handler import ErrorReportingMiddleware
-from app.middleware.error_handler import GlobalErrorHandlerMiddleware
+from app.api import (
+    auth,
+    error_correlation,
+    logs,
+    monitoring,
+    templates,
+    websockets,
+    workflows,
+)
+from app.middleware.error_handler import (
+    ErrorReportingMiddleware,
+    GlobalErrorHandlerMiddleware,
+)
 from app.middleware.logging import StructuredLoggingMiddleware
 from app.middleware.prometheus import prometheus_middleware
 from app.middleware.tracing import setup_tracing

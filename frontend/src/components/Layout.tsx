@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { KiroStatusIndicator } from './KiroStatusIndicator';
+import { Button } from '../../shared/components/Button';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -64,12 +65,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <span className="text-sm text-gray-700">
                 Welcome, {user?.name}
               </span>
-              <button
+              <Button
                 onClick={handleLogout}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                variant="secondary"
+                size="sm"
               >
                 Logout
-              </button>
+              </Button>
             </div>
           </div>
         </div>

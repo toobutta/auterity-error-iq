@@ -2,14 +2,7 @@
 
 import uuid
 
-from sqlalchemy import JSON
-from sqlalchemy import UUID
-from sqlalchemy import Boolean
-from sqlalchemy import Column
-from sqlalchemy import DateTime
-from sqlalchemy import ForeignKey
-from sqlalchemy import String
-from sqlalchemy import Text
+from sqlalchemy import JSON, UUID, Boolean, Column, DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 

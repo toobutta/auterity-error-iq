@@ -1,10 +1,8 @@
 """RelayCore integration configuration for AutoMatrix."""
 
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
-from pydantic import BaseSettings
-from pydantic import Field
+from pydantic import BaseSettings, Field
 
 
 class RelayCoreCostSettings(BaseSettings):
