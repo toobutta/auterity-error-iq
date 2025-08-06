@@ -1,0 +1,92 @@
+# Enterprise SSO Integration
+
+## Overview
+Complete enterprise SSO authentication system with AWS Cognito, SAML 2.0, and OIDC support for AutoMatrix AI Hub.
+
+## Features
+- **Dual Authentication**: Enterprise SSO + legacy JWT fallback
+- **Multi-IdP Support**: Active Directory, Azure AD, Okta, Google Workspace
+- **Role-Based Access Control**: Admin, Developer, Data Analyst, Compliance Officer
+- **8-hour Sessions**: Automatic token refresh
+- **Audit Logging**: Complete authentication audit trail
+- **Zero Downtime**: Backward compatible with existing system
+
+## Quick Deployment
+
+### 1. Deploy Infrastructure
+```bash
+./scripts/deploy-sso.sh production
+```
+
+### 2. Configure Environment
+```bash
+cp .env.sso .env
+# Update .env with your specific values
+```
+
+### 3. Configure Identity Providers
+Access AWS Cognito Console and add your SAML/OIDC providers:
+- **SAML**: Upload metadata XML from your IdP
+- **OIDC**: Configure client credentials and endpoints
+
+### 4. Update Application
+```bash
+# Backend
+cd backend && pip install -r requirements.txt
+
+# Frontend  
+cd frontend && npm install
+```
+
+## Role Mapping
+- **admin**: Full system access, user management, audit logs
+- **developer**: Read/write workflows, execute workflows
+- **data_analyst**: Read access, reports, data export
+- **compliance_officer**: Read access, audit logs, compliance reports
+- **user**: Basic read access
+
+## API Endpoints
+- `POST /api/auth/validate` - Validate authentication token
+- `GET /api/auth/user/profile` - Get user profile
+- `POST /api/auth/logout` - Logout user
+
+## Frontend Integration
+```typescript
+import { useAuth } from './contexts/AuthContext';
+
+const { user, hasPermission, logout } = useAuth();
+
+if (hasPermission('manage_users')) {
+  // Show admin features
+}
+```
+
+## Security Features
+- JWT token validation with 8-hour expiry
+- Automatic token refresh
+- Secure logout with IdP session termination
+- Role-based permission system
+- Audit logging for all authentication events
+
+## Monitoring
+- CloudTrail integration for audit logs
+- Health check endpoints
+- Authentication metrics
+- Session monitoring
+
+## Troubleshooting
+1. **Token validation fails**: Check Cognito User Pool configuration
+2. **SSO redirect fails**: Verify callback URLs in IdP and Cognito
+3. **Role mapping issues**: Check custom attributes in User Pool schema
+4. **Session timeout**: Verify token validity periods in Cognito client settings
+
+## Next Steps
+
+- [Production Deployment](/deployment/production-deployment) - Deploy to production
+- [System Architecture](/architecture/system-architecture) - Understand the platform
+
+---
+
+**Last Updated**: $(date)  
+**Version**: 1.0  
+**Environment**: Production
