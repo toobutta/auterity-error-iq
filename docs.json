@@ -27,7 +27,24 @@
         "group": "Get Started",
         "pages": [
           "docs/introduction",
-          "docs/quickstart"
+          "docs/quickstart",
+          "docs/project-status"
+        ]
+      },
+      {
+        "group": "API Reference",
+        "pages": [
+          "docs/api-reference/workflow-api",
+          "docs/api-reference/authentication"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "docs/guides/templates",
+          "docs/guides/frontend-setup",
+          "docs/guides/security",
+          "docs/guides/contributing"
         ]
       },
       {
@@ -35,7 +52,15 @@
         "pages": [
           "docs/architecture/system-architecture",
           "docs/architecture/backend-architecture",
-          "docs/architecture/frontend-architecture"
+          "docs/architecture/frontend-architecture",
+          "docs/architecture/technology-stack"
+        ]
+      },
+      {
+        "group": "Development",
+        "pages": [
+          "docs/development/workflow-engine",
+          "docs/development/shared-library"
         ]
       },
       {
