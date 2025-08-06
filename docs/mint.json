@@ -1,0 +1,53 @@
+{
+  "name": "Auterity",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373"
+  },
+  "topbarLinks": [
+    {
+      "name": "Support",
+      "url": "mailto:support@autmatrix.com"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Dashboard",
+    "url": "https://app.autmatrix.com"
+  },
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": ["introduction", "quickstart"]
+    },
+    {
+      "group": "Architecture",
+      "pages": [
+        "architecture/system-architecture",
+        "architecture/backend-architecture",
+        "architecture/frontend-architecture"
+      ]
+    },
+    {
+      "group": "Deployment",
+      "pages": [
+        "deployment/production-deployment",
+        "deployment/ENTERPRISE_SSO"
+      ]
+    },
+    {
+      "group": "Business",
+      "pages": [
+        "business/product-overview"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/toobutta/auterity-error-iq"
+  }
+}
