@@ -21,33 +21,24 @@
     "name": "Dashboard",
     "url": "https://app.autmatrix.com"
   },
-  "navigation": [
-    {
-      "group": "Get Started",
-      "pages": ["docs/introduction", "docs/quickstart"]
-    },
-    {
-      "group": "Architecture",
-      "pages": [
-        "docs/architecture/system-architecture",
-        "docs/architecture/backend-architecture",
-        "docs/architecture/frontend-architecture"
-      ]
-    },
-    {
-      "group": "Deployment",
-      "pages": [
-        "docs/deployment/production-deployment",
-        "docs/deployment/ENTERPRISE_SSO"
-      ]
-    },
-    {
-      "group": "Business",
-      "pages": [
-        "docs/business/product-overview"
-      ]
-    }
-  ],
+  "navigation": {
+    "Get Started": [
+      "docs/introduction",
+      "docs/quickstart"
+    ],
+    "Architecture": [
+      "docs/architecture/system-architecture",
+      "docs/architecture/backend-architecture",
+      "docs/architecture/frontend-architecture"
+    ],
+    "Deployment": [
+      "docs/deployment/production-deployment",
+      "docs/deployment/ENTERPRISE_SSO"
+    ],
+    "Business": [
+      "docs/business/product-overview"
+    ]
+  },
   "footerSocials": {
     "github": "https://github.com/toobutta/auterity-error-iq"
   }
