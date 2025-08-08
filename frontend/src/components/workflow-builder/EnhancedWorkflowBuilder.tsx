@@ -124,7 +124,7 @@ const EnhancedWorkflowBuilder: React.FC<EnhancedWorkflowBuilderProps> = ({
     setShowTester(true);
   }, [onTest]);
 
-  const handleExecuteWorkflow = useCallback(async (inputData: Record<string, any>): Promise<string> => {
+  const handleExecuteWorkflow = useCallback(async (inputData: Record<string, unknown>): Promise<string> => {
     if (!workflow?.id) {
       throw new Error('Workflow must be saved before execution');
     }
@@ -145,7 +145,7 @@ const EnhancedWorkflowBuilder: React.FC<EnhancedWorkflowBuilderProps> = ({
     setSelectedNode(node);
   }, []);
 
-  const handleNodeUpdate = useCallback((nodeId: string, nodeData: any) => {
+  const handleNodeUpdate = useCallback((nodeId: string, nodeData: { label: string; description?: string; config: Record<string, unknown> }) => {
     // Update node in workflow
     if (workflow) {
       const updatedSteps = workflow.steps.map(step => 
@@ -278,7 +278,7 @@ const EnhancedWorkflowBuilder: React.FC<EnhancedWorkflowBuilderProps> = ({
                 />
                 <select
                   value={workflow.category}
-                  onChange={(e) => handleCategoryChange(e.target.value as any)}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
                   className="text-sm border border-gray-300 rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="sales">Sales</option>

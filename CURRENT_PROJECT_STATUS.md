@@ -31,15 +31,12 @@ Based on the active task file from `/Dryva 2/.kiro/specs/workflow-engine-mvp/tas
 - **Report:** docs/security/AMAZON-Q-SECURITY-VULNERABILITY-RESOLUTION-REPORT.md
 
 ### 2. **CLINE-TASK-FRONTEND: Critical TypeScript & Linting Fixes** 🔴
-- **Status:** CRITICAL - READY FOR CLINE ASSIGNMENT (Security fixes completed)
-- **Issue:** 19 TypeScript linting errors blocking clean development
-- **Problems:**
-  - Replace all `any` types with proper TypeScript interfaces
-  - Fix React Hook dependency arrays (useEffect missing dependencies)
-  - Remove unused variables and imports throughout codebase
-  - Fix HTML entity escaping issues (use &quot;, &apos;, etc.)
-- **Goal:** `npm run lint` passes with 0 errors, 0 warnings
-- **Tool Change:** Delegated from Cursor IDE
+- **Status:** ASSIGNED TO CLINE - READY FOR EXECUTION
+- **Issue:** 107 TypeScript linting errors blocking clean development
+- **Task Specification:** `.kiro/specs/auterity-expansion/cline-typescript-compliance-task.md`
+- **Success Criteria:** 0 linting errors, 0 warnings, maintained functionality
+- **Estimated Effort:** 4-6 hours
+- **Blocking Dependencies:** ✅ Security fixes completed
 
 ### 3. **AMAZON-Q-TASK-BACKEND: Backend Code Quality Emergency Fix** 🟡
 - **Status:** HIGH PRIORITY - IN PROGRESS WITH AMAZON Q

@@ -87,7 +87,7 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
   const [showAlertSettings, setShowAlertSettings] = useState(false);
 
   // Use WebSocket for real-time updates
-  const { logs: _logs, isConnected } = useWebSocketLogs();
+  const { isConnected } = useWebSocketLogs();
 
   // Generate mock data for demonstration
   const generateMockMetrics = useCallback((): SystemMetrics[] => {
@@ -396,7 +396,7 @@ const OverviewTab: React.FC<{
     criticalAlerts: number;
   };
   alerts: Alert[];
-}> = ({ metrics, stats, alerts }) => (
+}> = ({ stats, alerts }) => (
   <div className="space-y-6">
     {/* Key Metrics Cards */}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

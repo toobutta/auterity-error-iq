@@ -4,7 +4,8 @@ import { getExecution, getExecutionLogs, retryWorkflowExecution } from '../api/w
 import { useError } from '../contexts/ErrorContext';
 import { ErrorCategory, ErrorSeverity } from '../types/error';
 import { createAppError } from '../utils/errorUtils';
-import { useKiroIntegration } from '../hooks/useKiroIntegration';
+// TODO: Re-enable when Kiro integration is needed
+// import { useKiroIntegration } from '../hooks/useKiroIntegration';
 import RetryWorkflowModal from './RetryWorkflowModal';
 import ErrorReportModal from './ErrorReportModal';
 
@@ -44,7 +45,8 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['overview']));
 
   const { addError } = useError();
-  const { hasPermission: _hasPermission, getErrorRoute: _getErrorRoute } = useKiroIntegration('admin'); // TODO: Get actual user role
+  // TODO: Implement permission checking when needed
+  // const { hasPermission, getErrorRoute } = useKiroIntegration('admin');
 
   useEffect(() => {
     const fetchExecutionData = async () => {

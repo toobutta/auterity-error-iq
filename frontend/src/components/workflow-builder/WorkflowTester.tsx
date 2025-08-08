@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { WorkflowTesterProps, Workflow } from '../../types/workflow-builder';
+import { WorkflowTesterProps } from '../../types/workflow-builder';
 import { WorkflowExecution } from '../../types/workflow';
-import { executeWorkflow } from '../../api/workflows';
+// TODO: Re-enable when needed
+// import { executeWorkflow } from '../../api/workflows';
 import { wsClient, connectToExecutionStatus, subscribeToStatusUpdates } from '../../api/websocket';
 import WorkflowExecutionResults from '../WorkflowExecutionResults';
 
@@ -11,7 +12,7 @@ interface TestInputField {
   label: string;
   description?: string;
   required: boolean;
-  defaultValue?: any;
+  defaultValue?: unknown;
 }
 
 const WorkflowTester: React.FC<WorkflowTesterProps> = ({
@@ -19,9 +20,9 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
   onExecute,
   isExecuting = false
 }) => {
-  const [testInputs, setTestInputs] = useState<Record<string, any>>({});
+  const [testInputs, setTestInputs] = useState<Record<string, unknown>>({});
   const [executionId, setExecutionId] = useState<string | null>(null);
-  const [execution, setExecution] = useState<WorkflowExecution | null>(null);
+  const [, setExecution] = useState<WorkflowExecution | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
@@ -130,7 +131,7 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
 
   // Initialize test inputs with default values
   useEffect(() => {
-    const defaultInputs: Record<string, any> = {};
+    const defaultInputs: Record<string, unknown> = {};
     inputFields.forEach(field => {
       if (field.defaultValue !== undefined) {
         defaultInputs[field.name] = field.defaultValue;
@@ -169,7 +170,7 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
     };
   }, [executionId]);
 
-  const handleInputChange = (fieldName: string, value: any) => {
+  const handleInputChange = (fieldName: string, value: unknown) => {
     setTestInputs(prev => ({
       ...prev,
       [fieldName]: value
@@ -400,7 +401,7 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 <p className="text-lg font-medium">Ready to Test</p>
-                <p className="text-sm">Configure test inputs and click "Execute Workflow" to see results</p>
+                <p className="text-sm">Configure test inputs and click &quot;Execute Workflow&quot; to see results</p>
               </div>
             </div>
           )}

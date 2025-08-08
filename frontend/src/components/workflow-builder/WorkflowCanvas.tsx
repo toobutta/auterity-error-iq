@@ -4,7 +4,6 @@ import ReactFlow, {
   Background,
   Controls,
   Node,
-  Edge,
   addEdge,
   useNodesState,
   useEdgesState,
@@ -18,7 +17,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { v4 as uuidv4 } from 'uuid';
 
-import { WorkflowCanvasProps, WorkflowNode, DragItem, NodeData } from '../../types/workflow-builder';
+import { WorkflowCanvasProps, WorkflowNode, DragItem } from '../../types/workflow-builder';
 import { NodeData as LegacyNodeData } from '../../types/workflow';
 
 // Import existing node components
@@ -93,7 +92,7 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
+  const [reactFlowInstance, setReactFlowInstance] = useState<unknown>(null);
   const { project } = useReactFlow();
 
   // Drop zone for dragging nodes from palette
@@ -119,7 +118,7 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
     }),
   });
 
-  const addNodeFromTemplate = useCallback((template: any, position: { x: number; y: number }) => {
+  const addNodeFromTemplate = useCallback((template: { type: string; name: string; category: string }, position: { x: number; y: number }) => {
     const nodeId = uuidv4();
     
     // Convert template to ReactFlow node format

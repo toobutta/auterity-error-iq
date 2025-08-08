@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { NodeEditorProps, WorkflowNode, NodeConfig } from '../../types/workflow-builder';
+import { NodeEditorProps } from '../../types/workflow-builder';
+// TODO: Re-enable when needed
+// import { WorkflowNode, NodeConfig } from '../../types/workflow-builder';
 
 interface FormFieldProps {
   label: string;
-  value: any;
-  onChange: (value: any) => void;
+  value: unknown;
+  onChange: (value: unknown) => void;
   type?: 'text' | 'textarea' | 'number' | 'select' | 'checkbox' | 'multiselect';
   options?: { value: string; label: string }[];
   placeholder?: string;
@@ -153,7 +155,7 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
     );
   }
 
-  const handleFieldChange = (field: string, value: any) => {
+  const handleFieldChange = (field: string, value: unknown) => {
     const newData = {
       ...localData,
       config: {
@@ -165,7 +167,7 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
     setHasChanges(true);
   };
 
-  const handleBasicFieldChange = (field: string, value: any) => {
+  const handleBasicFieldChange = (field: string, value: unknown) => {
     const newData = {
       ...localData,
       [field]: value

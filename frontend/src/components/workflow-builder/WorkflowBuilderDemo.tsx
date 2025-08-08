@@ -4,7 +4,7 @@ import { Workflow } from '../../types/workflow-builder';
 
 const WorkflowBuilderDemo: React.FC = () => {
   const [savedWorkflow, setSavedWorkflow] = useState<Workflow | null>(null);
-  const [executionResult, setExecutionResult] = useState<string | null>(null);
+  const [, setExecutionResult] = useState<string | null>(null);
 
   const handleSave = (workflow: Workflow) => {
     setSavedWorkflow(workflow);

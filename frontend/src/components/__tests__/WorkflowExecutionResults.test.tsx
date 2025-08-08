@@ -1,9 +1,11 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type MockedFunction } from 'vitest';
 import WorkflowExecutionResults from '../WorkflowExecutionResults';
 import { ErrorProvider } from '../../contexts/ErrorContext';
 import * as workflowsApi from '../../api/workflows';
+// Types imported for reference but not directly used in test structure
+// import type { WorkflowExecution } from '../../types/workflow-core';
 
 // Mock the API with all required functions
 vi.mock('../../api/workflows', () => ({
@@ -53,7 +55,7 @@ describe('WorkflowExecutionResults Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (workflowsApi.getExecution as any).mockResolvedValue(mockExecution);
+    (workflowsApi.getExecution as MockedFunction<typeof workflowsApi.getExecution>).mockResolvedValue(mockExecution);
   });
 
   it('renders component with completed status', async () => {
@@ -87,8 +89,8 @@ describe('WorkflowExecutionResults Component', () => {
       errorMessage: 'Test error message'
     };
     
-    (workflowsApi.getExecution as any).mockResolvedValue(errorExecution);
-    (workflowsApi.getExecutionLogs as any).mockResolvedValue([]);
+    (workflowsApi.getExecution as MockedFunction<typeof workflowsApi.getExecution>).mockResolvedValue(errorExecution);
+    (workflowsApi.getExecutionLogs as MockedFunction<typeof workflowsApi.getExecutionLogs>).mockResolvedValue([]);
     
     renderWithErrorProvider(<WorkflowExecutionResults executionId="exec-123" />);
     
@@ -104,7 +106,7 @@ describe('WorkflowExecutionResults Component', () => {
       outputData: 42
     };
     
-    (workflowsApi.getExecution as any).mockResolvedValue(primitiveExecution);
+    (workflowsApi.getExecution as MockedFunction<typeof workflowsApi.getExecution>).mockResolvedValue(primitiveExecution);
     
     renderWithErrorProvider(<WorkflowExecutionResults executionId="exec-123" />);
     
@@ -119,7 +121,7 @@ describe('WorkflowExecutionResults Component', () => {
       outputData: 'Test string output'
     };
     
-    (workflowsApi.getExecution as any).mockResolvedValue(stringExecution);
+    (workflowsApi.getExecution as MockedFunction<typeof workflowsApi.getExecution>).mockResolvedValue(stringExecution);
     
     renderWithErrorProvider(<WorkflowExecutionResults executionId="exec-123" />);
     
@@ -135,7 +137,7 @@ describe('WorkflowExecutionResults Component', () => {
   });
 
   it('shows error state when API call fails', async () => {
-    (workflowsApi.getExecution as any).mockRejectedValue(new Error('API Error'));
+    (workflowsApi.getExecution as MockedFunction<typeof workflowsApi.getExecution>).mockRejectedValue(new Error('API Error'));
     
     renderWithErrorProvider(<WorkflowExecutionResults executionId="exec-123" />);
     

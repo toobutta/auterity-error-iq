@@ -49,7 +49,7 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const loadWorkflow = async (id: string) => {
+  const loadWorkflow = useCallback(async (id: string) => {
     setIsLoading(true);
     try {
       const workflow = await getWorkflow(id);
@@ -86,7 +86,7 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [setNodes, setEdges]);
 
   const initializeDefaultWorkflow = useCallback(() => {
     const startNode: Node<NodeData> = {

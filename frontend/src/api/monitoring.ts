@@ -74,10 +74,10 @@ export const getUnifiedMetrics = async (
   const response = await apiClient.get<SystemMetrics[]>(`/api/monitoring/metrics?${params}`);
   
   // Transform response to ensure proper date parsing
-  return response.map((metric: any) => ({
+  return response.map((metric: SystemMetrics) => ({
     ...metric,
     timestamp: new Date(metric.timestamp),
-    alerts: metric.alerts.map((alert: any) => ({
+    alerts: metric.alerts.map((alert: Alert) => ({
       ...alert,
       timestamp: new Date(alert.timestamp)
     }))
@@ -121,8 +121,8 @@ export const getNeuroWeaverMetrics = async (timeRange: string = '24h'): Promise<
  * Fetch all active alerts across systems
  */
 export const getActiveAlerts = async (): Promise<Alert[]> => {
-  const response = await apiClient.get('/api/monitoring/alerts');
-  return response.map((alert: any) => ({
+  const response = await apiClient.get<Alert[]>('/api/monitoring/alerts');
+  return response.map((alert: Alert) => ({
     ...alert,
     timestamp: new Date(alert.timestamp)
   }));

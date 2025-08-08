@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { logApiCall } from '../utils/logger';
 
 // Extended interfaces for request timing
@@ -29,7 +29,7 @@ apiClient.interceptors.request.use(
     
     return { ...config, requestStartTime: Date.now() };
   },
-  (error: any) => {
+  (error: AxiosError) => {
     return Promise.reject(error);
   }
 );
@@ -58,9 +58,9 @@ apiClient.interceptors.response.use(
     
     return response.data;
   },
-  (error: any) => {
+  (error: AxiosError) => {
     // Calculate request duration
-    const startTime = error.config?.requestStartTime;
+    const startTime = (error.config as TimedAxiosRequestConfig)?.requestStartTime;
     const duration = startTime ? Date.now() - startTime : undefined;
     
     // Extract correlation ID from error response
