@@ -1,0 +1,60 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+    -   id: check-json
+    -   id: check-merge-conflict
+
+# Python linting
+-   repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+    -   id: isort
+        name: isort (python)
+        files: ^backend/.*\.py$
+
+-   repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+    -   id: black
+        files: ^backend/.*\.py$
+
+-   repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+    -   id: flake8
+        files: ^backend/.*\.py$
+        additional_dependencies: [flake8-docstrings]
+
+# TypeScript/JavaScript linting
+-   repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.38.0
+    hooks:
+    -   id: eslint
+        files: \.(js|ts|tsx)$
+        types: [file]
+        additional_dependencies:
+        -   eslint@8.53.0
+        -   eslint-plugin-react@7.33.2
+        -   eslint-plugin-react-hooks@4.6.0
+        -   @typescript-eslint/eslint-plugin@6.10.0
+        -   @typescript-eslint/parser@6.10.0
+        -   typescript@5.2.2
+
+# Markdown linting
+-   repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.33.0
+    hooks:
+    -   id: markdownlint
+        args: [--fix]
+
+# Shell script linting
+-   repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.2
+    hooks:
+    -   id: shellcheck
+        files: ^scripts/.*\.sh$
