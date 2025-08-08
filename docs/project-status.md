@@ -29,7 +29,7 @@ Based on the active task file from `/Dryva 2/.kiro/specs/workflow-engine-mvp/tas
 - **Action Required:** Determine safe upgrade path without breaking component functionality
 - **Success Criteria:** Zero moderate or high security vulnerabilities in npm audit
 
-### 2. **CLINE-TASK-FRONTEND: Critical TypeScript & Linting Fixes** 🟡
+### 2. **CURSOR-TASK-FRONTEND: Critical TypeScript & Linting Fixes** 🟡
 - **Status:** HIGH PRIORITY - AFTER SECURITY
 - **Issue:** 108 TypeScript linting errors blocking clean development
 - **Problems:**
@@ -39,7 +39,7 @@ Based on the active task file from `/Dryva 2/.kiro/specs/workflow-engine-mvp/tas
   - Fix HTML entity escaping issues (use &quot;, &apos;, etc.)
 - **Goal:** `npm run lint` passes with 0 errors, 0 warnings
 
-### 3. **CLINE-TASK-BACKEND: Backend Code Quality Assessment** 🟡
+### 3. **CURSOR-TASK-BACKEND: Backend Code Quality Assessment** 🟡
 - **Status:** MEDIUM PRIORITY
 - **Action:** Assess backend code quality and identify any linting violations
 - **Tasks:**
@@ -88,7 +88,7 @@ Based on the active task file from `/Dryva 2/.kiro/specs/workflow-engine-mvp/tas
 
 ### Phase 1: Critical Issues (Week 1)
 1. **🔴 SECURITY FIXES** - Amazon Q delegation for dependency vulnerabilities
-2. **🟡 TYPESCRIPT CLEANUP** - Cline delegation for linting errors
+2. **🟡 TYPESCRIPT CLEANUP** - Cursor delegation for linting errors
 3. **🟡 BACKEND QUALITY** - Code quality assessment and fixes
 
 ### Phase 2: MVP Completion (Weeks 2-4)

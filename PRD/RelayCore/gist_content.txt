@@ -2,7 +2,7 @@
 
 A simple Lisp (Scheme-like) interpreter implemented in Rust.
 
-> Created by [Eleanor Berger](https://ai.intellectronica.net/) using Cline and Qwen 3 Coder, for less than $1 and in 10 minutes.
+> Created by [Eleanor Berger](https://ai.intellectronica.net/) using Cursor and Qwen 3 Coder, for less than $1 and in 10 minutes.
 
 ## Features
 

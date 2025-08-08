@@ -313,7 +313,7 @@ interface EnhancedNeuroWeaver {
 #### New Admin Dashboard (Needs Implementation)
 ```typescript
 interface RelayCoreAdminDashboard {
-  // Core admin features (needs CLINE implementation)
+  // Core admin features (needs CURSOR implementation)
   adminInterface: {
     routingRules: {
       component: 'SteeringRulesEditor';
@@ -510,21 +510,21 @@ frontend-systems/
 
 ### Phase 1: Critical Fixes & Integration Foundation (Week 1)
 1. **🔴 AMAZON-Q-TASK**: Fix AutoMatrix security vulnerabilities (prismjs)
-2. **🟡 CLINE-TASK**: Fix AutoMatrix TypeScript errors (108 linting issues)
-3. **🟡 CLINE-TASK**: Create shared design system and cross-system API client
-4. **🟡 CLINE-TASK**: Implement RelayCore admin interface foundation
+2. **🟡 CURSOR-TASK**: Fix AutoMatrix TypeScript errors (108 linting issues)
+3. **🟡 CURSOR-TASK**: Create shared design system and cross-system API client
+4. **🟡 CURSOR-TASK**: Implement RelayCore admin interface foundation
 
 ### Phase 2: Cross-System Integration (Weeks 2-3)
-1. **🟡 CLINE-TASK**: AutoMatrix-NeuroWeaver integration (model selection in workflows)
-2. **🟡 CLINE-TASK**: AutoMatrix-RelayCore integration (AI routing in workflows)
-3. **🟡 CLINE-TASK**: NeuroWeaver-RelayCore integration (model registration)
-4. **🟡 CLINE-TASK**: Unified authentication system
+1. **🟡 CURSOR-TASK**: AutoMatrix-NeuroWeaver integration (model selection in workflows)
+2. **🟡 CURSOR-TASK**: AutoMatrix-RelayCore integration (AI routing in workflows)
+3. **🟡 CURSOR-TASK**: NeuroWeaver-RelayCore integration (model registration)
+4. **🟡 CURSOR-TASK**: Unified authentication system
 
 ### Phase 3: Enhanced Features (Weeks 4-6)
-1. **🟡 CLINE-TASK**: RelayCore admin dashboard (steering rules, cost monitoring)
-2. **🟡 CLINE-TASK**: Unified monitoring dashboard
-3. **🟡 CLINE-TASK**: Enhanced automotive workflow nodes
-4. **🟡 CLINE-TASK**: Cross-system analytics and reporting
+1. **🟡 CURSOR-TASK**: RelayCore admin dashboard (steering rules, cost monitoring)
+2. **🟡 CURSOR-TASK**: Unified monitoring dashboard
+3. **🟡 CURSOR-TASK**: Enhanced automotive workflow nodes
+4. **🟡 CURSOR-TASK**: Cross-system analytics and reporting
 
 ### Phase 4: Production Readiness (Weeks 7-8)
 1. **🔴 AMAZON-Q-TASK**: Comprehensive testing across all three systems
@@ -783,7 +783,7 @@ This specification was developed through a comprehensive analysis of the Auterit
 
 ### Critical Next Steps:
 1. **Amazon Q**: Fix security vulnerabilities in AutoMatrix
-2. **Cline**: Implement RelayCore admin interface and cross-system integration
+2. **Cursor**: Implement RelayCore admin interface and cross-system integration
 3. **Unified Development**: Create shared components and authentication system
 
 This specification provides a complete roadmap for transforming the current implementations into a unified, production-ready automotive AI platform.

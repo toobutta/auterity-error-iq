@@ -22,40 +22,46 @@ Based on the active task file from `/Dryva 2/.kiro/specs/workflow-engine-mvp/tas
 ## 🔴 Critical Quality & Security Issues (URGENT)
 
 ### 1. **AMAZON-Q-TASK-SECURITY: URGENT Security Vulnerability Fixes** 🔴
-- **Status:** CRITICAL - DELEGATED TO AMAZON Q
-- **Issue:** 3 moderate security vulnerabilities in frontend dependencies
+- **Status:** CRITICAL - IN PROGRESS WITH AMAZON Q
+- **Issue:** 7 moderate security vulnerabilities in frontend dependencies
 - **Root Cause:** prismjs <1.30.0 DOM Clobbering vulnerability via react-syntax-highlighter
 - **Dependency Chain:** react-syntax-highlighter@15.6.1 → refractor@3.6.0 → prismjs@1.27.0 (vulnerable)
 - **Action Required:** Determine safe upgrade path without breaking component functionality
 - **Success Criteria:** Zero moderate or high security vulnerabilities in npm audit
+- **Kiro Support:** Working directly with Amazon Q on resolution strategy
 
-### 2. **CLINE-TASK-FRONTEND: Critical TypeScript & Linting Fixes** 🟡
-- **Status:** HIGH PRIORITY - AFTER SECURITY
-- **Issue:** 108 TypeScript linting errors blocking clean development
+### 2. **CURSOR-TASK-FRONTEND: Critical TypeScript & Linting Fixes** 🟡
+- **Status:** HIGH PRIORITY - PENDING AMAZON Q COMPLETION
+- **Issue:** 19 TypeScript linting errors blocking clean development
 - **Problems:**
   - Replace all `any` types with proper TypeScript interfaces
   - Fix React Hook dependency arrays (useEffect missing dependencies)
   - Remove unused variables and imports throughout codebase
   - Fix HTML entity escaping issues (use &quot;, &apos;, etc.)
 - **Goal:** `npm run lint` passes with 0 errors, 0 warnings
+- **Tool Change:** Delegated from Cursor IDE
 
-### 3. **CLINE-TASK-BACKEND: Backend Code Quality Assessment** 🟡
-- **Status:** MEDIUM PRIORITY
-- **Action:** Assess backend code quality and identify any linting violations
+### 3. **AMAZON-Q-TASK-BACKEND: Backend Code Quality Emergency Fix** 🟡
+- **Status:** HIGH PRIORITY - IN PROGRESS WITH AMAZON Q
+- **Issue:** 500+ backend linting violations requiring immediate attention
+- **Action:** Comprehensive backend code quality improvement
 - **Tasks:**
   - Run flake8, black, and isort checks on backend codebase
-  - Fix any import organization issues and code formatting problems
+  - Fix import organization issues and code formatting problems
   - Ensure all backend tests pass and code meets production standards
+- **Kiro Support:** Direct collaboration with Amazon Q on backend architecture
 
 ## 🚧 Missing MVP Features (40% Complete)
 
 ### 12. Real-time execution monitoring with WebSockets
+- **Status:** DELEGATED TO CURSOR IDE (PENDING Amazon Q completion)
 - Implement WebSocket connection for live execution updates
 - Create real-time log streaming for workflow executions
 - Add live progress indicators and status updates
 - Build WebSocket error handling and reconnection logic
 
 ### 13. Enhanced error handling and recovery
+- **Status:** AMAZON Q COLLABORATION TASK
 - Implement comprehensive error categorization system
 - Create error recovery suggestions and retry mechanisms
 - Build error reporting and analytics dashboard
@@ -88,7 +94,7 @@ Based on the active task file from `/Dryva 2/.kiro/specs/workflow-engine-mvp/tas
 
 ### Phase 1: Critical Issues (Week 1)
 1. **🔴 SECURITY FIXES** - Amazon Q delegation for dependency vulnerabilities
-2. **🟡 TYPESCRIPT CLEANUP** - Cline delegation for linting errors
+2. **🟡 TYPESCRIPT CLEANUP** - Cursor delegation for linting errors
 3. **🟡 BACKEND QUALITY** - Code quality assessment and fixes
 
 ### Phase 2: MVP Completion (Weeks 2-4)
