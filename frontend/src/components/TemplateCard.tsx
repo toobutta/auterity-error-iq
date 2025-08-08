@@ -1,6 +1,6 @@
 import React from 'react';
 import { Template } from '../types/template';
-import { Button } from '../../shared/components/Button';
+import { Button } from '../../../shared/components/Button';
 
 interface TemplateCardProps {
   template: Template;
