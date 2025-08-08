@@ -1,11 +1,13 @@
-# GitHub Copilot Task: Multi-Model Support Implementation
+# Multi-Model Support Implementation Task
+
 ## Phase 2.1 - Core Infrastructure Expansion
 
 **Date**: January 31, 2025  
-**Task Type**: [COPILOT-TASK]  
-**Priority**: HIGH  
-**Timeline**: Week 5-6 of expansion plan  
+**Task Type**: [CLINE-TASK] - Standard Development Implementation  
+**Priority**: MEDIUM (Blocked by Critical Security/Quality Fixes)  
+**Timeline**: Week 5-6 of expansion plan (After Amazon Q completes security fixes)  
 **Estimated Effort**: 8-12 hours  
+**Blocking Dependencies**: Amazon Q security vulnerability fixes, TypeScript compliance cleanup
 
 ---
 
@@ -18,19 +20,25 @@ Transform the current OpenAI-only AI service into a multi-model routing system u
 ## 📋 Current State Analysis
 
 ### Existing Implementation
-- **File**: `backend/app/services/ai_service.py`
-- **Current Model Support**: OpenAI only (GPT-3.5-turbo, GPT-4, GPT-4-turbo)
-- **Architecture**: Direct OpenAI AsyncClient integration
-- **Features**: Template system, retry logic, response validation
-- **Integration**: Workflow engine via `AIStepExecutor`
 
-### Key Patterns to Preserve
-- `AIResponse` dataclass structure
-- `PromptTemplate` system with variable substitution
-- Async/await patterns throughout
-- Retry logic with exponential backoff
-- Global service instance pattern (`get_ai_service()`)
-- Template-based processing (`process_with_template()`)
+- **File**: `backend/app/services/ai_service.py`
+- **Current Model Support**: OpenAI only (GPT-3.5-turbo, GPT-4, GPT-4-turbo-preview)
+- **Architecture**: Direct OpenAI AsyncClient integration with AIModelType enum
+- **Features**: Template system with DEFAULT_TEMPLATES, retry logic with exponential backoff, response validation
+- **Integration**: Workflow engine via `AIStepExecutor` in workflow execution engine
+- **Global Instance**: Singleton pattern with `get_ai_service()` and `set_ai_service()`
+
+### Key Patterns to Preserve (CRITICAL for Backward Compatibility)
+
+- `AIResponse` dataclass structure with `content`, `model`, `usage`, `finish_reason`, `error` fields
+- `PromptTemplate` class with `format()` method and variable validation
+- `AIModelType` enum pattern (extend for new providers)
+- Async/await patterns throughout (`process_text`, `process_with_template`, `_make_api_call`)
+- Retry logic with exponential backoff in `_make_api_call`
+- Global service instance pattern (`get_ai_service()`, `set_ai_service()`)
+- Template-based processing with `DEFAULT_TEMPLATES` dictionary
+- Error handling with `AIServiceError` exceptions
+- Logging patterns with structured log messages
 
 ---
 
@@ -80,12 +88,12 @@ class ModelConfig:
 
 class LiteLLMService:
     """Multi-model service using LiteLLM for routing."""
-    
+
     def __init__(self, config_path: Optional[str] = None):
         """Initialize LiteLLM service with model configurations."""
         # Implementation details for Copilot to generate
         pass
-    
+
     async def make_completion(
         self,
         messages: List[Dict[str, str]],
@@ -95,12 +103,12 @@ class LiteLLMService:
         """Make completion call through LiteLLM with fallback logic."""
         # Implementation details for Copilot to generate
         pass
-    
+
     def get_available_models(self) -> List[ModelConfig]:
         """Get list of available models with their configurations."""
         # Implementation details for Copilot to generate
         pass
-    
+
     async def health_check(self, model: str) -> bool:
         """Check if a specific model is available and responding."""
         # Implementation details for Copilot to generate
@@ -112,6 +120,7 @@ class LiteLLMService:
 **Modify**: `backend/app/services/ai_service.py`
 
 **Key Changes Required**:
+
 - Replace direct OpenAI client with LiteLLM service
 - Add model selection and fallback logic
 - Implement cost tracking per model
@@ -119,14 +128,15 @@ class LiteLLMService:
 - Preserve all existing method signatures for backward compatibility
 
 **New Methods to Add**:
+
 ```python
 async def get_available_models(self) -> List[Dict[str, Any]]:
     """Get list of available models with capabilities and costs."""
     pass
 
 async def select_optimal_model(
-    self, 
-    task_type: str, 
+    self,
+    task_type: str,
     context_length: int = 0,
     cost_preference: str = "balanced"
 ) -> str:
@@ -152,14 +162,14 @@ models:
       max_tokens: 4096
       capabilities: ["text", "chat", "reasoning"]
       use_cases: ["general", "customer_service", "quick_responses"]
-    
+
     gpt-4:
       provider: openai
       cost_per_1k_tokens: 0.03
       max_tokens: 8192
       capabilities: ["text", "chat", "complex_reasoning", "analysis"]
       use_cases: ["complex_analysis", "detailed_responses", "critical_tasks"]
-  
+
   ollama:
     llama2:
       provider: ollama
@@ -172,7 +182,7 @@ models:
 routing_rules:
   default_model: "gpt-3.5-turbo"
   fallback_chain: ["gpt-3.5-turbo", "gpt-4", "llama2"]
-  
+
   task_preferences:
     customer_inquiry: ["gpt-3.5-turbo", "gpt-4"]
     lead_qualification: ["gpt-4", "gpt-3.5-turbo"]
@@ -199,7 +209,7 @@ from .base import Base
 class ModelUsage(Base):
     """Track model usage and costs."""
     __tablename__ = "model_usage"
-    
+
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     model_name = Column(String(100), nullable=False)
     provider = Column(String(50), nullable=False)
@@ -212,7 +222,7 @@ class ModelUsage(Base):
 class ModelConfiguration(Base):
     """Store dynamic model configurations."""
     __tablename__ = "model_configurations"
-    
+
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(100), nullable=False, unique=True)
     provider = Column(String(50), nullable=False)
@@ -227,8 +237,12 @@ class ModelConfiguration(Base):
 **Create**: `frontend/src/components/ModelSelector.tsx`
 
 ```typescript
-import React, { useState, useEffect } from 'react';
-import { ChevronDownIcon, CpuChipIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
+import React, { useState, useEffect } from "react";
+import {
+  ChevronDownIcon,
+  CpuChipIcon,
+  CurrencyDollarIcon,
+} from "@heroicons/react/24/outline";
 
 interface ModelInfo {
   name: string;
@@ -250,8 +264,8 @@ interface ModelSelectorProps {
 export const ModelSelector: React.FC<ModelSelectorProps> = ({
   selectedModel,
   onModelChange,
-  taskType = 'general',
-  className = ''
+  taskType = "general",
+  className = "",
 }) => {
   const [models, setModels] = useState<ModelInfo[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -276,12 +290,16 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 **Create**: `frontend/src/components/ModelStatusIndicator.tsx`
 
 ```typescript
-import React from 'react';
-import { CheckCircleIcon, ExclamationTriangleIcon, ClockIcon } from '@heroicons/react/24/outline';
+import React from "react";
+import {
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  ClockIcon,
+} from "@heroicons/react/24/outline";
 
 interface ModelStatusIndicatorProps {
   model: string;
-  status: 'available' | 'unavailable' | 'slow' | 'unknown';
+  status: "available" | "unavailable" | "slow" | "unknown";
   responseTime?: number;
   className?: string;
 }
@@ -290,7 +308,7 @@ export const ModelStatusIndicator: React.FC<ModelStatusIndicatorProps> = ({
   model,
   status,
   responseTime,
-  className = ''
+  className = "",
 }) => {
   // Implementation details for Copilot to generate:
   // - Status indicator with appropriate colors
@@ -397,16 +415,19 @@ from sqlalchemy.dialects import postgresql
 ## 🔧 Integration Points
 
 ### Workflow Engine Integration
+
 - **File**: `backend/app/executors/step_executors.py`
 - **Modification**: Update `AIStepExecutor` to support model selection
 - **New Parameters**: Add `model`, `fallback_models`, `cost_limit` to step configuration
 
 ### Frontend Workflow Builder
+
 - **File**: `frontend/src/components/workflow-builder/`
 - **Addition**: Model selection in AI step configuration
 - **Features**: Cost estimation, model comparison, availability status
 
 ### Monitoring Dashboard
+
 - **Integration**: Add model usage metrics to existing dashboard
 - **Charts**: Cost breakdown by model, usage patterns, performance metrics
 
@@ -415,6 +436,7 @@ from sqlalchemy.dialects import postgresql
 ## 📊 Success Criteria
 
 ### Functional Requirements
+
 - ✅ Support for OpenAI, Ollama, and HuggingFace models
 - ✅ Dynamic model switching without service restart
 - ✅ Automatic fallback to alternative models on failure
@@ -423,12 +445,14 @@ from sqlalchemy.dialects import postgresql
 - ✅ UI for model selection and configuration
 
 ### Performance Requirements
+
 - ✅ Model switching latency < 100ms
 - ✅ Fallback activation time < 2 seconds
 - ✅ Cost calculation accuracy within 1%
 - ✅ Health check response time < 5 seconds
 
 ### Quality Requirements
+
 - ✅ Backward compatibility with existing AI service interface
 - ✅ Zero downtime during model configuration changes
 - ✅ Comprehensive error handling and logging
@@ -439,6 +463,7 @@ from sqlalchemy.dialects import postgresql
 ## 🧪 Testing Strategy
 
 ### Unit Tests
+
 ```python
 # backend/tests/test_litellm_service.py
 # backend/tests/test_multi_model_ai_service.py
@@ -446,12 +471,14 @@ from sqlalchemy.dialects import postgresql
 ```
 
 ### Integration Tests
+
 ```python
 # backend/tests/test_workflow_multi_model_integration.py
 # backend/tests/test_model_fallback_scenarios.py
 ```
 
 ### Frontend Tests
+
 ```typescript
 // frontend/src/components/__tests__/ModelSelector.test.tsx
 // frontend/src/components/__tests__/ModelStatusIndicator.test.tsx
@@ -462,13 +489,26 @@ from sqlalchemy.dialects import postgresql
 ## 📦 Dependencies
 
 ### Backend Dependencies
+
 ```txt
-# Add to requirements.txt
-litellm>=1.0.0
-pyyaml>=6.0
+# Add to requirements.txt (after current dependencies)
+litellm>=1.35.0
+pyyaml>=6.0.1
+aiofiles>=23.2.1  # For async config file reading
+```
+
+### Current Dependencies Context
+
+```txt
+# Existing relevant dependencies in requirements.txt:
+openai==1.3.7  # Will be used through LiteLLM
+pydantic==2.5.0  # For model validation
+fastapi==0.104.1  # For API endpoints
+sqlalchemy==2.0.23  # For model tracking tables
 ```
 
 ### Frontend Dependencies
+
 ```json
 // Add to package.json
 {
@@ -482,12 +522,14 @@ pyyaml>=6.0
 ## 🚨 Risk Mitigation
 
 ### High-Risk Areas
+
 1. **Model Availability**: Implement robust health checking and fallback logic
 2. **Cost Control**: Add budget limits and usage monitoring
 3. **Performance Impact**: Optimize model selection and caching
 4. **Configuration Complexity**: Provide sensible defaults and validation
 
 ### Fallback Strategies
+
 1. **Primary Model Failure**: Automatic fallback to secondary models
 2. **All Models Unavailable**: Graceful degradation with error messages
 3. **Cost Limit Exceeded**: Switch to lower-cost models or pause execution
@@ -498,49 +540,68 @@ pyyaml>=6.0
 ## 📝 Documentation Requirements
 
 ### API Documentation
+
 - Model management endpoints with examples
 - Configuration schema documentation
 - Cost calculation methodology
 
 ### User Guides
+
 - Model selection best practices
 - Cost optimization strategies
 - Troubleshooting common issues
 
 ### Developer Documentation
+
 - LiteLLM integration patterns
 - Custom model provider setup
 - Monitoring and alerting setup
 
 ---
 
-## 🎯 Copilot Execution Instructions
+## 🎯 Cline Execution Instructions
+
+**DELEGATION CHECK COMPLETED**: ✅ Standard component development + API integration → **CLINE TASK**
 
 ### Phase 1: Backend Implementation (4-6 hours)
-1. **Install Dependencies**: Add LiteLLM and YAML parsing
-2. **Create LiteLLM Service**: Implement multi-model routing layer
-3. **Enhance AI Service**: Add model selection and cost tracking
-4. **Database Models**: Create model usage and configuration tables
-5. **API Endpoints**: Implement model management endpoints
-6. **Database Migration**: Create migration for new tables
+
+1. **Install Dependencies**: Add LiteLLM, YAML parsing, and aiofiles to requirements.txt
+2. **Create LiteLLM Service**: Implement `backend/app/services/litellm_service.py` with multi-model routing
+3. **Enhance AI Service**: Modify existing `ai_service.py` to use LiteLLM while preserving all existing interfaces
+4. **Database Models**: Create `backend/app/models/model_config.py` with ModelUsage and ModelConfiguration tables
+5. **API Endpoints**: Implement `backend/app/api/models.py` with model management endpoints
+6. **Database Migration**: Create Alembic migration for new model tracking tables
+7. **Configuration**: Create `backend/config/model_policies.yml` with routing rules
 
 ### Phase 2: Frontend Implementation (3-4 hours)
-1. **Model Selector Component**: Create dropdown with model information
-2. **Status Indicator**: Real-time model availability display
-3. **Integration**: Add to workflow builder and execution interface
-4. **Styling**: Consistent design with existing components
+
+1. **Model Selector Component**: Create `frontend/src/components/ModelSelector.tsx` with dropdown interface
+2. **Status Indicator**: Create `frontend/src/components/ModelStatusIndicator.tsx` for availability display
+3. **API Integration**: Add model management functions to existing API client
+4. **Workflow Builder Integration**: Add model selection to AI step configuration
+5. **Styling**: Use existing Tailwind patterns and design tokens for consistency
 
 ### Phase 3: Testing & Documentation (2-3 hours)
-1. **Unit Tests**: Comprehensive test coverage for new functionality
-2. **Integration Tests**: End-to-end workflow testing with multiple models
-3. **API Documentation**: Update OpenAPI specs
-4. **User Documentation**: Model selection and cost optimization guides
+
+1. **Unit Tests**: Create comprehensive test coverage for new backend and frontend functionality
+2. **Integration Tests**: Test end-to-end workflow execution with multiple models
+3. **API Documentation**: Update FastAPI OpenAPI specs with new endpoints
+4. **User Documentation**: Create model selection and cost optimization guides
+
+### Critical Implementation Notes for Cline:
+
+- **Preserve Backward Compatibility**: All existing `AIService` method signatures MUST remain unchanged
+- **Error Handling**: Maintain existing `AIServiceError` patterns and logging
+- **Global Instance**: Keep `get_ai_service()` and `set_ai_service()` patterns intact
+- **Template System**: Preserve `DEFAULT_TEMPLATES` and `PromptTemplate` functionality
+- **Async Patterns**: Maintain all async/await patterns throughout the codebase
 
 ---
 
 ## 🔄 Handoff Protocol
 
 ### Completion Criteria
+
 - All files created and integrated successfully
 - Tests passing with >90% coverage
 - Documentation updated and complete
@@ -548,6 +609,7 @@ pyyaml>=6.0
 - Model fallback logic tested and working
 
 ### Deliverables
+
 - Complete multi-model support implementation
 - Updated API documentation
 - User guide for model selection
@@ -556,8 +618,44 @@ pyyaml>=6.0
 
 ---
 
-**Task Priority**: HIGH - Core infrastructure for Phase 2 expansion  
-**Blocking Dependencies**: None (foundation work complete)  
+**Task Priority**: MEDIUM - Core infrastructure for Phase 2 expansion  
+**Blocking Dependencies**:
+
+- Amazon Q security vulnerability fixes (7 moderate vulnerabilities)
+- TypeScript compliance cleanup (19 linting errors)
+- Backend code quality fixes (500+ linting violations)
+
 **Next Phase Enabler**: Advanced monitoring, prompt engineering, agent orchestration
 
+**Status**: READY FOR CLINE ASSIGNMENT (after critical fixes complete)
+
 This task transforms Auterity from a single-model system into a flexible, cost-effective multi-model platform ready for enterprise deployment and advanced AI workflows.
+
+---
+
+## 📋 Task Completion Tracking
+
+### Pre-Execution Checklist
+
+- [ ] Amazon Q completes security vulnerability fixes
+- [ ] TypeScript compliance issues resolved
+- [ ] Backend code quality meets production standards
+- [ ] All existing tests passing
+- [ ] Cline assigned and briefed on task requirements
+
+### Implementation Progress
+
+- [ ] Phase 1: Backend Implementation (0/7 tasks)
+- [ ] Phase 2: Frontend Implementation (0/5 tasks)
+- [ ] Phase 3: Testing & Documentation (0/4 tasks)
+
+### Quality Gates
+
+- [ ] All existing AI service tests still pass
+- [ ] New functionality has >90% test coverage
+- [ ] No TypeScript errors or linting violations
+- [ ] API documentation updated and accurate
+- [ ] Backward compatibility verified with existing workflows
+
+**Last Updated**: January 31, 2025  
+**Next Review**: After Amazon Q completes critical fixes

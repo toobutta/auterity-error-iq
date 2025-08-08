@@ -1,4 +1,4 @@
-"""AI service for workflow processing using OpenAI GPT."""
+"""AI service for workflow processing using LiteLLM for multi-model support."""
 
 import asyncio
 import json
@@ -8,10 +8,13 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-import openai
-from openai import AsyncOpenAI
-
 from app.exceptions import AIServiceError
+from app.services.litellm_service import (
+    LiteLLMService, 
+    get_litellm_service,
+    set_litellm_service,
+    ModelProvider
+)
 
 logger = logging.getLogger(__name__)
 
@@ -116,6 +119,7 @@ class AIService:
         model: AIModelType = AIModelType.GPT_3_5_TURBO,
         max_retries: int = 3,
         retry_delay: float = 1.0,
+        litellm_service: Optional[LiteLLMService] = None,
     ):
         """
         Initialize the AI service.
@@ -125,6 +129,7 @@ class AIService:
             model: AI model to use
             max_retries: Maximum number of retry attempts
             retry_delay: Delay between retries in seconds
+            litellm_service: LiteLLMService instance (uses global instance if None)
         """
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         if not self.api_key:
@@ -134,8 +139,8 @@ class AIService:
         self.max_retries = max_retries
         self.retry_delay = retry_delay
 
-        # Initialize OpenAI client
-        self.client = AsyncOpenAI(api_key=self.api_key)
+        # Use provided LiteLLM service or get global instance
+        self.litellm_service = litellm_service or get_litellm_service()
 
         self.logger = logging.getLogger(__name__)
 
@@ -179,7 +184,8 @@ class AIService:
             context_str = f"Additional context: {json.dumps(context, indent=2)}"
             messages.append({"role": "system", "content": context_str})
 
-        return await self._make_api_call(
+        # Use LiteLLM service for API call
+        return await self.litellm_service.make_completion(
             messages=messages,
             model=model_name,
             temperature=temperature,
@@ -264,85 +270,6 @@ class AIService:
             self.logger.error(f"Response validation error: {e}")
             return False
 
-    async def _make_api_call(
-        self,
-        messages: List[Dict[str, str]],
-        model: str,
-        temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-    ) -> AIResponse:
-        """
-        Make API call to OpenAI with retry logic.
-
-        Args:
-            messages: List of message dictionaries
-            model: Model name to use
-            temperature: Sampling temperature
-            max_tokens: Maximum tokens in response
-
-        Returns:
-            AIResponse containing the result
-        """
-        last_error = None
-
-        for attempt in range(self.max_retries + 1):
-            try:
-                self.logger.debug(
-                    f"API call attempt {attempt + 1}/{self.max_retries + 1}"
-                )
-
-                # Make the API call
-                response = await self.client.chat.completions.create(
-                    model=model,
-                    messages=messages,
-                    temperature=temperature,
-                    max_tokens=max_tokens,
-                )
-
-                # Extract response data
-                choice = response.choices[0]
-                content = choice.message.content
-
-                self.logger.info("AI API call successful")
-
-                return AIResponse(
-                    content=content,
-                    model=model,
-                    usage=response.usage.model_dump() if response.usage else None,
-                    finish_reason=choice.finish_reason,
-                )
-
-            except openai.RateLimitError as e:
-                last_error = e
-                self.logger.warning(f"Rate limit error on attempt {attempt + 1}: {e}")
-                if attempt < self.max_retries:
-                    await asyncio.sleep(
-                        self.retry_delay * (2**attempt)
-                    )  # Exponential backoff
-                    continue
-
-            except openai.APIError as e:
-                last_error = e
-                self.logger.error(f"OpenAI API error on attempt {attempt + 1}: {e}")
-                if attempt < self.max_retries:
-                    await asyncio.sleep(self.retry_delay)
-                    continue
-
-            except Exception as e:
-                last_error = e
-                self.logger.error(f"Unexpected error on attempt {attempt + 1}: {e}")
-                if attempt < self.max_retries:
-                    await asyncio.sleep(self.retry_delay)
-                    continue
-
-        # All retries failed
-        error_msg = (
-            f"AI API call failed after {self.max_retries + 1} attempts: {last_error}"
-        )
-        self.logger.error(error_msg)
-
-        return AIResponse(content="", model=model, error=error_msg)
-
     def add_custom_template(self, name: str, template: PromptTemplate) -> None:
         """
         Add a custom prompt template.
@@ -357,6 +284,11 @@ class AIService:
     def get_available_templates(self) -> List[str]:
         """Get list of available template names."""
         return list(self.DEFAULT_TEMPLATES.keys())
+    
+    def get_available_models(self) -> List[str]:
+        """Get list of available model names."""
+        models = self.litellm_service.get_available_models()
+        return [model.name for model in models]
 
 
 # Global AI service instance
