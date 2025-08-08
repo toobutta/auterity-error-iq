@@ -1,0 +1,35 @@
+# Model routing policies and configurations
+models:
+  openai:
+    gpt-3.5-turbo:
+      provider: openai
+      cost_per_1k_tokens: 0.002
+      max_tokens: 4096
+      capabilities: ["text", "chat", "reasoning"]
+      use_cases: ["general", "customer_service", "quick_responses"]
+    gpt-4:
+      provider: openai
+      cost_per_1k_tokens: 0.03
+      max_tokens: 8192
+      capabilities: ["text", "chat", "complex_reasoning", "analysis"]
+      use_cases: ["complex_analysis", "detailed_responses", "critical_tasks"]
+  ollama:
+    llama2:
+      provider: ollama
+      endpoint: "http://localhost:11434"
+      cost_per_1k_tokens: 0.0
+      max_tokens: 4096
+      capabilities: ["text", "chat"]
+      use_cases: ["development", "testing", "cost_sensitive"]
+routing_rules:
+  default_model: "gpt-3.5-turbo"
+  fallback_chain: ["gpt-3.5-turbo", "gpt-4", "llama2"]
+  task_preferences:
+    customer_inquiry: ["gpt-3.5-turbo", "gpt-4"]
+    lead_qualification: ["gpt-4", "gpt-3.5-turbo"]
+    service_recommendation: ["gpt-4"]
+    generic_processing: ["gpt-3.5-turbo", "llama2"]
+cost_controls:
+  daily_budget: 100.0
+  per_request_limit: 1.0
+  alert_threshold: 80.0

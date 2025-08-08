@@ -1,5 +1,14 @@
 # Delegation Decision Log
 
+## [2025-01-31 Current] Tool Reallocation Update
+- **Decision**: TOOL REASSIGNMENT
+- **Change**: Cline tasks delegated to Cursor IDE
+- **Reasoning**: User preference for Cursor IDE over Cline for frontend development
+- **Impact**: All frontend TypeScript and WebSocket tasks now pending Amazon Q completion
+- **New Workflow**: Amazon Q (security/backend) → Cursor (frontend) → Expansion features
+
+# Previous Delegation Decisions
+
 ## [2025-01-31 15:45] Task: Pre-Development Monitoring Integration Analysis
 - **Decision**: DELEGATED
 - **Tool Assigned**: CLINE
