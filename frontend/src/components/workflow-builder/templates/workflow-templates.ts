@@ -10,7 +10,7 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
     steps: [
       {
         id: 'trigger-1',
-        type: 'customer_inquiry' as any,
+        type: 'customer_inquiry',
         name: 'Customer Inquiry',
         description: 'Triggered when customer submits inquiry form',
         config: {
@@ -18,12 +18,12 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
             sources: ['web_form', 'email'],
             filters: {}
           }
-        } as any,
+        },
         position: { x: 100, y: 100 }
       },
       {
         id: 'ai-1',
-        type: 'lead_qualification' as any,
+        type: 'lead_qualification',
         name: 'AI Lead Scoring',
         description: 'Score lead quality using AI analysis',
         config: {
@@ -33,12 +33,12 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
             temperature: 0.3,
             maxTokens: 500
           }
-        } as any,
+        },
         position: { x: 100, y: 250 }
       },
       {
         id: 'condition-1',
-        type: 'budget_range' as any,
+        type: 'budget_range',
         name: 'Budget Check',
         description: 'Route based on customer budget',
         config: {
@@ -50,12 +50,12 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
               logicalOperator: 'and'
             }
           ]
-        } as any,
+        },
         position: { x: 100, y: 400 }
       },
       {
         id: 'action-1',
-        type: 'send_email' as any,
+        type: 'send_email',
         name: 'High-Value Lead Email',
         description: 'Send premium follow-up email',
         config: {
@@ -64,12 +64,12 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
             body: 'Dear {{customer_name}},\n\nThank you for your interest in our vehicles. Based on your preferences, I have some exclusive offers that might interest you.\n\nBest regards,\nYour Sales Team',
             recipients: []
           }
-        } as any,
+        },
         position: { x: 300, y: 500 }
       },
       {
         id: 'action-2',
-        type: 'send_email' as any,
+        type: 'send_email',
         name: 'Standard Follow-up',
         description: 'Send standard follow-up email',
         config: {
@@ -78,12 +78,12 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
             body: 'Dear {{customer_name}},\n\nThank you for contacting us. We will get back to you shortly with more information.\n\nBest regards,\nYour Sales Team',
             recipients: []
           }
-        } as any,
+        },
         position: { x: -100, y: 500 }
       },
       {
         id: 'action-3',
-        type: 'update_crm' as any,
+        type: 'update_crm',
         name: 'Update CRM',
         description: 'Update customer record in CRM',
         config: {
@@ -93,7 +93,7 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
             notes: 'Lead processed through qualification workflow',
             tags: ['web-lead', 'qualified']
           }
-        } as any,
+        },
         position: { x: 100, y: 650 }
       }
     ],

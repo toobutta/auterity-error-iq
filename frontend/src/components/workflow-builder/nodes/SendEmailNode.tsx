@@ -22,9 +22,10 @@ const SendEmailNode: React.FC<NodeProps<NodeData>> = ({ data, isConnectable }) =
         {data.description && (
           <p className="text-xs text-blue-600 mt-1">{data.description}</p>
         )}
-        {(data.config as any).emailTemplate?.subject && (
-          <p className="text-xs text-gray-500 mt-1 truncate" title={(data.config as any).emailTemplate.subject}>
-            Subject: {(data.config as any).emailTemplate.subject.substring(0, 20)}...
+        {(
+          (data.config as { emailTemplate?: { subject?: string } })?.emailTemplate?.subject &&
+          <p className="text-xs text-gray-500 mt-1 truncate" title={((data.config as { emailTemplate?: { subject?: string } }).emailTemplate?.subject || '')}>
+            Subject: {((data.config as { emailTemplate?: { subject?: string } }).emailTemplate?.subject || '').substring(0, 20)}...
           </p>
         )}
       </div>

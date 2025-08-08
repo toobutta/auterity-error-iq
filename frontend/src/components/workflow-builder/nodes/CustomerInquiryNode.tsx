@@ -15,9 +15,10 @@ const CustomerInquiryNode: React.FC<NodeProps<NodeData>> = ({ data, isConnectabl
         {data.description && (
           <p className="text-xs text-yellow-600 mt-1">{data.description}</p>
         )}
-        {(data.config as any).customerInquiry?.sources && (
+        {(
+          (data.config as { customerInquiry?: { sources?: string[] } })?.customerInquiry?.sources &&
           <p className="text-xs text-gray-500 mt-1">
-            Sources: {(data.config as any).customerInquiry.sources.join(', ')}
+            Sources: {((data.config as { customerInquiry?: { sources?: string[] } }).customerInquiry?.sources || []).join(', ')}
           </p>
         )}
       </div>

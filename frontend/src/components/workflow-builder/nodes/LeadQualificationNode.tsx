@@ -22,9 +22,10 @@ const LeadQualificationNode: React.FC<NodeProps<NodeData>> = ({ data, isConnecta
         {data.description && (
           <p className="text-xs text-green-600 mt-1">{data.description}</p>
         )}
-        {(data.config as any).aiPrompt?.model && (
+        {(
+          (data.config as { aiPrompt?: { model?: string } })?.aiPrompt?.model &&
           <p className="text-xs text-gray-500 mt-1">
-            Model: {(data.config as any).aiPrompt.model}
+            Model: {((data.config as { aiPrompt?: { model?: string } }).aiPrompt?.model || '')}
           </p>
         )}
       </div>
