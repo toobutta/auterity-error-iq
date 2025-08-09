@@ -41,6 +41,27 @@
         "-y",
         "@upstash/context7-mcp@latest"
       ]
+    },
+    "codacy": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@codacy/codacy-mcp"
+      ],
+      "env": {
+        "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>"
+      }
+    },
+    "circleci": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@circleci/mcp-server-circleci"
+      ],
+      "env": {
+        "CIRCLECI_TOKEN": "your-circleci-token",
+        "CIRCLECI_BASE_URL": "https://circleci.com"
+      }
     }
   }
 }
