@@ -21,7 +21,6 @@ export const RealtimeStatusProvider: React.FC<{ children: ReactNode }> = ({ chil
 
   useEffect(() => {
     let ws: WebSocket | null = null;
-    let interval: NodeJS.Timeout;
 
     const connect = () => {
       ws = new WebSocket('wss://localhost:8000/ws/status');
@@ -40,15 +39,19 @@ export const RealtimeStatusProvider: React.FC<{ children: ReactNode }> = ({ chil
       };
     };
     connect();
+    
     // Fallback polling every 30s
-    interval = setInterval(async () => {
+    const interval = setInterval(async () => {
       try {
         const res = await fetch('/api/v1/health');
         const data = await res.json();
         setStatus(data.services);
         setLastUpdate(new Date());
-      } catch {}
+      } catch (error) {
+        console.warn('Health check failed:', error);
+      }
     }, 30000);
+    
     return () => {
       ws?.close();
       clearInterval(interval);

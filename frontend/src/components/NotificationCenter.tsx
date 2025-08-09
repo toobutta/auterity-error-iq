@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface Notification {
   id: string;
@@ -20,7 +20,9 @@ export const NotificationCenter: React.FC = () => {
           { id: data.id || Date.now().toString(), type: data.type, message: data.message, timestamp: new Date() },
           ...prev.slice(0, 4)
         ]);
-      } catch {}
+      } catch (error) {
+        console.warn('Failed to parse notification:', error);
+      }
     };
     return () => ws.close();
   }, []);

@@ -72,6 +72,7 @@
 - Qdrant (Vector Database)
 - Ollama (Local LLM)
 - Elasticsearch + Kibana (Search & Analytics)
+- Evidently.ai (ML Monitoring)
 - Prometheus + Grafana (Monitoring)
 - Jaeger (Tracing)
 

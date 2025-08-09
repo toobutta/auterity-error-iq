@@ -1,6 +1,7 @@
 import React from 'react';
 import { RealtimeStatusProvider } from './RealtimeStatusProvider';
 import { NotificationCenter } from './NotificationCenter';
+import { OnboardingOverlay } from './OnboardingOverlay';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { KiroStatusIndicator } from './KiroStatusIndicator';
@@ -85,6 +86,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {children}
       </main>
       <NotificationCenter />
+      <OnboardingOverlay />
     </div>
     </RealtimeStatusProvider>
   );

@@ -42,6 +42,21 @@ sentence-transformers==2.2.2
 # Search and Analytics
 elasticsearch==8.11.0
 
+# ML Monitoring
+evidently==0.4.22
+
+# Communication Services
+twilio==8.10.0
+sendgrid==6.10.0
+
+# Document Processing
+pytesseract==0.3.10
+Pillow==10.1.0
+PyMuPDF==1.23.8
+
+# Web Automation
+playwright==1.40.0
+
 # Secrets Management
 hvac==2.0.0
 

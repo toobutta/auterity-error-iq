@@ -190,9 +190,41 @@ logs = search.search_logs(
 )
 ```
 
+## ML Monitoring Service
+
+### Overview
+Evidently.ai-based ML model monitoring for data drift detection, model performance tracking, and data quality validation.
+
+### Location
+`/backend/app/services/ml_monitoring_service.py`
+
+### Usage
+```python
+from app.services.ml_monitoring_service import get_ml_monitoring_service
+import pandas as pd
+
+ml_monitor = get_ml_monitoring_service()
+
+# Monitor data drift
+drift_report = ml_monitor.create_drift_report(
+    reference_data=reference_df,
+    current_data=current_df
+)
+
+# Monitor model performance
+perf_report = ml_monitor.create_model_performance_report(
+    reference_data=reference_df,
+    current_data=current_df
+)
+
+# Run data quality tests
+quality_tests = ml_monitor.run_data_quality_tests(data_df)
+```
+
 ## Service Access
 - **MinIO Console**: http://localhost:9001 (minioadmin/minioadmin123)
 - **Qdrant Dashboard**: http://localhost:6333/dashboard
 - **Ollama API**: http://localhost:11434
 - **Elasticsearch**: http://localhost:9200
 - **Kibana**: http://localhost:5601
+- **Evidently Dashboard**: http://localhost:8085
