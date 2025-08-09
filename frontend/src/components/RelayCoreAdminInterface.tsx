@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
-
-interface RelayCoreAdminInterfaceProps {
-  onBudgetUpdate?: (budget: number) => void;
-  onProviderChange?: (provider: string) => void;
-}
+import { RelayCoreAdminInterfaceProps } from '../types/components';
 
 export const RelayCoreAdminInterface: React.FC<RelayCoreAdminInterfaceProps> = ({
-  onBudgetUpdate,
+  onBudgetUpdate: _onBudgetUpdate,
   onProviderChange: _onProviderChange,
 }) => {
   const [budgetLimit, setBudgetLimit] = useState<number>(1000);
@@ -15,90 +11,73 @@ export const RelayCoreAdminInterface: React.FC<RelayCoreAdminInterfaceProps> = (
   const providers = [
     { id: 'openai', name: 'OpenAI', cost: 0.002, status: 'active' },
     { id: 'anthropic', name: 'Anthropic', cost: 0.008, status: 'active' },
-    { id: 'google', name: 'Google', cost: 0.001, status: 'active' },
+    { id: 'google', name: 'Google', cost: 0.001, status: 'inactive' },
   ];
 
-
-
-  const handleBudgetUpdate = (newBudget: number) => {
-    setBudgetLimit(newBudget);
-    onBudgetUpdate?.(newBudget);
-  };
-
-  const usagePercentage = (currentUsage / budgetLimit) * 100;
+  const usagePercent = (currentUsage / budgetLimit) * 100;
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">RelayCore Admin</h1>
-        <div className="w-3 h-3 bg-green-500 rounded-full" />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="bg-gray-50 p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">RelayCore Admin Interface</h2>
+      
+      {/* Budget Management */}
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold text-gray-700 mb-4">Budget Management</h3>
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-sm font-medium text-gray-500">Current Budget</h3>
-          <p className="text-2xl font-bold text-gray-900">${currentUsage.toFixed(2)}</p>
-          <p className="text-sm text-gray-500">of ${budgetLimit.toFixed(2)}</p>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-sm font-medium text-gray-500">Active Providers</h3>
-          <p className="text-2xl font-bold text-gray-900">
-            {providers.filter(p => p.status === 'active').length}
-          </p>
-          <p className="text-sm text-gray-500">configured</p>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-sm font-medium text-gray-500">Cost Efficiency</h3>
-          <p className="text-2xl font-bold text-gray-900">${(currentUsage / 1000).toFixed(4)}</p>
-          <p className="text-sm text-gray-500">per 1K tokens</p>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold mb-4">Budget Management</h2>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Budget Limit: ${budgetLimit}
-            </label>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-gray-600">Monthly Budget Limit: ${budgetLimit}</span>
+            <span className="text-gray-800 font-medium">${currentUsage} / ${budgetLimit}</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-4">
+            <div 
+              className="bg-blue-600 h-4 rounded-full" 
+              style={{ width: `${usagePercent}%` }}
+            ></div>
+          </div>
+          <div className="mt-4">
+            <label htmlFor="budget" className="block text-sm font-medium text-gray-700">Set Budget Limit</label>
             <input
               type="range"
+              id="budget"
               min="100"
-              max="5000"
+              max="10000"
               value={budgetLimit}
-              onChange={(e) => handleBudgetUpdate(Number(e.target.value))}
-              className="w-full"
-            />
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className={`h-2 rounded-full ${usagePercentage > 80 ? 'bg-red-500' : 'bg-green-500'}`}
-              style={{ width: `${Math.min(usagePercentage, 100)}%` }}
+              onChange={(e) => setBudgetLimit(Number(e.target.value))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
             />
           </div>
         </div>
+      </div>
 
-        <div className="mt-6">
-          <h3 className="text-md font-medium mb-3">Provider Configuration</h3>
-          <div className="space-y-2">
-            {providers.map((provider) => (
-              <div key={provider.id} className="flex items-center justify-between p-3 border rounded">
-                <div>
-                  <span className="font-medium">{provider.name}</span>
-                  <span className="text-sm text-gray-500 ml-2">
-                    ${provider.cost}/token
+      {/* Provider Configuration */}
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold text-gray-700 mb-4">Provider Configuration</h3>
+        <div className="bg-white p-4 rounded-lg shadow">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {providers.map(provider => (
+              <div key={provider.id} className={`p-4 rounded-lg border-2 ${provider.status === 'active' ? 'border-green-500' : 'border-gray-300'}`}>
+                <div className="flex justify-between items-start">
+                  <h4 className="font-bold text-gray-800">{provider.name}</h4>
+                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${provider.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                    {provider.status}
                   </span>
                 </div>
-                <span className={`px-2 py-1 text-xs rounded-full ${
-                  provider.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                }`}>
-                  {provider.status}
-                </span>
+                <p className="text-sm text-gray-600 mt-2">Cost: ${provider.cost}/1k tokens</p>
               </div>
             ))}
           </div>
         </div>
       </div>
+
+      {/* Cost Analytics Placeholder */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-700 mb-4">Cost Analytics</h3>
+        <div className="bg-white p-4 rounded-lg shadow text-center text-gray-500">
+          <p>Cost analytics dashboard coming soon.</p>
+        </div>
+      </div>
     </div>
   );
 };
+
+export default RelayCoreAdminInterface;
