@@ -29,3 +29,12 @@ opentelemetry-sdk==1.21.0
 opentelemetry-instrumentation-fastapi==0.42b0
 opentelemetry-exporter-jaeger==1.21.0
 redis==5.0.1
+
+# Object Storage
+minio==7.2.0
+
+# Vector Database
+qdrant-client==1.7.0
+
+# Embeddings
+sentence-transformers==2.2.2

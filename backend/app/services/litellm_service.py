@@ -15,7 +15,23 @@ from litellm import acompletion, ModelResponse
 from litellm.exceptions import ServiceUnavailableError, RateLimitError, APIError
 
 from app.exceptions import AIServiceError
-from app.services.ai_service import AIResponse
+# Avoid circular import - define AIResponse locally
+from dataclasses import dataclass
+from typing import Optional, Dict, Any
+
+@dataclass
+class AIResponse:
+    """Container for AI service responses."""
+    content: str
+    model: str
+    usage: Optional[Dict[str, Any]] = None
+    finish_reason: Optional[str] = None
+    error: Optional[str] = None
+
+    @property
+    def is_success(self) -> bool:
+        """Check if the response was successful."""
+        return self.error is None
 
 
 class ModelProvider(Enum):

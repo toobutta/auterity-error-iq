@@ -29,13 +29,14 @@ Convert the MCP Architecture design into a series of coding tasks that will impl
   - Create agent configuration validation and security policies
   - _Requirements: 1.1, 5.1, 6.1, 8.1_
 
-- [ ] 4. Protocol Manager and Communication Layer
+- [x] 4. Protocol Manager and Communication Layer (PARTIAL)
   - Implement ProtocolManager class for handling multi-protocol communication
   - Create ProtocolMessage data structure and routing logic
   - Implement WebSocket-based agent-to-agent communication
-  - Add message queuing with Redis for reliable delivery
+  - ✅ Add message queuing with Redis for reliable delivery
   - Create protocol handlers for MCP, OpenAI API, and custom protocols
   - _Requirements: 1.1, 2.1, 4.1, 7.1_
+  - **Completed**: Redis-based message queue service (`/backend/app/services/message_queue.py`)
 
 - [ ] 5. Context Manager for Multi-Agent Workflows
   - Implement WorkflowContext class for shared state management
