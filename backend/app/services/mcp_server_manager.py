@@ -4,25 +4,60 @@ Implements process management, health checks, tool discovery, and configuration 
 """
 import asyncio
 import logging
-from typing import Dict, Optional, List
+import json
+import httpx
+from typing import Dict, Optional, List, Any
 from uuid import UUID
+from datetime import datetime
+from sqlalchemy.orm import Session
 
-from app.models import mcp_server  # Placeholder for actual model import
-from app.database import get_db_session
+# Import the models from the migration we created
+from app.models.mcp_server import MCPServer, MCPServerStatus
 
 logger = logging.getLogger(__name__)
 
 class MCPServerManager:
-    def __init__(self):
+    def __init__(self, db: Session):
+        self.db = db
         self.active_servers: Dict[UUID, asyncio.subprocess.Process] = {}
+        self.client = httpx.AsyncClient()
 
     async def start_server(self, server_id: UUID, config: dict) -> bool:
         """Start an external MCP server process."""
-        # TODO: Implement actual process start logic
-        logger.info(f"Starting MCP server {server_id} with config: {config}")
-        # Example: process = await asyncio.create_subprocess_exec(...)
-        # self.active_servers[server_id] = process
-        return True
+        try:
+            # Get server config from database
+            server = self.db.query(MCPServer).filter(MCPServer.id == server_id).first()
+            if not server:
+                logger.error(f"MCP server {server_id} not found in database")
+                return False
+            
+            # Construct command from config
+            command = config.get('command', [])
+            if not command:
+                logger.error(f"No command specified for MCP server {server_id}")
+                return False
+            
+            # Start the process
+            process = await asyncio.create_subprocess_exec(
+                *command,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                env=config.get('env', {})
+            )
+            
+            self.active_servers[server_id] = process
+            
+            # Update server status in database
+            server.status = MCPServerStatus.RUNNING
+            server.updated_at = datetime.utcnow()
+            self.db.commit()
+            
+            logger.info(f"Started MCP server {server_id} with PID {process.pid}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to start MCP server {server_id}: {str(e)}")
+            return False
 
     async def stop_server(self, server_id: UUID) -> bool:
         """Stop an external MCP server process."""
