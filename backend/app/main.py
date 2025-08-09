@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import (
     auth,
     error_correlation,
+    error_management,
     logs,
     monitoring,
     templates,
@@ -15,6 +16,11 @@ from app.api import (
 from app.middleware.error_handler import (
     ErrorReportingMiddleware,
     GlobalErrorHandlerMiddleware,
+)
+from app.middleware.enhanced_error_middleware import (
+    EnhancedErrorHandlingMiddleware,
+    ErrorMetricsMiddleware,
+    HealthCheckMiddleware,
 )
 from app.middleware.logging import StructuredLoggingMiddleware
 from app.middleware.prometheus import prometheus_middleware
@@ -39,6 +45,14 @@ app.add_middleware(GlobalErrorHandlerMiddleware)
 app.add_middleware(
     ErrorReportingMiddleware, enable_reporting=ENVIRONMENT == "production"
 )
+
+# Add enhanced error handling middleware
+app.add_middleware(
+    EnhancedErrorHandlingMiddleware, 
+    enable_auto_recovery=ENVIRONMENT == "production"
+)
+app.add_middleware(ErrorMetricsMiddleware)
+app.add_middleware(HealthCheckMiddleware)
 
 # Add structured logging middleware
 app.add_middleware(StructuredLoggingMiddleware)
@@ -65,6 +79,7 @@ app.include_router(templates.router, prefix="/api")
 app.include_router(logs.router, prefix="/api")
 app.include_router(monitoring.router, prefix="/api")
 app.include_router(error_correlation.router)
+app.include_router(error_management.router)
 
 # Include WebSocket routes (no prefix for WebSocket endpoints)
 app.include_router(websockets.router)
