@@ -3,17 +3,38 @@ name: RelayCore CI/CD
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-and-test:
+  setup:
     runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache-key.outputs.key }}
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Generate cache key
+        id: cache-key
+        run: echo "key=relaycore-${{ hashFiles('**/package-lock.json') }}-$(date +'%Y-%m')" >> $GITHUB_OUTPUT
 
+  build-and-test:
+    needs: setup
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [18.x]
-
+    
     steps:
     - uses: actions/checkout@v3
     
@@ -23,23 +44,39 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     
+    - name: Cache node modules
+      uses: actions/cache@v3
+      with:
+        path: node_modules
+        key: ${{ needs.setup.outputs.cache-key }}
+        restore-keys: |
+          relaycore-${{ hashFiles('**/package-lock.json') }}
+          relaycore-
+    
     - name: Install dependencies
       run: npm ci
     
-    - name: Lint
-      run: npm run lint
+    - name: Lint and Test
+      run: |
+        npm run lint &
+        npm test &
+        wait
     
     - name: Build
       run: npm run build
     
-    - name: Test
-      run: npm test
+    - name: Cache build output
+      uses: actions/cache@v3
+      with:
+        path: dist
+        key: relaycore-build-${{ github.sha }}
     
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: build-artifacts
         path: dist/
+        retention-days: 5
 
   docker-build:
     needs: build-and-test
@@ -72,11 +109,28 @@ jobs:
         tags: relaycore/relaycore:latest,relaycore/relaycore:${{ github.sha }}
         cache-from: type=registry,ref=relaycore/relaycore:latest
         cache-to: type=inline
+        platforms: linux/amd64,linux/arm64
+        build-args: |
+          BUILDKIT_INLINE_CACHE=1
+    
+    - name: Scan Docker image for vulnerabilities
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'relaycore/relaycore:${{ github.sha }}'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        severity: 'CRITICAL,HIGH'
+    
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
 
   deploy-staging:
     needs: docker-build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: staging
     
     steps:
     - uses: actions/checkout@v3
@@ -98,13 +152,15 @@ jobs:
     
     - name: Verify deployment
       run: |
-        kubectl rollout status deployment/relaycore-staging -n relaycore-staging
+        kubectl rollout status deployment/relaycore-staging -n relaycore-staging --timeout=300s
     
     - name: Run integration tests
       run: |
         echo "Running integration tests against staging environment..."
         # Add integration test commands here
-    
+        sleep 30 # Wait for services to be fully available
+        # npm run test:integration -- --url=https://staging-api.relaycore.example.com
+
   deploy-production:
     needs: deploy-staging
     runs-on: ubuntu-latest
@@ -131,7 +187,7 @@ jobs:
     
     - name: Verify deployment
       run: |
-        kubectl rollout status deployment/relaycore-production -n relaycore-production
+        kubectl rollout status deployment/relaycore-production -n relaycore-production --timeout=300s
     
     - name: Send deployment notification
       uses: rtCamp/action-slack-notify@v2

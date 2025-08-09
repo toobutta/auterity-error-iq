@@ -1,0 +1,27 @@
+{
+  "name": "@auterity/e2e-tests",
+  "version": "1.0.0",
+  "description": "End-to-end tests for Auterity Unified Platform",
+  "main": "index.js",
+  "scripts": {
+    "install-playwright": "playwright install",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report",
+    "test:debug": "playwright test --debug",
+    "test:codegen": "playwright codegen"
+  },
+  "keywords": ["e2e", "testing", "playwright", "auterity"],
+  "author": "Auterity Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.9.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "axios": "^1.6.0"
+  }
+}

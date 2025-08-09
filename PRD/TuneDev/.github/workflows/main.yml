@@ -3,8 +3,14 @@ name: NeuroWeaver CI/CD Pipeline
 on:
   push:
     branches: [ main, develop, feature/* ]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
   pull_request:
     branches: [ main, develop ]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
   workflow_dispatch:
     inputs:
       environment:
@@ -18,12 +24,54 @@ on:
         - staging
         - production
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      python-cache-key: ${{ steps.python-cache-key.outputs.key }}
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Determine components to build
+        id: set-matrix
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # For PRs, only build components with changes
+            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+            COMPONENTS=()
+            
+            for COMPONENT in template-system auto-specializer inference-weaver dataset-refinement costguard-dashboard workflow-ui; do
+              if echo "$CHANGED_FILES" | grep -q "src/$COMPONENT/"; then
+                COMPONENTS+=("$COMPONENT")
+              fi
+            done
+            
+            # If no components have changes, build all
+            if [ ${#COMPONENTS[@]} -eq 0 ]; then
+              COMPONENTS=(template-system auto-specializer inference-weaver dataset-refinement costguard-dashboard workflow-ui)
+            fi
+          else
+            # For direct pushes, build all components
+            COMPONENTS=(template-system auto-specializer inference-weaver dataset-refinement costguard-dashboard workflow-ui)
+          fi
+          
+          echo "matrix={\"component\":[\"$(IFS=\\\",\\\"; echo "${COMPONENTS[*]}")\"]}" >> $GITHUB_OUTPUT
+      
+      - name: Generate Python cache key
+        id: python-cache-key
+        run: echo "key=neuroweaver-python-$(date +'%Y-%m')" >> $GITHUB_OUTPUT
+
   build:
+    needs: setup
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        component: [template-system, auto-specializer, inference-weaver, dataset-refinement, costguard-dashboard, workflow-ui]
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+      fail-fast: false
     
     steps:
     - uses: actions/checkout@v3
@@ -32,6 +80,17 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
+        cache: 'pip'
+        cache-dependency-path: requirements/${{ matrix.component }}.txt
+    
+    - name: Cache Python dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ needs.setup.outputs.python-cache-key }}-${{ matrix.component }}-${{ hashFiles('requirements/${{ matrix.component }}.txt') }}
+        restore-keys: |
+          ${{ needs.setup.outputs.python-cache-key }}-${{ matrix.component }}-
+          ${{ needs.setup.outputs.python-cache-key }}-
     
     - name: Install dependencies
       run: |
@@ -45,7 +104,7 @@ jobs:
     
     - name: Test with pytest
       run: |
-        pytest src/${{ matrix.component }}/tests/ --cov=src/${{ matrix.component }} --cov-report=xml
+        pytest src/${{ matrix.component }}/tests/ --cov=src/${{ matrix.component }} --cov-report=xml -v
     
     - name: Upload coverage report
       uses: codecov/codecov-action@v3
@@ -57,11 +116,26 @@ jobs:
       run: |
         docker build -t neuroweaver/${{ matrix.component }}:${{ github.sha }} -f docker/${{ matrix.component }}/Dockerfile .
     
+    - name: Cache Docker image
+      uses: actions/cache@v3
+      with:
+        path: /tmp/docker-images/${{ matrix.component }}.tar
+        key: docker-${{ matrix.component }}-${{ github.sha }}
+      
+    - name: Save Docker image
+      run: |
+        mkdir -p /tmp/docker-images
+        docker save neuroweaver/${{ matrix.component }}:${{ github.sha }} > /tmp/docker-images/${{ matrix.component }}.tar
+    
     - name: Push to ECR
       if: github.event_name != 'pull_request'
       uses: aws-actions/amazon-ecr-login@v1
       with:
         registry: ${{ secrets.AWS_ECR_REGISTRY }}
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
       run: |
         docker tag neuroweaver/${{ matrix.component }}:${{ github.sha }} ${{ secrets.AWS_ECR_REGISTRY }}/neuroweaver/${{ matrix.component }}:${{ github.sha }}
         docker push ${{ secrets.AWS_ECR_REGISTRY }}/neuroweaver/${{ matrix.component }}:${{ github.sha }}
@@ -78,27 +152,39 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
+        cache: 'pip'
+        cache-dependency-path: requirements/integration.txt
     
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements/integration.txt
     
+    - name: Load Docker images
+      run: |
+        for component in template-system auto-specializer inference-weaver dataset-refinement costguard-dashboard workflow-ui; do
+          if [ -f /tmp/docker-images/$component.tar ]; then
+            docker load < /tmp/docker-images/$component.tar
+          fi
+        done
+    
     - name: Set up integration environment
       run: |
         docker-compose -f docker-compose.integration.yml up -d
     
-    - name: Run integration tests
+    - name: Run integration tests in parallel
       run: |
-        pytest integration_tests/ --junitxml=integration-results.xml
+        pytest integration_tests/ -xvs --junitxml=integration-results.xml -n auto
     
     - name: Upload test results
       uses: actions/upload-artifact@v3
       with:
         name: integration-test-results
         path: integration-results.xml
+        retention-days: 5
     
     - name: Tear down integration environment
+      if: always()
       run: |
         docker-compose -f docker-compose.integration.yml down
 
@@ -124,16 +210,27 @@ jobs:
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.0.0
+        terraform_wrapper: false
+    
+    - name: Cache Terraform
+      uses: actions/cache@v3
+      with:
+        path: |
+          terraform/${{ github.event.inputs.environment || 'development' }}/.terraform
+          terraform/${{ github.event.inputs.environment || 'development' }}/.terraform.lock.hcl
+        key: terraform-${{ github.event.inputs.environment || 'development' }}-${{ hashFiles('terraform/${{ github.event.inputs.environment || 'development' }}/*.tf') }}
+        restore-keys: |
+          terraform-${{ github.event.inputs.environment || 'development' }}-
     
     - name: Terraform Init
       run: |
         cd terraform/${{ github.event.inputs.environment || 'development' }}
-        terraform init
+        terraform init -input=false
     
     - name: Terraform Plan
       run: |
         cd terraform/${{ github.event.inputs.environment || 'development' }}
-        terraform plan -out=tfplan
+        terraform plan -input=false -out=tfplan
     
     - name: Terraform Apply
       if: github.event.inputs.environment != 'production' || github.ref == 'refs/heads/main'
@@ -162,8 +259,8 @@ jobs:
     
     - name: Verify deployment
       run: |
-        kubectl rollout status deployment/neuroweaver-api -n neuroweaver-${{ github.event.inputs.environment || 'development' }}
-        kubectl rollout status deployment/neuroweaver-frontend -n neuroweaver-${{ github.event.inputs.environment || 'development' }}
+        kubectl rollout status deployment/neuroweaver-api -n neuroweaver-${{ github.event.inputs.environment || 'development' }} --timeout=300s
+        kubectl rollout status deployment/neuroweaver-frontend -n neuroweaver-${{ github.event.inputs.environment || 'development' }} --timeout=300s
 
   monitor:
     needs: deploy
