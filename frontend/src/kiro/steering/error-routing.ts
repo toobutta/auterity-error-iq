@@ -1,6 +1,11 @@
 // Kiro Error Steering Rules
+export interface ErrorDetails {
+  type?: 'validation' | 'runtime' | 'ai_service' | 'system' | string;
+  [key: string]: unknown;
+}
+
 export interface ErrorSteeringRule {
-  condition: (error: any) => boolean;
+  condition: (error: ErrorDetails) => boolean;
   route: string;
   action?: () => void;
 }
@@ -28,7 +33,7 @@ export const errorSteeringRules: ErrorSteeringRule[] = [
   }
 ];
 
-export const applyErrorSteering = (error: any): string => {
+export const applyErrorSteering = (error: ErrorDetails): string => {
   const rule = errorSteeringRules.find(rule => rule.condition(error));
   if (rule) {
     rule.action?.();

@@ -47,7 +47,7 @@ export const getDefaultRetryOptions = (category: ErrorCategory): RetryOptions =>
         maxAttempts: 5,
         baseDelay: 500,
         retryCondition: (error) => {
-          const status = error.response?.status;
+          const status = (error as { response?: { status?: number } }).response?.status;
           return !status || status >= 500 || status === 408 || status === 429;
         }
       };
@@ -59,7 +59,7 @@ export const getDefaultRetryOptions = (category: ErrorCategory): RetryOptions =>
         baseDelay: 2000,
         maxDelay: 30000,
         retryCondition: (error) => {
-          const status = error.response?.status;
+          const status = (error as { response?: { status?: number } }).response?.status;
           return status === 503 || status === 502 || status === 429;
         }
       };
@@ -70,7 +70,7 @@ export const getDefaultRetryOptions = (category: ErrorCategory): RetryOptions =>
         maxAttempts: 3,
         baseDelay: 1000,
         retryCondition: (error) => {
-          const status = error.response?.status;
+          const status = (error as { response?: { status?: number } }).response?.status;
           return status >= 500 || status === 429;
         }
       };
@@ -81,7 +81,7 @@ export const getDefaultRetryOptions = (category: ErrorCategory): RetryOptions =>
         maxAttempts: 2,
         baseDelay: 2000,
         retryCondition: (error) => {
-          const status = error.response?.status;
+          const status = (error as { response?: { status?: number } }).response?.status;
           return status === 503 || status === 502;
         }
       };
@@ -167,7 +167,7 @@ export async function retryWithBackoff<T>(
         logWarn('Error not retryable, failing immediately', {
           component: context?.component,
           action: context?.action,
-          error: error.message,
+          error: (error as Error).message,
           attempt
         });
         throw error;
@@ -178,7 +178,7 @@ export async function retryWithBackoff<T>(
         logError('Max retry attempts reached', {
           component: context?.component,
           action: context?.action,
-          error: error.message,
+          error: (error as Error).message,
           attempt,
           maxAttempts: config.maxAttempts
         });
@@ -199,13 +199,13 @@ export async function retryWithBackoff<T>(
       logWarn(`Operation failed, retrying in ${delay}ms`, {
         component: context?.component,
         action: context?.action,
-        error: error.message,
+        error: (error as Error).message,
         attempt,
         maxAttempts: config.maxAttempts,
         delay
       });
       
-      config.onRetry?.(attempt, error);
+       config.onRetry?.(attempt, error);
       await sleep(delay);
     }
   }
@@ -328,7 +328,7 @@ export function withRetry<T extends (...args: unknown[]) => Promise<unknown>>(
 export async function retryBatch<T>(
   operations: Array<() => Promise<T>>,
   options: Partial<RetryOptions> = {}
-): Promise<Array<{ success: boolean; result?: T; error?: any }>> {
+): Promise<Array<{ success: boolean; result?: T; error?: unknown }>> {
   const results = await Promise.allSettled(
     operations.map(op => retryWithBackoff(op, options))
   );

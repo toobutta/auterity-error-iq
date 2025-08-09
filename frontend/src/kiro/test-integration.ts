@@ -1,5 +1,5 @@
 // Kiro Integration Test
-import { onErrorEvent } from './hooks/error-intelligence.hook';
+// import { onErrorEvent } from './hooks/error-intelligence.hook';
 import { applyErrorSteering } from './steering/error-routing';
 import { checkKiroPermission } from './permissions/error-analytics';
 import { getEnabledKiroModules } from './register';
@@ -26,6 +26,7 @@ export const testKiroIntegration = async () => {
   // Test 4: Hook Execution (mock)
   try {
     // This would normally make an API call, but we'll just test the structure
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const mockError = {
       workflowId: 'test-workflow-123',
       error: {

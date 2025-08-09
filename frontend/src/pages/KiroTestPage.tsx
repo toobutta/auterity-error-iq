@@ -5,7 +5,7 @@ import { useKiroIntegration } from '../hooks/useKiroIntegration';
 import { createAppError } from '../utils/errorUtils';
 
 const KiroTestPage: React.FC = () => {
-  const [testResults, setTestResults] = useState<any>(null);
+  const [testResults, setTestResults] = useState<Record<string, unknown> | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { triggerKiroHook, getErrorRoute, hasPermission } = useKiroIntegration('admin');
 
@@ -15,7 +15,8 @@ const KiroTestPage: React.FC = () => {
       const results = await testKiroIntegration();
       setTestResults(results);
     } catch (error) {
-      setTestResults({ success: false, error: error.message });
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      setTestResults({ success: false, error: message });
     } finally {
       setIsLoading(false);
     }

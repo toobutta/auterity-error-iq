@@ -170,7 +170,7 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
     steps: [
       {
         id: 'trigger-1',
-        type: 'service_appointment' as any,
+        type: 'service_appointment',
         name: 'Service Due',
         description: 'Triggered when service is due',
         config: {
@@ -181,12 +181,12 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
               daysBefore: 7
             }
           }
-        } as any,
+        },
         position: { x: 100, y: 100 }
       },
       {
         id: 'action-1',
-        type: 'send_email' as any,
+        type: 'send_email',
         name: 'Service Reminder',
         description: 'Send service reminder email',
         config: {
@@ -195,12 +195,12 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
             body: 'Dear {{customer_name}},\n\nYour {{vehicle_make}} {{vehicle_model}} is due for service. Please schedule an appointment at your convenience.\n\nBest regards,\nService Department',
             recipients: []
           }
-        } as any,
+        },
         position: { x: 100, y: 250 }
       },
       {
         id: 'action-2',
-        type: 'schedule_appointment' as any,
+        type: 'schedule_appointment',
         name: 'Auto-Schedule',
         description: 'Automatically schedule appointment',
         config: {
@@ -210,12 +210,12 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
             location: 'Service Bay 1',
             autoConfirm: false
           }
-        } as any,
+        },
         position: { x: 100, y: 400 }
       },
       {
         id: 'action-3',
-        type: 'update_crm' as any,
+        type: 'update_crm',
         name: 'Update Service Record',
         description: 'Update customer service history',
         config: {
@@ -224,7 +224,7 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
             notes: 'Service reminder sent and appointment scheduled',
             tags: ['service-due', 'reminder-sent']
           }
-        } as any,
+        },
         position: { x: 100, y: 550 }
       }
     ],
@@ -283,7 +283,7 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
     steps: [
       {
         id: 'trigger-1',
-        type: 'inventory_update' as any,
+        type: 'inventory_update',
         name: 'New Vehicle Arrival',
         description: 'Triggered when new vehicle is added to inventory',
         config: {
@@ -291,12 +291,12 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
             eventTypes: ['new_arrival'],
             vehicleFilters: {}
           }
-        } as any,
+        },
         position: { x: 100, y: 100 }
       },
       {
         id: 'ai-1',
-        type: 'recommendation_engine' as any,
+        type: 'recommendation_engine',
         name: 'Match Customers',
         description: 'Find customers interested in this vehicle type',
         config: {
@@ -306,12 +306,12 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
             temperature: 0.4,
             maxTokens: 600
           }
-        } as any,
+        },
         position: { x: 100, y: 250 }
       },
       {
         id: 'action-1',
-        type: 'send_email' as any,
+        type: 'send_email',
         name: 'Inventory Alert',
         description: 'Send new inventory alert to matched customers',
         config: {
@@ -320,12 +320,12 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
             body: 'Dear {{customer_name}},\n\nGreat news! A {{vehicle_year}} {{vehicle_make}} {{vehicle_model}} just arrived at our dealership. Based on your preferences, this might be the perfect vehicle for you.\n\nWould you like to schedule a test drive?\n\nBest regards,\nSales Team',
             recipients: []
           }
-        } as any,
+        },
         position: { x: 100, y: 400 }
       },
       {
         id: 'action-2',
-        type: 'update_crm' as any,
+        type: 'update_crm',
         name: 'Log Notification',
         description: 'Log inventory notification in CRM',
         config: {
@@ -334,7 +334,7 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
             notes: 'Customer notified of matching inventory arrival',
             tags: ['inventory-alert', 'potential-match']
           }
-        } as any,
+        },
         position: { x: 100, y: 550 }
       }
     ],
@@ -393,7 +393,7 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
     steps: [
       {
         id: 'trigger-1',
-        type: 'inventory_update' as any,
+        type: 'inventory_update',
         name: 'Price Review Trigger',
         description: 'Triggered weekly for price review',
         config: {
@@ -401,12 +401,12 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
             eventTypes: ['price_change'],
             vehicleFilters: {}
           }
-        } as any,
+        },
         position: { x: 100, y: 100 }
       },
       {
         id: 'ai-1',
-        type: 'price_optimization' as any,
+        type: 'price_optimization',
         name: 'AI Price Analysis',
         description: 'Analyze market conditions and recommend pricing',
         config: {
@@ -416,12 +416,12 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
             temperature: 0.2,
             maxTokens: 300
           }
-        } as any,
+        },
         position: { x: 100, y: 250 }
       },
       {
         id: 'condition-1',
-        type: 'budget_range' as any,
+        type: 'budget_range',
         name: 'Price Change Threshold',
         description: 'Check if price change is significant',
         config: {
@@ -433,12 +433,12 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
               logicalOperator: 'and'
             }
           ]
-        } as any,
+        },
         position: { x: 100, y: 400 }
       },
       {
         id: 'action-1',
-        type: 'update_crm' as any,
+        type: 'update_crm',
         name: 'Update Pricing',
         description: 'Update vehicle pricing in system',
         config: {
@@ -447,7 +447,7 @@ export const AUTOMOTIVE_WORKFLOW_TEMPLATES: Workflow[] = [
             notes: 'Price updated based on AI recommendation',
             tags: ['price-optimization', 'ai-recommended']
           }
-        } as any,
+        },
         position: { x: 100, y: 550 }
       }
     ],

@@ -34,12 +34,12 @@ class MockWebSocket {
     }
   }
 
-  send(data: string) {
+  send(_data: string) {
     // Mock send - in real tests you might want to capture this
   }
 
   // Helper method to simulate receiving messages
-  simulateMessage(data: any) {
+  simulateMessage(data: unknown) {
     if (this.onmessage && this.readyState === MockWebSocket.OPEN) {
       const messageEvent = new MessageEvent('message', {
         data: JSON.stringify(data)
@@ -57,7 +57,7 @@ class MockWebSocket {
 }
 
 // Mock global WebSocket
-(global as any).WebSocket = MockWebSocket;
+(global as unknown as { WebSocket: unknown }).WebSocket = MockWebSocket as unknown as WebSocket;
 
 // Mock environment variable
 const originalEnv = process.env;
@@ -72,17 +72,22 @@ afterEach(() => {
 
 describe('useWebSocketLogs', () => {
   const mockExecutionId = 'test-execution-id';
-  let mockWebSocket: MockWebSocket;
+  const getMockWebSocket = (): MockWebSocket => {
+    const WS = (global as unknown as { WebSocket: typeof MockWebSocket & { lastInstance?: MockWebSocket } }).WebSocket;
+    return (WS as unknown as { lastInstance?: MockWebSocket }).lastInstance as MockWebSocket;
+  };
 
   beforeEach(() => {
     // Capture the WebSocket instance for testing
-    const OriginalWebSocket = (global as any).WebSocket;
-    (global as any).WebSocket = class extends OriginalWebSocket {
+    const OriginalWebSocket = (global as unknown as { WebSocket: typeof MockWebSocket }).WebSocket;
+    class TestWebSocket extends (OriginalWebSocket as unknown as typeof MockWebSocket) {
+      static lastInstance?: MockWebSocket;
       constructor(url: string) {
         super(url);
-        mockWebSocket = this;
+        TestWebSocket.lastInstance = this as unknown as MockWebSocket;
       }
-    };
+    }
+    (global as unknown as { WebSocket: unknown }).WebSocket = TestWebSocket as unknown as WebSocket;
   });
 
   afterEach(() => {
@@ -148,7 +153,7 @@ describe('useWebSocketLogs', () => {
 
     // Simulate receiving a message
     await act(async () => {
-      mockWebSocket.simulateMessage(mockLogMessage);
+      getMockWebSocket().simulateMessage(mockLogMessage);
     });
 
     expect(result.current.logs).toHaveLength(1);
@@ -172,7 +177,7 @@ describe('useWebSocketLogs', () => {
 
     // Simulate error
     await act(async () => {
-      mockWebSocket.simulateError();
+      getMockWebSocket().simulateError();
     });
 
     expect(result.current.connectionStatus).toBe('error');
@@ -199,7 +204,7 @@ describe('useWebSocketLogs', () => {
 
     // Simulate unexpected close (not normal closure)
     await act(async () => {
-      mockWebSocket.close(1006, 'Connection lost');
+      getMockWebSocket().close(1006, 'Connection lost');
     });
 
     expect(result.current.connectionStatus).toBe('disconnected');
@@ -227,7 +232,7 @@ describe('useWebSocketLogs', () => {
 
     // Simulate normal close
     await act(async () => {
-      mockWebSocket.close(1000, 'Normal closure');
+      getMockWebSocket().close(1000, 'Normal closure');
     });
 
     expect(result.current.connectionStatus).toBe('disconnected');
@@ -246,9 +251,9 @@ describe('useWebSocketLogs', () => {
     );
 
     // Wait for connection and add a log
-    await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 20));
-      mockWebSocket.simulateMessage({
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 20));
+        getMockWebSocket().simulateMessage({
         id: 'log-1',
         execution_id: mockExecutionId,
         step_name: 'Test',
@@ -283,7 +288,7 @@ describe('useWebSocketLogs', () => {
 
     // Close connection
     await act(async () => {
-      mockWebSocket.close(1006, 'Connection lost');
+      getMockWebSocket().close(1006, 'Connection lost');
     });
 
     expect(result.current.connectionStatus).toBe('disconnected');
@@ -314,7 +319,7 @@ describe('useWebSocketLogs', () => {
     // Add more logs than buffer size
     for (let i = 0; i < 5; i++) {
       await act(async () => {
-        mockWebSocket.simulateMessage({
+        getMockWebSocket().simulateMessage({
           id: `log-${i}`,
           execution_id: mockExecutionId,
           step_name: `Test ${i}`,
@@ -346,11 +351,11 @@ describe('useWebSocketLogs', () => {
 
     // Simulate malformed message
     await act(async () => {
-      if (mockWebSocket.onmessage) {
+      if (getMockWebSocket().onmessage) {
         const malformedEvent = new MessageEvent('message', {
           data: 'invalid json'
         });
-        mockWebSocket.onmessage(malformedEvent);
+        getMockWebSocket().onmessage!(malformedEvent);
       }
     });
 
@@ -374,6 +379,6 @@ describe('useWebSocketLogs', () => {
     unmount();
 
     // WebSocket should be closed
-    expect(mockWebSocket.readyState).toBe(MockWebSocket.CLOSED);
+    expect(getMockWebSocket().readyState).toBe(MockWebSocket.CLOSED);
   });
 });

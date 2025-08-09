@@ -11,6 +11,27 @@ from .workflow import (
     WorkflowUpdate,
 )
 
+from .auth import (
+    CrossSystemTokenRequest,
+    CrossSystemTokenResponse,
+    PermissionResponse,
+    RoleCreate,
+    RoleResponse,
+    Token,
+    UserLogin,
+    UserRegister,
+    UserResponse,
+    UserRoleAssignment,
+)
+
+from .template import (
+    TemplateCreate,
+    TemplateUpdate,
+    TemplateResponse,
+    TemplateListResponse,
+    TemplateInstantiateRequest,
+)
+
 __all__ = [
     "WorkflowCreate",
     "WorkflowUpdate",
@@ -20,4 +41,19 @@ __all__ = [
     "ExecutionStatusResponse",
     "ExecutionLogResponse",
     "ExecutionResultResponse",
+    "UserRoleAssignment",
+    "UserResponse",
+    "UserRegister",
+    "UserLogin",
+    "Token",
+    "RoleResponse",
+    "RoleCreate",
+    "PermissionResponse",
+    "CrossSystemTokenResponse",
+    "CrossSystemTokenRequest",
+    "TemplateCreate",
+    "TemplateUpdate",
+    "TemplateResponse",
+    "TemplateListResponse",
+    "TemplateInstantiateRequest",
 ]

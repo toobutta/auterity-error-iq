@@ -1,4 +1,4 @@
-import { WorkflowStep, WorkflowConnection, WorkflowDefinition } from './workflow';
+import { WorkflowStep, WorkflowDefinition } from './workflow';
 
 // Enhanced workflow interfaces for automotive dealership workflows
 export interface Workflow extends WorkflowDefinition {
@@ -14,14 +14,14 @@ export interface Workflow extends WorkflowDefinition {
 export interface WorkflowVariable {
   name: string;
   type: 'string' | 'number' | 'boolean' | 'object';
-  defaultValue?: any;
+  defaultValue?: string | number | boolean | Record<string, unknown>;
   description: string;
 }
 
 export interface TriggerConfig {
   id: string;
   type: 'customer_inquiry' | 'inventory_update' | 'service_appointment' | 'lead_generation';
-  config: Record<string, any>;
+  config: Record<string, unknown>;
 }
 
 // Node system interfaces
@@ -74,7 +74,7 @@ export interface NodeTemplate {
 export interface InputPort {
   id: string;
   name: string;
-  type: 'string' | 'number' | 'boolean' | 'object' | 'any';
+  type: 'string' | 'number' | 'boolean' | 'object' | 'unknown';
   required: boolean;
   description?: string;
 }
@@ -82,7 +82,7 @@ export interface InputPort {
 export interface OutputPort {
   id: string;
   name: string;
-  type: 'string' | 'number' | 'boolean' | 'object' | 'any';
+  type: 'string' | 'number' | 'boolean' | 'object' | 'unknown';
   description?: string;
 }
 
@@ -102,7 +102,7 @@ export interface NodeConfig {
     status?: string;
     notes?: string;
     tags?: string[];
-    customFields?: Record<string, any>;
+     customFields?: Record<string, unknown>;
   };
   
   // AI Node
@@ -118,24 +118,24 @@ export interface NodeConfig {
   conditions?: {
     field: string;
     operator: 'equals' | 'contains' | 'greater_than' | 'less_than' | 'in' | 'not_in';
-    value: any;
+     value: unknown;
     logicalOperator?: 'and' | 'or';
   }[];
   
   // Trigger Nodes
   customerInquiry?: {
     sources: ('email' | 'phone' | 'web_form' | 'chat')[];
-    filters?: Record<string, any>;
+     filters?: Record<string, unknown>;
   };
   
   inventoryUpdate?: {
     eventTypes: ('new_arrival' | 'price_change' | 'status_change')[];
-    vehicleFilters?: {
+     vehicleFilters?: {
       make?: string[];
       model?: string[];
       year?: number[];
       priceRange?: { min: number; max: number };
-    };
+     };
   };
   
   serviceAppointment?: {
@@ -168,14 +168,14 @@ export interface NodeConfig {
     includeFinancing: boolean;
     includeTradeIn: boolean;
     validityDays: number;
-    discountRules?: Record<string, any>;
+     discountRules?: Record<string, unknown>;
   };
 }
 
 export interface ValidationRule {
   field: string;
   type: 'required' | 'min_length' | 'max_length' | 'pattern' | 'custom';
-  value?: any;
+  value?: string | number | boolean | RegExp | Record<string, unknown>;
   message: string;
 }
 
@@ -215,7 +215,7 @@ export interface NodeEditorProps {
 
 export interface WorkflowTesterProps {
   workflow: Workflow;
-  onExecute: (inputData: Record<string, any>) => Promise<string>; // Returns executionId
+  onExecute: (inputData: Record<string, unknown>) => Promise<string>; // Returns executionId
   isExecuting?: boolean;
 }
 
@@ -245,7 +245,7 @@ export interface VehicleData {
   status: 'available' | 'sold' | 'reserved' | 'maintenance';
   features: string[];
   images?: string[];
-  specifications?: Record<string, any>;
+   specifications?: Record<string, unknown>;
 }
 
 export interface ServiceAppointmentData {
