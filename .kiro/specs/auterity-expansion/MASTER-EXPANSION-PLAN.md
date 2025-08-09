@@ -75,6 +75,21 @@ This master plan integrates the ambitious Auterity Strategic Feature Expansion w
 - **Enables:** Multi-agent orchestration expansion features
 ```
 
+#### 1.5 GenAI AgentOS Internal Engine Setup
+```markdown
+[AMAZON-Q-TASK] GenAI AgentOS Fork & Internal Engine Architecture
+- **Repo Integration:** Fork GenAI AgentOS (MIT License) ✅ Safe
+- **Source:** https://github.com/genai-works-org/genai-agentos → Fork to Auterity org
+- **Architecture:** Internal engine layer with Auterity as customer-facing product
+- **Separation:** GenAI AgentOS = Internal engine | Auterity = Product layer
+- **Components:** Containerized engine (Backend, Router, Master Agents, PostgreSQL, CLI, Redis, Celery)
+- **Integration:** API-only communication between Auterity and GenAI engine
+- **Contribution:** All engine improvements contributed back to upstream MIT project
+- **Timeline:** Week 4
+- **Success Criteria:** Isolated engine with clean API boundaries
+- **Enables:** Multi-protocol agent orchestration without license contamination
+```
+
 ---
 
 ## 🏗️ Phase 2: Core Infrastructure Expansion (Weeks 5-8)
@@ -96,16 +111,17 @@ This master plan integrates the ambitious Auterity Strategic Feature Expansion w
 - **Repo Integration:** Keycloak (Apache-2.0) ✅ Safe
 - **Objective:** Extend current JWT system with RBAC and preferences
 - **Components:** Role-based access control, user preferences, profile management
-- **Architecture:** Build on existing JWT auth foundation
+- **Architecture:** Auterity-only auth system with API calls to GenAI engine
 - **Timeline:** Week 5
 - **Success Criteria:** Complete user management with enterprise features
 
 [CLINE-TASK] API Key Management System
-- **Approach:** Custom build (strategic IP ownership)
+- **Approach:** Custom Auterity build with engine API integration
 - **Objective:** Master key system with usage limits and tracking
-- **Components:** Key generation, usage monitoring, rate limiting
+- **Components:** Key generation, usage monitoring, rate limiting, engine authentication
+- **Architecture:** Auterity manages keys, passes to GenAI engine via API
 - **Timeline:** Week 6
-- **Success Criteria:** Secure API key management with usage controls
+- **Success Criteria:** Secure API key management with engine isolation
 ```
 
 ### **2.3 Prompt Engineering Infrastructure**
@@ -133,38 +149,42 @@ This master plan integrates the ambitious Auterity Strategic Feature Expansion w
 ### **3.1 Visual Agent Creation System**
 ```markdown
 [CLINE-TASK] Agent Creation Interface
-- **Repo Integration:** React Flow + LangGraph (MIT License) ✅ Safe
-- **Objective:** Visual node builder for agent workflows
-- **Architecture:** Extend current React Flow implementation
-- **Components:** Agent nodes, connection validation, visual flow design
+- **Repo Integration:** React Flow (MIT License) ✅ Safe
+- **Objective:** Visual node builder for agent workflows with multi-protocol support
+- **Architecture:** Auterity React frontend with API calls to GenAI engine
+- **Components:** Agent nodes, protocol selection, connection validation, visual flow design
+- **Engine Communication:** REST API calls to containerized GenAI engine
 - **Timeline:** Week 9
-- **Success Criteria:** Drag-and-drop agent workflow creation
+- **Success Criteria:** Drag-and-drop agent workflow creation with clean API separation
 
-[AMAZON-Q-TASK] Multi-Agent Orchestration Engine
-- **Repo Integration:** LangGraph (MIT License) ✅ Safe
-- **Objective:** LangGraph/TaskWeaver chaining for complex workflows
-- **Architecture:** Build on MCP orchestration foundation
-- **Components:** Agent chaining, context passing, parallel execution
+[AMAZON-Q-TASK] Multi-Agent Orchestration Engine Enhancement
+- **Approach:** Contribute improvements to forked GenAI AgentOS
+- **Objective:** Enhanced orchestration with automotive-specific features
+- **Architecture:** Improve GenAI engine, contribute back to MIT project
+- **Components:** Enhanced routing, automotive protocols, performance optimizations
+- **Contribution:** All improvements pushed to upstream GenAI AgentOS project
 - **Timeline:** Week 10
-- **Success Criteria:** Complex multi-agent workflow execution
+- **Success Criteria:** Enhanced engine with upstream contributions
 ```
 
 ### **3.2 Conversational Interface System**
 ```markdown
 [CLINE-TASK] Agent Chat UI Development
-- **Approach:** Custom build (inspired by Open WebUI patterns)
-- **Reason:** Open WebUI uses AGPL-3.0 ⚠️ - develop in-house for safety
+- **Approach:** Custom Auterity build with engine API integration
 - **Objective:** Conversational frontend with visual flow integration
-- **Components:** Chat interface, visual flow display, context management
+- **Architecture:** Auterity React frontend communicating with GenAI engine via API
+- **Components:** Multi-protocol chat interface, visual flow display, context management
+- **Engine Communication:** WebSocket + REST API to GenAI engine
 - **Timeline:** Week 11
-- **Success Criteria:** Seamless chat experience with workflow visualization
+- **Success Criteria:** Seamless chat experience with clean engine separation
 
 [CLINE-TASK] Embeddable Chat Widget
-- **Approach:** Custom build (strategic IP ownership)
-- **Objective:** Embeddable widget with token preview for external sites
-- **Components:** Lightweight widget, token estimation, branding controls
+- **Approach:** Custom Auterity build with engine proxy
+- **Objective:** Embeddable widget with multi-protocol agent support
+- **Components:** Lightweight widget, token estimation, branding controls, API proxy
+- **Architecture:** Widget → Auterity API → GenAI Engine
 - **Timeline:** Week 12
-- **Success Criteria:** Deployable chat widget for partner integration
+- **Success Criteria:** Deployable chat widget with proper API isolation
 ```
 
 ---
@@ -317,3 +337,124 @@ This master plan integrates the ambitious Auterity Strategic Feature Expansion w
 - Cursor ready to begin frontend work immediately after Amazon Q completion
 
 This master plan ensures that critical foundation work is completed as essential subtasks while systematically building toward the strategic expansion vision, maintaining quality and legal compliance throughout the process.
+
+---
+
+## 🤖 GenAI AgentOS Integration Specifications
+
+### **Core Infrastructure Merge Strategy**
+
+#### Backend Integration
+```markdown
+**Current Auterity:** FastAPI + SQLAlchemy + PostgreSQL + JWT
+**GenAI AgentOS:** Backend + Router + Master Agents + PostgreSQL + Redis + Celery
+
+**Merge Approach:**
+- Integrate GenAI AgentOS router as microservice alongside current FastAPI
+- Merge PostgreSQL schemas (Auterity workflows + GenAI agent management)
+- Add Redis for agent state management and Celery for async agent tasks
+- Extend JWT auth to support agent authentication protocols
+```
+
+#### Frontend Integration
+```markdown
+**Current Auterity:** React 18 + TypeScript + Tailwind + React Flow
+**GenAI AgentOS:** Frontend with agent management UI
+
+**Merge Approach:**
+- Integrate GenAI AgentOS agent management components into current React app
+- Extend React Flow with GenAI protocol node types
+- Add MCP and A2A protocol support to workflow builder
+- Merge UI patterns for consistent user experience
+```
+
+#### Protocol Support Matrix
+```markdown
+| Protocol Type    | Current Support | GenAI AgentOS | Merged Capability |
+|------------------|----------------|---------------|-------------------|
+| **Workflow API** | ✅ Native      | ➕ Enhanced   | Advanced workflow + agent orchestration |
+| **GenAI Protocol** | ❌ None       | ✅ Native     | Full GenAI agent support |
+| **MCP Servers**  | ❌ None       | ✅ Native     | Model Context Protocol integration |
+| **A2A Protocol** | ❌ None       | ✅ Native     | Agent-to-Agent communication |
+| **OpenAI API**   | ✅ Native      | ➕ Enhanced   | Multi-model routing + GenAI protocols |
+```
+
+### **Implementation Priority Matrix**
+
+#### High Priority (Week 4)
+- GenAI AgentOS router integration
+- PostgreSQL schema merge
+- Redis + Celery setup
+- Basic agent protocol support
+
+#### Medium Priority (Week 9-10)
+- Frontend UI component integration
+- Multi-protocol workflow nodes
+- Agent management interface
+
+#### Low Priority (Week 11-12)
+- CLI integration
+- Advanced protocol features
+- Performance optimization
+
+### **Technical Integration Points**
+
+#### Database Schema Merge
+```sql
+-- Extend existing Auterity tables
+ALTER TABLE workflows ADD COLUMN agent_protocols TEXT[];
+ALTER TABLE workflow_executions ADD COLUMN agent_context JSONB;
+
+-- Add GenAI AgentOS tables
+CREATE TABLE agents (
+    id UUID PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    protocol_type VARCHAR(50) NOT NULL, -- 'genai', 'mcp', 'a2a'
+    config JSONB NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE agent_sessions (
+    id UUID PRIMARY KEY,
+    agent_id UUID REFERENCES agents(id),
+    workflow_execution_id UUID REFERENCES workflow_executions(id),
+    status VARCHAR(50) NOT NULL,
+    context JSONB
+);
+```
+
+#### API Endpoint Extensions
+```python
+# Extend existing FastAPI routes
+@router.post("/workflows/{workflow_id}/agents")
+async def add_agent_to_workflow(workflow_id: str, agent_config: AgentConfig):
+    """Add GenAI/MCP/A2A agent to workflow"""
+    pass
+
+@router.get("/agents/protocols")
+async def list_supported_protocols():
+    """List all supported agent protocols"""
+    return {"protocols": ["genai", "mcp", "a2a", "openai"]}
+```
+
+#### React Component Integration
+```typescript
+// Extend existing React Flow nodes
+interface AgentNodeData extends NodeData {
+  protocolType: 'genai' | 'mcp' | 'a2a' | 'openai';
+  agentConfig: AgentConfig;
+  connectionEndpoints: ProtocolEndpoint[];
+}
+
+// New agent management components
+export const AgentProtocolSelector: React.FC<{
+  onProtocolSelect: (protocol: string) => void;
+}>;
+
+export const MultiProtocolChat: React.FC<{
+  supportedProtocols: string[];
+  activeAgent?: Agent;
+}>;
+```
+
+This integration transforms Auterity into a comprehensive multi-protocol agent orchestration platform, leveraging GenAI AgentOS's proven infrastructure while maintaining the existing workflow automation capabilities.

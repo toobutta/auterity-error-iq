@@ -1,14 +1,9 @@
 export interface WorkflowStep {
   id: string;
-  type: 'start' | 'ai_process' | 'condition' | 'action' | 'end';
+  type: string;
   name: string;
   description?: string;
-  config: {
-    prompt?: string;
-    condition?: string;
-    action?: string;
-    parameters?: Record<string, unknown>;
-  };
+  config: Record<string, unknown>;
   position: { x: number; y: number };
 }
 
