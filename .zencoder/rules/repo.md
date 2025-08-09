@@ -188,6 +188,46 @@ npm run build && npm start  # Production
 cd systems/neuroweaver/frontend && npm test
 ```
 
+## Testing Framework
+
+### End-to-End Testing
+**Framework**: Playwright
+**Test Location**: tests/e2e
+**Run Command**:
+```bash
+cd tests/e2e && npm test
+```
+
+### Comprehensive Testing
+**Automation Script**: scripts/test-automation.sh
+**Features**:
+- Unit tests with coverage analysis
+- Integration tests
+- End-to-end tests with Playwright
+- Security vulnerability scanning
+- Performance testing
+- Quality gates with configurable thresholds
+
+**Run Command**:
+```bash
+./scripts/test-automation.sh
+```
+
+### Staging Validation
+**Validation Script**: scripts/staging-deployment-validation.sh
+**Features**:
+- Service health checks
+- API endpoint validation
+- Frontend application validation
+- SSL certificate validation
+- Database connectivity checks
+- Smoke tests
+
+**Run Command**:
+```bash
+./scripts/staging-deployment-validation.sh
+```
+
 ### Infrastructure
 **Type**: Docker Compose, AWS CloudFormation, Terraform
 
