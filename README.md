@@ -60,6 +60,23 @@ docker-compose up
 
 ### 📚 Documentation
 
+#### **Core Documentation**
+- [Infrastructure Complete](docs/INFRASTRUCTURE_COMPLETE.md) - All 16 services implemented
+- [Architecture Overview](docs/ARCHITECTURE_OVERVIEW.md) - System design and data flow
+- [API Specifications](docs/API_SPECIFICATIONS.md) - Complete API reference
+
+#### **Setup & Deployment**
+- [Development Setup](docs/DEVELOPMENT_SETUP.md) - Local development guide
+- [Deployment Guide](docs/DEPLOYMENT_GUIDE.md) - Production deployment
+- [Infrastructure Services](docs/INFRASTRUCTURE_SERVICES.md) - Service details
+
+#### **Operations & Monitoring**
+- [Monitoring Setup](docs/MONITORING_SETUP.md) - Grafana, Prometheus, Jaeger
+- [Performance Optimization](docs/PERFORMANCE_OPTIMIZATION.md) - Scaling strategies
+- [Troubleshooting](docs/TROUBLESHOOTING.md) - Common issues & solutions
+- [Security Guide](docs/SECURITY_GUIDE.md) - Authentication & data protection
+
+#### **Legacy Documentation**
 - [Current Project Status](CURRENT_PROJECT_STATUS.md)
 - [Enterprise SSO](docs/ENTERPRISE_SSO.md)
 - [Realtime Monitoring](docs/REALTIME_MONITORING_IMPLEMENTATION.md)

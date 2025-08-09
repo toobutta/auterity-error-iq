@@ -158,7 +158,41 @@ similar = vector_db.search_similar(
 )
 ```
 
+## Search Service
+
+### Overview
+Elasticsearch-based search and analytics for workflows, executions, and logs with Kibana visualization.
+
+### Location
+`/backend/app/services/search_service.py`
+
+### Usage
+```python
+from app.services.search_service import get_search_service
+
+search = get_search_service()
+
+# Index workflow
+search.index_workflow("workflow_123", {
+    "name": "Data Processing",
+    "description": "Process customer data",
+    "tags": ["data", "etl"]
+})
+
+# Search workflows
+results = search.search_workflows("customer data", tags=["etl"])
+
+# Search logs
+logs = search.search_logs(
+    query="error",
+    level="ERROR",
+    time_range={"from": "2024-01-01", "to": "2024-01-31"}
+)
+```
+
 ## Service Access
 - **MinIO Console**: http://localhost:9001 (minioadmin/minioadmin123)
 - **Qdrant Dashboard**: http://localhost:6333/dashboard
 - **Ollama API**: http://localhost:11434
+- **Elasticsearch**: http://localhost:9200
+- **Kibana**: http://localhost:5601

@@ -9,6 +9,7 @@ from app.api import (
     error_management,
     logs,
     monitoring,
+    tasks,
     templates,
     websockets,
     workflows,
@@ -25,6 +26,7 @@ from app.middleware.enhanced_error_middleware import (
 from app.middleware.logging import StructuredLoggingMiddleware
 from app.middleware.prometheus import prometheus_middleware
 from app.middleware.tracing import setup_tracing
+from app.middleware.otel_middleware import setup_opentelemetry
 
 # Environment configuration
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
@@ -63,6 +65,9 @@ app.middleware("http")(prometheus_middleware)
 # Setup distributed tracing
 setup_tracing(app)
 
+# Setup OpenTelemetry
+setup_opentelemetry(app)
+
 # CORS middleware for frontend integration
 app.add_middleware(
     CORSMiddleware,
@@ -76,6 +81,7 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api")
 app.include_router(workflows.router, prefix="/api")
 app.include_router(templates.router, prefix="/api")
+app.include_router(tasks.router, prefix="/api")
 app.include_router(logs.router, prefix="/api")
 app.include_router(monitoring.router, prefix="/api")
 app.include_router(error_correlation.router)
