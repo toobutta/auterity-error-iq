@@ -1,12 +1,10 @@
 """API endpoints for model management and monitoring."""
 
 from typing import List, Dict, Any, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.services.ai_service import get_ai_service
-from app.models.model_config import ModelUsage, ModelConfiguration
 from app.auth.dependencies import get_current_user
 from app.models.user import User
 

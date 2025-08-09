@@ -455,7 +455,7 @@ async def cancel_execution(
         if not success:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Execution cannot be cancelled (may already be completed or failed)",
+                detail="Execution cannot be cancelled (may be completed or failed)",
             )
 
         return {"message": "Execution cancelled successfully"}

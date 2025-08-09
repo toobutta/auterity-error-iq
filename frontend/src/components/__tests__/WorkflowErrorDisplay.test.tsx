@@ -35,11 +35,35 @@ vi.mock('../../utils/errorUtils', () => ({
 const mockGetExecution = vi.mocked(workflowsApi.getExecution);
 const mockGetExecutionLogs = vi.mocked(workflowsApi.getExecutionLogs);
 
-const mockFailedExecution = {
+// Define proper interfaces for test data
+interface WorkflowExecution {
+  id: string;
+  workflowId: string;
+  workflowName: string;
+  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+  inputData: Record<string, unknown>;
+  outputData: Record<string, unknown> | null;
+  startedAt: string;
+  completedAt: string | null;
+  errorMessage?: string;
+  duration: number;
+}
+
+interface ExecutionLog {
+  id: string;
+  stepName: string;
+  level: 'info' | 'warning' | 'error' | 'debug';
+  message: string;
+  timestamp: string;
+  duration: number;
+  data: Record<string, unknown>;
+}
+
+const mockFailedExecution: WorkflowExecution = {
   id: 'exec-123',
   workflowId: 'workflow-456',
   workflowName: 'Test Workflow',
-  status: 'failed' as const,
+  status: 'failed',
   inputData: {
     customerName: 'John Doe',
     vehicleType: 'sedan'
@@ -51,7 +75,7 @@ const mockFailedExecution = {
   duration: 300000
 };
 
-const mockExecutionLogs = [
+const mockExecutionLogs: ExecutionLog[] = [
   {
     id: 'log-1',
     stepName: 'Initialize Workflow',
@@ -81,6 +105,15 @@ const mockExecutionLogs = [
   }
 ];
 
+// Define the type for the component props
+interface WorkflowErrorDisplayProps {
+  executionId: string;
+  workflowId?: string;
+  onRetrySuccess?: (newExecutionId: string) => void;
+  onClose?: () => void;
+  className?: string;
+}
+
 const renderWithErrorProvider = (component: React.ReactElement) => {
   return render(
     <ErrorProvider>
@@ -90,7 +123,7 @@ const renderWithErrorProvider = (component: React.ReactElement) => {
 };
 
 describe('WorkflowErrorDisplay', () => {
-  const defaultProps = {
+  const defaultProps: WorkflowErrorDisplayProps = {
     executionId: 'exec-123',
     workflowId: 'workflow-456',
     onRetrySuccess: vi.fn(),
@@ -375,7 +408,7 @@ describe('WorkflowErrorDisplay', () => {
   });
 
   it('displays different error categories with appropriate styling', async () => {
-    const validationErrorExecution = {
+    const validationErrorExecution: WorkflowExecution = {
       ...mockFailedExecution,
       errorMessage: 'Validation failed: required field missing'
     };

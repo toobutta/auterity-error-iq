@@ -23,9 +23,34 @@ vi.mock('../../api/workflows', () => ({
   getDashboardMetrics: vi.fn(),
 }));
 
+// Define proper interfaces for component props
+interface WorkflowExecutionFormProps {
+  onExecutionStart?: (executionId: string) => void;
+  className?: string;
+}
+
+interface ExecutionStatusProps {
+  executionId: string;
+  onComplete?: (execution: { id: string; status: string; workflowId: string }) => void;
+}
+
+interface WorkflowExecutionResultsProps {
+  executionId: string;
+  workflowId: string;
+}
+
+interface WorkflowExecutionHistoryProps {
+  onExecutionSelect?: (execution: { id: string; workflowId: string; status: string }) => void;
+}
+
+interface WorkflowErrorDisplayProps {
+  executionId: string;
+  onRetrySuccess?: (newExecutionId: string) => void;
+}
+
 // Mock the child components to focus on integration
 vi.mock('../../components/WorkflowExecutionForm', () => ({
-  default: ({ onExecutionStart, className }: unknown) => (
+  default: ({ onExecutionStart, className }: WorkflowExecutionFormProps) => (
     <div data-testid="workflow-execution-form" className={className}>
       <button 
         onClick={() => onExecutionStart?.('test-execution-id')}
@@ -38,7 +63,7 @@ vi.mock('../../components/WorkflowExecutionForm', () => ({
 }));
 
 vi.mock('../../components/ExecutionStatus', () => ({
-  default: ({ executionId, onComplete }: unknown) => (
+  default: ({ executionId, onComplete }: ExecutionStatusProps) => (
     <div data-testid="execution-status">
       <span>Execution ID: {executionId}</span>
       <button 
@@ -52,7 +77,7 @@ vi.mock('../../components/ExecutionStatus', () => ({
 }));
 
 vi.mock('../../components/WorkflowExecutionResults', () => ({
-  default: ({ executionId, workflowId }: unknown) => (
+  default: ({ executionId, workflowId }: WorkflowExecutionResultsProps) => (
     <div data-testid="execution-results">
       <span>Results for execution: {executionId}</span>
       <span>Workflow: {workflowId}</span>
@@ -61,7 +86,7 @@ vi.mock('../../components/WorkflowExecutionResults', () => ({
 }));
 
 vi.mock('../../components/WorkflowExecutionHistory', () => ({
-  default: ({ onExecutionSelect }: unknown) => (
+  default: ({ onExecutionSelect }: WorkflowExecutionHistoryProps) => (
     <div data-testid="execution-history">
       <button 
         onClick={() => onExecutionSelect?.({ 
@@ -78,7 +103,7 @@ vi.mock('../../components/WorkflowExecutionHistory', () => ({
 }));
 
 vi.mock('../../components/WorkflowErrorDisplay', () => ({
-  default: ({ executionId, onRetrySuccess }: unknown) => (
+  default: ({ executionId, onRetrySuccess }: WorkflowErrorDisplayProps) => (
     <div data-testid="error-display">
       <span>Error for execution: {executionId}</span>
       <button 

@@ -1,6 +1,5 @@
 """AI service for workflow processing using LiteLLM for multi-model support."""
 
-import asyncio
 import json
 import logging
 import os
@@ -10,10 +9,8 @@ from typing import Any, Dict, List, Optional
 
 from app.exceptions import AIServiceError
 from app.services.litellm_service import (
-    LiteLLMService, 
-    get_litellm_service,
-    set_litellm_service,
-    ModelProvider
+    LiteLLMService,
+    get_litellm_service
 )
 
 logger = logging.getLogger(__name__)
@@ -284,7 +281,7 @@ class AIService:
     def get_available_templates(self) -> List[str]:
         """Get list of available template names."""
         return list(self.DEFAULT_TEMPLATES.keys())
-    
+
     def get_available_models(self) -> List[str]:
         """Get list of available model names."""
         models = self.litellm_service.get_available_models()

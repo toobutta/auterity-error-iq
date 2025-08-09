@@ -21,40 +21,52 @@ vi.mock('../../api/workflows', () => ({
   getDashboardMetrics: vi.fn(),
 }));
 
-const mockLogData = [
+import { ExecutionLogEntry } from '../../types/execution';
+
+const mockLogData: ExecutionLogEntry[] = [
   {
     id: 'log-1',
-    execution_id: 'exec-123',
-    step_name: 'Initialize Workflow',
-    step_type: 'start',
-    input_data: { userId: '123', action: 'start' },
-    output_data: { status: 'initialized', timestamp: '2024-01-01T10:00:00Z' },
-    duration_ms: 150,
+    executionId: 'exec-123',
+    stepName: 'Initialize Workflow',
+    message: 'Workflow initialization completed',
+    data: { 
+      userId: '123', 
+      action: 'start',
+      stepType: 'start',
+      input: { userId: '123', action: 'start' },
+      output: { status: 'initialized', timestamp: '2024-01-01T10:00:00Z' }
+    },
+    duration: 150,
     timestamp: '2024-01-01T10:00:00Z',
-    level: 'info' as const,
+    level: 'info',
   },
   {
     id: 'log-2',
-    execution_id: 'exec-123',
-    step_name: 'Process Data',
-    step_type: 'processing',
-    input_data: { data: 'sample data' },
-    output_data: { result: 'processed' },
-    duration_ms: 2500,
+    executionId: 'exec-123',
+    stepName: 'Process Data',
+    message: 'Processing failed due to invalid input',
+    data: {
+      stepType: 'processing',
+      input: { data: 'sample data' },
+      output: { result: 'processed' }
+    },
+    duration: 2500,
     timestamp: '2024-01-01T10:00:02Z',
-    error_message: 'Processing failed due to invalid input',
-    level: 'error' as const,
+    level: 'error',
   },
   {
     id: 'log-3',
-    execution_id: 'exec-123',
-    step_name: 'Validation Check',
-    step_type: 'warning',
-    input_data: { rules: ['required', 'format'] },
-    output_data: { valid: false, warnings: ['format issue'] },
-    duration_ms: 500,
+    executionId: 'exec-123',
+    stepName: 'Validation Check',
+    message: 'Validation completed with warnings',
+    data: {
+      stepType: 'warning',
+      input: { rules: ['required', 'format'] },
+      output: { valid: false, warnings: ['format issue'] }
+    },
+    duration: 500,
     timestamp: '2024-01-01T10:00:03Z',
-    level: 'warning' as const,
+    level: 'warning',
   },
 ];
 
