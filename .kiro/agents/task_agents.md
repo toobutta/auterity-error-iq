@@ -57,7 +57,36 @@
 - Health monitoring system
 **Timeline**: 3-4 days
 **Status**: READY
+
 **Best Practices**: Type-safe agent definitions, efficient capability indexing, robust health checks
+
+---
+
+## 📚 Agent Specialization References
+
+For **detailed agent specializations, advanced capabilities, and best practices** for both ChatGPT and Claude agents, see:
+
+- **[Agent Specializations Framework (ChatGPT)](agent_specializations.md)**  
+	Comprehensive profiles, instruction sets, and best practices for all ChatGPT-based development agents.
+
+- **[Claude Agent Framework](claude_agent_framework.md)**  
+	Detailed Claude-optimized agent roles, capabilities, and systematic reasoning strategies for analysis, review, and quality assurance.
+
+These frameworks provide in-depth guidance for agent customization, collaboration, and lifecycle coverage, ensuring robust, scalable, and high-quality development across the entire MCP architecture project.
+
+---
+
+## 🛠️ Agent Routing & UI Status
+
+**Current Task:** Database Schema Extensions for MCP Support
+**Assigned Agent:** 🗄️ DatabaseArchitect
+**Agent Type:** ChatGPT (Implementation)
+
+**UI Status:**
+> **Active Agent:** 🗄️ DatabaseArchitect (ChatGPT)
+> **Task:** Creating and applying database migrations for MCP support
+
+---
 
 ---
 
