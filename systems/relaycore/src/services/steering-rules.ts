@@ -101,7 +101,7 @@ export class SteeringRulesEngine {
     }
   }
 
-  async determineRouting(request: AIRequest): Promise<RoutingDecision> {
+  async determineRouting(request: AIRequest, profileId: string): Promise<RoutingDecision> {
     if (!this.config) {
       await this.loadSteeringRules();
     }
@@ -112,10 +112,16 @@ export class SteeringRulesEngine {
         return this.createFallbackDecision('Daily budget exceeded', ['budget_constraint']);
       }
 
-      // Find matching rule
+      // Add profile-specific cost constraints
+      const profileCostRules = await this.getProfileCostRules(profileId);
+      if (profileCostRules && this.dailySpend >= profileCostRules.daily_budget) {
+        return this.createFallbackDecision('Profile budget exceeded', ['profile_budget']);
+      }
+
+      // Find matching rule with profile awareness
       for (const rule of this.config!.routing_rules) {
-        if (this.evaluateConditions(rule.conditions, request)) {
-          const decision = await this.createRoutingDecision(rule, request);
+        if (this.evaluateProfileConditions(rule.conditions, request, profileId)) {
+          const decision = await this.createRoutingDecision(rule, request, profileId);
           
           // Check if decision exceeds per-request budget
           if (decision.estimated_cost > this.config!.cost_constraints.per_request_max) {
@@ -130,7 +136,7 @@ export class SteeringRulesEngine {
       // No rules matched, use default
       const defaultRule = this.config!.routing_rules.find(r => r.name === 'default');
       if (defaultRule) {
-        return this.createRoutingDecision(defaultRule, request);
+        return this.createRoutingDecision(defaultRule, request, profileId);
       }
 
       return this.createFallbackDecision('No matching rules found', ['no_match_fallback']);
@@ -141,11 +147,16 @@ export class SteeringRulesEngine {
     }
   }
 
-  private evaluateConditions(conditions: RuleCondition[], request: AIRequest): boolean {
+  private evaluateProfileConditions(conditions: RuleCondition[], request: AIRequest, profileId: string): boolean {
     if (conditions.length === 0) return true; // Default rule
 
     return conditions.every(condition => {
       const fieldValue = this.getFieldValue(condition.field, request);
+      
+      // Check for profile-specific conditions
+      if (condition.field === 'profile') {
+        return profileId === condition.value;
+      }
       
       switch (condition.operator) {
         case 'equals':
@@ -180,8 +191,8 @@ export class SteeringRulesEngine {
     return value;
   }
 
-  private async createRoutingDecision(rule: any, request: AIRequest): Promise<RoutingDecision> {
-    const baseCost = this.calculateBaseCost(rule.action.model, request.prompt.length);
+  private async createRoutingDecision(rule: any, request: AIRequest, profileId: string): Promise<RoutingDecision> {
+    const baseCost = this.calculateBaseCost(rule.action.model, request.prompt.length, profileId);
     const estimatedCost = baseCost * (rule.action.cost_multiplier || 1.0);
     
     return {
@@ -189,7 +200,7 @@ export class SteeringRulesEngine {
       model: rule.action.model,
       estimated_cost: estimatedCost,
       expected_latency: rule.action.max_latency || 2000,
-      confidence_score: this.calculateConfidenceScore(rule, request),
+      confidence_score: this.calculateConfidenceScore(rule, request, profileId),
       reasoning: `Matched rule: ${sanitizeForLog(rule.name || 'unknown')}`,
       routing_rules_applied: [rule.name || 'unknown']
     };
@@ -207,7 +218,7 @@ export class SteeringRulesEngine {
     };
   }
 
-  private calculateBaseCost(model: string, promptLength: number): number {
+  private calculateBaseCost(model: string, promptLength: number, profileId: string): number {
     const costPerToken: Record<string, number> = {
       'gpt-4': 0.03,
       'gpt-3.5-turbo': 0.0015,
@@ -215,16 +226,25 @@ export class SteeringRulesEngine {
       'automotive-specialist-v1': 0.001
     };
     
-    const estimatedTokens = Math.ceil(promptLength / 4); // Rough token estimation
-    return (costPerToken[model] || 0.002) * estimatedTokens / 1000;
+    // Apply profile-specific cost adjustments
+    if (profileId === 'automotive') {
+      return (costPerToken[model] || 0.002) * promptLength / 1000 * 0.9; // 10% discount
+    }
+    
+    return (costPerToken[model] || 0.002) * promptLength / 1000;
   }
 
-  private calculateConfidenceScore(rule: any, request: AIRequest): number {
+  private calculateConfidenceScore(rule: any, request: AIRequest, profileId: string): number {
     let score = 0.8; // Base confidence
     
     // Adjust based on model capability
     if (rule.model.includes('gpt-4')) score += 0.1;
     if (rule.model.includes('specialist')) score += 0.05;
+    
+    // Adjust based on profile-specific confidence
+    if (profileId === 'healthcare') {
+      score += 0.05; // Higher confidence for healthcare rules
+    }
     
     // Adjust based on request complexity
     if (request.prompt.length > 1000) score -= 0.05;
@@ -245,5 +265,18 @@ export class SteeringRulesEngine {
   resetDailyTracking(): void {
     this.dailySpend = 0;
     this.requestCount = 0;
+  }
+
+  private async getProfileCostRules(profileId: string): Promise<{daily_budget: number} | null> {
+    // Implementation to fetch profile-specific cost rules
+    const profileCosts: Record<string, {daily_budget: number}> = {
+      'automotive': {daily_budget: 500},
+      'healthcare': {daily_budget: 300},
+      'finance': {daily_budget: 400},
+      'retail': {daily_budget: 250},
+      'general': {daily_budget: 200}
+    };
+    
+    return profileCosts[profileId] || null;
   }
 }

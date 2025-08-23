@@ -57,6 +57,7 @@ export const api = {
       apiClient.post('/auth/login', credentials),
     logout: () => apiClient.post('/auth/logout'),
     refresh: () => apiClient.post('/auth/refresh'),
+    register: (data: any) => apiClient.post('/api/auth/register', data),
   },
 
   // Models

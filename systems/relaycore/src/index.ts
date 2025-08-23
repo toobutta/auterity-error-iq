@@ -15,6 +15,7 @@ import { healthRoutes } from './routes/health';
 import { metricsRoutes } from './routes/metrics';
 import { modelsRoutes } from './routes/models';
 import { budgetRoutes } from './routes/budgets';
+import { adminRoutes } from './routes/admin';
 import { errorHandler } from './middleware/errorHandler';
 import { authMiddleware } from './middleware/auth';
 import { prometheusMiddleware } from './middleware/prometheus';
@@ -22,12 +23,17 @@ import { initializeTracing } from './middleware/tracing';
 import { logger } from './utils/logger';
 import { DatabaseConnection } from './services/database';
 import { initializeDatabase, checkDatabaseHealth } from './database/init';
+import { WebSocketService } from './services/websocket';
+import { MetricsCollector } from './services/metrics-collector';
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Initialize metrics collector
+const metricsCollector = new MetricsCollector();
 
 // Security middleware
 app.use(helmet());
@@ -55,6 +61,7 @@ app.use('/api/v1/ai', authMiddleware, aiRoutes);
 app.use('/api/v1/metrics', authMiddleware, metricsRoutes);
 app.use('/api/v1/models', authMiddleware, modelsRoutes);
 app.use('/api/v1/budgets', authMiddleware, budgetRoutes);
+app.use('/admin', adminRoutes);
 
 // Error handling middleware
 app.use(errorHandler);
@@ -85,10 +92,14 @@ const startServer = async () => {
   
   const server = createServer(app);
   
+  // Initialize WebSocket service
+  const webSocketService = new WebSocketService(server, metricsCollector);
+  
   server.listen(PORT, () => {
     logger.info(`RelayCore server running on port ${PORT}`);
     logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
     logger.info(`Health check: http://localhost:${PORT}/health`);
+    logger.info(`WebSocket service initialized`);
   });
 
   // Graceful shutdown

@@ -7,9 +7,12 @@ import asyncio
 import logging
 import json
 import aiohttp
-from datetime import datetime
-from typing import Dict, Optional, List
-from dataclasses import dataclass
+import yaml
+import base64
+from datetime import datetime, timedelta
+from typing import Dict, Optional, List, Any
+from dataclasses import dataclass, asdict
+from pathlib import Path
 
 from app.core.config import settings
 from app.services.model_registry import ModelRegistry, ModelInfo
@@ -305,3 +308,505 @@ class ModelDeployer:
             "memory_usage_mb": 1024,
             "active_connections": 5
         }
+
+    async def create_kubernetes_deployment(self, model: ModelInfo, config: DeploymentConfig) -> Dict:
+        """Create Kubernetes deployment for model"""
+        try:
+            # Create deployment manifest
+            deployment_manifest = self._generate_deployment_manifest(model, config)
+            service_manifest = self._generate_service_manifest(model, config)
+
+            # Apply manifests to Kubernetes
+            deployment_result = await self._apply_kubernetes_manifest(deployment_manifest)
+            service_result = await self._apply_kubernetes_manifest(service_manifest)
+
+            # Create deployment info
+            deployment_info = {
+                "deployment_id": f"deploy-{model.id}",
+                "model_id": model.id,
+                "endpoint": f"http://{model.name}-{model.specialization}:8080",
+                "replicas": config.replicas,
+                "status": "creating",
+                "created_at": datetime.utcnow().isoformat(),
+                "kubernetes": {
+                    "deployment_name": f"{model.name}-{model.specialization}",
+                    "service_name": f"{model.name}-{model.specialization}",
+                    "namespace": "neuroweaver-models",
+                    "deployment_uid": deployment_result.get("metadata", {}).get("uid"),
+                    "service_uid": service_result.get("metadata", {}).get("uid")
+                },
+                "config": {
+                    "memory_limit": config.memory_limit,
+                    "cpu_limit": config.cpu_limit,
+                    "gpu_required": config.gpu_required,
+                    "auto_scaling": config.auto_scaling
+                },
+                "health_check": {
+                    "path": config.health_check_path,
+                    "interval": config.health_check_interval,
+                    "max_response_time": config.max_response_time
+                }
+            }
+
+            return deployment_info
+
+        except Exception as e:
+            logger.error(f"Failed to create Kubernetes deployment for model {model.id}: {e}")
+            raise
+
+    def _generate_deployment_manifest(self, model: ModelInfo, config: DeploymentConfig) -> Dict:
+        """Generate Kubernetes deployment manifest"""
+        manifest = {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "metadata": {
+                "name": f"{model.name}-{model.specialization}",
+                "namespace": "neuroweaver-models",
+                "labels": {
+                    "app": "neuroweaver-model",
+                    "model": model.name,
+                    "version": model.version,
+                    "specialization": model.specialization
+                }
+            },
+            "spec": {
+                "replicas": config.replicas,
+                "selector": {
+                    "matchLabels": {
+                        "app": "neuroweaver-model",
+                        "model": model.name,
+                        "version": model.version
+                    }
+                },
+                "template": {
+                    "metadata": {
+                        "labels": {
+                            "app": "neuroweaver-model",
+                            "model": model.name,
+                            "version": model.version,
+                            "specialization": model.specialization
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "name": "model-server",
+                                "image": f"neuroweaver/{model.name}:{model.version}",
+                                "ports": [
+                                    {
+                                        "containerPort": 8080,
+                                        "name": "http"
+                                    }
+                                ],
+                                "env": [
+                                    {
+                                        "name": "MODEL_PATH",
+                                        "value": f"/models/{model.name}/{model.version}"
+                                    },
+                                    {
+                                        "name": "SPECIALIZATION",
+                                        "value": model.specialization
+                                    }
+                                ],
+                                "resources": {
+                                    "limits": {
+                                        "cpu": config.cpu_limit,
+                                        "memory": config.memory_limit
+                                    },
+                                    "requests": {
+                                        "cpu": "500m",
+                                        "memory": "1Gi"
+                                    }
+                                },
+                                "livenessProbe": {
+                                    "httpGet": {
+                                        "path": config.health_check_path,
+                                        "port": 8080
+                                    },
+                                    "initialDelaySeconds": 30,
+                                    "periodSeconds": config.health_check_interval,
+                                    "timeoutSeconds": 5,
+                                    "failureThreshold": 3
+                                },
+                                "readinessProbe": {
+                                    "httpGet": {
+                                        "path": config.health_check_path,
+                                        "port": 8080
+                                    },
+                                    "initialDelaySeconds": 5,
+                                    "periodSeconds": 10,
+                                    "timeoutSeconds": 3
+                                },
+                                "volumeMounts": [
+                                    {
+                                        "name": "model-storage",
+                                        "mountPath": "/models",
+                                        "readOnly": True
+                                    }
+                                ]
+                            }
+                        ],
+                        "volumes": [
+                            {
+                                "name": "model-storage",
+                                "persistentVolumeClaim": {
+                                    "claimName": "neuroweaver-models-pvc"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+
+        # Add GPU resources if required
+        if config.gpu_required:
+            manifest["spec"]["template"]["spec"]["containers"][0]["resources"]["limits"]["nvidia.com/gpu"] = "1"
+            manifest["spec"]["template"]["spec"]["containers"][0]["resources"]["requests"]["nvidia.com/gpu"] = "1"
+            manifest["spec"]["template"]["spec"]["nodeSelector"] = {"accelerator": "nvidia-tesla-k80"}
+
+        return manifest
+
+    def _generate_service_manifest(self, model: ModelInfo, config: DeploymentConfig) -> Dict:
+        """Generate Kubernetes service manifest"""
+        return {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "name": f"{model.name}-{model.specialization}",
+                "namespace": "neuroweaver-models",
+                "labels": {
+                    "app": "neuroweaver-model",
+                    "model": model.name,
+                    "version": model.version,
+                    "specialization": model.specialization
+                }
+            },
+            "spec": {
+                "selector": {
+                    "app": "neuroweaver-model",
+                    "model": model.name,
+                    "version": model.version
+                },
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8080,
+                        "targetPort": 8080,
+                        "protocol": "TCP"
+                    }
+                ],
+                "type": "ClusterIP"
+            }
+        }
+
+    async def _apply_kubernetes_manifest(self, manifest: Dict) -> Dict:
+        """Apply Kubernetes manifest using kubectl or API"""
+        try:
+            # In a real implementation, this would use the Kubernetes Python client
+            # For now, we'll simulate the application
+
+            # Convert manifest to YAML
+            manifest_yaml = yaml.dump(manifest, default_flow_style=False)
+
+            # Simulate applying to Kubernetes
+            # In production, you would use:
+            # from kubernetes import client, config
+            # config.load_kube_config()
+            # api = client.AppsV1Api()
+            # api.create_namespaced_deployment(namespace=manifest["metadata"]["namespace"], body=manifest)
+
+            logger.info(f"Applied Kubernetes manifest for {manifest['metadata']['name']}")
+
+            # Return simulated result
+            return {
+                "metadata": {
+                    "name": manifest["metadata"]["name"],
+                    "namespace": manifest["metadata"]["namespace"],
+                    "uid": f"uid-{manifest['metadata']['name']}-{int(datetime.utcnow().timestamp())}"
+                },
+                "status": "created"
+            }
+
+        except Exception as e:
+            logger.error(f"Failed to apply Kubernetes manifest: {e}")
+            raise
+
+    async def create_horizontal_pod_autoscaler(self, model: ModelInfo, config: DeploymentConfig) -> Dict:
+        """Create HPA for auto-scaling"""
+        try:
+            hpa_manifest = {
+                "apiVersion": "autoscaling/v2",
+                "kind": "HorizontalPodAutoscaler",
+                "metadata": {
+                    "name": f"{model.name}-{model.specialization}-hpa",
+                    "namespace": "neuroweaver-models"
+                },
+                "spec": {
+                    "scaleTargetRef": {
+                        "apiVersion": "apps/v1",
+                        "kind": "Deployment",
+                        "name": f"{model.name}-{model.specialization}"
+                    },
+                    "minReplicas": 1,
+                    "maxReplicas": 10,
+                    "metrics": [
+                        {
+                            "type": "Resource",
+                            "resource": {
+                                "name": "cpu",
+                                "target": {
+                                    "type": "Utilization",
+                                    "averageUtilization": 70
+                                }
+                            }
+                        },
+                        {
+                            "type": "Resource",
+                            "resource": {
+                                "name": "memory",
+                                "target": {
+                                    "type": "Utilization",
+                                    "averageUtilization": 80
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+
+            return await self._apply_kubernetes_manifest(hpa_manifest)
+
+        except Exception as e:
+            logger.error(f"Failed to create HPA for model {model.id}: {e}")
+            raise
+
+    async def setup_monitoring(self, model: ModelInfo) -> Dict:
+        """Set up monitoring for the model deployment"""
+        try:
+            # Create ServiceMonitor for Prometheus
+            service_monitor = {
+                "apiVersion": "monitoring.coreos.com/v1",
+                "kind": "ServiceMonitor",
+                "metadata": {
+                    "name": f"{model.name}-{model.specialization}-monitor",
+                    "namespace": "neuroweaver-monitoring"
+                },
+                "spec": {
+                    "selector": {
+                        "matchLabels": {
+                            "app": "neuroweaver-model",
+                            "model": model.name,
+                            "version": model.version
+                        }
+                    },
+                    "endpoints": [
+                        {
+                            "port": "http",
+                            "path": "/metrics",
+                            "interval": "30s"
+                        }
+                    ]
+                }
+            }
+
+            # Create Prometheus rules for alerting
+            prometheus_rules = {
+                "apiVersion": "monitoring.coreos.com/v1",
+                "kind": "PrometheusRule",
+                "metadata": {
+                    "name": f"{model.name}-{model.specialization}-rules",
+                    "namespace": "neuroweaver-monitoring"
+                },
+                "spec": {
+                    "groups": [
+                        {
+                            "name": f"{model.name}_{model.specialization}",
+                            "rules": [
+                                {
+                                    "alert": "ModelHighLatency",
+                                    "expr": f"histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{{model=\"{model.name}\",version=\"{model.version}\"}}[5m])) > 2",
+                                    "for": "5m",
+                                    "labels": {
+                                        "severity": "warning",
+                                        "model": model.name,
+                                        "version": model.version
+                                    },
+                                    "annotations": {
+                                        "summary": f"High latency detected for {model.name} v{model.version}",
+                                        "description": "Model response time is above 2 seconds for 5 minutes"
+                                    }
+                                },
+                                {
+                                    "alert": "ModelHighErrorRate",
+                                    "expr": f"rate(http_requests_total{{status=~\"5..\",model=\"{model.name}\",version=\"{model.version}\"}}[5m]) / rate(http_requests_total{{model=\"{model.name}\",version=\"{model.version}\"}}[5m]) > 0.05",
+                                    "for": "5m",
+                                    "labels": {
+                                        "severity": "critical",
+                                        "model": model.name,
+                                        "version": model.version
+                                    },
+                                    "annotations": {
+                                        "summary": f"High error rate detected for {model.name} v{model.version}",
+                                        "description": "Model error rate is above 5% for 5 minutes"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+
+            # Apply monitoring manifests
+            await self._apply_kubernetes_manifest(service_monitor)
+            await self._apply_kubernetes_manifest(prometheus_rules)
+
+            return {
+                "service_monitor": service_monitor["metadata"]["name"],
+                "prometheus_rules": prometheus_rules["metadata"]["name"],
+                "monitoring_setup": "completed"
+            }
+
+        except Exception as e:
+            logger.error(f"Failed to setup monitoring for model {model.id}: {e}")
+            raise
+
+    async def get_kubernetes_logs(self, model_id: str, lines: int = 100) -> List[str]:
+        """Get logs from Kubernetes pods"""
+        try:
+            deployment_info = self.deployed_models.get(model_id)
+            if not deployment_info:
+                raise ValueError(f"Model {model_id} is not deployed")
+
+            # In a real implementation, this would use the Kubernetes API
+            # kubectl logs deployment/{deployment_name} --tail={lines}
+
+            # Simulate log retrieval
+            logs = []
+            for i in range(min(lines, 50)):  # Limit to 50 for simulation
+                logs.append(
+                    f"[{datetime.utcnow().isoformat()}] "
+                    f"Model {model_id} - INFO - Processing request {i+1}"
+                )
+
+            return logs
+
+        except Exception as e:
+            logger.error(f"Failed to get Kubernetes logs for model {model_id}: {e}")
+            return []
+
+    async def get_kubernetes_metrics(self, model_id: str) -> Dict[str, Any]:
+        """Get comprehensive Kubernetes metrics"""
+        try:
+            deployment_info = self.deployed_models.get(model_id)
+            if not deployment_info:
+                raise ValueError(f"Model {model_id} is not deployed")
+
+            # In a real implementation, this would query Prometheus/Grafana
+            # or use Kubernetes metrics server
+
+            # Simulate comprehensive metrics
+            return {
+                "cpu_usage": {
+                    "current": 45.2,
+                    "limit": 1000,
+                    "unit": "millicores"
+                },
+                "memory_usage": {
+                    "current": 1024,
+                    "limit": 2048,
+                    "unit": "MB"
+                },
+                "network": {
+                    "rx_bytes_per_second": 1024000,
+                    "tx_bytes_per_second": 512000
+                },
+                "requests": {
+                    "total": 15432,
+                    "per_second": 10.5,
+                    "error_rate": 0.01
+                },
+                "latency": {
+                    "p50": 120,
+                    "p95": 250,
+                    "p99": 450,
+                    "unit": "ms"
+                },
+                "replicas": {
+                    "current": deployment_info.get("replicas", 1),
+                    "ready": deployment_info.get("replicas", 1),
+                    "desired": deployment_info.get("replicas", 1)
+                },
+                "uptime_seconds": (datetime.utcnow() - datetime.fromisoformat(
+                    deployment_info.get("created_at", datetime.utcnow().isoformat())
+                )).total_seconds()
+            }
+
+        except Exception as e:
+            logger.error(f"Failed to get Kubernetes metrics for model {model_id}: {e}")
+            return {}
+
+    async def scale_deployment_kubernetes(self, model_id: str, replicas: int) -> bool:
+        """Scale deployment using Kubernetes API"""
+        try:
+            deployment_info = self.deployed_models.get(model_id)
+            if not deployment_info:
+                raise ValueError(f"Model {model_id} is not deployed")
+
+            # In a real implementation, this would use the Kubernetes API:
+            # api = client.AppsV1Api()
+            # scale = client.V1Scale(
+            #     spec=client.V1ScaleSpec(replicas=replicas)
+            # )
+            # api.patch_namespaced_deployment_scale(
+            #     name=deployment_info["kubernetes"]["deployment_name"],
+            #     namespace=deployment_info["kubernetes"]["namespace"],
+            #     body=scale
+            # )
+
+            # Simulate scaling
+            deployment_info["replicas"] = replicas
+            logger.info(f"Scaled Kubernetes deployment for model {model_id} to {replicas} replicas")
+
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to scale Kubernetes deployment for model {model_id}: {e}")
+            return False
+
+    async def delete_kubernetes_resources(self, deployment_info: Dict) -> None:
+        """Delete Kubernetes resources for a deployment"""
+        try:
+            kubernetes_info = deployment_info.get("kubernetes", {})
+
+            if kubernetes_info:
+                # Delete in reverse order: HPA, Service, Deployment
+                resources_to_delete = [
+                    ("HorizontalPodAutoscaler", kubernetes_info.get("hpa_name")),
+                    ("Service", kubernetes_info.get("service_name")),
+                    ("Deployment", kubernetes_info.get("deployment_name"))
+                ]
+
+                for resource_type, resource_name in resources_to_delete:
+                    if resource_name:
+                        await self._delete_kubernetes_resource(
+                            resource_type,
+                            resource_name,
+                            kubernetes_info.get("namespace", "neuroweaver-models")
+                        )
+
+            logger.info(f"Deleted Kubernetes resources for deployment {deployment_info['deployment_id']}")
+
+        except Exception as e:
+            logger.error(f"Failed to delete Kubernetes resources: {e}")
+            raise
+
+    async def _delete_kubernetes_resource(self, resource_type: str, resource_name: str, namespace: str) -> None:
+        """Delete a specific Kubernetes resource"""
+        try:
+            # In a real implementation, this would use the Kubernetes API
+            logger.info(f"Deleted {resource_type} {resource_name} from namespace {namespace}")
+
+        except Exception as e:
+            logger.error(f"Failed to delete {resource_type} {resource_name}: {e}")
+            # Don't raise, continue with other deletions
