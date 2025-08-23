@@ -53,6 +53,9 @@ class WorkflowExecution(Base):
     logs = relationship(
         "ExecutionLog", back_populates="execution", cascade="all, delete-orphan"
     )
+    metrics = relationship(
+        "ExecutionMetric", back_populates="execution", cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<WorkflowExecution(id={self.id}, workflow_id={self.workflow_id}, status={self.status})>"
