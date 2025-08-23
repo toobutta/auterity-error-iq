@@ -85,7 +85,7 @@ class Tenant(Base):
     audit_retention_days = Column(String(10), default="365", nullable=False)
     
     # Metadata
-    metadata = Column(JSON, nullable=True)
+    tenant_metadata = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
@@ -233,7 +233,7 @@ class AuditLog(Base):
     # Event data
     old_values = Column(JSON, nullable=True)
     new_values = Column(JSON, nullable=True)
-    metadata = Column(JSON, nullable=True)
+    audit_metadata = Column(JSON, nullable=True)
     
     # Status
     status = Column(String(20), default="success", nullable=False)
@@ -273,7 +273,7 @@ class BillingRecord(Base):
     paid_at = Column(DateTime(timezone=True), nullable=True)
     
     # Metadata
-    metadata = Column(JSON, nullable=True)
+    billing_metadata = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
@@ -303,7 +303,7 @@ class UsageLog(Base):
     workflow_id = Column(UUID(as_uuid=True), ForeignKey("workflows.id"), nullable=True)
     
     # Metadata
-    metadata = Column(JSON, nullable=True)
+    usage_metadata = Column(JSON, nullable=True)
     timestamp = Column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
 
     # Relationships

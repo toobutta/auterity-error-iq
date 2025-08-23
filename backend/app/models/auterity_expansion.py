@@ -4,7 +4,8 @@ import uuid
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional, Dict, Any, List
-from sqlalchemy import Column, String, JSON, Enum, ForeignKey, DateTime, Boolean, Integer, Text, Numeric
+from enum import Enum
+from sqlalchemy import Column, String, JSON, ForeignKey, DateTime, Boolean, Integer, Text, Numeric, CheckConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -26,7 +27,7 @@ class TriageRule(Base):
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=False)
-    rule_type = Column(Enum(TriageRuleType), nullable=False)
+    rule_type = Column(String(50), nullable=False)
     name = Column(String(255), nullable=False)
     conditions = Column(JSON, nullable=False)  # JSON conditions for rule matching
     routing_logic = Column(JSON, nullable=False)  # JSON routing decisions
@@ -52,7 +53,7 @@ class VectorEmbedding(Base):
     item_id = Column(UUID(as_uuid=True), nullable=False)
     content_hash = Column(String(64), nullable=False)
     embedding_vector = Column(JSON, nullable=False)  # Store as JSON for now, will use pgvector later
-    metadata = Column(JSON, nullable=True)
+    embedding_metadata = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     
     # Relationships
@@ -85,10 +86,10 @@ class Integration(Base):
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=False)
-    provider = Column(Enum(IntegrationProvider), nullable=False)
+    provider = Column(String(100), nullable=False)
     name = Column(String(255), nullable=False)
     config = Column(JSON, nullable=False)  # OAuth2 tokens, API keys, etc.
-    status = Column(Enum(IntegrationStatus), nullable=False, default=IntegrationStatus.INACTIVE)
+    status = Column(String(20), nullable=False, default="inactive")
     last_sync = Column(DateTime(timezone=True), nullable=True)
     sync_interval_minutes = Column(Integer, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
@@ -133,7 +134,7 @@ class ChannelTrigger(Base):
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=False)
-    channel_type = Column(Enum(ChannelType), nullable=False)
+    channel_type = Column(String(50), nullable=False)
     name = Column(String(255), nullable=False)
     trigger_config = Column(JSON, nullable=False)  # Channel-specific configuration
     workflow_mapping = Column(JSON, nullable=False)  # Which workflows to trigger
@@ -172,10 +173,10 @@ class CustomModel(Base):
     tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=False)
     model_name = Column(String(255), nullable=False)
     endpoint_url = Column(Text, nullable=False)
-    model_type = Column(Enum(CustomModelType), nullable=False)
+    model_type = Column(String(50), nullable=False)
     config = Column(JSON, nullable=False)  # Model configuration and parameters
     version = Column(String(20), nullable=False, default="1.0.0")
-    status = Column(Enum(CustomModelStatus), nullable=False, default=CustomModelStatus.INACTIVE)
+    status = Column(String(20), nullable=False, default="inactive")
     last_health_check = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)

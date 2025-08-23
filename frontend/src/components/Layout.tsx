@@ -7,6 +7,7 @@ const Icons = {
   Dashboard: () => <span className="text-xl">📊</span>,
   Workflows: () => <span className="text-xl">🔄</span>,
   Templates: () => <span className="text-xl">📋</span>,
+  AuterityExpansion: () => <span className="text-xl">🚀</span>,
   Settings: () => <span className="text-xl">⚙️</span>,
   Menu: () => <span className="text-xl">☰</span>,
   Close: () => <span className="text-xl">✕</span>,
@@ -16,7 +17,7 @@ const Icons = {
   Notification: () => <span className="text-xl">🔔</span>,
   User: () => <span className="text-xl">👤</span>,
   ChevronDown: () => <span className="text-sm">▼</span>,
-  Car: () => <span className="text-xl">🚗</span>,
+  Car: () => <span className="text-xl">🚀</span>,
 };
 
 interface NavItemData {
@@ -30,6 +31,7 @@ const navigationItems: NavItemData[] = [
   { href: '/dashboard', label: 'Dashboard', icon: Icons.Dashboard },
   { href: '/workflows', label: 'Workflows', icon: Icons.Workflows, badge: 3 },
   { href: '/templates', label: 'Templates', icon: Icons.Templates },
+  { href: '/auterity-expansion', label: 'AI Expansion', icon: Icons.AuterityExpansion, badge: 3 },
   { href: '/settings', label: 'Settings', icon: Icons.Settings },
 ];
 

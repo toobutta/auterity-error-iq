@@ -17,6 +17,7 @@ const WorkflowBuilderPage = lazy(() => import('./pages/WorkflowBuilderPage'));
 const ErrorDisplayDemo = lazy(() => import('./pages/ErrorDisplayDemo'));
 const KiroTestPage = lazy(() => import('./pages/KiroTestPage'));
 const AgentModelCorrelationPage = lazy(() => import('./pages/AgentModelCorrelationPage'));
+const AuterityExpansion = lazy(() => import('./pages/AuterityExpansion'));
 
 // Loading component for lazy-loaded routes
 const LoadingSpinner = () => (
@@ -160,6 +161,18 @@ function App() {
                       <ErrorBoundary component="KiroTestPage">
                         <Suspense fallback={<LoadingSpinner />}>
                           <KiroTestPage />
+                        </Suspense>
+                      </ErrorBoundary>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/auterity-expansion"
+                  element={
+                    <ProtectedRoute>
+                      <ErrorBoundary component="AuterityExpansion">
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <AuterityExpansion />
                         </Suspense>
                       </ErrorBoundary>
                     </ProtectedRoute>

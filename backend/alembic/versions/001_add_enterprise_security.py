@@ -11,7 +11,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers
 revision = '001_enterprise_security'
-down_revision = None
+down_revision = '0001'
 depends_on = None
 
 

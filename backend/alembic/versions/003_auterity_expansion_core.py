@@ -12,7 +12,7 @@ import uuid
 
 # revision identifiers, used by Alembic.
 revision = '003_auterity_expansion_core'
-down_revision = '002_create_industry_profiles_table'
+down_revision = '001_enterprise_security'
 branch_labels = None
 depends_on = None
 
