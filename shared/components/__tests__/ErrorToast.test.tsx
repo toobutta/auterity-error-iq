@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { vi, beforeEach, afterEach } from 'vitest';
 import { ErrorToast } from '../ErrorToast';
 import { AppError, ErrorSeverity, ErrorCategory } from '../../types/error';
 
@@ -21,17 +22,17 @@ const mockError: AppError = {
 };
 
 describe('ErrorToast', () => {
-  const mockOnDismiss = jest.fn();
-  const mockOnRetry = jest.fn();
-  const mockOnReport = jest.fn();
+  const mockOnDismiss = vi.fn();
+  const mockOnRetry = vi.fn();
+  const mockOnReport = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.useFakeTimers();
+    vi.clearAllMocks();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('renders error toast with basic information', () => {

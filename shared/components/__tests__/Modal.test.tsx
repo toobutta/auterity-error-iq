@@ -1,12 +1,13 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi, beforeEach } from 'vitest';
 import { Modal } from '../Modal';
 
 describe('Modal', () => {
-  const mockOnClose = jest.fn();
+  const mockOnClose = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('does not render when isOpen is false', () => {

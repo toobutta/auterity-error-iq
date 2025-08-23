@@ -1,6 +1,8 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
+import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,37 +16,17 @@ export default defineConfig({
       brotliSize: true,
     }),
   ].filter(Boolean),
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      '@shared': path.resolve(__dirname, '../shared'),
+    },
+  },
   server: {
     host: '0.0.0.0',
     port: 3000,
   },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/setupTests.ts',
-    // Memory optimization
-    pool: 'threads',
-    poolOptions: {
-      threads: {
-        singleThread: true,
-      },
-    },
-    // Coverage configuration (using c8 for vitest 0.34.6)
-    coverage: {
-      reporter: ['text', 'json-summary'],
-      exclude: [
-        'node_modules/',
-        'src/setupTests.ts',
-        '**/*.d.ts',
-        '**/*.test.{ts,tsx}',
-        '**/__tests__/**',
-      ],
-    },
-    // Increase timeout for slow tests
-    testTimeout: 10000,
-    // Optimize memory usage
-    logHeapUsage: true,
-  },
+
   build: {
     // Increase chunk size warning limit to 600kb (from default 500kb)
     chunkSizeWarningLimit: 600,
