@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ErrorProvider } from './contexts/ErrorContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ThemeProvider } from './components/ThemeProvider';
+import { NotificationProvider } from './components/notifications/NotificationSystem';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LoginForm from './components/auth/LoginForm';
 import RegisterForm from './components/auth/RegisterForm';
@@ -15,6 +16,7 @@ const Templates = lazy(() => import('./pages/Templates'));
 const WorkflowBuilderPage = lazy(() => import('./pages/WorkflowBuilderPage'));
 const ErrorDisplayDemo = lazy(() => import('./pages/ErrorDisplayDemo'));
 const KiroTestPage = lazy(() => import('./pages/KiroTestPage'));
+const AgentModelCorrelationPage = lazy(() => import('./pages/AgentModelCorrelationPage'));
 
 // Loading component for lazy-loaded routes
 const LoadingSpinner = () => (
@@ -32,10 +34,11 @@ function App() {
       component="App"
     >
       <ThemeProvider defaultMode="auto" storageKey="autmatrix-theme">
-        <ErrorProvider 
-          maxErrors={10}
-          enableErrorReporting={true}
-          toastPosition="top-right"
+        <NotificationProvider position="top-right" maxNotifications={5}>
+          <ErrorProvider 
+            maxErrors={10}
+            enableErrorReporting={true}
+            toastPosition="top-right"
         >
           <AuthProvider>
             <Router>
@@ -139,6 +142,18 @@ function App() {
                   }
                 />
                 <Route
+                  path="/agent-correlation"
+                  element={
+                    <ProtectedRoute>
+                      <ErrorBoundary component="AgentModelCorrelation">
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <AgentModelCorrelationPage />
+                        </Suspense>
+                      </ErrorBoundary>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/kiro-test"
                   element={
                     <ProtectedRoute>
@@ -158,6 +173,7 @@ function App() {
           </Router>
         </AuthProvider>
       </ErrorProvider>
+      </NotificationProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

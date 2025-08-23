@@ -40,9 +40,9 @@ interface ThemeContextType {
 const defaultThemeConfig: ThemeConfig = {
   mode: 'auto',
   automotive: {
-    primary: '#1e40af',
-    accent: '#f59e0b',
-    surface: '#f8fafc',
+    primary: '#2563eb', // Modern blue
+    accent: '#f59e0b',  // Amber
+    surface: '#f8fafc', // Very light gray
   },
   glassmorphism: {
     enabled: true,
