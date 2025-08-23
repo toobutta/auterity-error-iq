@@ -16,57 +16,64 @@ export default defineConfig({
       brotliSize: true,
     }),
   ].filter(Boolean),
+  
+  css: {
+    postcss: './postcss.config.js',
+    devSourcemap: true,
+  },
+  
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@shared': path.resolve(__dirname, '../shared'),
     },
   },
+  
   server: {
     host: '0.0.0.0',
     port: 3000,
+    hmr: {
+      overlay: true,
+    },
   },
 
   build: {
-    // Increase chunk size warning limit to 600kb (from default 500kb)
+    // Optimize for production
+    target: 'es2020',
+    minify: 'esbuild',
+    sourcemap: process.env.NODE_ENV === 'development',
+    
+    // Increase chunk size warning limit
     chunkSizeWarningLimit: 600,
+    
+    // Simplified chunk strategy for stability
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // React core and routing
-          if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
-            return 'react-vendor';
-          }
+        manualChunks: {
+          // Core React libraries
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           
-          // Heavy visualization libraries
-          if (id.includes('reactflow') || id.includes('react-flow-renderer')) {
-            return 'workflow-viz';
-          }
+          // Workflow visualization
+          'workflow-libs': ['reactflow', 'react-flow-renderer'],
           
-          // Charts and data visualization - split into smaller chunks
-          if (id.includes('recharts')) {
-            return 'charts';
-          }
-          
-          // Code highlighting (lazy loaded) - split syntax highlighter and styles
-          if (id.includes('react-syntax-highlighter')) {
-            if (id.includes('styles') || id.includes('dark')) {
-              return 'syntax-styles';
-            }
-            return 'syntax-highlighter';
-          }
-          
-          // HTTP and utilities
-          if (id.includes('axios')) {
-            return 'utils';
-          }
-          
-          // Split large node_modules into separate chunks
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
+          // UI and utilities
+          'ui-libs': ['recharts', 'axios'],
         },
       },
     },
+    
+    // CSS optimization
+    cssCodeSplit: true,
+    cssMinify: 'esbuild',
+  },
+  
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'reactflow',
+      'recharts',
+    ],
   },
 })
