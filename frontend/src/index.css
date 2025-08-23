@@ -2,49 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-/* AutoMatrix AI Hub - Streamlined Design System */
+/* AutoMatrix Design System - Minimal Core */
 :root {
-  /* Core Automotive Colors */
   --automotive-primary: #1e40af;
   --automotive-secondary: #3b82f6;
   --automotive-accent: #f59e0b;
   --automotive-silver: #64748b;
   --automotive-gold: #fbbf24;
-  
-  /* Glassmorphism Variables */
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.2);
-  --glass-blur: blur(10px);
 }
 
-/* Dark Mode Support */
 .dark {
   --automotive-primary: #3b82f6;
   --automotive-accent: #fbbf24;
 }
 
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
+}
+
 /* Essential Glass Components */
 .glass-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: var(--glass-blur);
-  border-radius: 12px;
+  @apply glass rounded-xl p-6 shadow-lg;
 }
 
 .glass-button {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: var(--glass-blur);
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  transition: all 0.2s ease;
+  @apply glass rounded-lg px-4 py-2 transition-all duration-200 hover:bg-white/20;
 }
 
-.glass-button:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-/* Automotive Theme Classes */
+/* Automotive Theme Utilities */
 .btn-automotive-primary {
   background: var(--automotive-primary);
   color: white;
@@ -56,47 +43,4 @@
 
 .bg-automotive-primary {
   background-color: var(--automotive-primary);
-}
-
-/* Animation Utilities */
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* Basic AutoMatrix styles */
-:root {
-  --automotive-primary: #1e40af;
-  --automotive-accent: #f59e0b;
-  --automotive-silver: #64748b;
-}
-
-body {
-  font-family: 'Inter', sans-serif;
-  background: #f8fafc;
-  color: #1e293b;
-}
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(20px);
-  border-radius: 12px;
-}
-
-.glass-button {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  transition: all 0.2s;
-}
-
-.glass-button:hover {
-  background: rgba(255, 255, 255, 0.2);
 }

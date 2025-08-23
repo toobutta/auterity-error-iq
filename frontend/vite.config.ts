@@ -18,7 +18,7 @@ export default defineConfig({
   ].filter(Boolean),
   
   css: {
-    postcss: './postcss.config.js',
+    postcss: './postcss.config.cjs',
     devSourcemap: true,
   },
   
