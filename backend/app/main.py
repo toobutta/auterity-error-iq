@@ -9,8 +9,10 @@ from app.api import (
     error_management,
     logs,
     monitoring,
+    sso,
     tasks,
     templates,
+    tenants,
     websockets,
     workflows,
 )
@@ -27,6 +29,7 @@ from app.middleware.logging import StructuredLoggingMiddleware
 from app.middleware.prometheus import prometheus_middleware
 from app.middleware.tracing import setup_tracing
 from app.middleware.otel_middleware import setup_opentelemetry
+from app.middleware.tenant_middleware import TenantIsolationMiddleware, AuditLoggingMiddleware
 
 # Environment configuration
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
@@ -59,6 +62,10 @@ app.add_middleware(HealthCheckMiddleware)
 # Add structured logging middleware
 app.add_middleware(StructuredLoggingMiddleware)
 
+# Add tenant isolation and audit logging middleware
+app.add_middleware(AuditLoggingMiddleware)
+app.add_middleware(TenantIsolationMiddleware)
+
 # Add Prometheus metrics middleware
 app.middleware("http")(prometheus_middleware)
 
@@ -79,6 +86,8 @@ app.add_middleware(
 
 # Include API routes
 app.include_router(auth.router, prefix="/api")
+app.include_router(sso.router, prefix="/api")
+app.include_router(tenants.router, prefix="/api")
 app.include_router(workflows.router, prefix="/api")
 app.include_router(templates.router, prefix="/api")
 app.include_router(tasks.router, prefix="/api")

@@ -6,6 +6,8 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, EmailStr, validator
 
+from app.models.tenant import TenantStatus, SSOProvider
+
 
 # Authentication schemas
 class UserLogin(BaseModel):
@@ -502,3 +504,196 @@ class TemplateInstantiateRequest(BaseModel):
         if len(v.strip()) > 255:
             raise ValueError("Workflow name cannot exceed 255 characters")
         return v.strip()
+
+
+# Tenant schemas
+class TenantCreate(BaseModel):
+    """Schema for tenant creation request."""
+
+    name: str
+    slug: str
+    domain: str
+    sso_enabled: bool = False
+    audit_enabled: bool = True
+
+    @validator("slug")
+    def validate_slug(cls, v):
+        if not v or not v.strip():
+            raise ValueError("Tenant slug cannot be empty")
+        # Allow only alphanumeric and hyphens
+        import re
+        if not re.match(r'^[a-z0-9-]+$', v):
+            raise ValueError("Tenant slug can only contain lowercase letters, numbers, and hyphens")
+        return v.strip()
+
+    @validator("domain")
+    def validate_domain(cls, v):
+        if not v or not v.strip():
+            raise ValueError("Tenant domain cannot be empty")
+        # Basic domain validation
+        import re
+        if not re.match(r'^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', v):
+            raise ValueError("Invalid domain format")
+        return v.strip().lower()
+
+
+class TenantUpdate(BaseModel):
+    """Schema for tenant update request."""
+
+    name: Optional[str] = None
+    status: Optional[TenantStatus] = None
+    sso_enabled: Optional[bool] = None
+    audit_enabled: Optional[bool] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+
+class TenantResponse(BaseModel):
+    """Schema for tenant response."""
+
+    id: uuid.UUID
+    name: str
+    slug: str
+    domain: str
+    status: str
+    sso_enabled: bool
+    audit_enabled: bool
+    metadata: Optional[Dict[str, Any]]
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+    @classmethod
+    def from_tenant(cls, tenant):
+        """Create TenantResponse from Tenant model."""
+        return cls(
+            id=tenant.id,
+            name=tenant.name,
+            slug=tenant.slug,
+            domain=tenant.domain,
+            status=tenant.status,
+            sso_enabled=tenant.sso_enabled,
+            audit_enabled=tenant.audit_enabled,
+            metadata=tenant.metadata,
+            created_at=tenant.created_at,
+            updated_at=tenant.updated_at
+        )
+
+
+class TenantStatsResponse(BaseModel):
+    """Schema for tenant statistics response."""
+
+    tenant_id: str
+    tenant_name: str
+    tenant_status: str
+    users: Dict[str, int]
+    sso_enabled: bool
+    audit_enabled: bool
+    audit_summary: Dict[str, Any]
+
+
+# SSO schemas
+class SSOConfigurationCreate(BaseModel):
+    """Schema for SSO configuration creation."""
+
+    provider: str
+    config: Dict[str, Any]
+
+    @validator("provider")
+    def validate_provider(cls, v):
+        allowed_providers = ["saml", "oidc", "oauth2"]
+        if v not in allowed_providers:
+            raise ValueError(f"Provider must be one of: {', '.join(allowed_providers)}")
+        return v
+
+
+class SSOConfigurationResponse(BaseModel):
+    """Schema for SSO configuration response."""
+
+    id: uuid.UUID
+    tenant_id: uuid.UUID
+    provider: str
+    auto_provision_users: bool
+    default_role: str
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+    @classmethod
+    def from_sso_config(cls, config):
+        """Create SSOConfigurationResponse from SSOConfiguration model."""
+        return cls(
+            id=config.id,
+            tenant_id=config.tenant_id,
+            provider=config.provider,
+            auto_provision_users=config.auto_provision_users,
+            default_role=config.default_role,
+            is_active=config.is_active,
+            created_at=config.created_at,
+            updated_at=config.updated_at
+        )
+
+
+class SSOInitiateResponse(BaseModel):
+    """Schema for SSO initiation response."""
+
+    redirect_url: str
+    provider: str
+    tenant_slug: str
+
+
+class SSOLoginResponse(BaseModel):
+    """Schema for SSO login response."""
+
+    access_token: str
+    token_type: str
+    user: Dict[str, Any]
+
+
+# Audit Log schemas
+class AuditLogResponse(BaseModel):
+    """Schema for audit log response."""
+
+    id: uuid.UUID
+    tenant_id: uuid.UUID
+    user_id: Optional[uuid.UUID]
+    event_type: str
+    resource_type: str
+    resource_id: Optional[str]
+    action: str
+    ip_address: Optional[str]
+    user_agent: Optional[str]
+    old_values: Optional[Dict[str, Any]]
+    new_values: Optional[Dict[str, Any]]
+    metadata: Optional[Dict[str, Any]]
+    status: str
+    error_message: Optional[str]
+    timestamp: datetime
+
+    class Config:
+        from_attributes = True
+
+    @classmethod
+    def from_audit_log(cls, log):
+        """Create AuditLogResponse from AuditLog model."""
+        return cls(
+            id=log.id,
+            tenant_id=log.tenant_id,
+            user_id=log.user_id,
+            event_type=log.event_type,
+            resource_type=log.resource_type,
+            resource_id=log.resource_id,
+            action=log.action,
+            ip_address=log.ip_address,
+            user_agent=log.user_agent,
+            old_values=log.old_values,
+            new_values=log.new_values,
+            metadata=log.metadata,
+            status=log.status,
+            error_message=log.error_message,
+            timestamp=log.timestamp
+        )
