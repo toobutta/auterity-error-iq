@@ -6,6 +6,12 @@ from .template import Template, TemplateParameter
 from .tenant import AuditLog, SSOConfiguration, Tenant, TenantStatus, SSOProvider
 from .user import Permission, Role, SystemPermission, User, UserRole
 from .workflow import Workflow
+from .auterity_expansion import (
+    TriageRule, TriageRuleType, VectorEmbedding, Integration, IntegrationProvider,
+    IntegrationStatus, IntegrationWebhook, ChannelTrigger, ChannelType,
+    CustomModel, CustomModelType, CustomModelStatus, AgentMemory, ExecutionMetric,
+    TriageResult
+)
 
 __all__ = [
     "Base",
@@ -27,4 +33,9 @@ __all__ = [
     "ExecutionStatus",
     "Template",
     "TemplateParameter",
+    # Auterity Expansion Models
+    "TriageRule", "TriageRuleType", "VectorEmbedding", "Integration", "IntegrationProvider",
+    "IntegrationStatus", "IntegrationWebhook", "ChannelTrigger", "ChannelType",
+    "CustomModel", "CustomModelType", "CustomModelStatus", "AgentMemory", "ExecutionMetric",
+    "TriageResult"
 ]

@@ -34,6 +34,9 @@ class Agent(Base):
     created_at = Column(DateTime(timezone=True))
     updated_at = Column(DateTime(timezone=True))
     capabilities_rel = relationship("AgentCapability", back_populates="agent")
+    
+    # Auterity Expansion Relationships
+    memories = relationship("AgentMemory", back_populates="agent", cascade="all, delete-orphan")
 
 class AgentCapability(Base):
     __tablename__ = "agent_capabilities"

@@ -15,6 +15,7 @@ from app.api import (
     tenants,
     websockets,
     workflows,
+    auterity_expansion,
 )
 from app.middleware.error_handler import (
     ErrorReportingMiddleware,
@@ -95,6 +96,9 @@ app.include_router(logs.router, prefix="/api")
 app.include_router(monitoring.router, prefix="/api")
 app.include_router(error_correlation.router)
 app.include_router(error_management.router)
+
+# Include Auterity Expansion routes
+app.include_router(auterity_expansion.router)
 
 # Include WebSocket routes (no prefix for WebSocket endpoints)
 app.include_router(websockets.router)

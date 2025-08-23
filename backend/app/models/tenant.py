@@ -94,6 +94,14 @@ class Tenant(Base):
     audit_logs = relationship("AuditLog", back_populates="tenant", cascade="all, delete-orphan")
     billing_records = relationship("BillingRecord", back_populates="tenant", cascade="all, delete-orphan")
     usage_logs = relationship("UsageLog", back_populates="tenant", cascade="all, delete-orphan")
+    
+    # Auterity Expansion Relationships
+    triage_rules = relationship("TriageRule", back_populates="tenant", cascade="all, delete-orphan")
+    vector_embeddings = relationship("VectorEmbedding", back_populates="tenant", cascade="all, delete-orphan")
+    integrations = relationship("Integration", back_populates="tenant", cascade="all, delete-orphan")
+    channel_triggers = relationship("ChannelTrigger", back_populates="tenant", cascade="all, delete-orphan")
+    custom_models = relationship("CustomModel", back_populates="tenant", cascade="all, delete-orphan")
+    triage_results = relationship("TriageResult", back_populates="tenant", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Tenant(id={self.id}, name='{self.name}', domain='{self.domain}')>"
