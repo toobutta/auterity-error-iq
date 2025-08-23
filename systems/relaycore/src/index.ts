@@ -20,11 +20,16 @@ import { errorHandler } from './middleware/errorHandler';
 import { authMiddleware } from './middleware/auth';
 import { prometheusMiddleware } from './middleware/prometheus';
 import { initializeTracing } from './middleware/tracing';
+import { IntelligentRateLimiter, createSpeedLimitMiddleware, createRateLimitMiddleware, RateLimitConfig } from './middleware/rate-limiter';
+import { CompressionService, defaultCompressionConfig } from './middleware/compression';
 import { logger } from './utils/logger';
 import { DatabaseConnection } from './services/database';
 import { initializeDatabase, checkDatabaseHealth } from './database/init';
 import { WebSocketService } from './services/websocket';
 import { MetricsCollector } from './services/metrics-collector';
+import { CacheManager } from './services/cache-manager';
+import { OptimizedDatabase, createOptimizedDatabase } from './services/optimized-database';
+import { CircuitBreakerManager, defaultCircuitBreakerConfig } from './services/circuit-breaker';
 
 // Load environment variables
 dotenv.config();
@@ -32,8 +37,37 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Initialize metrics collector
+// Initialize services
 const metricsCollector = new MetricsCollector();
+const cacheManager = new CacheManager();
+const optimizedDatabase = createOptimizedDatabase();
+const circuitBreakerManager = new CircuitBreakerManager(defaultCircuitBreakerConfig);
+const compressionService = new CompressionService(defaultCompressionConfig);
+
+// Rate limiting configuration
+const rateLimitConfig: RateLimitConfig = {
+  global: {
+    requests: 1000,
+    window: 60000, // 1 minute
+    burst: 50
+  },
+  perProvider: {
+    openai: { requests: 500, window: 60000, burst: 25 },
+    anthropic: { requests: 300, window: 60000, burst: 15 },
+    neuroweaver: { requests: 200, window: 60000, burst: 10 }
+  },
+  perUser: {
+    requests: 100,
+    window: 60000
+  },
+  emergency: {
+    enabled: true,
+    threshold: 0.8
+  }
+};
+
+// Initialize intelligent rate limiter
+const rateLimiter = new IntelligentRateLimiter(rateLimitConfig, cacheManager);
 
 // Security middleware
 app.use(helmet());
@@ -42,12 +76,19 @@ app.use(cors({
   credentials: true
 }));
 
+// Compression middleware (early in the stack for maximum benefit)
+app.use(compressionService.createMiddleware());
+
 // Logging middleware
 app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Rate limiting middleware (before API routes)
+app.use('/api', createRateLimitMiddleware(rateLimitConfig, cacheManager));
+app.use('/api', createSpeedLimitMiddleware());
 
 // Monitoring middleware
 app.use(prometheusMiddleware);

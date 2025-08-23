@@ -6,6 +6,9 @@
 import axios, { AxiosInstance } from 'axios';
 import { logger } from '../utils/logger';
 import { AIRequest, AIResponse, RoutingDecision } from '../models/request';
+import { SemanticCache, SemanticSearchRequest, defaultSemanticCacheConfig } from './semantic-cache';
+import { PriorityRequestQueue, Priority, defaultQueueConfig } from './request-queue';
+import { CacheManager } from './cache-manager';
 
 export interface ProviderConfig {
   name: string;
@@ -20,8 +23,21 @@ export interface ProviderConfig {
 export class ProviderManager {
   private providers: Map<string, ProviderConfig> = new Map();
   private httpClients: Map<string, AxiosInstance> = new Map();
+  private semanticCache: SemanticCache;
+  private requestQueue: PriorityRequestQueue;
 
   constructor() {
+    const cacheManager = new CacheManager();
+    this.semanticCache = new SemanticCache(defaultSemanticCacheConfig, cacheManager);
+    
+    // Create queue config with execution handler
+    const queueConfig = {
+      ...defaultQueueConfig,
+      executionHandler: this.executeProviderRequestFromQueue.bind(this)
+    };
+    
+    this.requestQueue = new PriorityRequestQueue(queueConfig, cacheManager);
+    
     this.initializeProviders();
   }
 
@@ -101,6 +117,98 @@ export class ProviderManager {
       throw new Error(`Provider ${decision.provider} not found`);
     }
 
+    // Check semantic cache first
+    const cacheRequest: SemanticSearchRequest = {
+      prompt: request.prompt,
+      provider: decision.provider,
+      model: decision.model,
+      parameters: request.routing_preferences
+    };
+
+    const cachedResponse = await this.semanticCache.checkCache(cacheRequest);
+    if (cachedResponse) {
+      logger.info(`Semantic cache hit for request ${request.id}`);
+      return {
+        id: request.id,
+        content: cachedResponse.response.content,
+        model_used: decision.model,
+        provider: decision.provider,
+        cost: 0, // Cached responses are free
+        latency: 0,
+        confidence: cachedResponse.response.confidence || 0.95,
+        metadata: { 
+          ...cachedResponse.response.metadata,
+          fromCache: true,
+          cacheId: cachedResponse.id
+        }
+      };
+    }
+
+    // Determine priority based on request characteristics
+    const priority = this.determinePriority(request);
+
+    // Queue the request for processing
+    try {
+      const result = await this.requestQueue.enqueue(
+        decision.provider,
+        { request, decision },
+        priority,
+        {
+          userId: request.user_id,
+          timeoutMs: 30000,
+          maxRetries: 3
+        }
+      );
+
+      // Store successful response in semantic cache
+      await this.semanticCache.storeResponse(cacheRequest, result);
+
+      return result;
+    } catch (error) {
+      logger.error(`Request routing failed: ${error}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Determine request priority based on context and constraints
+   */
+  private determinePriority(request: AIRequest): Priority {
+    // Check automotive context urgency
+    if (request.context.automotive_context?.urgency === 'critical') {
+      return Priority.CRITICAL;
+    }
+    
+    if (request.context.automotive_context?.urgency === 'high' || 
+        request.context.priority === 'high') {
+      return Priority.HIGH;
+    }
+
+    // Check cost constraints (high budget = higher priority)
+    if (request.cost_constraints.max_cost > 10) {
+      return Priority.HIGH;
+    }
+
+    if (request.context.priority === 'low' || 
+        request.cost_constraints.max_cost < 1) {
+      return Priority.LOW;
+    }
+
+    return Priority.NORMAL;
+  }
+
+  /**
+   * Execute provider request from queue payload
+   */
+  private async executeProviderRequestFromQueue(provider: string, payload: any): Promise<AIResponse> {
+    const { request, decision } = payload;
+    return await this.executeProviderRequest(request, decision);
+  }
+
+  /**
+   * Execute the actual provider request (moved from inline processing)
+   */
+  async executeProviderRequest(request: AIRequest, decision: RoutingDecision): Promise<AIResponse> {
     const client = this.httpClients.get(decision.provider);
     if (!client) {
       throw new Error(`HTTP client for ${decision.provider} not initialized`);
