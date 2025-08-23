@@ -3,11 +3,13 @@ import { Suspense, lazy } from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { ErrorProvider } from './contexts/ErrorContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { ThemeProvider } from './components/ThemeProvider';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LoginForm from './components/auth/LoginForm';
 import RegisterForm from './components/auth/RegisterForm';
 // Lazy load heavy components
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+const ModernDashboard = lazy(() => import('./pages/ModernDashboard'));
 const Workflows = lazy(() => import('./pages/Workflows'));
 const Templates = lazy(() => import('./pages/Templates'));
 const WorkflowBuilderPage = lazy(() => import('./pages/WorkflowBuilderPage'));
@@ -29,40 +31,53 @@ function App() {
       enableReporting={true}
       component="App"
     >
-      <ErrorProvider 
-        maxErrors={10}
-        enableErrorReporting={true}
-        toastPosition="top-right"
-      >
-        <AuthProvider>
-          <Router>
-            <div className="App">
-              <Routes>
-                {/* Public routes */}
-                <Route path="/login" element={
-                  <ErrorBoundary component="LoginForm">
-                    <LoginForm />
-                  </ErrorBoundary>
-                } />
-                <Route path="/register" element={
-                  <ErrorBoundary component="RegisterForm">
-                    <RegisterForm />
-                  </ErrorBoundary>
-                } />
-                
-                {/* Protected routes */}
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <ErrorBoundary component="Dashboard">
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <Dashboard />
-                        </Suspense>
-                      </ErrorBoundary>
-                    </ProtectedRoute>
-                  }
-                />
+      <ThemeProvider defaultMode="auto" storageKey="autmatrix-theme">
+        <ErrorProvider 
+          maxErrors={10}
+          enableErrorReporting={true}
+          toastPosition="top-right"
+        >
+          <AuthProvider>
+            <Router>
+              <div className="App">
+                <Routes>
+                  {/* Public routes */}
+                  <Route path="/login" element={
+                    <ErrorBoundary component="LoginForm">
+                      <LoginForm />
+                    </ErrorBoundary>
+                  } />
+                  <Route path="/register" element={
+                    <ErrorBoundary component="RegisterForm">
+                      <RegisterForm />
+                    </ErrorBoundary>
+                  } />
+                  
+                  {/* Protected routes */}
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <ErrorBoundary component="ModernDashboard">
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <ModernDashboard />
+                          </Suspense>
+                        </ErrorBoundary>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/dashboard/legacy"
+                    element={
+                      <ProtectedRoute>
+                        <ErrorBoundary component="Dashboard">
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <Dashboard />
+                          </Suspense>
+                        </ErrorBoundary>
+                      </ProtectedRoute>
+                    }
+                  />
                 <Route
                   path="/workflows"
                   element={
@@ -143,6 +158,7 @@ function App() {
           </Router>
         </AuthProvider>
       </ErrorProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }

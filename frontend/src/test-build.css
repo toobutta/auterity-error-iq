@@ -1,0 +1,8 @@
+/* Simple test CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.test {
+  color: red;
+}
