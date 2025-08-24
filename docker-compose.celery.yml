@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Message Queue (RabbitMQ)
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=auterity
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: unless-stopped
+
+  # Celery Workers
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    command: celery -A app.celery_app worker --loglevel=info
+    environment:
+      - CELERY_BROKER_URL=amqp://auterity:${RABBITMQ_PASSWORD}@rabbitmq:5672//
+      - CELERY_RESULT_BACKEND=redis://redis-cluster:6379/0
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres-primary:5432/auterity
+    depends_on:
+      - rabbitmq
+      - redis-cluster
+      - postgres-primary
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+
+  # Celery Beat (Scheduler)
+  celery-beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    command: celery -A app.celery_app beat --loglevel=info
+    environment:
+      - CELERY_BROKER_URL=amqp://auterity:${RABBITMQ_PASSWORD}@rabbitmq:5672//
+      - CELERY_RESULT_BACKEND=redis://redis-cluster:6379/0
+    depends_on:
+      - rabbitmq
+      - redis-cluster
+    restart: unless-stopped
+
+volumes:
+  rabbitmq_data:

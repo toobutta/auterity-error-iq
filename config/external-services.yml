@@ -1,0 +1,39 @@
+# External Services Configuration
+vector_databases:
+  pinecone:
+    enabled: true
+    api_key: "${PINECONE_API_KEY}"
+    environment: "${PINECONE_ENVIRONMENT:-us-west1-gcp}"
+    index_name: "${PINECONE_INDEX:-auterity-vectors}"
+    dimension: 1536
+    
+  weaviate:
+    enabled: true
+    url: "${WEAVIATE_URL:-http://localhost:8080}"
+    api_key: "${WEAVIATE_API_KEY}"
+    class_name: "AuterityDocument"
+
+llm_providers:
+  openai:
+    enabled: true
+    api_key: "${OPENAI_API_KEY}"
+    models: ["gpt-4-turbo-preview", "gpt-3.5-turbo", "text-embedding-ada-002"]
+    
+  anthropic:
+    enabled: true
+    api_key: "${ANTHROPIC_API_KEY}"
+    models: ["claude-3-opus-20240229", "claude-3-sonnet-20240229"]
+
+authentication:
+  providers:
+    auth0:
+      enabled: true
+      domain: "${AUTH0_DOMAIN}"
+      client_id: "${AUTH0_CLIENT_ID}"
+      client_secret: "${AUTH0_CLIENT_SECRET}"
+      
+    cognito:
+      enabled: false
+      user_pool_id: "${COGNITO_USER_POOL_ID}"
+      client_id: "${COGNITO_CLIENT_ID}"
+      region: "${AWS_REGION:-us-east-1}"

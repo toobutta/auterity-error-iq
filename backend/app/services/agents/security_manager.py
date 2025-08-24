@@ -203,6 +203,54 @@ class SecurityManager:
         
         return jwt.encode(payload, self.jwt_secret, algorithm="HS256")
     
+    def generate_token(self, user_data: Dict[str, Any]) -> str:
+        """Simple token generation for testing and basic use"""
+        user_id = user_data.get('user_id', 'unknown')
+        tenant_id = user_data.get('tenant_id', 'default')
+        permissions = user_data.get('permissions', [])
+        
+        return self.generate_secure_token(user_id, tenant_id, permissions)
+    
+    def validate_token(self, token: str) -> Dict[str, Any]:
+        """Validate a JWT token"""
+        try:
+            payload = jwt.decode(token, self.jwt_secret, algorithms=["HS256"])
+            
+            # Check if token is expired
+            current_time = datetime.now(timezone.utc).timestamp()
+            if payload.get('exp', 0) < current_time:
+                return {'valid': False, 'error': 'Token expired'}
+            
+            return {
+                'valid': True,
+                'user_id': payload.get('user_id'),
+                'tenant_id': payload.get('tenant_id'),
+                'permissions': payload.get('permissions', [])
+            }
+            
+        except jwt.InvalidTokenError as e:
+            return {'valid': False, 'error': str(e)}
+    
+    def detect_threat(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Simple threat detection for testing"""
+        ip_address = request_data.get('ip_address')
+        request_count = request_data.get('request_count', 0)
+        
+        # Simple rate limiting logic
+        threat_detected = request_count > 100
+        threat_level = 'high' if threat_detected else 'low'
+        
+        actions_taken = []
+        if threat_detected and ip_address:
+            self.blocked_ips.add(ip_address)
+            actions_taken.append(f'Blocked IP {ip_address}')
+        
+        return {
+            'threat_detected': threat_detected,
+            'threat_level': threat_level,
+            'actions_taken': actions_taken
+        }
+    
     async def detect_threats(
         self,
         input_data: Dict[str, Any],

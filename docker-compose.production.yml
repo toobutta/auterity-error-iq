@@ -1,0 +1,177 @@
+version: '3.8'
+
+services:
+  # Load Balancer
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/ssl/certs
+    depends_on:
+      - backend-1
+      - backend-2
+      - frontend
+    restart: unless-stopped
+
+  # Backend Services (Load Balanced)
+  backend-1:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    environment:
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres-primary:5432/auterity
+      - REDIS_URL=redis://redis-cluster:6379
+      - CELERY_BROKER_URL=amqp://auterity:${RABBITMQ_PASSWORD}@rabbitmq:5672//
+      - CELERY_RESULT_BACKEND=redis://redis-cluster:6379/0
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
+    depends_on:
+      - postgres-primary
+      - redis-cluster
+      - rabbitmq
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+
+  backend-2:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    environment:
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres-primary:5432/auterity
+      - REDIS_URL=redis://redis-cluster:6379
+      - CELERY_BROKER_URL=amqp://auterity:${RABBITMQ_PASSWORD}@rabbitmq:5672//
+      - CELERY_RESULT_BACKEND=redis://redis-cluster:6379/0
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
+    depends_on:
+      - postgres-primary
+      - redis-cluster
+      - rabbitmq
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    environment:
+      - VITE_API_URL=https://api.auterity.com
+      - VITE_AUTH0_DOMAIN=${AUTH0_DOMAIN}
+    restart: unless-stopped
+
+  # Database Cluster
+  postgres-primary:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=auterity
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_REPLICATION_MODE=master
+      - POSTGRES_REPLICATION_USER=replicator
+      - POSTGRES_REPLICATION_PASSWORD=${POSTGRES_REPLICATION_PASSWORD}
+    volumes:
+      - postgres_primary_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  postgres-replica:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_MASTER_SERVICE=postgres-primary
+      - POSTGRES_REPLICATION_MODE=slave
+      - POSTGRES_REPLICATION_USER=replicator
+      - POSTGRES_REPLICATION_PASSWORD=${POSTGRES_REPLICATION_PASSWORD}
+      - POSTGRES_MASTER_PORT_NUMBER=5432
+    depends_on:
+      - postgres-primary
+    restart: unless-stopped
+
+  # Redis Cluster
+  redis-cluster:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --cluster-enabled yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  # Vector Databases
+  weaviate:
+    image: semitechnologies/weaviate:latest
+    environment:
+      - QUERY_DEFAULTS_LIMIT=25
+      - AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED=false
+      - PERSISTENCE_DATA_PATH=/var/lib/weaviate
+      - DEFAULT_VECTORIZER_MODULE=text2vec-openai
+      - ENABLE_MODULES=text2vec-openai
+      - OPENAI_APIKEY=${OPENAI_API_KEY}
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    restart: unless-stopped
+
+  # Log Management
+  loki:
+    image: grafana/loki:latest
+    volumes:
+      - ./monitoring/loki/local-config.yaml:/etc/loki/local-config.yaml
+      - loki_data:/loki
+    ports:
+      - "3100:3100"
+    restart: unless-stopped
+
+volumes:
+  postgres_primary_data:
+  redis_data:
+  weaviate_data:
+  prometheus_data:
+  grafana_data:
+  loki_data:

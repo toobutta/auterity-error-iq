@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  kong:
+    image: kong:latest
+    environment:
+      - KONG_DATABASE=off
+      - KONG_DECLARATIVE_CONFIG=/kong/kong.yml
+      - KONG_PROXY_ACCESS_LOG=/dev/stdout
+      - KONG_ADMIN_ACCESS_LOG=/dev/stdout
+      - KONG_PROXY_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_LISTEN=0.0.0.0:8001
+    volumes:
+      - ./kong/kong.yml:/kong/kong.yml
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    restart: unless-stopped
+
+  # Message Queue (Kafka)
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    restart: unless-stopped
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+    ports:
+      - "2181:2181"
+    restart: unless-stopped
+
+  # Secrets Management
+  vault:
+    image: vault:latest
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=${VAULT_TOKEN}
+      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+    volumes:
+      - ./vault/config:/vault/config
+      - vault_data:/vault/data
+    ports:
+      - "8200:8200"
+    cap_add:
+      - IPC_LOCK
+    restart: unless-stopped
+
+  # ML Tracking
+  mlflow:
+    image: python:3.9-slim
+    command: >
+      bash -c "pip install mlflow psycopg2-binary &&
+               mlflow server --host 0.0.0.0 --port 5000 
+               --backend-store-uri postgresql://postgres:${POSTGRES_PASSWORD}@postgres-primary:5432/mlflow
+               --default-artifact-root /mlflow/artifacts"
+    volumes:
+      - mlflow_data:/mlflow/artifacts
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+
+volumes:
+  vault_data:
+  mlflow_data:

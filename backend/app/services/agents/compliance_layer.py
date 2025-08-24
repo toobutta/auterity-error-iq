@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 import logging
 import json
 import hashlib
+import uuid
 from enum import Enum
 
 logger = logging.getLogger(__name__)
@@ -101,6 +102,37 @@ class ComplianceLayer:
         
         self.compliance_rules = base_rules
         logger.info(f"Initialized compliance rules for {self.compliance_level.value}")
+    
+    def validate_compliance(self, data: Dict[str, Any], compliance_rules: List[str]) -> Dict[str, Any]:
+        """Simple compliance validation for testing"""
+        
+        audit_id = str(uuid.uuid4())
+        classification = data.get('classification', 'public')
+        
+        violations = []
+        compliance_status = 'compliant'
+        
+        # Simple validation logic
+        if 'GDPR' in compliance_rules and 'personal' in str(data).lower():
+            violations.append('GDPR: Personal data detected without proper consent')
+            compliance_status = 'violation'
+        
+        if 'HIPAA' in compliance_rules and 'health' in str(data).lower():
+            violations.append('HIPAA: Health information detected without proper authorization')
+            compliance_status = 'violation'
+        
+        result = {
+            'compliance_status': compliance_status,
+            'audit_id': audit_id,
+            'violations': violations,
+            'data_classification': classification,
+            'timestamp': datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Log for audit trail
+        self.audit_log.append(result)
+        
+        return result
     
     async def validate_operation(
         self,

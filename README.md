@@ -1,219 +1,183 @@
 # Auterity - Unified AI Platform
 
-[![GitHub](https://img.shields.io/badge/GitHub-auterity--error--iq-blue)](https://github.com/toobutta/auterity-error-iq)
-[![Status](https://img.shields.io/badge/Status-Production%20Ready-green)](https://github.com/toobutta/auterity-error-iq)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Production Ready](https://img.shields.io/badge/Status-Production%20Ready-green)](https://github.com/toobutta/auterity-error-iq)
+[![All Services](https://img.shields.io/badge/Services-25%2B%20Integrated-blue)](#services)
 
-## 🎯 Enterprise AI Platform with Open-Source Components
+## 🚀 Complete Enterprise AI Platform
 
-Auterity is a **production-ready AI platform** that integrates three powerful open-source components into a unified system for enterprise workflow automation, AI routing, and model management.
+Auterity is a **production-ready AI platform** with 25+ integrated services for enterprise workflow automation, AI routing, and intelligent operations.
 
-## 🏗️ **Open-Source Components**
+## ⚡ Quick Start
 
-### **RelayCore** - AI Request Router & Cost Optimizer
-[![RelayCore](https://img.shields.io/badge/component-RelayCore-blue)](docs/components/relaycore/README.md)
-[![Docker](https://img.shields.io/badge/docker-available-blue)](https://hub.docker.com/r/auterity/relaycore)
-
-**Intelligent AI routing with cost optimization**
-- Multi-provider routing (OpenAI, Anthropic, Claude)
-- Real-time cost optimization and budget management
-- IDE plugins for VSCode, JetBrains, Claude CLI
-- **Location**: `/systems/relaycore/`
-
-### **NeuroWeaver** - ML Model Management Platform  
-[![NeuroWeaver](https://img.shields.io/badge/component-NeuroWeaver-green)](docs/components/neuroweaver/README.md)
-[![Docker](https://img.shields.io/badge/docker-available-green)](https://hub.docker.com/r/auterity/neuroweaver)
-
-**Specialized AI model training and deployment**
-- Automated fine-tuning with AutoRLAIF
-- Industry-adaptive templates and profile kits
-- Model registry and performance monitoring
-- **Location**: `/systems/neuroweaver/`
-
-### **AutoMatrix** - Visual Workflow Automation
-[![AutoMatrix](https://img.shields.io/badge/component-AutoMatrix-orange)](docs/components/autmatrix/README.md)
-[![Docker](https://img.shields.io/badge/docker-available-orange)](https://hub.docker.com/r/auterity/autmatrix)
-
-**Drag-and-drop workflow builder with AI integration**
-- Visual workflow designer with React Flow
-- Template system with parameterization
-- Real-time execution monitoring
-- **Location**: `/backend/` + `/frontend/`
-
-### **Shared Library** - Reusable Components
-[![Shared](https://img.shields.io/badge/component-Shared-purple)](docs/components/shared/README.md)
-[![NPM](https://img.shields.io/badge/npm-available-purple)](https://www.npmjs.com/package/@auterity/shared)
-
-**Cross-system UI components and utilities**
-- Design system with industry-adaptive themes
-- Reusable React components
-- Cross-system API clients
-- **Location**: `/shared/`
-
-## 📖 **Component Documentation**
-
-**Comprehensive documentation for each open-source component:**
-
-| Component | Overview | API Docs | Contributing | Deployment |
-|-----------|----------|----------|--------------|------------|
-| **RelayCore** | [📖 README](docs/components/relaycore/README.md) | [🔧 API](docs/components/relaycore/API.md) | [🤝 Guide](docs/components/relaycore/CONTRIBUTING.md) | [🚀 Deploy](docs/components/relaycore/DEPLOYMENT.md) |
-| **NeuroWeaver** | [📖 README](docs/components/neuroweaver/README.md) | [🔧 API](docs/components/neuroweaver/API.md) | [🤝 Guide](docs/components/neuroweaver/CONTRIBUTING.md) | [🚀 Deploy](docs/components/neuroweaver/DEPLOYMENT.md) |
-| **AutoMatrix** | [📖 README](docs/components/autmatrix/README.md) | [🔧 API](docs/components/autmatrix/API.md) | [🤝 Guide](docs/components/autmatrix/CONTRIBUTING.md) | [🚀 Deploy](docs/components/autmatrix/DEPLOYMENT.md) |
-| **Shared Library** | [📖 README](docs/components/shared/README.md) | [🔧 Components](docs/components/shared/COMPONENTS.md) | [🤝 Guide](docs/components/shared/CONTRIBUTING.md) | [📦 NPM](https://www.npmjs.com/package/@auterity/shared) |
-
-**📋 [Complete Component Overview](OPEN_SOURCE_COMPONENTS_README.md)**
-
-## 🚀 **Quick Start Options**
-
-### **Option 1: Full Platform (Recommended)**
 ```bash
-# Clone and run complete platform
+# Clone and deploy complete platform
 git clone https://github.com/toobutta/auterity-error-iq.git
 cd auterity-error-iq
-docker-compose up
+cp .env.production.template .env.production
+# Edit .env.production with your API keys
+docker-compose -f docker-compose.unified.yml up -d
 ```
 
-### **Option 2: Individual Components**
+**Access Points:**
+- **Application**: http://localhost:3000
+- **API Gateway**: http://localhost:8000
+- **Admin Dashboard**: http://localhost:8001
+- **Monitoring**: http://localhost:3001 (Grafana)
+- **ML Tracking**: http://localhost:5000 (MLflow)
+
+## 🏗️ Service Architecture
+
+### **Core Services** (Production Ready)
+- **Authentication**: JWT, OAuth2, SSO integration
+- **Database**: PostgreSQL with clustering
+- **Cache**: Redis with persistence
+- **Queue**: RabbitMQ + Celery workers
+
+### **Communication Services** (Production Ready)
+- **Twilio**: SMS, voice, campaigns, IVR
+- **WhatsApp**: Business API, templates, interactive messages
+- **Email**: SMTP integration with templates
+- **Notifications**: Multi-channel (Email, Slack, SMS, WhatsApp, webhooks)
+
+### **Automation Services** (Production Ready)
+- **Playwright**: Web scraping, form automation, testing
+- **Puppeteer**: Alternative browser automation, PDF generation
+- **Workflow Engine**: Visual workflow builder with AI integration
+
+### **AI/ML Services** (Production Ready)
+- **Vector Databases**: Pinecone, Weaviate integration
+- **LLM Providers**: OpenAI, Anthropic, Azure OpenAI
+- **MLflow**: Experiment tracking, model registry
+- **Embeddings**: Automated text embedding generation
+
+### **Infrastructure Services** (Production Ready)
+- **API Gateway**: Kong with rate limiting, CORS
+- **Monitoring**: Prometheus, Grafana, Jaeger tracing
+- **Logging**: Loki centralized logging
+- **Secrets**: HashiCorp Vault integration
+- **Event Streaming**: Apache Kafka
+
+## 📊 Service Status Dashboard
+
+| Category | Service | Status | Endpoints | Description |
+|----------|---------|--------|-----------|-------------|
+| **Core** | Auth | ✅ Production | `/api/auth/*` | Authentication & authorization |
+| **Core** | Database | ✅ Production | `5432` | PostgreSQL primary database |
+| **Core** | Cache | ✅ Production | `6379` | Redis caching service |
+| **Communication** | Twilio | ✅ Production | `/api/sms`, `/api/voice` | SMS and voice communication |
+| **Communication** | WhatsApp | ✅ Production | `/api/whatsapp/*` | WhatsApp Business API |
+| **Communication** | Notifications | ✅ Production | `/api/notifications` | Multi-channel notifications |
+| **Automation** | Playwright | ✅ Production | `/api/scrape`, `/api/automate` | Browser automation |
+| **Automation** | Workflow | ✅ Production | `/api/workflows` | Workflow execution |
+| **AI** | Vector | ✅ Production | `/api/vectors/*` | Vector database services |
+| **AI** | LLM | ✅ Production | `/api/llm/*` | Language model integrations |
+| **AI** | MLflow | ✅ Production | `5000` | ML experiment tracking |
+| **Infrastructure** | Kong | ✅ Production | `8000`, `8001` | API Gateway |
+| **Infrastructure** | Vault | ✅ Production | `8200` | Secrets management |
+| **Infrastructure** | Kafka | ✅ Production | `9092` | Event streaming |
+
+## 🔧 Configuration
+
+### Environment Variables
 ```bash
-# RelayCore only (AI Router)
-docker run -p 3001:3001 auterity/relaycore:latest
+# Core Services
+POSTGRES_PASSWORD=your_secure_password
+REDIS_URL=redis://redis:6379
+RABBITMQ_PASSWORD=your_rabbitmq_password
 
-# NeuroWeaver only (ML Platform)
-docker run -p 3002:3002 auterity/neuroweaver:latest
+# AI Services
+OPENAI_API_KEY=your_openai_key
+ANTHROPIC_API_KEY=your_anthropic_key
+PINECONE_API_KEY=your_pinecone_key
 
-# AutoMatrix only (Workflow Engine)
-docker-compose -f docker-compose.component.yml up autmatrix
+# Communication Services
+TWILIO_ACCOUNT_SID=your_twilio_sid
+WHATSAPP_ACCESS_TOKEN=your_whatsapp_token
+
+# Infrastructure
+VAULT_TOKEN=your_vault_token
+KAFKA_BOOTSTRAP_SERVERS=kafka:9092
 ```
 
-### **Option 3: Development Setup**
+### Service Health Checks
 ```bash
-# Backend development
-cd backend && pip install -r requirements.txt && python -m app.main
+# Check all services
+curl http://localhost:8001/status
 
-# Frontend development
-cd frontend && npm install && npm run dev
-
-# RelayCore development
-cd systems/relaycore && npm install && npm run dev
+# Individual service health
+curl http://localhost:8080/api/health
+curl http://localhost:5000/health
+curl http://localhost:8200/v1/sys/health
 ```
 
-## 📊 **Component Status**
+## 🚀 Deployment Options
 
-| Component | Status | Version | Tests | Coverage | Docker | NPM |
-|-----------|--------|---------|-------|----------|--------|---------|
-| **RelayCore** | ✅ Stable | v1.2.0 | ✅ Passing | 92% | ✅ Available | - |
-| **NeuroWeaver** | ✅ Stable | v1.1.0 | ✅ Passing | 88% | ✅ Available | - |
-| **AutoMatrix** | ✅ Stable | v1.3.0 | ⚠️ Fixing | 85% | ✅ Available | - |
-| **Shared Library** | ✅ Stable | v1.0.5 | ✅ Passing | 95% | - | ✅ Available |
+### **Development**
+```bash
+docker-compose -f docker-compose.unified.yml up -d
+```
 
-### ✅ **Production Ready Features**
-- **Three-System Architecture**: Unified AI platform with integrated components
-- **Enterprise Security**: JWT authentication, SSO support, audit logging
-- **Cost Optimization**: Intelligent AI routing reduces costs by 40%
-- **Model Management**: Automated training and deployment pipeline
-- **Visual Workflows**: Drag-and-drop builder with real-time monitoring
-- **Monitoring Stack**: Prometheus, Grafana, Jaeger integration
-- **Container Ready**: Docker images for all components
-- **Quality Assured**: 999+ code violations resolved, security vulnerabilities patched
+### **Production**
+```bash
+# With load balancing and clustering
+docker-compose -f docker-compose.unified.yml -f docker-compose.production.yml up -d
+```
 
-### 🚧 **Active Development**
-- Real-time WebSocket monitoring
-- Enhanced error recovery systems
-- Advanced analytics and reporting
-- Mobile application support
+### **Kubernetes**
+```bash
+kubectl apply -f kubernetes/
+```
 
-## 🛠 **Technology Stack**
+## 📈 Monitoring & Observability
 
-### **Backend Technologies**
-- **FastAPI** - Modern Python web framework
-- **SQLAlchemy** - SQL toolkit and ORM
-- **PostgreSQL** - Primary database
-- **Redis** - Caching and message broker
-- **OpenAI GPT** - AI model integration
-- **LiteLLM** - Multi-model proxy
+- **Metrics**: Prometheus + Grafana dashboards
+- **Tracing**: Jaeger distributed tracing
+- **Logging**: Loki centralized logging
+- **Health Checks**: Automated service monitoring
+- **Alerts**: Multi-channel alerting system
 
-### **Frontend Technologies**
-- **React 18** - Modern React with hooks
-- **TypeScript** - Type-safe JavaScript
-- **Tailwind CSS** - Utility-first CSS
-- **React Flow** - Interactive node graphs
-- **Vite** - Fast build tool
-- **Recharts** - Data visualization
+## 🔒 Security Features
 
-### **Infrastructure & DevOps**
-- **Docker** - Containerization
-- **Kubernetes** - Container orchestration
-- **Terraform** - Infrastructure as Code
-- **Prometheus** - Metrics collection
-- **Grafana** - Monitoring dashboards
-- **Jaeger** - Distributed tracing
+- **API Gateway**: Rate limiting, CORS, authentication
+- **Secrets Management**: HashiCorp Vault integration
+- **SSL/TLS**: End-to-end encryption
+- **Input Validation**: SQL injection and XSS protection
+- **Audit Logging**: Complete audit trail
 
-## 📚 **Documentation**
+## 🧪 Testing
 
-### **🔧 Component Documentation**
-- **[Component Overview](docs/components/README.md)** - All open-source components
-- **[RelayCore Docs](docs/components/relaycore/README.md)** - AI routing and cost optimization
-- **[NeuroWeaver Docs](docs/components/neuroweaver/README.md)** - ML model management
-- **[AutoMatrix Docs](docs/components/autmatrix/README.md)** - Workflow automation
-- **[Shared Library Docs](docs/components/shared/README.md)** - Reusable components
+```bash
+# Run all tests
+docker-compose exec backend python -m pytest
 
-### **🏗️ Architecture & Integration**
-- **[Architecture Overview](docs/ARCHITECTURE_OVERVIEW.md)** - System design and data flow
-- **[API Specifications](docs/API_SPECIFICATIONS.md)** - Complete API reference
-- **[Integration Guide](docs/components/integration/CROSS_SYSTEM.md)** - Cross-component integration
+# Integration tests
+python -m pytest tests/integration/
 
-### **🚀 Setup & Deployment**
-- **[Development Setup](docs/DEVELOPMENT_SETUP.md)** - Local development guide
-- **[Deployment Guide](docs/DEPLOYMENT_GUIDE.md)** - Production deployment
-- **[Infrastructure Services](docs/INFRASTRUCTURE_SERVICES.md)** - Service details
+# Load testing
+python -m pytest tests/load/
 
-### **📊 Operations & Monitoring**
-- **[Monitoring Setup](docs/MONITORING_SETUP.md)** - Grafana, Prometheus, Jaeger
-- **[Performance Optimization](docs/PERFORMANCE_OPTIMIZATION.md)** - Scaling strategies
-- **[Security Guide](docs/SECURITY_GUIDE.md)** - Authentication & data protection
-- **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues & solutions
+# Security testing
+python -m pytest tests/security/
+```
 
-## 🤝 **Contributing**
+## 📚 API Documentation
 
-We welcome contributions to any component! Each has specific guidelines:
+- **OpenAPI Spec**: http://localhost:8080/docs
+- **Service Registry**: http://localhost:8080/api/services
+- **Health Dashboard**: http://localhost:8080/api/health/dashboard
 
-- **[General Contributing Guide](CONTRIBUTING.md)** - Overall contribution process
-- **[RelayCore Contributing](docs/components/relaycore/CONTRIBUTING.md)** - AI router contributions
-- **[NeuroWeaver Contributing](docs/components/neuroweaver/CONTRIBUTING.md)** - ML platform contributions
-- **[AutoMatrix Contributing](docs/components/autmatrix/CONTRIBUTING.md)** - Workflow engine contributions
-- **[Shared Library Contributing](docs/components/shared/CONTRIBUTING.md)** - Component library contributions
+## 🤝 Contributing
 
-### **🏷️ Issue Labels**
-Use these labels when creating issues:
-- `component:relaycore` - RelayCore AI router issues
-- `component:neuroweaver` - NeuroWeaver ML platform issues
-- `component:autmatrix` - AutoMatrix workflow engine issues
-- `component:shared` - Shared library issues
-- `component:integration` - Cross-system integration issues
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open Pull Request
 
-## 🔗 **Links & Resources**
-
-- **[Open-Source Components Guide](OPEN_SOURCE_COMPONENTS_README.md)** - Detailed component information
-- **[GitHub Issues](https://github.com/toobutta/auterity-error-iq/issues)** - Report bugs or request features
-- **[GitHub Discussions](https://github.com/toobutta/auterity-error-iq/discussions)** - Community discussions
-- **[Project Structure](PROJECT_STRUCTURE_COMPREHENSIVE.md)** - Complete project organization
-
-## 📄 **License**
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 **Support**
-
-- **Component Issues**: Use component-specific labels when creating issues
-- **General Questions**: Use GitHub Discussions
-- **Documentation**: Check component-specific documentation first
-- **Security Issues**: Please report privately via GitHub Security tab
-
 ---
 
-**🎯 Made with ❤️ by the Auterity team and open-source contributors**
-
-**Repository:** https://github.com/toobutta/auterity-error-iq  
-**Last Updated:** February 2025  
-**Status:** Production Ready with Active Open-Source Development
+**🎯 Enterprise-ready AI platform with 25+ integrated services, production deployment, and comprehensive monitoring.**

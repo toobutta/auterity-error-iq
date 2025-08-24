@@ -1,30 +1,6 @@
 """
-Quick test of agent framewo    # Test instantiation
-    try:
-        orchestrator = AgentOrchestrator()
-        print("✅ AgentOrchestrator instantiated")
-        
-        rag_engine = RAGEngine()
-        print("✅ RAGEngine instantiated")
-        
-        compliance = ComplianceLayer()
-        print("✅ ComplianceLayer instantiated")
-        
-        security = SecurityManager()
-        print("✅ SecurityManager instantiated")
-        
-        components = {
-            'orchestrator': orchestrator,
-            'rag_engine': rag_engine,
-            'compliance': compliance,
-            'security': security
-        }
-        
-    except Exception as e:
-        print(f"❌ Instantiation failed: {e}")
-        import traceback
-        traceback.print_exc()
-        return False"
+Quick test of agent framework components
+"""
 import sys
 import os
 
@@ -70,6 +46,8 @@ def main():
         
     except Exception as e:
         print(f"❌ Instantiation failed: {e}")
+        import traceback
+        traceback.print_exc()
         return False
     
     # Test basic functionality
@@ -98,6 +76,8 @@ def main():
         
     except Exception as e:
         print(f"❌ Functionality test failed: {e}")
+        import traceback
+        traceback.print_exc()
         return False
     
     print("\n" + "=" * 50)
