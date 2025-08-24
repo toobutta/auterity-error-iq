@@ -51,8 +51,16 @@ export default tseslint.config(
         argsIgnorePattern: '^_', 
         varsIgnorePattern: '^_' 
       }],
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/explicit-function-return-type': 'error',
+      '@typescript-eslint/no-unused-vars': ['error', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_'
+      }],
+      '@typescript-eslint/explicit-module-boundary-types': 'error',
+      '@typescript-eslint/no-non-null-assertion': 'error',
+      '@typescript-eslint/ban-types': 'error',
+      '@typescript-eslint/no-inferrable-types': 'error',
       
       // General rules
       'no-unused-vars': 'off', // Use TypeScript version instead
@@ -69,7 +77,8 @@ export default tseslint.config(
   {
     files: ['**/*.test.{ts,tsx}', '**/*.{spec,test}.{ts,tsx}'],
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off'
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/explicit-function-return-type': 'off'
     }
   }
 );

@@ -35,29 +35,9 @@ vi.mock('../../utils/errorUtils', () => ({
 const mockGetExecution = vi.mocked(workflowsApi.getExecution);
 const mockGetExecutionLogs = vi.mocked(workflowsApi.getExecutionLogs);
 
-// Define proper interfaces for test data
-interface WorkflowExecution {
-  id: string;
-  workflowId: string;
-  workflowName: string;
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
-  inputData: Record<string, unknown>;
-  outputData: Record<string, unknown> | null;
-  startedAt: string;
-  completedAt: string | null;
-  errorMessage?: string;
-  duration: number;
-}
-
-interface ExecutionLog {
-  id: string;
-  stepName: string;
-  level: 'info' | 'warning' | 'error' | 'debug';
-  message: string;
-  timestamp: string;
-  duration: number;
-  data: Record<string, unknown>;
-}
+import { WorkflowExecution } from '../../types/workflow';
+import { ExecutionLog, ExtendedExecutionLogEntry } from '../../types/execution-logs';
+import { ExecutionLogEntry } from '../../types/execution';
 
 const mockFailedExecution: WorkflowExecution = {
   id: 'exec-123',
@@ -68,39 +48,39 @@ const mockFailedExecution: WorkflowExecution = {
     customerName: 'John Doe',
     vehicleType: 'sedan'
   },
-  outputData: undefined,
+  outputData: null,
   startedAt: '2024-01-01T10:00:00Z',
   completedAt: '2024-01-01T10:05:00Z',
   errorMessage: 'AI service timeout occurred during processing',
   duration: 300000
 };
 
-const mockExecutionLogs: ExecutionLog[] = [
+const mockExecutionLogs: ExecutionLogEntry[] = [
   {
     id: 'log-1',
+    executionId: 'exec-123',
     stepName: 'Initialize Workflow',
     level: 'info',
     message: 'Workflow started',
     timestamp: '2024-01-01T10:00:00Z',
-    duration: 100,
     data: { step: 'start' }
   },
   {
     id: 'log-2',
+    executionId: 'exec-123',
     stepName: 'Process Customer Data',
     level: 'info',
     message: 'Processing customer information',
     timestamp: '2024-01-01T10:01:00Z',
-    duration: 2000,
     data: { customerName: 'John Doe' }
   },
   {
     id: 'log-3',
+    executionId: 'exec-123',
     stepName: 'AI Analysis',
     level: 'error',
     message: 'AI service timeout',
     timestamp: '2024-01-01T10:05:00Z',
-    duration: 0,
     data: {}
   }
 ];
@@ -133,7 +113,7 @@ describe('WorkflowErrorDisplay', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetExecution.mockResolvedValue(mockFailedExecution);
-    mockGetExecutionLogs.mockResolvedValue(mockExecutionLogs);
+mockGetExecutionLogs.mockResolvedValue(mockExecutionLogs);
   });
 
   it('shows loading state initially', () => {
@@ -304,8 +284,9 @@ describe('WorkflowErrorDisplay', () => {
   it('handles missing execution gracefully', async () => {
     mockGetExecution.mockResolvedValue({
       ...mockFailedExecution,
-      status: 'completed'
-    });
+      status: 'completed',
+      completedAt: undefined
+    } as WorkflowExecution);
 
     renderWithErrorProvider(
       <WorkflowErrorDisplay {...defaultProps} />
@@ -413,7 +394,10 @@ describe('WorkflowErrorDisplay', () => {
       errorMessage: 'Validation failed: required field missing'
     };
     
-    mockGetExecution.mockResolvedValue(validationErrorExecution);
+    mockGetExecution.mockResolvedValue({
+      ...validationErrorExecution,
+      completedAt: undefined
+    } as WorkflowExecution);
 
     renderWithErrorProvider(
       <WorkflowErrorDisplay {...defaultProps} />

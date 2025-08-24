@@ -9,6 +9,12 @@ import { logger } from '../utils/logger';
 import { MetricsCollector, SystemMetrics, ProviderMetrics } from './metrics-collector';
 import { authMiddleware } from '../middleware/auth';
 
+// Extend Socket interface to include custom properties
+interface AuthenticatedSocket extends Socket {
+  userId?: string;
+  userRole?: string;
+}
+
 export interface RealtimeMetrics {
   timestamp: number;
   system: SystemMetrics;
@@ -74,7 +80,7 @@ export class WebSocketService {
   }
 
   private setupEventHandlers(): void {
-    this.io.on('connection', (socket: Socket) => {
+    this.io.on('connection', (socket: AuthenticatedSocket) => {
       logger.info(`Client connected: ${socket.id} (User: ${socket.userId})`);
       this.connectedClients.add(socket.id);
 
@@ -85,7 +91,7 @@ export class WebSocketService {
       socket.on('subscribe_metrics', (types: string[]) => {
         logger.info(`Client ${socket.id} subscribed to metrics: ${types.join(', ')}`);
         socket.join('metrics_subscribers');
-        
+
         // Send immediate update
         this.sendMetricsToClient(socket);
       });
@@ -118,11 +124,11 @@ export class WebSocketService {
     });
   }
 
-  private async sendMetricsToClient(socket: Socket): Promise<void> {
+  private async sendMetricsToClient(socket: AuthenticatedSocket): Promise<void> {
     try {
       const systemMetrics = await this.metricsCollector.getSystemMetrics();
       const providerMetrics = await this.getAllProviderMetrics();
-      
+
       const realtimeMetrics: RealtimeMetrics = {
         timestamp: Date.now(),
         system: systemMetrics,
@@ -195,7 +201,7 @@ export class WebSocketService {
     return 0;
   }
 
-  private async handleAdminCommand(socket: Socket, command: any): Promise<void> {
+  private async handleAdminCommand(socket: AuthenticatedSocket, command: any): Promise<void> {
     logger.info(`Admin command received from ${socket.id}:`, command);
 
     switch (command.type) {

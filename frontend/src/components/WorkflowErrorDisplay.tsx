@@ -4,6 +4,7 @@ import { getExecution, getExecutionLogs, retryWorkflowExecution } from '../api/w
 import { useError } from '../contexts/ErrorContext';
 import { ErrorCategory, ErrorSeverity } from '../types/error';
 import { createAppError } from '../utils/errorUtils';
+import { ExecutionLog } from '../types/execution-logs';
 // TODO: Re-enable when Kiro integration is needed
 // import { useKiroIntegration } from '../hooks/useKiroIntegration';
 import RetryWorkflowModal from './RetryWorkflowModal';
@@ -17,16 +18,6 @@ interface WorkflowErrorDisplayProps {
   className?: string;
 }
 
-interface ExecutionLog {
-  id: string;
-  step_name: string;
-  step_type: string;
-  input_data: Record<string, unknown>;
-  output_data: Record<string, unknown>;
-  duration_ms: number;
-  timestamp: string;
-  error_message?: string;
-}
 
 
 
@@ -60,14 +51,17 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
           const logsData = await getExecutionLogs(executionId);
           const transformedLogs: ExecutionLog[] = logsData.map(entry => ({
             id: entry.id,
-            step_name: entry.stepName || 'Unknown Step',
-            step_type: entry.level || 'info',
-            input_data: entry.data || {},
-            output_data: entry.data || {},
-            duration_ms: entry.duration || 0,
+            stepName: entry.stepName || 'Unknown Step',
+            level: (entry.level === 'warn' ? 'warning' : entry.level) || 'info',
+            message: entry.message || '',
+            data: entry.data || {},
+            inputData: entry.data || {},
+            outputData: entry.data || {},
+            duration: entry.duration || 0,
             timestamp: entry.timestamp,
-            error_message: entry.level === 'error' ? entry.message : undefined
-          }));
+            errorMessage: entry.level === 'error' ? entry.message : undefined,
+            stepType: entry.stepType
+          })) as ExecutionLog[];
           setLogs(transformedLogs);
         } catch (logError) {
           console.warn('Failed to fetch execution logs:', logError);
@@ -109,8 +103,8 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
     
     // Check logs for more context
     const hasAiErrors = logs.some(log => 
-      log.error_message?.toLowerCase().includes('ai') || 
-      log.step_type === 'ai_process'
+      log.errorMessage?.toLowerCase().includes('ai') || 
+      log.stepType === 'ai_process'
     );
     if (hasAiErrors) return ErrorCategory.AI_SERVICE;
     
@@ -136,11 +130,11 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
   };
 
   const getFailurePoint = (logs: ExecutionLog[]): { stepName: string; stepIndex: number } | null => {
-    const errorLog = logs.find(log => log.error_message);
+    const errorLog = logs.find(log => log.errorMessage);
     if (errorLog) {
       const stepIndex = logs.findIndex(log => log.id === errorLog.id);
       return {
-        stepName: errorLog.step_name,
+        stepName: errorLog.stepName,
         stepIndex: stepIndex + 1
       };
     }
@@ -364,7 +358,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
                   <div 
                     key={log.id} 
                     className={`border rounded-lg p-4 ${
-                      log.error_message 
+                      log.errorMessage 
                         ? 'border-red-200 bg-red-50' 
                         : 'border-gray-200 bg-white'
                     }`}
@@ -373,51 +367,51 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
                       <div className="flex items-center">
                         <span className={`
                           w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium mr-3
-                          ${log.error_message 
+                          ${log.errorMessage 
                             ? 'bg-red-200 text-red-800' 
                             : 'bg-blue-200 text-blue-800'
                           }
                         `}>
                           {index + 1}
                         </span>
-                        <h4 className="font-medium text-gray-900">{log.step_name}</h4>
+                        <h4 className="font-medium text-gray-900">{log.stepName}</h4>
                       </div>
                       <div className="text-xs text-gray-500">
-                        {formatTimestamp(log.timestamp)} • {formatDuration(log.duration_ms)}
+                        {formatTimestamp(log.timestamp)} • {formatDuration(log.duration)}
                       </div>
                     </div>
                     
                     <p className="text-sm text-gray-600 mb-2 capitalize">
-                      {log.step_type.replace('_', ' ')}
+                      {log.level.replace('_', ' ')}
                     </p>
 
-                    {log.error_message && (
+                    {log.errorMessage && (
                       <div className="bg-red-100 border border-red-200 rounded p-3 mb-3">
                         <p className="text-red-800 font-medium text-sm">Error:</p>
-                        <p className="text-red-700 text-sm font-mono mt-1">{log.error_message}</p>
+                        <p className="text-red-700 text-sm font-mono mt-1">{log.errorMessage}</p>
                       </div>
                     )}
 
                     {/* Input/Output Data */}
-                    {(Object.keys(log.input_data).length > 0 || Object.keys(log.output_data).length > 0) && (
+                    {(Object.keys(log.inputData || {}).length > 0 || Object.keys(log.outputData || {}).length > 0) && (
                       <details className="mt-2">
                         <summary className="text-sm text-gray-600 cursor-pointer hover:text-gray-800">
                           View Step Data
                         </summary>
                         <div className="mt-2 space-y-2">
-                          {Object.keys(log.input_data).length > 0 && (
+                          {Object.keys(log.inputData || {}).length > 0 && (
                             <div>
                               <p className="text-xs font-medium text-gray-700">Input:</p>
                               <pre className="text-xs bg-gray-100 p-2 rounded overflow-x-auto">
-                                {JSON.stringify(log.input_data, null, 2)}
+                                {JSON.stringify(log.inputData, null, 2)}
                               </pre>
                             </div>
                           )}
-                          {Object.keys(log.output_data).length > 0 && (
+                          {Object.keys(log.outputData || {}).length > 0 && (
                             <div>
                               <p className="text-xs font-medium text-gray-700">Output:</p>
                               <pre className="text-xs bg-gray-100 p-2 rounded overflow-x-auto">
-                                {JSON.stringify(log.output_data, null, 2)}
+                                {JSON.stringify(log.outputData, null, 2)}
                               </pre>
                             </div>
                           )}

@@ -307,13 +307,17 @@ export const automotiveDesignTokens = {
  */
 export function getColor(path: string): string {
   const keys = path.split('.');
-  let value: unknown = automotiveDesignTokens.colors;
-  
+  let value: any = automotiveDesignTokens.colors;
+
   for (const key of keys) {
-    value = value?.[key];
+    if (value && typeof value === 'object' && key in value) {
+      value = value[key];
+    } else {
+      return '#000000';
+    }
   }
-  
-  return value || '#000000';
+
+  return typeof value === 'string' ? value : '#000000';
 }
 
 /**
