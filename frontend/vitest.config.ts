@@ -14,9 +14,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    // Define globals for tests
-    globals: true,
-    setupFiles: ['./src/setupTests.ts', './src/types/test-utils.ts'],
+    setupFiles: ['./vitest.setup.ts', './src/setupTests.ts'],
     // Fix module resolution issues
     deps: {
       inline: [

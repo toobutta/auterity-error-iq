@@ -7,6 +7,11 @@ and compliance management across the Auterity platform.
 
 import logging
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi.security import HTTPBearer
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/agents", tags=["agents"])

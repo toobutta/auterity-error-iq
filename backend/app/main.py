@@ -34,6 +34,8 @@ from app.middleware.logging import StructuredLoggingMiddleware
 from app.middleware.otel_middleware import setup_opentelemetry
 from app.middleware.prometheus import prometheus_middleware
 from app.middleware.tracing import setup_tracing
+from app.middleware.tenant_middleware import AuditLoggingMiddleware, TenantIsolationMiddleware
+from app.startup.ai_ecosystem_startup import ecosystem_manager, startup_event, shutdown_event
 
 # Environment configuration
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")

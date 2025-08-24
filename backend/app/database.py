@@ -4,9 +4,27 @@ import logging
 from contextlib import contextmanager
 from typing import Generator
 
-from sqlalchemy.orm import Session
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import Session, sessionmaker
+
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
+
+# Database engine configuration
+engine = create_engine(
+    settings.SQLALCHEMY_DATABASE_URL,
+    pool_pre_ping=True,
+    pool_recycle=300,
+    echo=settings.DEBUG if hasattr(settings, 'DEBUG') else False
+)
+
+# Session configuration
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Base class for all database models
+Base = declarative_base()
 
 
 def get_db() -> Generator[Session, None, None]:

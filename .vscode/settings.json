@@ -1,11 +1,8 @@
 {
-  "codeQL.cli.executablePath": "c:\\Users\\Andrew\\AppData\\Roaming\\Kiro\\User\\globalStorage\\github.vscode-codeql\\distribution1\\codeql\\codeql.exe",
-  "codeQL.runningQueries.numberOfThreads": 2,
-  "codeQL.runningQueries.memory": 1024,
-  "codeQL.runningQueries.timeout": 600,
-  "codeQL.runningTests.numberOfThreads": 1,
-  "codeQL.canary": false,
-  "codeQL.cli.serverTimeout": 30000,
-  "codeQL.autoUpdateChecks": false,
-  "codeQL.telemetry.enableTelemetry": false
+  "python.defaultInterpreterPath": "./backend/.venv/Scripts/python.exe",
+  "python.terminal.activateEnvironment": true,
+  "python.linting.enabled": true,
+  "python.linting.flake8Enabled": true,
+  "python.formatting.provider": "black",
+  "python.formatting.blackPath": "./backend/.venv/Scripts/black.exe"
 }

@@ -13,8 +13,8 @@ Auterity is a **production-ready AI platform** with 25+ integrated services for 
 # Clone and deploy complete platform
 git clone https://github.com/toobutta/auterity-error-iq.git
 cd auterity-error-iq
-cp .env.production.template .env.production
-# Edit .env.production with your API keys
+cp .env.example .env
+# Edit .env with your API keys
 docker-compose -f docker-compose.unified.yml up -d
 ```
 
@@ -105,9 +105,10 @@ KAFKA_BOOTSTRAP_SERVERS=kafka:9092
 curl http://localhost:8001/status
 
 # Individual service health
-curl http://localhost:8080/api/health
-curl http://localhost:5000/health
-curl http://localhost:8200/v1/sys/health
+curl http://localhost:8080/api/health (Backend)
+curl http://localhost:8081/v1/meta (Weaviate)
+curl http://localhost:5000/health (MLflow)
+curl http://localhost:8200/v1/sys/health (Vault)
 ```
 
 ## 🚀 Deployment Options
