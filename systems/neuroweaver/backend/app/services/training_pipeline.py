@@ -91,7 +91,7 @@ class QLoRATrainer:
         """Execute QLoRA training pipeline"""
         try:
             from app.core.security import SecurityValidator
-        logger.info(f"Starting QLoRA training for job {SecurityValidator.sanitize_log_input(job_id)}")
+            logger.info(f"Starting QLoRA training for job {SecurityValidator.sanitize_log_input(job_id)}")
             
             # Initialize wandb if configured
             if settings.WANDB_API_KEY:
@@ -605,7 +605,7 @@ class RLAIFTrainer:
                 with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
                     response = await asyncio.get_event_loop().run_in_executor(
                         executor,
-                    lambda: self.openai_client.chat.completions.create(
+                        lambda: self.openai_client.chat.completions.create(
                         model=self.feedback_model,
                         messages=[
                             {"role": "system", "content": "You are an expert evaluator of automotive assistant responses. Rate the response quality from 1-10 based on accuracy, helpfulness, professionalism, and relevance to automotive context."},
