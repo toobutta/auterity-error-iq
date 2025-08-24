@@ -8,12 +8,15 @@
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
     "jsx": "react-jsx",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "composite": true,
+    "declaration": true,
+    "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./"]

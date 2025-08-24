@@ -1,6 +1,7 @@
 import { vi } from 'vitest';
 import { ReactFlowProvider } from 'reactflow';
 import { BrowserRouter } from 'react-router-dom';
+import type { ReactNode } from 'react';
 
 // Vitest mock types
 export const mockVi = vi;
@@ -26,13 +27,13 @@ export interface MockNodeProps {
 }
 
 // Test wrapper components
-export const TestRouterWrapper = ({ children }: { children: React.ReactNode }) => (
-  <BrowserRouter>{children}</BrowserRouter>
-);
+export const TestRouterWrapper = ({ children }: { children: ReactNode }) => {
+  return <BrowserRouter>{children}</BrowserRouter>;
+};
 
-export const TestReactFlowWrapper = ({ children }: { children: React.ReactNode }) => (
-  <ReactFlowProvider>{children}</ReactFlowProvider>
-);
+export const TestReactFlowWrapper = ({ children }: { children: ReactNode }) => {
+  return <ReactFlowProvider>{children}</ReactFlowProvider>;
+};
 
 // Mock data factories
 export const createMockWorkflowExecution = (overrides: Record<string, unknown> = {}) => ({
