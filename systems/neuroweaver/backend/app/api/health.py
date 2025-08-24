@@ -1,148 +1,218 @@
 """
-NeuroWeaver Health Check API
-System health and status monitoring endpoints
+Health Check API
+System health and status endpoints
 """
 
-from fastapi import APIRouter, HTTPException
-from typing import Dict, Any
-from datetime import datetime
-import psutil
 import asyncio
+import psutil
+import torch
+from datetime import datetime
+from typing import Dict, Any
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.database import get_db_session
 from app.core.config import settings
-from app.core.database import engine
-from app.core.logging import logger
+from app.core.logging import get_logger
+from app.middleware.prometheus import metrics_endpoint
 
+logger = get_logger(__name__)
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("/health")
 async def health_check():
     """Basic health check endpoint"""
     return {
         "status": "healthy",
-        "service": "neuroweaver-backend",
-        "version": settings.VERSION,
         "timestamp": datetime.utcnow().isoformat(),
-        "environment": settings.ENVIRONMENT
+        "service": settings.APP_NAME,
+        "version": settings.VERSION
     }
 
 
-@router.get("/detailed")
-async def detailed_health_check():
-    """Detailed health check with system metrics"""
+@router.get("/health/detailed")
+async def detailed_health_check(db: AsyncSession = Depends(get_db_session)):
+    """Detailed health check with system information"""
     try:
-        # Database connectivity check
-        db_status = await check_database_health()
-        
-        # System metrics
-        system_metrics = get_system_metrics()
-        
-        # Service status
-        service_status = {
-            "training_enabled": settings.TRAINING_ENABLED,
-            "auto_deploy": settings.AUTO_DEPLOY,
-            "relaycore_enabled": settings.RELAYCORE_ENABLED
-        }
-        
-        overall_status = "healthy" if db_status["status"] == "healthy" else "degraded"
-        
-        return {
-            "status": overall_status,
-            "service": "neuroweaver-backend",
-            "version": settings.VERSION,
+        health_data = {
+            "status": "healthy",
             "timestamp": datetime.utcnow().isoformat(),
+            "service": settings.APP_NAME,
+            "version": settings.VERSION,
             "environment": settings.ENVIRONMENT,
-            "database": db_status,
-            "system": system_metrics,
-            "services": service_status
+            "system": await _get_system_info(),
+            "database": await _check_database_health(db),
+            "gpu": _get_gpu_info(),
+            "dependencies": _check_dependencies()
         }
+        
+        # Determine overall health status
+        if not health_data["database"]["healthy"]:
+            health_data["status"] = "unhealthy"
+            
+        return health_data
         
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         raise HTTPException(status_code=503, detail="Service unhealthy")
 
 
-@router.get("/readiness")
-async def readiness_check():
-    """Kubernetes readiness probe endpoint"""
+@router.get("/health/ready")
+async def readiness_check(db: AsyncSession = Depends(get_db_session)):
+    """Kubernetes readiness probe"""
     try:
         # Check database connectivity
-        db_status = await check_database_health()
+        await db.execute("SELECT 1")
         
-        if db_status["status"] != "healthy":
-            raise HTTPException(status_code=503, detail="Database not ready")
+        # Check if training is enabled and working
+        if settings.TRAINING_ENABLED:
+            # Basic GPU check if available
+            if torch.cuda.is_available():
+                torch.cuda.device_count()
         
-        return {
-            "status": "ready",
-            "timestamp": datetime.utcnow().isoformat()
-        }
+        return {"status": "ready"}
         
     except Exception as e:
         logger.error(f"Readiness check failed: {e}")
         raise HTTPException(status_code=503, detail="Service not ready")
 
 
-@router.get("/liveness")
+@router.get("/health/live")
 async def liveness_check():
-    """Kubernetes liveness probe endpoint"""
-    return {
-        "status": "alive",
-        "timestamp": datetime.utcnow().isoformat()
-    }
-
-
-async def check_database_health() -> Dict[str, Any]:
-    """Check database connectivity and health"""
+    """Kubernetes liveness probe"""
     try:
-        # Test database connection
-        async with engine.begin() as conn:
-            result = await conn.execute("SELECT 1")
-            await result.fetchone()
-        
-        return {
-            "status": "healthy",
-            "message": "Database connection successful",
-            "response_time_ms": 0  # Could measure actual response time
-        }
+        # Basic application liveness check
+        return {"status": "alive", "timestamp": datetime.utcnow().isoformat()}
         
     except Exception as e:
-        logger.error(f"Database health check failed: {e}")
-        return {
-            "status": "unhealthy",
-            "message": f"Database connection failed: {str(e)}",
-            "response_time_ms": None
-        }
+        logger.error(f"Liveness check failed: {e}")
+        raise HTTPException(status_code=503, detail="Service not alive")
 
 
-def get_system_metrics() -> Dict[str, Any]:
-    """Get system performance metrics"""
+@router.get("/metrics")
+async def get_metrics():
+    """Prometheus metrics endpoint"""
+    return await metrics_endpoint()
+
+
+async def _get_system_info() -> Dict[str, Any]:
+    """Get system information"""
     try:
-        # CPU usage
         cpu_percent = psutil.cpu_percent(interval=1)
-        
-        # Memory usage
         memory = psutil.virtual_memory()
-        
-        # Disk usage
         disk = psutil.disk_usage('/')
         
         return {
             "cpu_percent": cpu_percent,
             "memory": {
-                "total_gb": round(memory.total / (1024**3), 2),
-                "available_gb": round(memory.available / (1024**3), 2),
-                "used_percent": memory.percent
+                "total": memory.total,
+                "available": memory.available,
+                "percent": memory.percent,
+                "used": memory.used
             },
             "disk": {
-                "total_gb": round(disk.total / (1024**3), 2),
-                "free_gb": round(disk.free / (1024**3), 2),
-                "used_percent": round((disk.used / disk.total) * 100, 2)
-            }
+                "total": disk.total,
+                "used": disk.used,
+                "free": disk.free,
+                "percent": (disk.used / disk.total) * 100
+            },
+            "load_average": psutil.getloadavg() if hasattr(psutil, 'getloadavg') else None
+        }
+    except Exception as e:
+        logger.error(f"Failed to get system info: {e}")
+        return {"error": str(e)}
+
+
+async def _check_database_health(db: AsyncSession) -> Dict[str, Any]:
+    """Check database health"""
+    try:
+        start_time = datetime.utcnow()
+        await db.execute("SELECT 1")
+        end_time = datetime.utcnow()
+        
+        response_time = (end_time - start_time).total_seconds() * 1000
+        
+        return {
+            "healthy": True,
+            "response_time_ms": response_time,
+            "url": settings.DATABASE_URL.split('@')[1] if '@' in settings.DATABASE_URL else "hidden"
+        }
+    except Exception as e:
+        logger.error(f"Database health check failed: {e}")
+        return {
+            "healthy": False,
+            "error": str(e)
+        }
+
+
+def _get_gpu_info() -> Dict[str, Any]:
+    """Get GPU information"""
+    try:
+        if not torch.cuda.is_available():
+            return {"available": False, "message": "CUDA not available"}
+        
+        gpu_count = torch.cuda.device_count()
+        gpus = []
+        
+        for i in range(gpu_count):
+            gpu_props = torch.cuda.get_device_properties(i)
+            memory_allocated = torch.cuda.memory_allocated(i)
+            memory_cached = torch.cuda.memory_reserved(i)
+            
+            gpus.append({
+                "id": i,
+                "name": gpu_props.name,
+                "memory_total": gpu_props.total_memory,
+                "memory_allocated": memory_allocated,
+                "memory_cached": memory_cached,
+                "memory_free": gpu_props.total_memory - memory_allocated,
+                "compute_capability": f"{gpu_props.major}.{gpu_props.minor}"
+            })
+        
+        return {
+            "available": True,
+            "count": gpu_count,
+            "gpus": gpus
         }
         
     except Exception as e:
-        logger.error(f"Failed to get system metrics: {e}")
-        return {
-            "error": "Failed to retrieve system metrics"
+        logger.error(f"Failed to get GPU info: {e}")
+        return {"available": False, "error": str(e)}
+
+
+def _check_dependencies() -> Dict[str, Any]:
+    """Check critical dependencies"""
+    dependencies = {}
+    
+    try:
+        # Check PyTorch
+        dependencies["torch"] = {
+            "version": torch.__version__,
+            "cuda_available": torch.cuda.is_available(),
+            "status": "healthy"
         }
+    except Exception as e:
+        dependencies["torch"] = {"status": "error", "error": str(e)}
+    
+    try:
+        # Check Transformers
+        import transformers
+        dependencies["transformers"] = {
+            "version": transformers.__version__,
+            "status": "healthy"
+        }
+    except Exception as e:
+        dependencies["transformers"] = {"status": "error", "error": str(e)}
+    
+    try:
+        # Check Datasets
+        import datasets
+        dependencies["datasets"] = {
+            "version": datasets.__version__,
+            "status": "healthy"
+        }
+    except Exception as e:
+        dependencies["datasets"] = {"status": "error", "error": str(e)}
+    
+    return dependencies

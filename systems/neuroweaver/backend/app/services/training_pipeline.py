@@ -256,7 +256,10 @@ class QLoRATrainer:
             gradient_checkpointing=self.config.gradient_checkpointing,
             dataloader_pin_memory=False,
             remove_unused_columns=False,
-            report_to="wandb" if settings.WANDB_API_KEY else None
+            report_to="wandb" if settings.WANDB_API_KEY else None,
+            max_steps=-1,
+            save_total_limit=3,
+            prediction_loss_only=True
         )
     
     def _create_trainer(self, model, tokenizer, dataset, training_args):

@@ -1,81 +1,167 @@
-"""Prometheus metrics middleware for NeuroWeaver."""
+"""
+Prometheus Metrics Middleware
+Collects application metrics for monitoring
+"""
 
 import time
 from typing import Callable
 from fastapi import Request, Response
+from starlette.middleware.base import BaseHTTPMiddleware
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
 
-# HTTP Metrics
-http_requests_total = Counter(
-    'http_requests_total',
-    'Total HTTP requests',
-    ['method', 'endpoint', 'status']
+from app.core.logging import get_logger
+
+logger = get_logger(__name__)
+
+# Prometheus metrics
+REQUEST_COUNT = Counter(
+    'neuroweaver_requests_total',
+    'Total number of requests',
+    ['method', 'endpoint', 'status_code']
 )
 
-http_request_duration_seconds = Histogram(
-    'http_request_duration_seconds',
-    'HTTP request duration in seconds',
+REQUEST_DURATION = Histogram(
+    'neuroweaver_request_duration_seconds',
+    'Request duration in seconds',
     ['method', 'endpoint']
 )
 
-# Model Metrics
-model_deployments_total = Counter(
-    'model_deployments_total',
-    'Total model deployments',
-    ['model_name', 'status']
+ACTIVE_REQUESTS = Gauge(
+    'neuroweaver_active_requests',
+    'Number of active requests'
 )
 
-model_inference_requests = Counter(
-    'model_inference_requests',
-    'Total model inference requests',
-    ['model_name', 'status']
+TRAINING_JOBS = Gauge(
+    'neuroweaver_training_jobs_active',
+    'Number of active training jobs'
 )
 
-model_training_duration = Histogram(
-    'model_training_duration_seconds',
-    'Model training duration in seconds',
-    ['model_name']
+MODEL_COUNT = Gauge(
+    'neuroweaver_models_total',
+    'Total number of registered models'
 )
 
-active_models = Gauge(
-    'active_models',
-    'Number of active models'
+INFERENCE_REQUESTS = Counter(
+    'neuroweaver_inference_requests_total',
+    'Total number of inference requests',
+    ['model_id', 'status']
+)
+
+INFERENCE_DURATION = Histogram(
+    'neuroweaver_inference_duration_seconds',
+    'Inference request duration in seconds',
+    ['model_id']
 )
 
 
-async def prometheus_middleware(request: Request, call_next: Callable) -> Response:
-    """Prometheus metrics middleware."""
-    if request.url.path == "/metrics":
-        return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+class PrometheusMiddleware(BaseHTTPMiddleware):
+    """Middleware to collect Prometheus metrics"""
     
-    start_time = time.time()
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+        """Process request and collect metrics"""
+        
+        # Skip metrics endpoint to avoid recursion
+        if request.url.path == "/metrics":
+            return await call_next(request)
+        
+        # Increment active requests
+        ACTIVE_REQUESTS.inc()
+        
+        # Record start time
+        start_time = time.time()
+        
+        try:
+            # Process request
+            response = await call_next(request)
+            
+            # Calculate duration
+            duration = time.time() - start_time
+            
+            # Extract endpoint info
+            method = request.method
+            endpoint = self._get_endpoint_name(request)
+            status_code = str(response.status_code)
+            
+            # Record metrics
+            REQUEST_COUNT.labels(
+                method=method,
+                endpoint=endpoint,
+                status_code=status_code
+            ).inc()
+            
+            REQUEST_DURATION.labels(
+                method=method,
+                endpoint=endpoint
+            ).observe(duration)
+            
+            return response
+            
+        except Exception as e:
+            # Record error metrics
+            duration = time.time() - start_time
+            method = request.method
+            endpoint = self._get_endpoint_name(request)
+            
+            REQUEST_COUNT.labels(
+                method=method,
+                endpoint=endpoint,
+                status_code="500"
+            ).inc()
+            
+            REQUEST_DURATION.labels(
+                method=method,
+                endpoint=endpoint
+            ).observe(duration)
+            
+            logger.error(f"Request failed: {e}")
+            raise
+            
+        finally:
+            # Decrement active requests
+            ACTIVE_REQUESTS.dec()
     
-    response = await call_next(request)
+    def _get_endpoint_name(self, request: Request) -> str:
+        """Extract endpoint name from request"""
+        path = request.url.path
+        
+        # Normalize paths with IDs
+        if "/models/" in path and len(path.split("/")) > 4:
+            return "/api/v1/models/{id}"
+        elif "/training/" in path and len(path.split("/")) > 4:
+            return "/api/v1/training/{id}"
+        elif "/inference/" in path and len(path.split("/")) > 4:
+            return "/api/v1/inference/{id}"
+        
+        return path
+
+
+def update_training_metrics(active_jobs: int):
+    """Update training job metrics"""
+    TRAINING_JOBS.set(active_jobs)
+
+
+def update_model_metrics(total_models: int):
+    """Update model count metrics"""
+    MODEL_COUNT.set(total_models)
+
+
+def record_inference_request(model_id: str, duration: float, success: bool):
+    """Record inference request metrics"""
+    status = "success" if success else "error"
     
-    # Record metrics
-    duration = time.time() - start_time
-    method = request.method
-    endpoint = request.url.path
-    status = str(response.status_code)
+    INFERENCE_REQUESTS.labels(
+        model_id=model_id,
+        status=status
+    ).inc()
     
-    http_requests_total.labels(method=method, endpoint=endpoint, status=status).inc()
-    http_request_duration_seconds.labels(method=method, endpoint=endpoint).observe(duration)
-    
-    return response
+    INFERENCE_DURATION.labels(
+        model_id=model_id
+    ).observe(duration)
 
 
-def record_model_deployment(model_name: str, success: bool):
-    """Record model deployment metrics."""
-    status = "success" if success else "failed"
-    model_deployments_total.labels(model_name=model_name, status=status).inc()
-
-
-def record_model_inference(model_name: str, success: bool):
-    """Record model inference metrics."""
-    status = "success" if success else "failed"
-    model_inference_requests.labels(model_name=model_name, status=status).inc()
-
-
-def record_training_duration(model_name: str, duration: float):
-    """Record model training duration."""
-    model_training_duration.labels(model_name=model_name).observe(duration)
+async def metrics_endpoint():
+    """Prometheus metrics endpoint"""
+    return Response(
+        generate_latest(),
+        media_type=CONTENT_TYPE_LATEST
+    )
