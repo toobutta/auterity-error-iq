@@ -1,0 +1,23 @@
+{
+  "validation": {
+    "required_files": [
+      "backend/requirements.txt",
+      "frontend/package.json",
+      "shared/package.json",
+      "docker-compose.unified.yml",
+      ".env.example"
+    ],
+    "required_env_vars": [
+      "POSTGRES_PASSWORD",
+      "REDIS_URL",
+      "RABBITMQ_PASSWORD",
+      "VAULT_TOKEN"
+    ],
+    "service_health_checks": {
+      "backend": "http://localhost:8080/health",
+      "frontend": "http://localhost:3000",
+      "postgres": "postgresql://postgres:${POSTGRES_PASSWORD}@localhost:5432/auterity",
+      "redis": "redis://localhost:6379"
+    }
+  }
+}

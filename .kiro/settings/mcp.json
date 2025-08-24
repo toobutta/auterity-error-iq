@@ -1,4 +1,23 @@
 {
   "mcpServers": {
+    "auterity-backend": {
+      "command": "python",
+      "args": ["-m", "backend.mcp.orchestrator"],
+      "env": {
+        "DATABASE_URL": "${DATABASE_URL}",
+        "REDIS_URL": "${REDIS_URL}"
+      }
+    },
+    "workflow-engine": {
+      "command": "node",
+      "args": ["backend/workflow-mcp-server.js"],
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  },
+  "clientConfig": {
+    "timeout": 30000,
+    "retries": 3
   }
 }

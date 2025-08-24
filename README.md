@@ -1,11 +1,11 @@
 # Auterity - Unified AI Platform
 
 [![Production Ready](https://img.shields.io/badge/Status-Production%20Ready-green)](https://github.com/toobutta/auterity-error-iq)
-[![All Services](https://img.shields.io/badge/Services-25%2B%20Integrated-blue)](#services)
+[![All Services](https://img.shields.io/badge/Services-26%20Deployed-blue)](#services)
 
 ## 🚀 Complete Enterprise AI Platform
 
-Auterity is a **production-ready AI platform** with 25+ integrated services for enterprise workflow automation, AI routing, and intelligent operations.
+Auterity is a **production-ready AI platform** with 26 integrated services for enterprise workflow automation, AI routing, and intelligent operations.
 
 ## ⚡ Quick Start
 
@@ -30,21 +30,21 @@ docker-compose -f docker-compose.unified.yml up -d
 ### **Core Services** (Production Ready)
 - **Authentication**: JWT, OAuth2, SSO integration
 - **Database**: PostgreSQL with clustering
-- **Cache**: Redis with persistence
+- **Cache**: Redis with persistence  
 - **Queue**: RabbitMQ + Celery workers
 
 ### **Communication Services** (Production Ready)
 - **Twilio**: SMS, voice, campaigns, IVR
 - **WhatsApp**: Business API, templates, interactive messages
-- **Email**: SMTP integration with templates
+- **Email**: SMTP integration with MailHog development server
 - **Notifications**: Multi-channel (Email, Slack, SMS, WhatsApp, webhooks)
 
 ### **Automation Services** (Production Ready)
 - **Playwright**: Web scraping, form automation, testing
-- **Puppeteer**: Alternative browser automation, PDF generation
+- **Puppeteer**: Browser automation, PDF generation, screenshots
 - **Workflow Engine**: Visual workflow builder with AI integration
 
-### **AI/ML Services** (Production Ready)
+### **AI/ML Services** (Production Ready)  
 - **Vector Databases**: Pinecone, Weaviate integration
 - **LLM Providers**: OpenAI, Anthropic, Azure OpenAI
 - **MLflow**: Experiment tracking, model registry
@@ -52,29 +52,43 @@ docker-compose -f docker-compose.unified.yml up -d
 
 ### **Infrastructure Services** (Production Ready)
 - **API Gateway**: Kong with rate limiting, CORS
-- **Monitoring**: Prometheus, Grafana, Jaeger tracing
-- **Logging**: Loki centralized logging
+- **Load Balancer**: Nginx with SSL termination
+- **Monitoring**: Prometheus, Grafana, Jaeger tracing, Alertmanager
+- **Logging**: Loki centralized logging with Promtail collection
 - **Secrets**: HashiCorp Vault integration
-- **Event Streaming**: Apache Kafka
+- **Event Streaming**: Apache Kafka with Zookeeper
+- **Object Storage**: MinIO S3-compatible storage
+- **System Monitoring**: Node, Redis, Postgres exporters
 
-## 📊 Service Status Dashboard
+## 📊 Complete Service List (26 Services)
 
-| Category | Service | Status | Endpoints | Description |
-|----------|---------|--------|-----------|-------------|
-| **Core** | Auth | ✅ Production | `/api/auth/*` | Authentication & authorization |
-| **Core** | Database | ✅ Production | `5432` | PostgreSQL primary database |
-| **Core** | Cache | ✅ Production | `6379` | Redis caching service |
-| **Communication** | Twilio | ✅ Production | `/api/sms`, `/api/voice` | SMS and voice communication |
-| **Communication** | WhatsApp | ✅ Production | `/api/whatsapp/*` | WhatsApp Business API |
-| **Communication** | Notifications | ✅ Production | `/api/notifications` | Multi-channel notifications |
-| **Automation** | Playwright | ✅ Production | `/api/scrape`, `/api/automate` | Browser automation |
-| **Automation** | Workflow | ✅ Production | `/api/workflows` | Workflow execution |
-| **AI** | Vector | ✅ Production | `/api/vectors/*` | Vector database services |
-| **AI** | LLM | ✅ Production | `/api/llm/*` | Language model integrations |
-| **AI** | MLflow | ✅ Production | `5000` | ML experiment tracking |
-| **Infrastructure** | Kong | ✅ Production | `8000`, `8001` | API Gateway |
-| **Infrastructure** | Vault | ✅ Production | `8200` | Secrets management |
-| **Infrastructure** | Kafka | ✅ Production | `9092` | Event streaming |
+| Service | Type | Status | Port | Description |
+|---------|------|--------|------|-------------|
+| **kong** | Gateway | ✅ Production | 8000, 8001 | API Gateway & Admin |
+| **nginx** | Load Balancer | ✅ Production | 80, 443 | Load Balancer & SSL |
+| **backend** | API | ✅ Production | 8080 | FastAPI Backend |
+| **frontend** | Web | ✅ Production | 3000 | React Frontend |
+| **postgres** | Database | ✅ Production | 5432 | Primary Database |
+| **redis** | Cache | ✅ Production | 6379 | Cache & Sessions |
+| **rabbitmq** | Queue | ✅ Production | 5672, 15672 | Message Queue |
+| **kafka** | Streaming | ✅ Production | 9092 | Event Streaming |
+| **zookeeper** | Coordination | ✅ Production | 2181 | Kafka Dependency |
+| **vault** | Secrets | ✅ Production | 8200 | Secrets Management |
+| **mlflow** | ML | ✅ Production | 5000 | ML Experiment Tracking |
+| **weaviate** | Vector DB | ✅ Production | 8081 | Vector Database |
+| **puppeteer** | Automation | ✅ Production | 3000 | Browser Automation |
+| **mailhog** | Email | ✅ Development | 1025, 8025 | SMTP Development |
+| **celery-worker** | Workers | ✅ Production | - | Task Processing |
+| **prometheus** | Metrics | ✅ Production | 9090 | Metrics Collection |
+| **grafana** | Monitoring | ✅ Production | 3001 | Monitoring Dashboard |
+| **alertmanager** | Alerts | ✅ Production | 9093 | Alert Management |
+| **jaeger** | Tracing | ✅ Production | 16686 | Distributed Tracing |
+| **loki** | Logging | ✅ Production | 3100 | Log Aggregation |
+| **promtail** | Logs | ✅ Production | 9080 | Log Collection |
+| **node-exporter** | Metrics | ✅ Production | 9100 | System Metrics |
+| **redis-exporter** | Metrics | ✅ Production | 9121 | Redis Metrics |
+| **postgres-exporter** | Metrics | ✅ Production | 9187 | Postgres Metrics |
+| **minio** | Storage | ✅ Production | 9000, 9001 | Object Storage |
 
 ## 🔧 Configuration
 

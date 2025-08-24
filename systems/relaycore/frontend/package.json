@@ -11,12 +11,13 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "auterity-shared": "workspace:*",
     "clsx": "^2.0.0",
     "express-rate-limit": "^8.0.1",
     "express-slow-down": "^3.0.0",
     "lucide-react": "^0.263.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "recharts": "^2.8.0",
     "socket.io-client": "^4.7.5",
     "tailwind-merge": "^1.14.0"

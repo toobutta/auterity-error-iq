@@ -26,6 +26,11 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@shared': path.resolve(__dirname, '../shared'),
+      '@components': path.resolve(__dirname, './src/components'),
+      '@pages': path.resolve(__dirname, './src/pages'),
+      '@hooks': path.resolve(__dirname, './src/hooks'),
+      '@utils': path.resolve(__dirname, './src/utils'),
+      '@types': path.resolve(__dirname, './src/types'),
     },
   },
   
@@ -54,7 +59,7 @@ export default defineConfig({
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           
           // Workflow visualization
-          'workflow-libs': ['reactflow', 'react-flow-renderer'],
+          'workflow-libs': ['@xyflow/react'],
           
           // UI and utilities
           'ui-libs': ['recharts', 'axios'],
@@ -72,7 +77,7 @@ export default defineConfig({
       'react',
       'react-dom',
       'react-router-dom',
-      'reactflow',
+      '@xyflow/react',
       'recharts',
     ],
   },

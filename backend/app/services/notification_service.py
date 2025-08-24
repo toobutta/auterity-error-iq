@@ -574,9 +574,50 @@ class NotificationService:
         self.logger.info(f"EMAIL: {notification.title} to {notification.recipients}")
 
     async def _send_slack_notification(self, notification: Notification) -> None:
-        """Send Slack notification (placeholder)."""
-        # In a real implementation, this would integrate with Slack API
-        self.logger.info(f"SLACK: {notification.title} to {notification.recipients}")
+        """Send Slack notification using real Slack service."""
+        try:
+            # Import here to avoid circular imports
+            from app.services.slack_service import get_slack_service
+            
+            slack_service = get_slack_service()
+            
+            # Map notification types to appropriate Slack methods
+            if notification.type == NotificationType.ERROR_ALERT:
+                result = await slack_service.send_error_alert(
+                    error_code=notification.data.get("error_code", "UNKNOWN"),
+                    message=notification.message,
+                    severity=notification.priority.value
+                )
+            elif notification.type in [NotificationType.RECOVERY_SUCCESS, NotificationType.RECOVERY_FAILURE]:
+                result = await slack_service.send_recovery_notification(
+                    service=notification.data.get("service", "Unknown"),
+                    status="recovered" if notification.type == NotificationType.RECOVERY_SUCCESS else "failed",
+                    details=notification.data
+                )
+            elif notification.type == NotificationType.SYSTEM_HEALTH:
+                result = await slack_service.send_system_health_alert(
+                    status=notification.data.get("health_status", "unknown"),
+                    metrics=notification.data.get("metrics", {})
+                )
+            else:
+                # Generic notification
+                result = await slack_service.send_custom_notification(
+                    title=notification.title,
+                    message=notification.message,
+                    channel=notification.recipients[0] if notification.recipients else "#general",
+                    priority=notification.priority.value,
+                    metadata=notification.data
+                )
+            
+            if result.get("error"):
+                self.logger.error(f"Slack notification failed: {result['error']}")
+            else:
+                self.logger.info(f"Slack notification sent successfully: {notification.title}")
+                
+        except Exception as e:
+            self.logger.error(f"Failed to send Slack notification: {e}")
+            # Fallback to simple logging
+            self.logger.info(f"SLACK: {notification.title} to {notification.recipients}")
 
     async def _send_webhook_notification(self, notification: Notification) -> None:
         """Send webhook notification (placeholder)."""

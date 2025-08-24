@@ -1,26 +1,55 @@
-# AutoMatrix AI Hub - Prometheus Configuration
-# Generated: 2025-01-31
+# Enhanced Prometheus Configuration for Auterity Platform
+# Production-ready with advanced rules, targets, and retention
 
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
+  scrape_timeout: 10s
+  external_labels:
+    cluster: 'auterity-platform'
+    environment: 'production'
+    region: 'local'
 
+# Advanced rule files configuration
 rule_files:
-  - "alert_rules.yml"
+  - "/etc/prometheus/rules/*.yml"
+  - "/etc/prometheus/alerts/*.yml"
 
+# Enhanced alerting configuration
 alerting:
   alertmanagers:
     - static_configs:
         - targets:
           - alertmanager:9093
+      scheme: http
+      timeout: 10s
+      api_version: v2
+      path_prefix: /
 
+# Enhanced scrape configurations
 scrape_configs:
-  # AutoMatrix Backend
-  - job_name: 'autmatrix-backend'
+  # Prometheus itself
+  - job_name: 'prometheus'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['localhost:9090']
+    metrics_path: /metrics
+    scrape_timeout: 10s
+
+  # Core Application Services
+  - job_name: 'backend-api'
+    scrape_interval: 15s
     static_configs:
       - targets: ['backend:8000']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'backend'
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'backend:8000'
 
   # RelayCore Service
   - job_name: 'relaycore'
@@ -28,6 +57,10 @@ scrape_configs:
       - targets: ['relaycore:3001']
     metrics_path: '/metrics'
     scrape_interval: 30s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'relaycore'
 
   # NeuroWeaver Backend
   - job_name: 'neuroweaver-backend'
@@ -35,26 +68,253 @@ scrape_configs:
       - targets: ['neuroweaver-backend:8001']
     metrics_path: '/metrics'
     scrape_interval: 30s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'neuroweaver'
 
-  # PostgreSQL Exporter
+  # Frontend Application
+  - job_name: 'frontend'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['frontend:3000']
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'frontend'
+
+  # Infrastructure Services
   - job_name: 'postgres'
+    scrape_interval: 30s
     static_configs:
       - targets: ['postgres-exporter:9187']
-    scrape_interval: 30s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'postgres'
 
-  # Redis Exporter
   - job_name: 'redis'
+    scrape_interval: 30s
     static_configs:
       - targets: ['redis-exporter:9121']
-    scrape_interval: 30s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'redis'
 
-  # Node Exporter
-  - job_name: 'node'
+  - job_name: 'kafka'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['kafka-exporter:9308']
+    metrics_path: /metrics
+    scrape_timeout: 15s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'kafka'
+
+  # Monitoring Stack
+  - job_name: 'grafana'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['grafana:3000']
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'grafana'
+
+  - job_name: 'alertmanager'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['alertmanager:9093']
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'alertmanager'
+
+  - job_name: 'loki'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['loki:3100']
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'loki'
+
+  - job_name: 'promtail'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['promtail:9080']
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'promtail'
+
+  - job_name: 'jaeger'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['jaeger:14269']
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'jaeger'
+
+  # AI/ML Services
+  - job_name: 'mlflow'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mlflow:5000']
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'mlflow'
+
+  - job_name: 'weaviate'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['weaviate:8080']
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'weaviate'
+
+  - job_name: 'puppeteer'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['puppeteer:3000']
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'puppeteer'
+
+  # Security & Infrastructure
+  - job_name: 'vault'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['vault:8200']
+    metrics_path: /v1/sys/metrics
+    params:
+      format: ['prometheus']
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'vault'
+
+  - job_name: 'minio'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['minio:9000']
+    metrics_path: /minio/v2/metrics/cluster
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'minio'
+
+  # System Metrics
+  - job_name: 'node-exporter'
+    scrape_interval: 15s
     static_configs:
       - targets: ['node-exporter:9100']
-    scrape_interval: 30s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'node-exporter'
 
-  # Prometheus itself
+  - job_name: 'cadvisor'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['cadvisor:8080']
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'cadvisor'
+
+  # Load Balancer
+  - job_name: 'nginx'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'nginx'
+
+  # Additional Services
+  - job_name: 'mailhog'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mailhog:8025']
+    metrics_path: /api/v2/metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service
+        replacement: 'mailhog'
+
+# Enhanced storage configuration
+storage:
+  tsdb:
+    retention.time: 30d
+    retention.size: 50GB
+    path: /prometheus/data
+    wal-compression: true
+    no-lockfile: false
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
+
+  # Alertmanager
+  - job_name: 'alertmanager'
+    static_configs:
+      - targets: ['alertmanager:9093']
+
+  # Puppeteer Browser Service
+  - job_name: 'puppeteer'
+    static_configs:
+      - targets: ['puppeteer:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # MinIO Object Storage
+  - job_name: 'minio'
+    static_configs:
+      - targets: ['minio:9000']
+    metrics_path: '/minio/v2/metrics/cluster'
+    scrape_interval: 30s
+
+  # Nginx Load Balancer
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:8080']
+    metrics_path: '/nginx-status'
+    scrape_interval: 30s

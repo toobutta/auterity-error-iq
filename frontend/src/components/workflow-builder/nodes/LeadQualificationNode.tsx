@@ -1,5 +1,5 @@
 import React from 'react';
-import { Handle, Position, NodeProps } from 'reactflow';
+import { Handle, Position, NodeProps } from '@xyflow/react';
 import { NodeData } from '../../../types/workflow';
 
 const LeadQualificationNode: React.FC<NodeProps<NodeData>> = ({ data, isConnectable }) => {

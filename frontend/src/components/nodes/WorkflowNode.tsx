@@ -1,5 +1,5 @@
 import React from 'react';
-import { Handle, Position, NodeProps } from 'reactflow';
+import { Handle, Position, NodeProps } from '@xyflow/react';
 
 export const WorkflowNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
   return (

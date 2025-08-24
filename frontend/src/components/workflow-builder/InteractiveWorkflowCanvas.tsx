@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import ReactFlow, {
+import {
+  ReactFlow,
   MiniMap,
   Controls,
   Background,
@@ -11,8 +12,8 @@ import ReactFlow, {
   Node,
   NodeChange,
   EdgeChange,
-} from 'reactflow';
-import 'reactflow/dist/style.css';
+} from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
 
 const initialNodes: Node[] = [
   { id: '1', type: 'input', data: { label: 'Start' }, position: { x: 100, y: 100 } },

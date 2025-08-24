@@ -1,5 +1,5 @@
 import React from 'react';
-import { Handle, Position, NodeProps } from 'reactflow';
+import { Handle, Position, NodeProps } from '@xyflow/react';
 import { NodeData } from '../../types/workflow';
 
 export const AIProcessNode: React.FC<NodeProps<NodeData>> = ({ data, isConnectable }) => {

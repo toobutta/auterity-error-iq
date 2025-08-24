@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import ReactFlow, {
+import {
+  ReactFlow,
   Background,
   Controls,
   Node,
@@ -9,8 +10,8 @@ import ReactFlow, {
   Panel,
   useReactFlow,
   ReactFlowProvider,
-} from 'reactflow';
-import 'reactflow/dist/style.css';
+} from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
 
 import { StartNode } from './nodes/StartNode';
 import { AIProcessNode } from './nodes/AIProcessNode';

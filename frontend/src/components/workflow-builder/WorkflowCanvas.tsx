@@ -1,6 +1,7 @@
 import React, { useCallback, useRef, useEffect, useState } from 'react';
 import { useDrop } from 'react-dnd';
-import ReactFlow, {
+import {
+  ReactFlow,
   Background,
   Controls,
   Node,
@@ -13,8 +14,8 @@ import ReactFlow, {
   Panel,
   useReactFlow,
   ReactFlowProvider,
-} from 'reactflow';
-import 'reactflow/dist/style.css';
+} from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
 import { v4 as uuidv4 } from 'uuid';
 
 import { WorkflowCanvasProps, WorkflowNode, DragItem } from '../../types/workflow-builder';

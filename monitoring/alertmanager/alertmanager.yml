@@ -1,73 +1,204 @@
-# AutoMatrix AI Hub - Alertmanager Configuration
-# Generated: 2025-01-31
+# Enhanced Alertmanager Configuration for Auterity Platform
+# Production-ready with advanced routing and integrations
 
 global:
-  smtp_smarthost: 'localhost:587'
-  smtp_from: 'alerts@autmatrix.com'
-  smtp_auth_username: 'alerts@autmatrix.com'
-  smtp_auth_password: 'your-email-password'
+  smtp_smarthost: 'mailhog:1025'
+  smtp_from: 'alerts@auterity.local'
+  smtp_auth_username: ''
+  smtp_auth_password: ''
+  smtp_require_tls: false
+  slack_api_url: '${SLACK_WEBHOOK_URL}'
+  
+  # High availability settings
+  cluster:
+    listen_address: '0.0.0.0:9094'
+    advertise_address: 'alertmanager:9094'
+    peers:
+      - 'alertmanager:9094'
 
+# Advanced routing configuration
 route:
-  group_by: ['alertname', 'cluster', 'service']
-  group_wait: 10s
-  group_interval: 10s
-  repeat_interval: 1h
+  group_by: ['alertname', 'cluster', 'service', 'severity']
+  group_wait: 5s
+  group_interval: 30s
+  repeat_interval: 2h
   receiver: 'default-receiver'
+  
   routes:
+  # Critical alerts - immediate notification
   - match:
       severity: critical
     receiver: 'critical-alerts'
+    group_wait: 0s
+    repeat_interval: 30m
+    
+  # High severity alerts
   - match:
-      severity: warning
-    receiver: 'warning-alerts'
+      severity: high
+    receiver: 'high-priority-alerts'
+    group_wait: 2s
+    repeat_interval: 1h
+    
+  # Database alerts
+  - match:
+      service: postgres
+    receiver: 'database-alerts'
+    group_interval: 2m
+    
+  # Application errors
+  - match:
+      service: backend
+    receiver: 'application-alerts'
+    
+  # Infrastructure alerts  
+  - match_re:
+      service: (redis|kafka|vault|minio)
+    receiver: 'infrastructure-alerts'
+    
+  # Monitoring system alerts
+  - match_re:
+      service: (prometheus|grafana|loki|jaeger)
+    receiver: 'monitoring-alerts'
+    
+  # AI/ML service alerts
+  - match_re:
+      service: (mlflow|weaviate|puppeteer)
+    receiver: 'ai-service-alerts'
 
-receivers:
-- name: 'default-receiver'
-  email_configs:
-  - to: 'ops@autmatrix.com'
-    subject: 'AutoMatrix Alert: {{ .GroupLabels.alertname }}'
-    body: |
-      {{ range .Alerts }}
-      Alert: {{ .Annotations.summary }}
-      Description: {{ .Annotations.description }}
-      Labels: {{ range .Labels.SortedPairs }}{{ .Name }}={{ .Value }} {{ end }}
-      {{ end }}
-
-- name: 'critical-alerts'
-  email_configs:
-  - to: 'ops@autmatrix.com,admin@autmatrix.com'
-    subject: '🚨 CRITICAL: AutoMatrix Alert - {{ .GroupLabels.alertname }}'
-    body: |
-      CRITICAL ALERT TRIGGERED
-      
-      {{ range .Alerts }}
-      Alert: {{ .Annotations.summary }}
-      Description: {{ .Annotations.description }}
-      Severity: {{ .Labels.severity }}
-      Service: {{ .Labels.job }}
-      Time: {{ .StartsAt }}
-      {{ end }}
-      
-      Please investigate immediately.
-
-- name: 'warning-alerts'
-  email_configs:
-  - to: 'ops@autmatrix.com'
-    subject: '⚠️ WARNING: AutoMatrix Alert - {{ .GroupLabels.alertname }}'
-    body: |
-      WARNING ALERT TRIGGERED
-      
-      {{ range .Alerts }}
-      Alert: {{ .Annotations.summary }}
-      Description: {{ .Annotations.description }}
-      Severity: {{ .Labels.severity }}
-      Service: {{ .Labels.job }}
-      Time: {{ .StartsAt }}
-      {{ end }}
-
+# Inhibition rules to reduce noise
 inhibit_rules:
 - source_match:
     severity: 'critical'
   target_match:
     severity: 'warning'
   equal: ['alertname', 'cluster', 'service']
+
+- source_match:
+    severity: 'critical'
+  target_match:
+    severity: 'high'
+  equal: ['alertname', 'cluster', 'service']
+
+- source_match:
+    alertname: 'InstanceDown'
+  target_match_re:
+    alertname: '.*'
+  equal: ['instance']
+
+# Enhanced receiver configurations
+receivers:
+- name: 'default-receiver'
+  email_configs:
+  - to: 'ops@auterity.local'
+    subject: '[Auterity] Alert: {{ .GroupLabels.alertname }}'
+    body: |
+      {{ range .Alerts }}
+      **Alert:** {{ .Annotations.summary }}
+      **Description:** {{ .Annotations.description }}
+      **Severity:** {{ .Labels.severity }}
+      **Service:** {{ .Labels.service }}
+      **Instance:** {{ .Labels.instance }}
+      **Started:** {{ .StartsAt.Format "2006-01-02 15:04:05 UTC" }}
+      {{ if .Labels.runbook_url }}**Runbook:** {{ .Labels.runbook_url }}{{ end }}
+      {{ end }}
+    headers:
+      Subject: '[Auterity] Alert Notification'
+
+- name: 'critical-alerts'
+  email_configs:
+  - to: 'ops@auterity.local,admin@auterity.local,oncall@auterity.local'
+    subject: '🚨 CRITICAL ALERT: [Auterity] {{ .GroupLabels.alertname }}'
+    body: |
+      **🚨 CRITICAL SYSTEM ALERT 🚨**
+      
+      {{ range .Alerts }}
+      **Alert:** {{ .Annotations.summary }}
+      **Description:** {{ .Annotations.description }}
+      **Severity:** {{ .Labels.severity | toUpper }}
+      **Service:** {{ .Labels.service }}
+      **Instance:** {{ .Labels.instance }}
+      **Started:** {{ .StartsAt.Format "2006-01-02 15:04:05 UTC" }}
+      {{ if .Labels.runbook_url }}**Runbook:** {{ .Labels.runbook_url }}{{ end }}
+      
+      **Immediate action required!**
+      {{ end }}
+    headers:
+      Priority: 'urgent'
+      
+  slack_configs:
+  - api_url: '${SLACK_WEBHOOK_URL}'
+    channel: '#critical-alerts'
+    username: 'Auterity Alertmanager'
+    icon_emoji: ':rotating_light:'
+    title: '🚨 Critical Alert: {{ .GroupLabels.alertname }}'
+    text: |
+      {{ range .Alerts }}
+      *Alert:* {{ .Annotations.summary }}
+      *Severity:* {{ .Labels.severity | toUpper }}
+      *Service:* {{ .Labels.service }}
+      *Instance:* {{ .Labels.instance }}
+      {{ if .Labels.runbook_url }}*Runbook:* {{ .Labels.runbook_url }}{{ end }}
+      {{ end }}
+    send_resolved: true
+
+- name: 'high-priority-alerts'
+  email_configs:
+  - to: 'ops@auterity.local,admin@auterity.local'
+    subject: '⚠️ HIGH: [Auterity] {{ .GroupLabels.alertname }}'
+    body: |
+      **⚠️ HIGH PRIORITY ALERT**
+      
+      {{ range .Alerts }}
+      **Alert:** {{ .Annotations.summary }}
+      **Description:** {{ .Annotations.description }}
+      **Service:** {{ .Labels.service }}
+      **Instance:** {{ .Labels.instance }}
+      **Started:** {{ .StartsAt.Format "2006-01-02 15:04:05 UTC" }}
+      {{ end }}
+      
+  slack_configs:
+  - api_url: '${SLACK_WEBHOOK_URL}'
+    channel: '#alerts'
+    username: 'Auterity Alertmanager'
+    icon_emoji: ':warning:'
+    title: '⚠️ High Priority: {{ .GroupLabels.alertname }}'
+    send_resolved: true
+
+- name: 'database-alerts'
+  email_configs:
+  - to: 'dba@auterity.local,ops@auterity.local'
+    subject: '🗄️ DATABASE: [Auterity] {{ .GroupLabels.alertname }}'
+    body: |
+      **🗄️ DATABASE ALERT**
+      
+      {{ range .Alerts }}
+      **Alert:** {{ .Annotations.summary }}
+      **Database:** {{ .Labels.service }}
+      **Instance:** {{ .Labels.instance }}
+      **Query:** {{ .Labels.query }}
+      **Value:** {{ .Labels.value }}
+      {{ end }}
+      
+- name: 'application-alerts'
+  email_configs:
+  - to: 'dev@auterity.local,ops@auterity.local'
+    subject: '🔧 APPLICATION: [Auterity] {{ .GroupLabels.alertname }}'
+    
+- name: 'infrastructure-alerts'
+  email_configs:
+  - to: 'infra@auterity.local,ops@auterity.local'
+    subject: '🏗️ INFRASTRUCTURE: [Auterity] {{ .GroupLabels.alertname }}'
+    
+- name: 'monitoring-alerts'
+  email_configs:
+  - to: 'monitoring@auterity.local,ops@auterity.local'
+    subject: '📊 MONITORING: [Auterity] {{ .GroupLabels.alertname }}'
+    
+- name: 'ai-service-alerts'
+  email_configs:
+  - to: 'ai-team@auterity.local,ops@auterity.local'
+    subject: '🤖 AI/ML: [Auterity] {{ .GroupLabels.alertname }}'
+
+# Templates for custom notifications
+templates:
+- '/etc/alertmanager/templates/*.tmpl'

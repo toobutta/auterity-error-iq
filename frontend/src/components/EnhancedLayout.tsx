@@ -35,6 +35,11 @@ const Icons = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
     </svg>
   ),
+  Close: ({ className = "w-5 h-5" }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  ),
   Sun: ({ className = "w-5 h-5" }) => (
     <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -124,7 +129,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  // Theme state
+  // Theme state with enhanced auto-detection
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('auterity-theme');
@@ -147,7 +152,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
 
-  // Mock notifications
+  // Mock notifications for demo
   const [notifications] = useState([
     { id: 1, title: 'Workflow completed', message: 'Marketing automation workflow finished successfully', time: '2 min ago', unread: true },
     { id: 2, title: 'System update', message: 'Auterity platform updated to v2.1.0', time: '1 hour ago', unread: false },
@@ -156,9 +161,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const unreadCount = notifications.filter(n => n.unread).length;
 
-  // Apply theme
+  // Apply theme to document with enhanced transitions
   useEffect(() => {
     const root = document.documentElement;
+    root.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+    
     if (isDark) {
       root.classList.add('dark');
       localStorage.setItem('auterity-theme', 'dark');
@@ -173,15 +180,34 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     localStorage.setItem('sidebar-collapsed', sidebarCollapsed.toString());
   }, [sidebarCollapsed]);
 
-  // Close dropdowns on route change
+  // Close mobile sidebar when route changes
   useEffect(() => {
     setSidebarMobileOpen(false);
     setUserMenuOpen(false);
     setNotificationOpen(false);
   }, [location.pathname]);
 
-  const toggleTheme = () => setIsDark(!isDark);
-  const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.user-menu') && !target.closest('.notification-menu')) {
+        setUserMenuOpen(false);
+        setNotificationOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  const toggleTheme = () => {
+    setIsDark(!isDark);
+  };
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
 
   const handleLogout = async () => {
     try {
@@ -201,6 +227,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setSidebarMobileOpen(false)}
+          style={{ animation: 'fadeIn 0.2s ease-out' }}
         />
       )}
 
@@ -214,14 +241,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       `}
       >
         <div className="h-full card border-r border-white/20 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl">
-          {/* Logo */}
+          {/* Logo/Brand */}
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
                 <Icons.Logo className="w-6 h-6 text-white" />
               </div>
               {!sidebarCollapsed && (
-                <div>
+                <div className="animate-fadeIn">
                   <h1 className="text-xl font-bold text-gradient">Auterity</h1>
                   <p className="text-sm text-gray-600 dark:text-gray-400">AI Platform</p>
                 </div>
@@ -241,16 +268,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             ))}
           </nav>
 
-          {/* Sidebar toggle */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <button
-              onClick={toggleSidebar}
-              className="w-full btn-ghost p-3 flex items-center justify-center"
-              title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              <Icons.Menu />
-            </button>
-          </div>
+          {/* Sidebar toggle (desktop) */}
+          {!sidebarMobileOpen && (
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={toggleSidebar}
+                className="w-full btn-ghost p-3 flex items-center justify-center"
+                title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                <Icons.Menu className={`transform transition-transform ${sidebarCollapsed ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
+          )}
         </div>
       </aside>
 
@@ -267,7 +296,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <Icons.Menu />
             </button>
 
-            {/* Page title */}
+            {/* Page title and breadcrumb */}
             <div className="flex-1 lg:ml-6">
               <div className="flex items-center space-x-2">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -292,7 +321,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </button>
 
               {/* Notifications */}
-              <div className="relative">
+              <div className="relative notification-menu">
                 <button 
                   onClick={() => setNotificationOpen(!notificationOpen)}
                   className="btn-ghost p-2 relative"
@@ -307,7 +336,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
                 {/* Notification dropdown */}
                 {notificationOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-80 card border shadow-xl z-50">
+                  <div className="absolute right-0 top-full mt-2 w-80 card border shadow-xl z-50" style={{ animation: 'slideInDown 0.2s ease-out' }}>
                     <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                       <h3 className="font-semibold text-gray-900 dark:text-white">Notifications</h3>
                     </div>
@@ -333,7 +362,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </div>
 
               {/* User menu */}
-              <div className="relative">
+              <div className="relative user-menu">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className="flex items-center space-x-3 p-2 rounded-lg btn-ghost"
@@ -341,20 +370,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
                     <Icons.User className="w-4 h-4 text-white" />
                   </div>
-                  <div className="hidden lg:block text-left">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      {user?.name || 'Admin User'}
-                    </p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      {user?.email || 'admin@auterity.local'}
-                    </p>
-                  </div>
+                  {!sidebarCollapsed && (
+                    <div className="hidden lg:block text-left">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {user?.name || 'Admin User'}
+                      </p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        {user?.email || 'admin@auterity.local'}
+                      </p>
+                    </div>
+                  )}
                   <Icons.ChevronDown className={`transform transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* User dropdown */}
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-56 card border shadow-xl z-50">
+                  <div className="absolute right-0 top-full mt-2 w-56 card border shadow-xl z-50" style={{ animation: 'slideInDown 0.2s ease-out' }}>
                     <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                       <p className="font-medium text-gray-900 dark:text-white">{user?.name || 'Admin User'}</p>
                       <p className="text-sm text-gray-600 dark:text-gray-400">{user?.email || 'admin@auterity.local'}</p>
@@ -387,7 +418,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         {/* Page Content */}
         <div className="p-6">
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-7xl mx-auto" style={{ animation: 'fadeIn 0.3s ease-out' }}>
             {children}
           </div>
         </div>

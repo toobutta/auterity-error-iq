@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { ReactFlowProvider } from 'reactflow';
+import { ReactFlowProvider } from '@xyflow/react';
 import { BrowserRouter } from 'react-router-dom';
 import type { ReactNode } from 'react';
 

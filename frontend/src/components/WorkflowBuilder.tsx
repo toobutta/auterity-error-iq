@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import ReactFlow, {
+import {
+  ReactFlow,
   Background,
   Controls,
   Node,
@@ -12,8 +13,8 @@ import ReactFlow, {
   NodeTypes,
   MiniMap,
   Panel,
-} from 'reactflow';
-import 'reactflow/dist/style.css';
+} from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
 
 import { StartNode } from './nodes/StartNode';
 import { AIProcessNode } from './nodes/AIProcessNode';
