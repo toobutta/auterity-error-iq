@@ -1,6 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { useDrag } from 'react-dnd';
-import { NodePaletteProps, NodeTemplate, NodeCategory, DragItem } from '../../types/workflow-builder';
+import {
+  NodePaletteProps,
+  NodeTemplate,
+  NodeCategory,
+  DragItem,
+} from '../../types/workflow-builder';
 
 interface NodePaletteItemProps {
   template: NodeTemplate;
@@ -15,12 +20,12 @@ const NodePaletteItem: React.FC<NodePaletteItemProps> = ({ template, onDragStart
       return {
         type: 'workflow-node',
         nodeType: template.type,
-        template
+        template,
       };
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
-    })
+    }),
   });
 
   const getCategoryColor = (category: string) => {
@@ -52,19 +57,13 @@ const NodePaletteItem: React.FC<NodePaletteItemProps> = ({ template, onDragStart
       title={template.description}
     >
       <div className="flex items-center space-x-3">
-        <div className="text-2xl flex-shrink-0">
-          {template.icon}
-        </div>
+        <div className="text-2xl flex-shrink-0">{template.icon}</div>
         <div className="flex-1 min-w-0">
-          <div className="font-medium text-sm truncate">
-            {template.label}
-          </div>
-          <div className="text-xs opacity-75 truncate">
-            {template.description}
-          </div>
+          <div className="font-medium text-sm truncate">{template.label}</div>
+          <div className="text-xs opacity-75 truncate">{template.description}</div>
         </div>
       </div>
-      
+
       {/* Connection indicators */}
       <div className="flex justify-between items-center mt-2 text-xs opacity-60">
         <div className="flex items-center space-x-1">
@@ -93,15 +92,16 @@ const CategorySection: React.FC<CategorySectionProps> = ({
   isExpanded,
   onToggle,
   searchTerm,
-  onNodeDragStart
+  onNodeDragStart,
 }) => {
   const filteredNodes = useMemo(() => {
     if (!searchTerm) return category.nodes;
-    
-    return category.nodes.filter(node =>
-      node.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      node.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      node.type.toLowerCase().includes(searchTerm.toLowerCase())
+
+    return category.nodes.filter(
+      (node) =>
+        node.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        node.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        node.type.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [category.nodes, searchTerm]);
 
@@ -154,7 +154,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      
+
       {isExpanded && (
         <div className="mt-2 pl-2">
           {filteredNodes.map((template) => (
@@ -174,7 +174,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({
   categories,
   onNodeDrag,
   searchTerm = '',
-  onSearchChange
+  onSearchChange,
 }) => {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set(['triggers', 'actions']) // Default expanded categories
@@ -200,12 +200,13 @@ const NodePalette: React.FC<NodePaletteProps> = ({
 
   const filteredTotalNodes = useMemo(() => {
     if (!searchTerm) return totalNodes;
-    
+
     return categories.reduce((total, category) => {
-      const filtered = category.nodes.filter(node =>
-        node.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        node.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        node.type.toLowerCase().includes(searchTerm.toLowerCase())
+      const filtered = category.nodes.filter(
+        (node) =>
+          node.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          node.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          node.type.toLowerCase().includes(searchTerm.toLowerCase())
       );
       return total + filtered.length;
     }, 0);
@@ -224,7 +225,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({
             {filteredTotalNodes} nodes
           </span>
         </div>
-        
+
         {/* Search */}
         {onSearchChange && (
           <div className="relative">
@@ -241,7 +242,12 @@ const NodePalette: React.FC<NodePaletteProps> = ({
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </div>
         )}
@@ -251,8 +257,18 @@ const NodePalette: React.FC<NodePaletteProps> = ({
       <div className="flex-1 overflow-y-auto p-4">
         {searchTerm && filteredTotalNodes === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              className="w-12 h-12 mx-auto mb-3 text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
             <p className="text-sm">No nodes found for &quot;{searchTerm}&quot;</p>
             <p className="text-xs mt-1">Try a different search term</p>
@@ -278,9 +294,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({
             <span>🖱️</span>
             <span>Drag nodes to canvas</span>
           </div>
-          <div className="text-gray-400">
-            Click category headers to expand/collapse
-          </div>
+          <div className="text-gray-400">Click category headers to expand/collapse</div>
         </div>
       </div>
     </div>

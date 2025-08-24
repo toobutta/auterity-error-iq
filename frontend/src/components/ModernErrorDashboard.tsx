@@ -83,11 +83,14 @@ const ModernErrorDashboard: React.FC = () => {
   };
 
   return (
-    <div className={cn('min-h-screen transition-all duration-500', 
-      isDarkMode 
-        ? 'bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900' 
-        : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
-    )}>
+    <div
+      className={cn(
+        'min-h-screen transition-all duration-500',
+        isDarkMode
+          ? 'bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900'
+          : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
+      )}
+    >
       {/* Header with glassmorphism */}
       <header className="glass sticky top-0 z-50 border-b border-white/20">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -101,7 +104,7 @@ const ModernErrorDashboard: React.FC = () => {
                 <p className="text-xs text-white/70">Real-time Error Monitoring</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <button
                 onClick={toggleDarkMode}
@@ -109,7 +112,7 @@ const ModernErrorDashboard: React.FC = () => {
               >
                 {isDarkMode ? '🌞' : '🌙'}
               </button>
-              
+
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 <span className="text-sm text-white/80">Live</span>
@@ -141,21 +144,21 @@ const ModernErrorDashboard: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-2xl">{metric.icon}</span>
-                    <div className={cn(
-                      'px-2 py-1 rounded-full text-xs font-medium',
-                      metric.severity === 'critical' && 'bg-red-500/20 text-red-300',
-                      metric.severity === 'high' && 'bg-orange-500/20 text-orange-300',
-                      metric.severity === 'medium' && 'bg-yellow-500/20 text-yellow-300',
-                      metric.severity === 'low' && 'bg-green-500/20 text-green-300'
-                    )}>
+                    <div
+                      className={cn(
+                        'px-2 py-1 rounded-full text-xs font-medium',
+                        metric.severity === 'critical' && 'bg-red-500/20 text-red-300',
+                        metric.severity === 'high' && 'bg-orange-500/20 text-orange-300',
+                        metric.severity === 'medium' && 'bg-yellow-500/20 text-yellow-300',
+                        metric.severity === 'low' && 'bg-green-500/20 text-green-300'
+                      )}
+                    >
                       {metric.severity}
                     </div>
                   </div>
-                  
-                  <h3 className="text-white/80 text-sm font-medium mb-2">
-                    {metric.label}
-                  </h3>
-                  
+
+                  <h3 className="text-white/80 text-sm font-medium mb-2">{metric.label}</h3>
+
                   <div className="flex items-baseline space-x-2">
                     <span className="text-3xl font-bold text-white">
                       {metric.value.toLocaleString()}
@@ -167,13 +170,16 @@ const ModernErrorDashboard: React.FC = () => {
                       {metric.trend === 'up' ? '↗️' : metric.trend === 'down' ? '↘️' : '➡️'}
                     </span>
                   </div>
-                  
-                  <div className={cn(
-                    'flex items-center mt-2 text-sm',
-                    metric.change > 0 ? 'text-red-300' : 'text-green-300'
-                  )}>
+
+                  <div
+                    className={cn(
+                      'flex items-center mt-2 text-sm',
+                      metric.change > 0 ? 'text-red-300' : 'text-green-300'
+                    )}
+                  >
                     <span>
-                      {metric.change > 0 ? '+' : ''}{metric.change}%
+                      {metric.change > 0 ? '+' : ''}
+                      {metric.change}%
                     </span>
                     <span className="text-white/50 ml-1">vs last hour</span>
                   </div>
@@ -191,7 +197,7 @@ const ModernErrorDashboard: React.FC = () => {
               View All
             </button>
           </div>
-          
+
           <div className="space-y-4">
             {recentErrors.map((error, index) => (
               <div
@@ -211,31 +217,41 @@ const ModernErrorDashboard: React.FC = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
-                        <span className={cn(
-                          'px-2 py-1 rounded text-xs font-medium',
-                          error.severity === 'critical' && 'bg-red-500/20 text-red-300',
-                          error.severity === 'high' && 'bg-orange-500/20 text-orange-300',
-                          error.severity === 'medium' && 'bg-yellow-500/20 text-yellow-300'
-                        )}>
+                        <span
+                          className={cn(
+                            'px-2 py-1 rounded text-xs font-medium',
+                            error.severity === 'critical' && 'bg-red-500/20 text-red-300',
+                            error.severity === 'high' && 'bg-orange-500/20 text-orange-300',
+                            error.severity === 'medium' && 'bg-yellow-500/20 text-yellow-300'
+                          )}
+                        >
                           {error.severity}
                         </span>
                         <span className="text-white/60 text-sm">{error.id}</span>
                         <span className="text-white/40 text-xs">{error.service}</span>
                       </div>
-                      
-                      <h3 className="text-white font-medium mb-1">
-                        {error.message}
-                      </h3>
-                      
+
+                      <h3 className="text-white font-medium mb-1">{error.message}</h3>
+
                       <div className="flex items-center space-x-4 text-sm text-white/60">
                         <span>{error.occurrences} occurrences</span>
                         <span>Last seen {error.lastSeen}</span>
                       </div>
                     </div>
-                    
+
                     <button className="text-white/60 hover:text-white transition-colors">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -263,11 +279,13 @@ const ModernErrorDashboard: React.FC = () => {
       </main>
 
       {/* Floating Action Button */}
-      <button className={cn(
-        'fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600',
-        'rounded-full shadow-2xl hover:shadow-3xl text-white',
-        'transition-all duration-300 hover:scale-110 z-50'
-      )}>
+      <button
+        className={cn(
+          'fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600',
+          'rounded-full shadow-2xl hover:shadow-3xl text-white',
+          'transition-all duration-300 hover:scale-110 z-50'
+        )}
+      >
         <svg className="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
         </svg>

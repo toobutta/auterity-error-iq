@@ -20,11 +20,11 @@ interface ExecutionLog {
   error_message?: string;
 }
 
-const ExecutionStatus: React.FC<ExecutionStatusProps> = ({ 
-  executionId, 
+const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
+  executionId,
   onComplete,
   showTimeline = true,
-  showLogs = false
+  showLogs = false,
 }) => {
   const [execution, setExecution] = useState<WorkflowExecution | null>(null);
   const [logs, setLogs] = useState<ExecutionLog[]>([]);
@@ -50,11 +50,14 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
       setRetryCount(0);
 
       // Fetch logs if requested and execution is running or completed
-      if (showLogs && (executionData.status === 'running' || executionData.status === 'completed')) {
+      if (
+        showLogs &&
+        (executionData.status === 'running' || executionData.status === 'completed')
+      ) {
         try {
           const logsData = await getExecutionLogs(executionId);
           // Transform ExecutionLogEntry to ExecutionLog format
-          const transformedLogs: ExecutionLog[] = logsData.map(entry => ({
+          const transformedLogs: ExecutionLog[] = logsData.map((entry) => ({
             id: entry.id,
             step_name: entry.stepName || 'Unknown Step',
             step_type: entry.level || 'info',
@@ -62,7 +65,7 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
             output_data: entry.data || {},
             duration_ms: entry.duration || 0,
             timestamp: entry.timestamp,
-            error_message: entry.level === 'error' ? entry.message : undefined
+            error_message: entry.level === 'error' ? entry.message : undefined,
           }));
           setLogs(transformedLogs);
         } catch (logError) {
@@ -80,7 +83,7 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
     } catch (err: unknown) {
       console.error('Failed to fetch execution data:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch execution status');
-      setRetryCount(prev => prev + 1);
+      setRetryCount((prev) => prev + 1);
 
       // Stop polling after max retries
       if (retryCount >= maxRetries) {
@@ -109,11 +112,16 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
 
   const getStatusColor = (status: WorkflowExecution['status']) => {
     switch (status) {
-      case 'pending': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      case 'running': return 'text-blue-600 bg-blue-50 border-blue-200';
-      case 'completed': return 'text-green-600 bg-green-50 border-green-200';
-      case 'failed': return 'text-red-600 bg-red-50 border-red-200';
-      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+      case 'pending':
+        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case 'running':
+        return 'text-blue-600 bg-blue-50 border-blue-200';
+      case 'completed':
+        return 'text-green-600 bg-green-50 border-green-200';
+      case 'failed':
+        return 'text-red-600 bg-red-50 border-red-200';
+      default:
+        return 'text-gray-600 bg-gray-50 border-gray-200';
     }
   };
 
@@ -122,25 +130,50 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
       case 'pending':
         return (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         );
       case 'running':
         return (
-          <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          <svg
+            className="w-5 h-5 animate-spin"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
           </svg>
         );
       case 'completed':
         return (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         );
       case 'failed':
         return (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         );
       default:
@@ -162,8 +195,18 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
         <div className="flex items-center">
-          <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-5 h-5 text-red-600 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           <span className="text-red-800 font-medium">Error</span>
         </div>
@@ -188,8 +231,18 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
     return (
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
         <div className="flex items-center">
-          <svg className="w-5 h-5 text-gray-600 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          <svg
+            className="w-5 h-5 text-gray-600 mr-2 animate-spin"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
           </svg>
           <span className="text-gray-700">Loading execution status...</span>
         </div>
@@ -229,7 +282,10 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
         {execution.status === 'running' && (
           <div className="mt-3">
             <div className="w-full bg-blue-200 rounded-full h-2">
-              <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+              <div
+                className="bg-blue-600 h-2 rounded-full animate-pulse"
+                style={{ width: '60%' }}
+              ></div>
             </div>
             <p className="text-sm mt-1 opacity-75">Processing workflow steps...</p>
           </div>
@@ -263,7 +319,9 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
                       <span>{formatDuration(log.duration_ms)}</span>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-600 capitalize">{log.step_type.replace('_', ' ')}</p>
+                  <p className="text-sm text-gray-600 capitalize">
+                    {log.step_type.replace('_', ' ')}
+                  </p>
                   {log.error_message && (
                     <p className="text-sm text-red-600 mt-1">Error: {log.error_message}</p>
                   )}

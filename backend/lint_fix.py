@@ -134,7 +134,7 @@ def main():
     """Main function to run the linting fixes."""
     # Get the app directory
     app_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app")
-    
+
     if not os.path.exists(app_dir):
         print(f"❌ Directory not found: {app_dir}")
         sys.exit(1)
@@ -151,7 +151,7 @@ def main():
 
     # Check remaining issues
     issues = run_flake8(app_dir)
-    
+
     if issues == 0:
         print("✅ All linting issues fixed!")
     else:

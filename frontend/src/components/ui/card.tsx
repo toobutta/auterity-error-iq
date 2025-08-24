@@ -9,14 +9,15 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', interactive = false, children, ...props }, ref) => {
     const baseClasses = 'rounded-xl transition-all duration-300';
-    
+
     const variantClasses = {
-      default: 'bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-soft',
+      default:
+        'bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-soft',
       glass: 'glass backdrop-blur-xl',
       elevated: 'bg-white dark:bg-neutral-900 shadow-xl border-0',
       outline: 'bg-transparent border-2 border-neutral-200 dark:border-neutral-800',
     };
-    
+
     const interactiveClasses = interactive
       ? 'hover-lift cursor-pointer hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2'
       : '';
@@ -24,12 +25,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
-        className={cn(
-          baseClasses,
-          variantClasses[variant],
-          interactiveClasses,
-          className
-        )}
+        className={cn(baseClasses, variantClasses[variant], interactiveClasses, className)}
         tabIndex={interactive ? 0 : undefined}
         role={interactive ? 'button' : undefined}
         {...props}
@@ -53,13 +49,7 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
       compact: 'p-4 pb-2',
     };
 
-    return (
-      <div
-        ref={ref}
-        className={cn(variantClasses[variant], className)}
-        {...props}
-      />
-    );
+    return <div ref={ref} className={cn(variantClasses[variant], className)} {...props} />;
   }
 );
 
@@ -72,7 +62,7 @@ export interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement>
 const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
   ({ className, level = 3, children, ...props }, ref) => {
     const Component = `h${level}` as keyof JSX.IntrinsicElements;
-    
+
     return (
       <Component
         ref={ref}
@@ -98,10 +88,7 @@ const CardDescription = React.forwardRef<HTMLParagraphElement, CardDescriptionPr
   ({ className, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn(
-        'text-sm text-neutral-600 dark:text-neutral-400 mt-2',
-        className
-      )}
+      className={cn('text-sm text-neutral-600 dark:text-neutral-400 mt-2', className)}
       {...props}
     />
   )
@@ -121,13 +108,7 @@ const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
       none: '',
     };
 
-    return (
-      <div
-        ref={ref}
-        className={cn(variantClasses[variant], className)}
-        {...props}
-      />
-    );
+    return <div ref={ref} className={cn(variantClasses[variant], className)} {...props} />;
   }
 );
 
@@ -147,11 +128,7 @@ const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
     return (
       <div
         ref={ref}
-        className={cn(
-          'flex items-center',
-          variantClasses[variant],
-          className
-        )}
+        className={cn('flex items-center', variantClasses[variant], className)}
         {...props}
       />
     );

@@ -22,21 +22,21 @@ export const automotiveDesignTokens = {
 
     // Automotive semantic colors
     automotive: {
-      blue: '#1e40af',      // Professional, trustworthy
-      silver: '#64748b',    // Metallic, premium
-      gold: '#f59e0b',      // Accent, luxury
-      red: '#dc2626',       // Alerts, critical
-      green: '#059669',     // Success, eco-friendly
+      blue: '#1e40af', // Professional, trustworthy
+      silver: '#64748b', // Metallic, premium
+      gold: '#f59e0b', // Accent, luxury
+      red: '#dc2626', // Alerts, critical
+      green: '#059669', // Success, eco-friendly
     },
 
     // Business domain colors
     semantic: {
-      dealership: '#1e40af',  // Primary business operations
-      customer: '#f59e0b',    // Customer management
-      inventory: '#059669',   // Inventory and stock
-      service: '#8b5cf6',     // Service department
-      finance: '#06b6d4',     // Finance and insurance
-      sales: '#ef4444',       // Sales operations
+      dealership: '#1e40af', // Primary business operations
+      customer: '#f59e0b', // Customer management
+      inventory: '#059669', // Inventory and stock
+      service: '#8b5cf6', // Service department
+      finance: '#06b6d4', // Finance and insurance
+      sales: '#ef4444', // Sales operations
     },
 
     // Node type colors for workflow builder
@@ -103,20 +103,20 @@ export const automotiveDesignTokens = {
   spacing: {
     // Automotive-specific spacing
     automotive: {
-      xs: '4px',      // Tight spacing
-      sm: '8px',      // Small gaps
-      md: '16px',     // Standard spacing
-      lg: '24px',     // Comfortable spacing
-      xl: '32px',     // Generous spacing
-      '2xl': '48px',  // Large sections
+      xs: '4px', // Tight spacing
+      sm: '8px', // Small gaps
+      md: '16px', // Standard spacing
+      lg: '24px', // Comfortable spacing
+      xl: '32px', // Generous spacing
+      '2xl': '48px', // Large sections
     },
-    
+
     // Component-specific spacing
-    dashboard: '24px',    // Dashboard grid gaps
-    nodeGap: '16px',      // Workflow node spacing
-    cardPadding: '24px',  // Card internal padding
+    dashboard: '24px', // Dashboard grid gaps
+    nodeGap: '16px', // Workflow node spacing
+    cardPadding: '24px', // Card internal padding
     sidebarWidth: '256px', // Sidebar width
-    headerHeight: '64px',  // Header height
+    headerHeight: '64px', // Header height
   },
 
   // === TYPOGRAPHY SYSTEM ===
@@ -125,18 +125,18 @@ export const automotiveDesignTokens = {
       sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       mono: ['SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'monospace'],
     },
-    
+
     fontSize: {
-      xs: '0.75rem',      // 12px
-      sm: '0.875rem',     // 14px
-      base: '1rem',       // 16px
-      lg: '1.125rem',     // 18px
-      xl: '1.25rem',      // 20px
-      '2xl': '1.5rem',    // 24px
-      '3xl': '1.875rem',  // 30px
-      '4xl': '2.25rem',   // 36px
+      xs: '0.75rem', // 12px
+      sm: '0.875rem', // 14px
+      base: '1rem', // 16px
+      lg: '1.125rem', // 18px
+      xl: '1.25rem', // 20px
+      '2xl': '1.5rem', // 24px
+      '3xl': '1.875rem', // 30px
+      '4xl': '2.25rem', // 36px
     },
-    
+
     fontWeight: {
       normal: '400',
       medium: '500',
@@ -144,14 +144,14 @@ export const automotiveDesignTokens = {
       bold: '700',
       extrabold: '800',
     },
-    
+
     lineHeight: {
       tight: '1.2',
       normal: '1.5',
       relaxed: '1.6',
       loose: '1.8',
     },
-    
+
     // Automotive typography scale
     scale: {
       display: {
@@ -206,9 +206,9 @@ export const automotiveDesignTokens = {
     lg: '12px',
     xl: '16px',
     '2xl': '20px',
-    automotive: '12px',   // Standard automotive radius
-    node: '8px',          // Workflow node radius
-    full: '9999px',       // Fully rounded
+    automotive: '12px', // Standard automotive radius
+    node: '8px', // Workflow node radius
+    full: '9999px', // Fully rounded
   },
 
   // === SHADOWS ===
@@ -218,7 +218,7 @@ export const automotiveDesignTokens = {
     md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
     xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-    
+
     // Automotive-specific shadows
     automotive: '0 8px 25px rgba(30, 64, 175, 0.15)',
     hover: '0 12px 30px rgba(0, 0, 0, 0.15)',
@@ -233,7 +233,7 @@ export const automotiveDesignTokens = {
     border: 'rgba(255, 255, 255, 0.18)',
     borderStrong: 'rgba(255, 255, 255, 0.30)',
     backdropFilter: 'blur(20px)',
-    
+
     // Dark mode variants
     dark: {
       background: 'rgba(15, 23, 42, 0.40)',
@@ -250,11 +250,11 @@ export const automotiveDesignTokens = {
     success: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
     danger: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
     surface: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-    
+
     // Background gradients
     backgroundLight: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
     backgroundDark: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-    
+
     // Automotive themed gradients
     automotive: {
       blue: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
@@ -269,7 +269,7 @@ export const automotiveDesignTokens = {
     smooth: '300ms cubic-bezier(0.4, 0, 0.2, 1)',
     bounce: '300ms cubic-bezier(0.68, -0.55, 0.265, 1.55)',
     spring: '400ms cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-    
+
     // Automotive-specific transitions
     automotive: {
       default: '300ms cubic-bezier(0.4, 0, 0.2, 1)',
@@ -324,7 +324,11 @@ export function getColor(path: string): string {
  * Get spacing value from design tokens
  */
 export function getSpacing(key: string): string {
-  return automotiveDesignTokens.spacing.automotive[key as keyof typeof automotiveDesignTokens.spacing.automotive] || '0';
+  return (
+    automotiveDesignTokens.spacing.automotive[
+      key as keyof typeof automotiveDesignTokens.spacing.automotive
+    ] || '0'
+  );
 }
 
 /**
@@ -344,7 +348,9 @@ export function getNodeTypeStyle(nodeType: keyof typeof automotiveDesignTokens.c
 /**
  * Get semantic color based on context
  */
-export function getSemanticColor(context: keyof typeof automotiveDesignTokens.colors.semantic): string {
+export function getSemanticColor(
+  context: keyof typeof automotiveDesignTokens.colors.semantic
+): string {
   return automotiveDesignTokens.colors.semantic[context];
 }
 
@@ -360,32 +366,32 @@ export function getStatusColor(status: keyof typeof automotiveDesignTokens.color
  */
 export function generateCSSCustomProperties(): Record<string, string> {
   const customProperties: Record<string, string> = {};
-  
+
   // Primary colors
   Object.entries(automotiveDesignTokens.colors.primary).forEach(([key, value]) => {
     customProperties[`--color-primary-${key}`] = value;
   });
-  
+
   // Automotive colors
   Object.entries(automotiveDesignTokens.colors.automotive).forEach(([key, value]) => {
     customProperties[`--color-automotive-${key}`] = value;
   });
-  
+
   // Semantic colors
   Object.entries(automotiveDesignTokens.colors.semantic).forEach(([key, value]) => {
     customProperties[`--color-semantic-${key}`] = value;
   });
-  
+
   // Spacing
   Object.entries(automotiveDesignTokens.spacing.automotive).forEach(([key, value]) => {
     customProperties[`--spacing-automotive-${key}`] = value;
   });
-  
+
   // Shadows
   Object.entries(automotiveDesignTokens.shadows).forEach(([key, value]) => {
     customProperties[`--shadow-${key}`] = value;
   });
-  
+
   return customProperties;
 }
 

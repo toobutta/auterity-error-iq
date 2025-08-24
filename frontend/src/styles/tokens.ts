@@ -4,48 +4,48 @@ export const tokens = {
   colors: {
     // Brand colors
     brand: {
-      primary: '#4f46e5',      // Indigo - primary actions
-      secondary: '#06b6d4',    // Cyan - secondary actions
+      primary: '#4f46e5', // Indigo - primary actions
+      secondary: '#06b6d4', // Cyan - secondary actions
     },
 
     // Severity levels (core to Error-IQ)
     severity: {
-      critical: '#dc2626',     // Red-600 - critical errors
-      high: '#ea580c',         // Orange-600 - high priority
-      medium: '#ca8a04',       // Yellow-600 - medium priority
-      low: '#65a30d',          // Lime-600 - low priority
-      info: '#0284c7',         // Sky-600 - informational
+      critical: '#dc2626', // Red-600 - critical errors
+      high: '#ea580c', // Orange-600 - high priority
+      medium: '#ca8a04', // Yellow-600 - medium priority
+      low: '#65a30d', // Lime-600 - low priority
+      info: '#0284c7', // Sky-600 - informational
     },
 
     // Semantic colors
     semantic: {
-      success: '#16a34a',      // Green-600
-      warning: '#ca8a04',      // Yellow-600
-      error: '#dc2626',        // Red-600
-      info: '#0284c7',         // Sky-600
+      success: '#16a34a', // Green-600
+      warning: '#ca8a04', // Yellow-600
+      error: '#dc2626', // Red-600
+      info: '#0284c7', // Sky-600
     },
 
     // Neutral scale (accessible contrast)
     neutral: {
-      0: '#ffffff',            // Pure white
-      50: '#f8fafc',          // Light backgrounds
-      100: '#f1f5f9',         // Subtle backgrounds
-      200: '#e2e8f0',         // Borders
-      300: '#cbd5e1',         // Disabled states
-      400: '#94a3b8',         // Placeholder text
-      500: '#64748b',         // Secondary text
-      600: '#475569',         // Primary text (light mode)
-      700: '#334155',         // Headings
-      800: '#1e293b',         // Dark text
-      900: '#0f172a',         // Darkest
-      950: '#020617',         // True black
+      0: '#ffffff', // Pure white
+      50: '#f8fafc', // Light backgrounds
+      100: '#f1f5f9', // Subtle backgrounds
+      200: '#e2e8f0', // Borders
+      300: '#cbd5e1', // Disabled states
+      400: '#94a3b8', // Placeholder text
+      500: '#64748b', // Secondary text
+      600: '#475569', // Primary text (light mode)
+      700: '#334155', // Headings
+      800: '#1e293b', // Dark text
+      900: '#0f172a', // Darkest
+      950: '#020617', // True black
     },
 
     // Background layers
     background: {
-      primary: '#ffffff',      // Main content
-      secondary: '#f8fafc',    // Subtle areas
-      tertiary: '#f1f5f9',     // Cards, panels
+      primary: '#ffffff', // Main content
+      secondary: '#f8fafc', // Subtle areas
+      tertiary: '#f1f5f9', // Cards, panels
       overlay: 'rgba(15, 23, 42, 0.5)', // Modal overlays
     },
 
@@ -59,11 +59,11 @@ export const tokens = {
 
     // Status indicators
     status: {
-      online: '#16a34a',       // Green
-      offline: '#64748b',      // Gray
-      loading: '#0284c7',      // Blue
-      error: '#dc2626',        // Red
-    }
+      online: '#16a34a', // Green
+      offline: '#64748b', // Gray
+      loading: '#0284c7', // Blue
+      error: '#dc2626', // Red
+    },
   },
 
   // Typography Scale
@@ -73,14 +73,14 @@ export const tokens = {
       mono: ['Fira Code', 'Monaco', 'Consolas', 'monospace'],
     },
     fontSize: {
-      xs: ['0.75rem', { lineHeight: '1rem' }],      // 12px
-      sm: ['0.875rem', { lineHeight: '1.25rem' }],   // 14px
-      base: ['1rem', { lineHeight: '1.5rem' }],      // 16px
-      lg: ['1.125rem', { lineHeight: '1.75rem' }],   // 18px
-      xl: ['1.25rem', { lineHeight: '1.75rem' }],    // 20px
-      '2xl': ['1.5rem', { lineHeight: '2rem' }],     // 24px
+      xs: ['0.75rem', { lineHeight: '1rem' }], // 12px
+      sm: ['0.875rem', { lineHeight: '1.25rem' }], // 14px
+      base: ['1rem', { lineHeight: '1.5rem' }], // 16px
+      lg: ['1.125rem', { lineHeight: '1.75rem' }], // 18px
+      xl: ['1.25rem', { lineHeight: '1.75rem' }], // 20px
+      '2xl': ['1.5rem', { lineHeight: '2rem' }], // 24px
       '3xl': ['1.875rem', { lineHeight: '2.25rem' }], // 30px
-      '4xl': ['2.25rem', { lineHeight: '2.5rem' }],  // 36px
+      '4xl': ['2.25rem', { lineHeight: '2.5rem' }], // 36px
     },
     fontWeight: {
       normal: '400',
@@ -94,40 +94,40 @@ export const tokens = {
   spacing: {
     px: '1px',
     0: '0',
-    0.5: '0.125rem',  // 2px
-    1: '0.25rem',     // 4px
-    1.5: '0.375rem',  // 6px
-    2: '0.5rem',      // 8px
-    2.5: '0.625rem',  // 10px
-    3: '0.75rem',     // 12px
-    3.5: '0.875rem',  // 14px
-    4: '1rem',        // 16px
-    5: '1.25rem',     // 20px
-    6: '1.5rem',      // 24px
-    7: '1.75rem',     // 28px
-    8: '2rem',        // 32px
-    9: '2.25rem',     // 36px
-    10: '2.5rem',     // 40px
-    11: '2.75rem',    // 44px
-    12: '3rem',       // 48px
-    14: '3.5rem',     // 56px
-    16: '4rem',       // 64px
-    20: '5rem',       // 80px
-    24: '6rem',       // 96px
-    28: '7rem',       // 112px
-    32: '8rem',       // 128px
+    0.5: '0.125rem', // 2px
+    1: '0.25rem', // 4px
+    1.5: '0.375rem', // 6px
+    2: '0.5rem', // 8px
+    2.5: '0.625rem', // 10px
+    3: '0.75rem', // 12px
+    3.5: '0.875rem', // 14px
+    4: '1rem', // 16px
+    5: '1.25rem', // 20px
+    6: '1.5rem', // 24px
+    7: '1.75rem', // 28px
+    8: '2rem', // 32px
+    9: '2.25rem', // 36px
+    10: '2.5rem', // 40px
+    11: '2.75rem', // 44px
+    12: '3rem', // 48px
+    14: '3.5rem', // 56px
+    16: '4rem', // 64px
+    20: '5rem', // 80px
+    24: '6rem', // 96px
+    28: '7rem', // 112px
+    32: '8rem', // 128px
   },
 
   // Border Radius
   borderRadius: {
     none: '0',
-    sm: '0.125rem',   // 2px
+    sm: '0.125rem', // 2px
     DEFAULT: '0.25rem', // 4px
-    md: '0.375rem',   // 6px
-    lg: '0.5rem',     // 8px
-    xl: '0.75rem',    // 12px
-    '2xl': '1rem',    // 16px
-    '3xl': '1.5rem',  // 24px
+    md: '0.375rem', // 6px
+    lg: '0.5rem', // 8px
+    xl: '0.75rem', // 12px
+    '2xl': '1rem', // 16px
+    '3xl': '1.5rem', // 24px
     full: '9999px',
   },
 
@@ -187,7 +187,8 @@ export const tokens = {
 } as const;
 
 // Export individual token categories for tree-shaking
-export const { colors, typography, spacing, borderRadius, boxShadow, zIndex, animation, screens } = tokens;
+export const { colors, typography, spacing, borderRadius, boxShadow, zIndex, animation, screens } =
+  tokens;
 
 // Type exports for TypeScript
 export type TokenColors = typeof colors;

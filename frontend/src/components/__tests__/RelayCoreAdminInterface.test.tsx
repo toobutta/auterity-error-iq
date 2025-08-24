@@ -27,8 +27,7 @@ describe('RelayCoreAdminInterface', () => {
 
   it('displays correct budget information', () => {
     render(<RelayCoreAdminInterface />);
-    
+
     expect(screen.getByText('$650 / $1000')).toBeInTheDocument();
   });
 });
-

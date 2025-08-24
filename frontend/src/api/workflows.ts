@@ -4,7 +4,9 @@ import { PerformanceMetrics } from '../types/performance';
 import { ExecutionLogEntry } from '../types/execution';
 
 // Workflow CRUD operations
-export const createWorkflow = async (workflow: Omit<WorkflowDefinition, 'id'>): Promise<WorkflowDefinition> => {
+export const createWorkflow = async (
+  workflow: Omit<WorkflowDefinition, 'id'>
+): Promise<WorkflowDefinition> => {
   const response = await client.post('/api/workflows', workflow);
   return response.data;
 };
@@ -19,7 +21,10 @@ export const getWorkflow = async (id: string): Promise<WorkflowDefinition> => {
   return response.data;
 };
 
-export const updateWorkflow = async (id: string, workflow: Partial<WorkflowDefinition>): Promise<WorkflowDefinition> => {
+export const updateWorkflow = async (
+  id: string,
+  workflow: Partial<WorkflowDefinition>
+): Promise<WorkflowDefinition> => {
   const response = await client.put(`/api/workflows/${id}`, workflow);
   return response.data;
 };
@@ -29,8 +34,13 @@ export const deleteWorkflow = async (id: string): Promise<void> => {
 };
 
 // Workflow execution operations
-export const executeWorkflow = async (workflowId: string, inputData: Record<string, unknown>): Promise<WorkflowExecution> => {
-  const response = await client.post(`/api/workflows/${workflowId}/execute`, { input_data: inputData });
+export const executeWorkflow = async (
+  workflowId: string,
+  inputData: Record<string, unknown>
+): Promise<WorkflowExecution> => {
+  const response = await client.post(`/api/workflows/${workflowId}/execute`, {
+    input_data: inputData,
+  });
   return response.data;
 };
 
@@ -68,9 +78,11 @@ export interface ExecutionHistoryResponse {
   totalPages: number;
 }
 
-export const getExecutionHistory = async (params: ExecutionHistoryParams = {}): Promise<ExecutionHistoryResponse> => {
+export const getExecutionHistory = async (
+  params: ExecutionHistoryParams = {}
+): Promise<ExecutionHistoryResponse> => {
   const queryParams = new URLSearchParams();
-  
+
   if (params.page) queryParams.append('page', params.page.toString());
   if (params.pageSize) queryParams.append('page_size', params.pageSize.toString());
   if (params.status) queryParams.append('status', params.status);
@@ -79,7 +91,7 @@ export const getExecutionHistory = async (params: ExecutionHistoryParams = {}): 
   if (params.endDate) queryParams.append('end_date', params.endDate);
   if (params.sortBy) queryParams.append('sort_by', params.sortBy);
   if (params.sortOrder) queryParams.append('sort_order', params.sortOrder);
-  
+
   const response = await client.get(`/api/executions?${queryParams.toString()}`);
   return response.data;
 };
@@ -120,7 +132,7 @@ export const retryWorkflowExecution = async (
   modifiedInputs?: Record<string, unknown>
 ): Promise<{ executionId: string }> => {
   const response = await client.post(`/api/executions/${executionId}/retry`, {
-    inputs: modifiedInputs
+    inputs: modifiedInputs,
   });
   return response.data;
 };

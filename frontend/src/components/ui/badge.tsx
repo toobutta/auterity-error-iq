@@ -10,49 +10,47 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
-  ({ 
-    className, 
-    variant = 'default', 
-    severity,
-    size = 'md',
-    pulse = false,
-    icon = false,
-    children, 
-    ...props 
-  }, ref) => {
-    const baseClasses = 'inline-flex items-center font-medium rounded-full transition-all duration-200';
-    
+  (
+    {
+      className,
+      variant = 'default',
+      severity,
+      size = 'md',
+      pulse = false,
+      icon = false,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const baseClasses =
+      'inline-flex items-center font-medium rounded-full transition-all duration-200';
+
     const sizeClasses = {
       sm: 'px-2 py-0.5 text-xs',
       md: 'px-2.5 py-1 text-xs',
       lg: 'px-3 py-1.5 text-sm',
     };
-    
+
     const variantClasses = {
       default: 'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200',
       secondary: 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400',
       destructive: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
-      outline: 'text-neutral-950 border border-neutral-200 dark:border-neutral-800 dark:text-neutral-50',
-      ghost: 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800',
+      outline:
+        'text-neutral-950 border border-neutral-200 dark:border-neutral-800 dark:text-neutral-50',
+      ghost:
+        'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800',
     };
-    
+
     // Use severity styling if provided, otherwise use variant
-    const finalClasses = severity 
-      ? getSeverityStyles(severity)
-      : variantClasses[variant];
-    
+    const finalClasses = severity ? getSeverityStyles(severity) : variantClasses[variant];
+
     const pulseClasses = pulse ? 'animate-pulse' : '';
-    
+
     return (
       <div
         ref={ref}
-        className={cn(
-          baseClasses,
-          sizeClasses[size],
-          finalClasses,
-          pulseClasses,
-          className
-        )}
+        className={cn(baseClasses, sizeClasses[size], finalClasses, pulseClasses, className)}
         {...props}
       >
         {icon && severity && (
@@ -80,11 +78,11 @@ const SeverityBadge = React.forwardRef<HTMLDivElement, SeverityBadgeProps>(
     const severityLabels = {
       critical: 'Critical',
       high: 'High',
-      medium: 'Medium', 
+      medium: 'Medium',
       low: 'Low',
       info: 'Info',
     };
-    
+
     return (
       <Badge
         ref={ref}
@@ -136,17 +134,14 @@ const StatusBadge = React.forwardRef<HTMLDivElement, StatusBadgeProps>(
         icon: '🔍',
       },
     };
-    
+
     const config = statusConfig[status];
-    
+
     return (
-      <Badge
-        ref={ref}
-        variant={config.variant}
-        aria-label={`Status: ${config.label}`}
-        {...props}
-      >
-        <span className="mr-1" aria-hidden="true">{config.icon}</span>
+      <Badge ref={ref} variant={config.variant} aria-label={`Status: ${config.label}`} {...props}>
+        <span className="mr-1" aria-hidden="true">
+          {config.icon}
+        </span>
         {children || config.label}
       </Badge>
     );

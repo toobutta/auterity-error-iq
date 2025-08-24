@@ -30,7 +30,7 @@ const WorkflowExecutionForm: React.FC<WorkflowExecutionFormProps> = ({
   workflowId,
   onExecutionStart,
   onError,
-  className = ''
+  className = '',
 }) => {
   const [workflow, setWorkflow] = useState<WorkflowDefinition | null>(null);
   const [formFields, setFormFields] = useState<FormField[]>([]);
@@ -45,24 +45,25 @@ const WorkflowExecutionForm: React.FC<WorkflowExecutionFormProps> = ({
       try {
         setIsLoading(true);
         setError(null);
-        
+
         const workflowData = await getWorkflow(workflowId);
         setWorkflow(workflowData);
-        
+
         // Extract input parameters from workflow definition
         const fields = extractFormFields(workflowData);
         setFormFields(fields);
-        
+
         // Initialize form data with empty values
         const initialData: Record<string, unknown> = {};
-        fields.forEach(field => {
+        fields.forEach((field) => {
           initialData[field.name] = field.type === 'number' ? 0 : '';
         });
         setFormData(initialData);
-        
       } catch (err: unknown) {
         const apiError = err as ApiErrorResponse;
-        const errorMessage = apiError?.response?.data?.detail || (err instanceof Error ? err.message : 'Failed to load workflow');
+        const errorMessage =
+          apiError?.response?.data?.detail ||
+          (err instanceof Error ? err.message : 'Failed to load workflow');
         setError(errorMessage);
         onError?.(errorMessage);
       } finally {
@@ -77,7 +78,7 @@ const WorkflowExecutionForm: React.FC<WorkflowExecutionFormProps> = ({
 
   const extractFormFields = (workflow: WorkflowDefinition): FormField[] => {
     const fields: FormField[] = [];
-    
+
     // Look for workflow parameters
     if (workflow.parameters) {
       Object.entries(workflow.parameters).forEach(([key, config]) => {
@@ -88,7 +89,7 @@ const WorkflowExecutionForm: React.FC<WorkflowExecutionFormProps> = ({
             type: (configObj.type as FormField['type']) || 'text',
             label: (configObj.label as string) || key,
             required: (configObj.required as boolean) || false,
-            placeholder: configObj.placeholder as string
+            placeholder: configObj.placeholder as string,
           });
         } else {
           // Simple parameter definition
@@ -96,37 +97,37 @@ const WorkflowExecutionForm: React.FC<WorkflowExecutionFormProps> = ({
             name: key,
             type: 'text',
             label: key,
-            required: true
+            required: true,
           });
         }
       });
     }
-    
+
     // Look for input requirements in start step
-    const startStep = workflow.steps.find(step => step.type === 'start');
+    const startStep = workflow.steps.find((step) => step.type === 'start');
     if (startStep?.config?.parameters) {
       Object.entries(startStep.config.parameters).forEach(([key, config]) => {
-        if (!fields.find(f => f.name === key)) {
+        if (!fields.find((f) => f.name === key)) {
           if (typeof config === 'object' && config !== null) {
             fields.push({
               name: key,
-              type: (config as Record<string, unknown>).type as FormField['type'] || 'text',
-              label: (config as Record<string, unknown>).label as string || key,
-              required: (config as Record<string, unknown>).required as boolean || false,
-              placeholder: (config as Record<string, unknown>).placeholder as string
+              type: ((config as Record<string, unknown>).type as FormField['type']) || 'text',
+              label: ((config as Record<string, unknown>).label as string) || key,
+              required: ((config as Record<string, unknown>).required as boolean) || false,
+              placeholder: (config as Record<string, unknown>).placeholder as string,
             });
           } else {
             fields.push({
               name: key,
               type: 'text',
               label: key,
-              required: true
+              required: true,
             });
           }
         }
       });
     }
-    
+
     // If no parameters found, add a default input field
     if (fields.length === 0) {
       fields.push({
@@ -134,19 +135,19 @@ const WorkflowExecutionForm: React.FC<WorkflowExecutionFormProps> = ({
         type: 'textarea',
         label: 'Input',
         required: true,
-        placeholder: 'Enter your input here...'
+        placeholder: 'Enter your input here...',
       });
     }
-    
+
     return fields;
   };
 
   const handleInputChange = (name: string, value: unknown) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
+
     // Clear success message when user starts typing
     if (success) {
       setSuccess(null);
@@ -158,62 +159,67 @@ const WorkflowExecutionForm: React.FC<WorkflowExecutionFormProps> = ({
       if (field.required && (!formData[field.name] || String(formData[field.name]).trim() === '')) {
         return `${field.label} is required`;
       }
-      
+
       if (field.type === 'email' && formData[field.name]) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(String(formData[field.name]))) {
           return `${field.label} must be a valid email address`;
         }
       }
-      
-      if (field.type === 'number' && formData[field.name] !== '' && isNaN(Number(formData[field.name]))) {
+
+      if (
+        field.type === 'number' &&
+        formData[field.name] !== '' &&
+        isNaN(Number(formData[field.name]))
+      ) {
         return `${field.label} must be a valid number`;
       }
     }
-    
+
     return null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const validationError = validateForm();
     if (validationError) {
       setError(validationError);
       setSuccess(null);
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
       setError(null);
       setSuccess(null);
-      
+
       // Convert form data to appropriate types
       const processedData: Record<string, unknown> = {};
-      formFields.forEach(field => {
+      formFields.forEach((field) => {
         let value = formData[field.name];
         if (field.type === 'number' && value !== '') {
           value = Number(value);
         }
         processedData[field.name] = value;
       });
-      
+
       const execution = await executeWorkflow(workflowId, processedData);
-      
+
       setSuccess(`Workflow execution started successfully! Execution ID: ${execution.id}`);
       onExecutionStart?.(execution.id);
-      
+
       // Reset form after successful submission
       const resetData: Record<string, unknown> = {};
-      formFields.forEach(field => {
+      formFields.forEach((field) => {
         resetData[field.name] = field.type === 'number' ? 0 : '';
       });
       setFormData(resetData);
-      
     } catch (err: unknown) {
       const apiError = err as ApiErrorResponse;
-      const errorMessage = apiError?.response?.data?.detail || (err instanceof Error ? err.message : 'Failed to execute workflow');
+      const errorMessage =
+        apiError?.response?.data?.detail ||
+        (err instanceof Error ? err.message : 'Failed to execute workflow');
       setError(errorMessage);
       onError?.(errorMessage);
     } finally {
@@ -243,9 +249,7 @@ const WorkflowExecutionForm: React.FC<WorkflowExecutionFormProps> = ({
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Execute Workflow</h2>
         <h3 className="text-lg font-semibold text-gray-700">{workflow.name}</h3>
-        {workflow.description && (
-          <p className="text-gray-600 mt-1">{workflow.description}</p>
-        )}
+        {workflow.description && <p className="text-gray-600 mt-1">{workflow.description}</p>}
       </div>
 
       {error && (
@@ -263,14 +267,11 @@ const WorkflowExecutionForm: React.FC<WorkflowExecutionFormProps> = ({
       <form onSubmit={handleSubmit} className="space-y-4">
         {formFields.map((field) => (
           <div key={field.name}>
-            <label 
-              htmlFor={field.name}
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 mb-1">
               {field.label}
               {field.required && <span className="text-red-500 ml-1">*</span>}
             </label>
-            
+
             {field.type === 'textarea' ? (
               <textarea
                 id={field.name}
@@ -302,7 +303,7 @@ const WorkflowExecutionForm: React.FC<WorkflowExecutionFormProps> = ({
             type="button"
             onClick={() => {
               const resetData: { [key: string]: string | number } = {};
-              formFields.forEach(field => {
+              formFields.forEach((field) => {
                 resetData[field.name] = field.type === 'number' ? 0 : '';
               });
               setFormData(resetData);
@@ -313,7 +314,7 @@ const WorkflowExecutionForm: React.FC<WorkflowExecutionFormProps> = ({
           >
             Reset
           </button>
-          
+
           <button
             type="submit"
             disabled={isSubmitting}

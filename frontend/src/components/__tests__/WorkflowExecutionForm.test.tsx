@@ -39,22 +39,22 @@ const mockWorkflow = {
             type: 'text',
             label: 'Customer Name',
             required: true,
-            placeholder: 'Enter customer name'
+            placeholder: 'Enter customer name',
           },
           email: {
             type: 'email',
             label: 'Email Address',
-            required: true
+            required: true,
           },
           budget: {
             type: 'number',
             label: 'Budget',
-            required: false
-          }
-        }
+            required: false,
+          },
+        },
       },
-      position: { x: 0, y: 0 }
-    }
+      position: { x: 0, y: 0 },
+    },
   ],
   connections: [],
   parameters: {
@@ -62,9 +62,9 @@ const mockWorkflow = {
       type: 'textarea',
       label: 'Additional Information',
       required: false,
-      placeholder: 'Any additional details...'
-    }
-  }
+      placeholder: 'Any additional details...',
+    },
+  },
 };
 
 const mockExecution = {
@@ -72,7 +72,7 @@ const mockExecution = {
   workflowId: 'workflow-1',
   status: 'pending' as const,
   inputData: {},
-  startedAt: '2023-01-01T00:00:00Z'
+  startedAt: '2023-01-01T00:00:00Z',
 };
 
 describe('WorkflowExecutionForm', () => {
@@ -92,7 +92,7 @@ describe('WorkflowExecutionForm', () => {
 
   it('renders loading state initially', () => {
     render(
-      <WorkflowExecutionForm 
+      <WorkflowExecutionForm
         workflowId="workflow-1"
         onExecutionStart={mockOnExecutionStart}
         onError={mockOnError}
@@ -104,7 +104,7 @@ describe('WorkflowExecutionForm', () => {
 
   it('renders workflow form after loading', async () => {
     render(
-      <WorkflowExecutionForm 
+      <WorkflowExecutionForm
         workflowId="workflow-1"
         onExecutionStart={mockOnExecutionStart}
         onError={mockOnError}
@@ -121,7 +121,7 @@ describe('WorkflowExecutionForm', () => {
 
   it('renders form fields based on workflow parameters', async () => {
     render(
-      <WorkflowExecutionForm 
+      <WorkflowExecutionForm
         workflowId="workflow-1"
         onExecutionStart={mockOnExecutionStart}
         onError={mockOnError}
@@ -139,7 +139,7 @@ describe('WorkflowExecutionForm', () => {
 
   it('shows required field indicators', async () => {
     render(
-      <WorkflowExecutionForm 
+      <WorkflowExecutionForm
         workflowId="workflow-1"
         onExecutionStart={mockOnExecutionStart}
         onError={mockOnError}
@@ -157,7 +157,7 @@ describe('WorkflowExecutionForm', () => {
 
   it('validates required fields on submission', async () => {
     render(
-      <WorkflowExecutionForm 
+      <WorkflowExecutionForm
         workflowId="workflow-1"
         onExecutionStart={mockOnExecutionStart}
         onError={mockOnError}
@@ -169,7 +169,7 @@ describe('WorkflowExecutionForm', () => {
     });
 
     const submitButton = screen.getByRole('button', { name: /Execute Workflow/ });
-    
+
     // Submit form without filling required fields
     const form = submitButton.closest('form')!;
     fireEvent.submit(form);
@@ -185,7 +185,7 @@ describe('WorkflowExecutionForm', () => {
 
   it('validates email format', async () => {
     render(
-      <WorkflowExecutionForm 
+      <WorkflowExecutionForm
         workflowId="workflow-1"
         onExecutionStart={mockOnExecutionStart}
         onError={mockOnError}
@@ -202,7 +202,7 @@ describe('WorkflowExecutionForm', () => {
 
     fireEvent.change(customerNameInput, { target: { value: 'John Doe' } });
     fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
-    
+
     const form = submitButton.closest('form')!;
     fireEvent.submit(form);
 
@@ -215,7 +215,7 @@ describe('WorkflowExecutionForm', () => {
 
   it('validates number fields', async () => {
     render(
-      <WorkflowExecutionForm 
+      <WorkflowExecutionForm
         workflowId="workflow-1"
         onExecutionStart={mockOnExecutionStart}
         onError={mockOnError}
@@ -234,11 +234,11 @@ describe('WorkflowExecutionForm', () => {
     // Fill required fields
     fireEvent.change(customerNameInput, { target: { value: 'John Doe' } });
     fireEvent.change(emailInput, { target: { value: 'john@example.com' } });
-    
+
     // For number inputs, browsers typically don't allow invalid text
     // So let's test with a valid number instead and verify the form submits successfully
     fireEvent.change(budgetInput, { target: { value: '50000' } });
-    
+
     const form = submitButton.closest('form')!;
     fireEvent.submit(form);
 
@@ -248,14 +248,14 @@ describe('WorkflowExecutionForm', () => {
         customerName: 'John Doe',
         email: 'john@example.com',
         budget: 50000,
-        additionalInfo: ''
+        additionalInfo: '',
       });
     });
   });
 
   it('submits form with valid data', async () => {
     render(
-      <WorkflowExecutionForm 
+      <WorkflowExecutionForm
         workflowId="workflow-1"
         onExecutionStart={mockOnExecutionStart}
         onError={mockOnError}
@@ -283,7 +283,7 @@ describe('WorkflowExecutionForm', () => {
         customerName: 'John Doe',
         email: 'john@example.com',
         budget: 50000,
-        additionalInfo: 'Looking for a sedan'
+        additionalInfo: 'Looking for a sedan',
       });
     });
 
@@ -292,10 +292,12 @@ describe('WorkflowExecutionForm', () => {
 
   it('shows loading state during submission', async () => {
     // Make the API call take some time
-    mockExecuteWorkflow.mockImplementation(() => new Promise(resolve => setTimeout(() => resolve(mockExecution), 100)));
+    mockExecuteWorkflow.mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve(mockExecution), 100))
+    );
 
     render(
-      <WorkflowExecutionForm 
+      <WorkflowExecutionForm
         workflowId="workflow-1"
         onExecutionStart={mockOnExecutionStart}
         onError={mockOnError}
@@ -324,7 +326,7 @@ describe('WorkflowExecutionForm', () => {
 
   it('shows success message after successful submission', async () => {
     render(
-      <WorkflowExecutionForm 
+      <WorkflowExecutionForm
         workflowId="workflow-1"
         onExecutionStart={mockOnExecutionStart}
         onError={mockOnError}
@@ -344,7 +346,9 @@ describe('WorkflowExecutionForm', () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/Workflow execution started successfully! Execution ID: execution-1/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Workflow execution started successfully! Execution ID: execution-1/)
+      ).toBeInTheDocument();
     });
   });
 
@@ -353,7 +357,7 @@ describe('WorkflowExecutionForm', () => {
     mockExecuteWorkflow.mockRejectedValue(new Error(errorMessage));
 
     render(
-      <WorkflowExecutionForm 
+      <WorkflowExecutionForm
         workflowId="workflow-1"
         onExecutionStart={mockOnExecutionStart}
         onError={mockOnError}
@@ -381,7 +385,7 @@ describe('WorkflowExecutionForm', () => {
 
   it('resets form after successful submission', async () => {
     render(
-      <WorkflowExecutionForm 
+      <WorkflowExecutionForm
         workflowId="workflow-1"
         onExecutionStart={mockOnExecutionStart}
         onError={mockOnError}
@@ -411,7 +415,7 @@ describe('WorkflowExecutionForm', () => {
 
   it('handles reset button click', async () => {
     render(
-      <WorkflowExecutionForm 
+      <WorkflowExecutionForm
         workflowId="workflow-1"
         onExecutionStart={mockOnExecutionStart}
         onError={mockOnError}
@@ -443,7 +447,7 @@ describe('WorkflowExecutionForm', () => {
     mockGetWorkflow.mockRejectedValue(new Error(errorMessage));
 
     render(
-      <WorkflowExecutionForm 
+      <WorkflowExecutionForm
         workflowId="workflow-1"
         onExecutionStart={mockOnExecutionStart}
         onError={mockOnError}
@@ -464,15 +468,15 @@ describe('WorkflowExecutionForm', () => {
       steps: [
         {
           ...mockWorkflow.steps[0],
-          config: {}
-        }
-      ]
+          config: {},
+        },
+      ],
     };
 
     mockGetWorkflow.mockResolvedValue(workflowWithoutParams);
 
     render(
-      <WorkflowExecutionForm 
+      <WorkflowExecutionForm
         workflowId="workflow-1"
         onExecutionStart={mockOnExecutionStart}
         onError={mockOnError}

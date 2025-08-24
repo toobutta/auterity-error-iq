@@ -1,31 +1,31 @@
 """Advanced Analytics & Business Intelligence Service - Predictive analytics and ROI analysis."""
 
 import logging
-import asyncio
-from datetime import datetime, timedelta
-from decimal import Decimal, ROUND_HALF_UP
-from typing import Dict, List, Optional, Any, Tuple
-from uuid import UUID
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from decimal import Decimal
 from enum import Enum
-import numpy as np
-import pandas as pd
-from sklearn.linear_model import LinearRegression
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import StandardScaler
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func, text
+from typing import Any, Dict, List, Optional, Tuple
+from uuid import UUID
 
-from app.models.tenant import Tenant, UsageLog, BillingRecord
-from app.models.user import User
-from app.models.workflow import Workflow, WorkflowExecution
+import numpy as np
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler
+from sqlalchemy import and_, func
+from sqlalchemy.orm import Session
+
 from app.core.saas_config import SaaSConfig
+from app.models.tenant import BillingRecord, Tenant, UsageLog
+from app.models.user import User
+from app.models.workflow import WorkflowExecution
 
 logger = logging.getLogger(__name__)
 
 
 class AnalyticsMetric(str, Enum):
     """Types of analytics metrics."""
+
     USAGE = "usage"
     PERFORMANCE = "performance"
     COST = "cost"
@@ -38,6 +38,7 @@ class AnalyticsMetric(str, Enum):
 
 class PredictionModel(str, Enum):
     """Types of prediction models."""
+
     LINEAR_REGRESSION = "linear_regression"
     RANDOM_FOREST = "random_forest"
     TIME_SERIES = "time_series"
@@ -46,6 +47,7 @@ class PredictionModel(str, Enum):
 
 class TimeGranularity(str, Enum):
     """Time granularity for analytics."""
+
     HOURLY = "hourly"
     DAILY = "daily"
     WEEKLY = "weekly"
@@ -57,6 +59,7 @@ class TimeGranularity(str, Enum):
 @dataclass
 class MetricData:
     """Container for metric data points."""
+
     metric: str
     value: float
     timestamp: datetime
@@ -66,6 +69,7 @@ class MetricData:
 @dataclass
 class TrendAnalysis:
     """Trend analysis result."""
+
     metric: str
     trend: str  # "increasing", "decreasing", "stable"
     slope: float
@@ -77,6 +81,7 @@ class TrendAnalysis:
 @dataclass
 class PredictionResult:
     """Prediction result from forecasting models."""
+
     metric: str
     predicted_value: float
     confidence_interval: Tuple[float, float]
@@ -90,6 +95,7 @@ class PredictionResult:
 @dataclass
 class ROIAnalysis:
     """ROI analysis result."""
+
     total_investment: Decimal
     total_return: Decimal
     roi_percentage: float
@@ -104,6 +110,7 @@ class ROIAnalysis:
 @dataclass
 class ChurnAnalysis:
     """Churn prediction and analysis."""
+
     churn_probability: float
     risk_level: str  # "low", "medium", "high", "critical"
     churn_reasons: List[str] = field(default_factory=list)
@@ -115,6 +122,7 @@ class ChurnAnalysis:
 @dataclass
 class BusinessIntelligenceReport:
     """Comprehensive business intelligence report."""
+
     tenant_id: UUID
     report_period: str
     generated_at: datetime
@@ -141,7 +149,7 @@ class AdvancedAnalyticsService:
         self,
         tenant_id: UUID,
         time_period_days: int = 30,
-        include_predictions: bool = True
+        include_predictions: bool = True,
     ) -> BusinessIntelligenceReport:
         """Generate comprehensive business intelligence report."""
         try:
@@ -157,8 +165,12 @@ class AdvancedAnalyticsService:
             churn_analysis = None
 
             if include_predictions:
-                predictions = await self._generate_predictions(tenant_id, time_period_days)
-                roi_analysis = await self._calculate_roi_analysis(tenant_id, time_period_days)
+                predictions = await self._generate_predictions(
+                    tenant_id, time_period_days
+                )
+                roi_analysis = await self._calculate_roi_analysis(
+                    tenant_id, time_period_days
+                )
                 churn_analysis = await self._analyze_churn_risk(tenant_id)
 
             recommendations = await self._generate_recommendations(
@@ -181,7 +193,7 @@ class AdvancedAnalyticsService:
                 roi_analysis=roi_analysis,
                 churn_analysis=churn_analysis,
                 recommendations=recommendations,
-                alerts=alerts
+                alerts=alerts,
             )
 
         except Exception as e:
@@ -189,62 +201,82 @@ class AdvancedAnalyticsService:
             raise
 
     async def _calculate_key_metrics(
-        self,
-        tenant_id: UUID,
-        time_period_days: int
+        self, tenant_id: UUID, time_period_days: int
     ) -> Dict[str, Any]:
         """Calculate key performance metrics."""
         period_start = datetime.utcnow() - timedelta(days=time_period_days)
 
         # Usage metrics
-        usage_logs = self.db.query(UsageLog).filter(
-            and_(
-                UsageLog.tenant_id == tenant_id,
-                UsageLog.created_at >= period_start
+        usage_logs = (
+            self.db.query(UsageLog)
+            .filter(
+                and_(
+                    UsageLog.tenant_id == tenant_id, UsageLog.created_at >= period_start
+                )
             )
-        ).all()
+            .all()
+        )
 
         # Billing metrics
-        billing_records = self.db.query(BillingRecord).filter(
-            and_(
-                BillingRecord.tenant_id == tenant_id,
-                BillingRecord.created_at >= period_start
+        billing_records = (
+            self.db.query(BillingRecord)
+            .filter(
+                and_(
+                    BillingRecord.tenant_id == tenant_id,
+                    BillingRecord.created_at >= period_start,
+                )
             )
-        ).all()
+            .all()
+        )
 
         # User metrics
-        active_users = self.db.query(User).filter(
-            and_(
-                User.tenant_id == tenant_id,
-                User.last_login >= period_start
-            )
-        ).count()
+        active_users = (
+            self.db.query(User)
+            .filter(and_(User.tenant_id == tenant_id, User.last_login >= period_start))
+            .count()
+        )
 
-        total_users = self.db.query(User).filter(
-            User.tenant_id == tenant_id
-        ).count()
+        total_users = self.db.query(User).filter(User.tenant_id == tenant_id).count()
 
         # Workflow metrics
-        workflow_executions = self.db.query(WorkflowExecution).filter(
-            and_(
-                WorkflowExecution.tenant_id == tenant_id,
-                WorkflowExecution.created_at >= period_start
+        workflow_executions = (
+            self.db.query(WorkflowExecution)
+            .filter(
+                and_(
+                    WorkflowExecution.tenant_id == tenant_id,
+                    WorkflowExecution.created_at >= period_start,
+                )
             )
-        ).all()
+            .all()
+        )
 
         # Calculate metrics
         total_requests = len(usage_logs)
-        successful_requests = len([log for log in usage_logs if log.status == "success"])
+        successful_requests = len(
+            [log for log in usage_logs if log.status == "success"]
+        )
         total_cost = sum(log.cost_amount or Decimal("0") for log in usage_logs)
-        total_billed = sum(record.amount for record in billing_records if record.status == "paid")
+        total_billed = sum(
+            record.amount for record in billing_records if record.status == "paid"
+        )
 
-        success_rate = (successful_requests / total_requests * 100) if total_requests > 0 else 0
-        avg_cost_per_request = (total_cost / total_requests) if total_requests > 0 else Decimal("0")
+        success_rate = (
+            (successful_requests / total_requests * 100) if total_requests > 0 else 0
+        )
+        avg_cost_per_request = (
+            (total_cost / total_requests) if total_requests > 0 else Decimal("0")
+        )
 
         # Workflow efficiency
         total_executions = len(workflow_executions)
-        successful_executions = len([exec for exec in workflow_executions if exec.status == "completed"])
-        avg_execution_time = np.mean([exec.duration_ms for exec in workflow_executions]) if workflow_executions else 0
+        successful_executions = len(
+            [exec for exec in workflow_executions if exec.status == "completed"]
+        )
+        avg_execution_time = (
+            np.mean([exec.duration_ms for exec in workflow_executions])
+            if workflow_executions
+            else 0
+        )
 
         return {
             "usage": {
@@ -252,29 +284,37 @@ class AdvancedAnalyticsService:
                 "successful_requests": successful_requests,
                 "success_rate": round(success_rate, 2),
                 "total_cost": float(total_cost),
-                "avg_cost_per_request": float(avg_cost_per_request)
+                "avg_cost_per_request": float(avg_cost_per_request),
             },
             "billing": {
                 "total_billed": float(total_billed),
-                "billing_records_count": len(billing_records)
+                "billing_records_count": len(billing_records),
             },
             "users": {
                 "active_users": active_users,
                 "total_users": total_users,
-                "user_engagement_rate": round((active_users / total_users * 100), 2) if total_users > 0 else 0
+                "user_engagement_rate": (
+                    round((active_users / total_users * 100), 2)
+                    if total_users > 0
+                    else 0
+                ),
             },
             "workflows": {
                 "total_executions": total_executions,
                 "successful_executions": successful_executions,
-                "success_rate": round((successful_executions / total_executions * 100), 2) if total_executions > 0 else 0,
-                "avg_execution_time_ms": round(avg_execution_time, 2) if avg_execution_time else 0
-            }
+                "success_rate": (
+                    round((successful_executions / total_executions * 100), 2)
+                    if total_executions > 0
+                    else 0
+                ),
+                "avg_execution_time_ms": (
+                    round(avg_execution_time, 2) if avg_execution_time else 0
+                ),
+            },
         }
 
     async def _analyze_trends(
-        self,
-        tenant_id: UUID,
-        time_period_days: int
+        self, tenant_id: UUID, time_period_days: int
     ) -> List[TrendAnalysis]:
         """Analyze trends in key metrics."""
         trends = []
@@ -303,10 +343,7 @@ class AdvancedAnalyticsService:
         return trends
 
     async def _analyze_metric_trend(
-        self,
-        tenant_id: UUID,
-        metric: str,
-        time_period_days: int
+        self, tenant_id: UUID, metric: str, time_period_days: int
     ) -> Optional[TrendAnalysis]:
         """Analyze trend for a specific metric."""
         try:
@@ -314,11 +351,17 @@ class AdvancedAnalyticsService:
 
             # Get historical data points
             if metric == "usage_requests":
-                data_points = await self._get_usage_data_points(tenant_id, period_start, time_period_days)
+                data_points = await self._get_usage_data_points(
+                    tenant_id, period_start, time_period_days
+                )
             elif metric == "cost":
-                data_points = await self._get_cost_data_points(tenant_id, period_start, time_period_days)
+                data_points = await self._get_cost_data_points(
+                    tenant_id, period_start, time_period_days
+                )
             elif metric == "performance":
-                data_points = await self._get_performance_data_points(tenant_id, period_start, time_period_days)
+                data_points = await self._get_performance_data_points(
+                    tenant_id, period_start, time_period_days
+                )
             else:
                 return None
 
@@ -349,7 +392,7 @@ class AdvancedAnalyticsService:
                 slope=slope,
                 confidence=score,
                 period_days=time_period_days,
-                data_points=data_points
+                data_points=data_points,
             )
 
         except Exception as e:
@@ -357,10 +400,7 @@ class AdvancedAnalyticsService:
             return None
 
     async def _get_usage_data_points(
-        self,
-        tenant_id: UUID,
-        period_start: datetime,
-        days: int
+        self, tenant_id: UUID, period_start: datetime, days: int
     ) -> List[Tuple[datetime, float]]:
         """Get daily usage data points."""
         data_points = []
@@ -369,23 +409,24 @@ class AdvancedAnalyticsService:
             day_start = period_start + timedelta(days=i)
             day_end = day_start + timedelta(days=1)
 
-            count = self.db.query(func.count(UsageLog.id)).filter(
-                and_(
-                    UsageLog.tenant_id == tenant_id,
-                    UsageLog.created_at >= day_start,
-                    UsageLog.created_at < day_end
+            count = (
+                self.db.query(func.count(UsageLog.id))
+                .filter(
+                    and_(
+                        UsageLog.tenant_id == tenant_id,
+                        UsageLog.created_at >= day_start,
+                        UsageLog.created_at < day_end,
+                    )
                 )
-            ).scalar()
+                .scalar()
+            )
 
             data_points.append((day_start, float(count)))
 
         return data_points
 
     async def _get_cost_data_points(
-        self,
-        tenant_id: UUID,
-        period_start: datetime,
-        days: int
+        self, tenant_id: UUID, period_start: datetime, days: int
     ) -> List[Tuple[datetime, float]]:
         """Get daily cost data points."""
         data_points = []
@@ -394,23 +435,25 @@ class AdvancedAnalyticsService:
             day_start = period_start + timedelta(days=i)
             day_end = day_start + timedelta(days=1)
 
-            total_cost = self.db.query(func.sum(UsageLog.cost_amount)).filter(
-                and_(
-                    UsageLog.tenant_id == tenant_id,
-                    UsageLog.created_at >= day_start,
-                    UsageLog.created_at < day_end
+            total_cost = (
+                self.db.query(func.sum(UsageLog.cost_amount))
+                .filter(
+                    and_(
+                        UsageLog.tenant_id == tenant_id,
+                        UsageLog.created_at >= day_start,
+                        UsageLog.created_at < day_end,
+                    )
                 )
-            ).scalar() or 0
+                .scalar()
+                or 0
+            )
 
             data_points.append((day_start, float(total_cost)))
 
         return data_points
 
     async def _get_performance_data_points(
-        self,
-        tenant_id: UUID,
-        period_start: datetime,
-        days: int
+        self, tenant_id: UUID, period_start: datetime, days: int
     ) -> List[Tuple[datetime, float]]:
         """Get daily performance data points (success rate)."""
         data_points = []
@@ -419,32 +462,42 @@ class AdvancedAnalyticsService:
             day_start = period_start + timedelta(days=i)
             day_end = day_start + timedelta(days=1)
 
-            total_executions = self.db.query(func.count(WorkflowExecution.id)).filter(
-                and_(
-                    WorkflowExecution.tenant_id == tenant_id,
-                    WorkflowExecution.created_at >= day_start,
-                    WorkflowExecution.created_at < day_end
+            total_executions = (
+                self.db.query(func.count(WorkflowExecution.id))
+                .filter(
+                    and_(
+                        WorkflowExecution.tenant_id == tenant_id,
+                        WorkflowExecution.created_at >= day_start,
+                        WorkflowExecution.created_at < day_end,
+                    )
                 )
-            ).scalar()
+                .scalar()
+            )
 
-            successful_executions = self.db.query(func.count(WorkflowExecution.id)).filter(
-                and_(
-                    WorkflowExecution.tenant_id == tenant_id,
-                    WorkflowExecution.status == "completed",
-                    WorkflowExecution.created_at >= day_start,
-                    WorkflowExecution.created_at < day_end
+            successful_executions = (
+                self.db.query(func.count(WorkflowExecution.id))
+                .filter(
+                    and_(
+                        WorkflowExecution.tenant_id == tenant_id,
+                        WorkflowExecution.status == "completed",
+                        WorkflowExecution.created_at >= day_start,
+                        WorkflowExecution.created_at < day_end,
+                    )
                 )
-            ).scalar()
+                .scalar()
+            )
 
-            success_rate = (successful_executions / total_executions * 100) if total_executions > 0 else 0
+            success_rate = (
+                (successful_executions / total_executions * 100)
+                if total_executions > 0
+                else 0
+            )
             data_points.append((day_start, success_rate))
 
         return data_points
 
     async def _generate_predictions(
-        self,
-        tenant_id: UUID,
-        time_period_days: int
+        self, tenant_id: UUID, time_period_days: int
     ) -> List[PredictionResult]:
         """Generate predictions for key metrics."""
         predictions = []
@@ -466,11 +519,7 @@ class AdvancedAnalyticsService:
         return predictions
 
     async def _predict_metric(
-        self,
-        tenant_id: UUID,
-        metric: str,
-        historical_days: int,
-        forecast_days: int
+        self, tenant_id: UUID, metric: str, historical_days: int, forecast_days: int
     ) -> Optional[PredictionResult]:
         """Predict future values for a metric."""
         try:
@@ -478,9 +527,13 @@ class AdvancedAnalyticsService:
             period_start = datetime.utcnow() - timedelta(days=historical_days)
 
             if metric == "usage_requests":
-                data_points = await self._get_usage_data_points(tenant_id, period_start, historical_days)
+                data_points = await self._get_usage_data_points(
+                    tenant_id, period_start, historical_days
+                )
             elif metric == "cost":
-                data_points = await self._get_cost_data_points(tenant_id, period_start, historical_days)
+                data_points = await self._get_cost_data_points(
+                    tenant_id, period_start, historical_days
+                )
             else:
                 return None
 
@@ -496,7 +549,9 @@ class AdvancedAnalyticsService:
             model.fit(X, y)
 
             # Predict future values
-            future_X = np.array(range(len(data_points), len(data_points) + forecast_days)).reshape(-1, 1)
+            future_X = np.array(
+                range(len(data_points), len(data_points) + forecast_days)
+            ).reshape(-1, 1)
             predictions = model.predict(future_X)
 
             # Calculate confidence interval (simplified)
@@ -509,12 +564,15 @@ class AdvancedAnalyticsService:
             return PredictionResult(
                 metric=metric,
                 predicted_value=predicted_value,
-                confidence_interval=(predicted_value - margin_of_error, predicted_value + margin_of_error),
+                confidence_interval=(
+                    predicted_value - margin_of_error,
+                    predicted_value + margin_of_error,
+                ),
                 confidence_level=confidence_level,
                 model_used=PredictionModel.RANDOM_FOREST,
                 forecast_horizon=forecast_days,
                 forecast_period="days",
-                historical_data_points=len(data_points)
+                historical_data_points=len(data_points),
             )
 
         except Exception as e:
@@ -522,9 +580,7 @@ class AdvancedAnalyticsService:
             return None
 
     async def _calculate_roi_analysis(
-        self,
-        tenant_id: UUID,
-        time_period_days: int
+        self, tenant_id: UUID, time_period_days: int
     ) -> ROIAnalysis:
         """Calculate ROI analysis for the tenant."""
         try:
@@ -536,18 +592,22 @@ class AdvancedAnalyticsService:
                 and_(
                     BillingRecord.tenant_id == tenant_id,
                     BillingRecord.status == "paid",
-                    BillingRecord.created_at >= period_start
+                    BillingRecord.created_at >= period_start,
                 )
             ).scalar() or Decimal("0")
 
             # Calculate benefits (value delivered)
             # This is a simplified calculation - in practice, you'd have more sophisticated metrics
-            usage_logs = self.db.query(UsageLog).filter(
-                and_(
-                    UsageLog.tenant_id == tenant_id,
-                    UsageLog.created_at >= period_start
+            usage_logs = (
+                self.db.query(UsageLog)
+                .filter(
+                    and_(
+                        UsageLog.tenant_id == tenant_id,
+                        UsageLog.created_at >= period_start,
+                    )
                 )
-            ).all()
+                .all()
+            )
 
             # Estimate productivity gains (simplified)
             total_requests = len(usage_logs)
@@ -556,19 +616,33 @@ class AdvancedAnalyticsService:
 
             # Cost savings from automation
             manual_cost_per_request = Decimal("5.00")  # $5 manual cost per request
-            automation_cost_per_request = Decimal("0.50")  # $0.50 automation cost per request
-            cost_savings = Decimal(total_requests) * (manual_cost_per_request - automation_cost_per_request)
+            automation_cost_per_request = Decimal(
+                "0.50"
+            )  # $0.50 automation cost per request
+            cost_savings = Decimal(total_requests) * (
+                manual_cost_per_request - automation_cost_per_request
+            )
 
             # Total return
             total_return = productivity_gains + cost_savings
             total_investment = subscription_costs
 
             # Calculate ROI
-            roi_percentage = float((total_return / total_investment * 100)) if total_investment > 0 else 0
+            roi_percentage = (
+                float((total_return / total_investment * 100))
+                if total_investment > 0
+                else 0
+            )
 
             # Estimate payback period (simplified)
-            daily_net_benefit = (productivity_gains + cost_savings) / Decimal(time_period_days)
-            payback_period_days = int(total_investment / daily_net_benefit) if daily_net_benefit > 0 else 0
+            daily_net_benefit = (productivity_gains + cost_savings) / Decimal(
+                time_period_days
+            )
+            payback_period_days = (
+                int(total_investment / daily_net_benefit)
+                if daily_net_benefit > 0
+                else 0
+            )
 
             break_even_date = datetime.utcnow() + timedelta(days=payback_period_days)
 
@@ -580,7 +654,9 @@ class AdvancedAnalyticsService:
                 break_even_date=break_even_date,
                 cost_savings=cost_savings,
                 productivity_gains=productivity_gains,
-                revenue_increase=Decimal("0")  # Not calculated in this simplified version
+                revenue_increase=Decimal(
+                    "0"
+                ),  # Not calculated in this simplified version
             )
 
         except Exception as e:
@@ -591,7 +667,7 @@ class AdvancedAnalyticsService:
                 total_return=Decimal("0"),
                 roi_percentage=0.0,
                 payback_period_days=0,
-                break_even_date=datetime.utcnow()
+                break_even_date=datetime.utcnow(),
             )
 
     async def _analyze_churn_risk(self, tenant_id: UUID) -> ChurnAnalysis:
@@ -603,12 +679,16 @@ class AdvancedAnalyticsService:
             risk_factors = []
 
             # Usage patterns
-            recent_usage = self.db.query(UsageLog).filter(
-                and_(
-                    UsageLog.tenant_id == tenant_id,
-                    UsageLog.created_at >= datetime.utcnow() - timedelta(days=7)
+            recent_usage = (
+                self.db.query(UsageLog)
+                .filter(
+                    and_(
+                        UsageLog.tenant_id == tenant_id,
+                        UsageLog.created_at >= datetime.utcnow() - timedelta(days=7),
+                    )
                 )
-            ).count()
+                .count()
+            )
 
             if recent_usage == 0:
                 risk_factors.append("No recent usage")
@@ -616,13 +696,18 @@ class AdvancedAnalyticsService:
                 risk_factors.append("Low recent usage")
 
             # Billing issues
-            failed_payments = self.db.query(BillingRecord).filter(
-                and_(
-                    BillingRecord.tenant_id == tenant_id,
-                    BillingRecord.status == "failed",
-                    BillingRecord.created_at >= datetime.utcnow() - timedelta(days=30)
+            failed_payments = (
+                self.db.query(BillingRecord)
+                .filter(
+                    and_(
+                        BillingRecord.tenant_id == tenant_id,
+                        BillingRecord.status == "failed",
+                        BillingRecord.created_at
+                        >= datetime.utcnow() - timedelta(days=30),
+                    )
                 )
-            ).count()
+                .count()
+            )
 
             if failed_payments > 0:
                 risk_factors.append("Recent payment failures")
@@ -647,27 +732,27 @@ class AdvancedAnalyticsService:
 
             recommendations = []
             if risk_factors:
-                recommendations.extend([
-                    "Increase user engagement",
-                    "Address payment issues promptly",
-                    "Provide additional training/support",
-                    "Review feature utilization"
-                ])
+                recommendations.extend(
+                    [
+                        "Increase user engagement",
+                        "Address payment issues promptly",
+                        "Provide additional training/support",
+                        "Review feature utilization",
+                    ]
+                )
 
             return ChurnAnalysis(
                 churn_probability=churn_probability,
                 risk_level=risk_level,
                 churn_reasons=risk_factors,
                 retention_recommendations=recommendations,
-                confidence_level=0.75
+                confidence_level=0.75,
             )
 
         except Exception as e:
             logger.error(f"Churn analysis failed: {str(e)}")
             return ChurnAnalysis(
-                churn_probability=0.1,
-                risk_level="low",
-                confidence_level=0.5
+                churn_probability=0.1, risk_level="low", confidence_level=0.5
             )
 
     async def _generate_recommendations(
@@ -675,7 +760,7 @@ class AdvancedAnalyticsService:
         tenant_id: UUID,
         key_metrics: Dict[str, Any],
         trends: List[TrendAnalysis],
-        predictions: List[PredictionResult]
+        predictions: List[PredictionResult],
     ) -> List[str]:
         """Generate business recommendations based on analytics."""
         recommendations = []
@@ -683,10 +768,14 @@ class AdvancedAnalyticsService:
         # Usage-based recommendations
         usage_metrics = key_metrics.get("usage", {})
         if usage_metrics.get("success_rate", 0) < 90:
-            recommendations.append("Improve workflow success rate through error handling and monitoring")
+            recommendations.append(
+                "Improve workflow success rate through error handling and monitoring"
+            )
 
         if usage_metrics.get("total_requests", 0) == 0:
-            recommendations.append("Increase user adoption through training and onboarding")
+            recommendations.append(
+                "Increase user adoption through training and onboarding"
+            )
 
         # Cost-based recommendations
         if usage_metrics.get("avg_cost_per_request", 0) > 1.0:
@@ -695,12 +784,20 @@ class AdvancedAnalyticsService:
         # Trend-based recommendations
         for trend in trends:
             if trend.trend == "decreasing" and trend.metric == "usage_requests":
-                recommendations.append("Implement user engagement initiatives to reverse declining usage")
+                recommendations.append(
+                    "Implement user engagement initiatives to reverse declining usage"
+                )
 
         # Prediction-based recommendations
         for prediction in predictions:
-            if prediction.metric == "cost" and prediction.predicted_value > usage_metrics.get("total_cost", 0) * 1.5:
-                recommendations.append("Implement cost optimization measures to control future expenses")
+            if (
+                prediction.metric == "cost"
+                and prediction.predicted_value
+                > usage_metrics.get("total_cost", 0) * 1.5
+            ):
+                recommendations.append(
+                    "Implement cost optimization measures to control future expenses"
+                )
 
         return recommendations
 
@@ -708,7 +805,7 @@ class AdvancedAnalyticsService:
         self,
         tenant_id: UUID,
         key_metrics: Dict[str, Any],
-        predictions: List[PredictionResult]
+        predictions: List[PredictionResult],
     ) -> List[str]:
         """Generate alerts based on analytics data."""
         alerts = []
@@ -724,8 +821,13 @@ class AdvancedAnalyticsService:
 
         # Prediction alerts
         for prediction in predictions:
-            if prediction.metric == "usage_requests" and prediction.predicted_value == 0:
-                alerts.append("Critical: Predicted zero usage - immediate attention required")
+            if (
+                prediction.metric == "usage_requests"
+                and prediction.predicted_value == 0
+            ):
+                alerts.append(
+                    "Critical: Predicted zero usage - immediate attention required"
+                )
 
         return alerts
 
@@ -734,7 +836,7 @@ class AdvancedAnalyticsService:
         tenant_name: str,
         key_metrics: Dict[str, Any],
         trends: List[TrendAnalysis],
-        predictions: List[PredictionResult]
+        predictions: List[PredictionResult],
     ) -> str:
         """Generate executive summary for the business intelligence report."""
         usage_metrics = key_metrics.get("usage", {})
@@ -746,7 +848,9 @@ class AdvancedAnalyticsService:
         summary += f"- Total Requests: {total_requests}\n"
         summary += f"- Success Rate: {success_rate}%\n"
         summary += ".2f"
-        summary += f"- Active Users: {key_metrics.get('users', {}).get('active_users', 0)}\n\n"
+        summary += (
+            f"- Active Users: {key_metrics.get('users', {}).get('active_users', 0)}\n\n"
+        )
 
         if trends:
             summary += "Key Trends:\n"
@@ -766,7 +870,7 @@ class AdvancedAnalyticsService:
         metrics: List[str],
         start_date: datetime,
         end_date: datetime,
-        granularity: TimeGranularity = TimeGranularity.DAILY
+        granularity: TimeGranularity = TimeGranularity.DAILY,
     ) -> Dict[str, Any]:
         """Get custom analytics for specific metrics and time period."""
         try:
@@ -791,9 +895,9 @@ class AdvancedAnalyticsService:
                 "time_period": {
                     "start": start_date.isoformat(),
                     "end": end_date.isoformat(),
-                    "granularity": granularity.value
+                    "granularity": granularity.value,
                 },
-                "data": analytics_data
+                "data": analytics_data,
             }
 
         except Exception as e:
@@ -805,7 +909,7 @@ class AdvancedAnalyticsService:
         tenant_id: UUID,
         start_date: datetime,
         end_date: datetime,
-        granularity: TimeGranularity
+        granularity: TimeGranularity,
     ) -> Dict[str, Any]:
         """Get detailed usage analytics."""
         # Implementation would aggregate data based on granularity
@@ -814,7 +918,7 @@ class AdvancedAnalyticsService:
             "total_requests": 0,
             "successful_requests": 0,
             "success_rate": 0.0,
-            "data_points": []
+            "data_points": [],
         }
 
     async def _get_cost_analytics(
@@ -822,14 +926,14 @@ class AdvancedAnalyticsService:
         tenant_id: UUID,
         start_date: datetime,
         end_date: datetime,
-        granularity: TimeGranularity
+        granularity: TimeGranularity,
     ) -> Dict[str, Any]:
         """Get detailed cost analytics."""
         return {
             "total_cost": 0.0,
             "avg_cost_per_request": 0.0,
             "cost_trend": "stable",
-            "data_points": []
+            "data_points": [],
         }
 
     async def _get_performance_analytics(
@@ -837,12 +941,12 @@ class AdvancedAnalyticsService:
         tenant_id: UUID,
         start_date: datetime,
         end_date: datetime,
-        granularity: TimeGranularity
+        granularity: TimeGranularity,
     ) -> Dict[str, Any]:
         """Get detailed performance analytics."""
         return {
             "avg_response_time": 0.0,
             "success_rate_trend": "stable",
             "bottlenecks": [],
-            "data_points": []
+            "data_points": [],
         }

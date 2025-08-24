@@ -53,7 +53,9 @@ vi.mock('../../api/auth', () => ({
 
 // Mock React Flow to avoid canvas issues in tests
 vi.mock('reactflow', () => ({
-  ReactFlow: ({ children }: { children: React.ReactNode }) => <div data-testid="react-flow">{children}</div>,
+  ReactFlow: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="react-flow">{children}</div>
+  ),
   Background: () => <div data-testid="background" />,
   Controls: () => <div data-testid="controls" />,
   MiniMap: () => <div data-testid="minimap" />,
@@ -72,9 +74,7 @@ vi.mock('reactflow', () => ({
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <BrowserRouter>
     <ErrorProvider>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
+      <AuthProvider>{children}</AuthProvider>
     </ErrorProvider>
   </BrowserRouter>
 );
@@ -96,15 +96,15 @@ describe('End-to-End Workflow Integration Tests', () => {
           id: 'start-1',
           type: 'start',
           position: { x: 100, y: 100 },
-          data: { label: 'Start' }
-        }
+          data: { label: 'Start' },
+        },
       ],
-      edges: []
+      edges: [],
     },
     user_id: 'user-123',
     created_at: '2025-07-30T10:00:00Z',
     updated_at: '2025-07-30T10:00:00Z',
-    is_active: true
+    is_active: true,
   };
 
   const mockExecution = {
@@ -116,7 +116,7 @@ describe('End-to-End Workflow Integration Tests', () => {
     started_at: '2025-07-30T10:00:00Z',
     completed_at: '2025-07-30T10:01:00Z',
     duration: 60000,
-    error_message: null
+    error_message: null,
   };
 
   const mockTemplate = {
@@ -130,10 +130,10 @@ describe('End-to-End Workflow Integration Tests', () => {
           id: 'start-1',
           type: 'start',
           position: { x: 100, y: 100 },
-          data: { label: 'Start' }
-        }
+          data: { label: 'Start' },
+        },
       ],
-      edges: []
+      edges: [],
     },
     parameters: [
       {
@@ -143,32 +143,32 @@ describe('End-to-End Workflow Integration Tests', () => {
         description: 'Type of customer inquiry',
         isRequired: true,
         options: ['billing', 'technical', 'general'],
-        defaultValue: 'general'
-      }
+        defaultValue: 'general',
+      },
     ],
-    created_at: '2025-07-30T10:00:00Z'
+    created_at: '2025-07-30T10:00:00Z',
   };
 
   beforeEach(() => {
     // Reset all mocks
     vi.clearAllMocks();
-    
+
     // Setup default auth mock - use AuthApi class methods
     (authApi.AuthApi.getCurrentUser as Mock).mockResolvedValue(mockUser);
-    (authApi.AuthApi.login as Mock).mockResolvedValue({ 
+    (authApi.AuthApi.login as Mock).mockResolvedValue({
       access_token: 'mock-token',
       token_type: 'bearer',
-      user: mockUser 
+      user: mockUser,
     });
-    
+
     // Also mock individual functions for compatibility
     (authApi.getCurrentUser as Mock).mockResolvedValue(mockUser);
-    (authApi.login as Mock).mockResolvedValue({ 
+    (authApi.login as Mock).mockResolvedValue({
       access_token: 'mock-token',
       token_type: 'bearer',
-      user: mockUser 
+      user: mockUser,
     });
-    
+
     // Setup default API mocks
     (workflowsApi.getWorkflows as Mock).mockResolvedValue([mockWorkflow]);
     (workflowsApi.getWorkflow as Mock).mockResolvedValue(mockWorkflow);
@@ -179,9 +179,9 @@ describe('End-to-End Workflow Integration Tests', () => {
       executions: [mockExecution],
       total: 1,
       page: 1,
-      size: 10
+      size: 10,
     });
-    
+
     (templatesApi.getTemplates as Mock).mockResolvedValue([mockTemplate]);
     (templatesApi.getTemplate as Mock).mockResolvedValue(mockTemplate);
     (templatesApi.instantiateTemplate as Mock).mockResolvedValue(mockWorkflow);
@@ -215,7 +215,7 @@ describe('End-to-End Workflow Integration Tests', () => {
       // Create a new workflow
       const workflowNameInput = screen.getByLabelText(/workflow name/i);
       const workflowDescInput = screen.getByLabelText(/description/i);
-      
+
       fireEvent.change(workflowNameInput, { target: { value: 'E2E Test Workflow' } });
       fireEvent.change(workflowDescInput, { target: { value: 'End-to-end test workflow' } });
 
@@ -227,7 +227,7 @@ describe('End-to-End Workflow Integration Tests', () => {
         expect(workflowsApi.createWorkflow).toHaveBeenCalledWith(
           expect.objectContaining({
             name: 'E2E Test Workflow',
-            description: 'End-to-end test workflow'
+            description: 'End-to-end test workflow',
           })
         );
       });
@@ -255,7 +255,7 @@ describe('End-to-End Workflow Integration Tests', () => {
         expect(workflowsApi.executeWorkflow).toHaveBeenCalledWith(
           'workflow-123',
           expect.objectContaining({
-            input: 'Test execution input'
+            input: 'Test execution input',
           })
         );
       });
@@ -352,8 +352,8 @@ describe('End-to-End Workflow Integration Tests', () => {
           expect.objectContaining({
             name: 'My Customer Service Workflow',
             parameters: expect.objectContaining({
-              inquiry_type: 'billing'
-            })
+              inquiry_type: 'billing',
+            }),
           })
         );
       });
@@ -432,7 +432,7 @@ describe('End-to-End Workflow Integration Tests', () => {
       // Fill in login form
       const emailInput = screen.getByLabelText(/email/i);
       const passwordInput = screen.getByLabelText(/password/i);
-      
+
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
 
@@ -443,7 +443,7 @@ describe('End-to-End Workflow Integration Tests', () => {
       await waitFor(() => {
         expect(authApi.AuthApi.login).toHaveBeenCalledWith({
           email: 'test@example.com',
-          password: 'password123'
+          password: 'password123',
         });
       });
 
@@ -460,10 +460,10 @@ describe('End-to-End Workflow Integration Tests', () => {
       const executions = Array.from({ length: 5 }, (_, i) => ({
         ...mockExecution,
         id: `execution-${i}`,
-        input_data: { input: `Test input ${i}` }
+        input_data: { input: `Test input ${i}` },
       }));
 
-      (workflowsApi.executeWorkflow as Mock).mockImplementation(() => 
+      (workflowsApi.executeWorkflow as Mock).mockImplementation(() =>
         Promise.resolve(executions[Math.floor(Math.random() * executions.length)])
       );
 
@@ -487,15 +487,15 @@ describe('End-to-End Workflow Integration Tests', () => {
 
       // Execute workflow multiple times rapidly
       const executeButton = screen.getByText(/execute/i);
-      
+
       for (let i = 0; i < 3; i++) {
         fireEvent.click(executeButton);
-        
+
         const runButton = screen.getByText(/run workflow/i);
         fireEvent.click(runButton);
-        
+
         // Small delay between executions
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       }
 
       // Verify all executions were attempted
@@ -510,7 +510,7 @@ describe('End-to-End Workflow Integration Tests', () => {
         ...mockWorkflow,
         id: `workflow-${i}`,
         name: `Test Workflow ${i}`,
-        description: `Description for workflow ${i}`
+        description: `Description for workflow ${i}`,
       }));
 
       (workflowsApi.getWorkflows as Mock).mockResolvedValue(manyWorkflows);

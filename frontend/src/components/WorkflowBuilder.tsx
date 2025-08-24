@@ -18,7 +18,12 @@ import 'reactflow/dist/style.css';
 import { StartNode } from './nodes/StartNode';
 import { AIProcessNode } from './nodes/AIProcessNode';
 import { EndNode } from './nodes/EndNode';
-import { WorkflowDefinition, WorkflowValidationError, NodeData, WorkflowStep } from '../types/workflow';
+import {
+  WorkflowDefinition,
+  WorkflowValidationError,
+  NodeData,
+  WorkflowStep,
+} from '../types/workflow';
 import { validateWorkflow, validateStep } from '../utils/workflowValidation';
 import { createWorkflow, updateWorkflow, getWorkflow } from '../api/workflows';
 
@@ -37,7 +42,7 @@ interface WorkflowBuilderProps {
 const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
   workflowId: propWorkflowId,
   onSave,
-  onValidationChange
+  onValidationChange,
 }) => {
   const { id: routeWorkflowId } = useParams<{ id: string }>();
   const workflowId = propWorkflowId || routeWorkflowId;
@@ -49,44 +54,47 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const loadWorkflow = useCallback(async (id: string) => {
-    setIsLoading(true);
-    try {
-      const workflow = await getWorkflow(id);
-      setWorkflowName(workflow.name);
-      setWorkflowDescription(workflow.description || '');
+  const loadWorkflow = useCallback(
+    async (id: string) => {
+      setIsLoading(true);
+      try {
+        const workflow = await getWorkflow(id);
+        setWorkflowName(workflow.name);
+        setWorkflowDescription(workflow.description || '');
 
-      // Convert workflow steps to React Flow nodes
-      const flowNodes: Node<NodeData>[] = workflow.steps.map(step => ({
-        id: step.id,
-        type: step.type,
-        position: step.position,
-        data: {
-          label: step.name,
-          description: step.description,
+        // Convert workflow steps to React Flow nodes
+        const flowNodes: Node<NodeData>[] = workflow.steps.map((step) => ({
+          id: step.id,
           type: step.type,
-          config: step.config,
-          validationErrors: validateStep(step),
-        },
-      }));
+          position: step.position,
+          data: {
+            label: step.name,
+            description: step.description,
+            type: step.type,
+            config: step.config,
+            validationErrors: validateStep(step),
+          },
+        }));
 
-      // Convert workflow connections to React Flow edges
-      const flowEdges: Edge[] = workflow.connections.map(conn => ({
-        id: conn.id,
-        source: conn.source,
-        target: conn.target,
-        label: conn.label,
-        animated: true,
-      }));
+        // Convert workflow connections to React Flow edges
+        const flowEdges: Edge[] = workflow.connections.map((conn) => ({
+          id: conn.id,
+          source: conn.source,
+          target: conn.target,
+          label: conn.label,
+          animated: true,
+        }));
 
-      setNodes(flowNodes);
-      setEdges(flowEdges);
-    } catch (error: unknown) {
-      console.error('Failed to load workflow:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [setNodes, setEdges]);
+        setNodes(flowNodes);
+        setEdges(flowEdges);
+      } catch (error: unknown) {
+        console.error('Failed to load workflow:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [setNodes, setEdges]
+  );
 
   const initializeDefaultWorkflow = useCallback(() => {
     const startNode: Node<NodeData> = {
@@ -132,7 +140,7 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
     const workflow: WorkflowDefinition = {
       name: workflowName,
       description: workflowDescription,
-      steps: nodes.map(node => ({
+      steps: nodes.map((node) => ({
         id: node.id,
         type: node.data.type,
         name: node.data.label,
@@ -140,7 +148,7 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
         config: node.data.config,
         position: node.position,
       })),
-      connections: edges.map(edge => ({
+      connections: edges.map((edge) => ({
         id: edge.id,
         source: edge.source,
         target: edge.target,
@@ -152,7 +160,7 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
     setValidationErrors(errors);
 
     // Update node validation errors
-    const updatedNodes = nodes.map(node => ({
+    const updatedNodes = nodes.map((node) => ({
       ...node,
       data: {
         ...node.data,
@@ -251,7 +259,7 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
       const workflow: WorkflowDefinition = {
         name: workflowName,
         description: workflowDescription,
-        steps: nodes.map(node => ({
+        steps: nodes.map((node) => ({
           id: node.id,
           type: node.data.type,
           name: node.data.label,
@@ -259,7 +267,7 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
           config: node.data.config,
           position: node.position,
         })),
-        connections: edges.map(edge => ({
+        connections: edges.map((edge) => ({
           id: edge.id,
           source: edge.source,
           target: edge.target,

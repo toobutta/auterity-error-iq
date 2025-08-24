@@ -11,9 +11,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "app"))
 from app.config.relaycore import get_relaycore_config
 from app.services.ai_service_migration import AIServiceMigrationWrapper
 from app.services.ai_service_relaycore import EnhancedAIService
-from app.services.relaycore_client import RelayCoreChatClient
-from app.services.relaycore_client import RelayCoreFallbackHandler
-from app.services.relaycore_client import RelayCoreFallbackMode
+from app.services.relaycore_client import (
+    RelayCoreChatClient,
+    RelayCoreFallbackHandler,
+    RelayCoreFallbackMode,
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

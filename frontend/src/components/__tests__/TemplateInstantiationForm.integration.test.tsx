@@ -34,7 +34,7 @@ describe('TemplateInstantiationForm Integration', () => {
         description: 'Customer full name',
         parameterType: 'string',
         isRequired: true,
-        defaultValue: ''
+        defaultValue: '',
       },
       {
         id: 'param2',
@@ -44,9 +44,9 @@ describe('TemplateInstantiationForm Integration', () => {
         parameterType: 'number',
         isRequired: false,
         defaultValue: 3,
-        validationRules: { min: 1, max: 5 }
-      }
-    ]
+        validationRules: { min: 1, max: 5 },
+      },
+    ],
   };
 
   const mockWorkflow: WorkflowDefinition = {
@@ -54,7 +54,7 @@ describe('TemplateInstantiationForm Integration', () => {
     name: 'Customer Service Workflow',
     description: 'Created from template',
     steps: [],
-    connections: []
+    connections: [],
   };
 
   beforeEach(() => {
@@ -65,7 +65,7 @@ describe('TemplateInstantiationForm Integration', () => {
 
   it('successfully creates a workflow from template', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <TemplateInstantiationForm
         templateId="test-template-id"
@@ -88,7 +88,7 @@ describe('TemplateInstantiationForm Integration', () => {
     const workflowNameField = screen.getByLabelText(/Workflow Name/);
     await user.clear(workflowNameField);
     await user.type(workflowNameField, 'My Customer Service Workflow');
-    
+
     await user.type(screen.getByLabelText(/customerName/), 'John Smith');
 
     // Submit the form
@@ -101,8 +101,8 @@ describe('TemplateInstantiationForm Integration', () => {
         name: 'My Customer Service Workflow',
         parameterValues: {
           customerName: 'John Smith',
-          priority: 3
-        }
+          priority: 3,
+        },
       });
       expect(mockOnSuccess).toHaveBeenCalledWith('created-workflow-id');
     });
@@ -110,7 +110,7 @@ describe('TemplateInstantiationForm Integration', () => {
 
   it('handles template loading errors gracefully', async () => {
     mockGetTemplate.mockRejectedValue(new Error('Template not found'));
-    
+
     render(
       <TemplateInstantiationForm
         templateId="invalid-template-id"
@@ -129,7 +129,7 @@ describe('TemplateInstantiationForm Integration', () => {
   it('handles workflow creation errors', async () => {
     const user = userEvent.setup();
     mockInstantiateTemplate.mockRejectedValue(new Error('Creation failed'));
-    
+
     render(
       <TemplateInstantiationForm
         templateId="test-template-id"
@@ -160,7 +160,7 @@ describe('TemplateInstantiationForm Integration', () => {
 
   it('calls onCancel when cancel button is clicked', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <TemplateInstantiationForm
         templateId="test-template-id"

@@ -5,50 +5,50 @@ export const validateWorkflow = (workflow: WorkflowDefinition): WorkflowValidati
   const { steps, connections } = workflow;
 
   // Check for start node
-  const startNodes = steps.filter(step => step.type === 'start');
+  const startNodes = steps.filter((step) => step.type === 'start');
   if (startNodes.length === 0) {
     errors.push({
       type: 'missing_start',
-      message: 'Workflow must have at least one start node'
+      message: 'Workflow must have at least one start node',
     });
   } else if (startNodes.length > 1) {
     errors.push({
       type: 'invalid_step',
-      message: 'Workflow can only have one start node'
+      message: 'Workflow can only have one start node',
     });
   }
 
   // Check for end node
-  const endNodes = steps.filter(step => step.type === 'end');
+  const endNodes = steps.filter((step) => step.type === 'end');
   if (endNodes.length === 0) {
     errors.push({
       type: 'missing_end',
-      message: 'Workflow must have at least one end node'
+      message: 'Workflow must have at least one end node',
     });
   }
 
   // Check for disconnected nodes (except start and end)
-  steps.forEach(step => {
-    const hasIncoming = connections.some(conn => conn.target === step.id);
-    const hasOutgoing = connections.some(conn => conn.source === step.id);
+  steps.forEach((step) => {
+    const hasIncoming = connections.some((conn) => conn.target === step.id);
+    const hasOutgoing = connections.some((conn) => conn.source === step.id);
 
     if (step.type === 'start' && !hasOutgoing) {
       errors.push({
         type: 'missing_connection',
         message: `Start node "${step.name}" must have outgoing connections`,
-        stepId: step.id
+        stepId: step.id,
       });
     } else if (step.type === 'end' && !hasIncoming) {
       errors.push({
         type: 'missing_connection',
         message: `End node "${step.name}" must have incoming connections`,
-        stepId: step.id
+        stepId: step.id,
       });
     } else if (step.type !== 'start' && step.type !== 'end' && (!hasIncoming || !hasOutgoing)) {
       errors.push({
         type: 'missing_connection',
         message: `Node "${step.name}" must have both incoming and outgoing connections`,
-        stepId: step.id
+        stepId: step.id,
       });
     }
   });
@@ -68,7 +68,7 @@ export const validateWorkflow = (workflow: WorkflowDefinition): WorkflowValidati
     visited.add(nodeId);
     recursionStack.add(nodeId);
 
-    const outgoingConnections = connections.filter(conn => conn.source === nodeId);
+    const outgoingConnections = connections.filter((conn) => conn.source === nodeId);
     for (const connection of outgoingConnections) {
       if (hasCycle(connection.target)) {
         return true;
@@ -84,19 +84,19 @@ export const validateWorkflow = (workflow: WorkflowDefinition): WorkflowValidati
       errors.push({
         type: 'circular_dependency',
         message: 'Workflow contains circular dependencies',
-        stepId: step.id
+        stepId: step.id,
       });
       break;
     }
   }
 
   // Validate step configurations
-  steps.forEach(step => {
+  steps.forEach((step) => {
     if (step.type === 'ai_process' && !step.config.prompt) {
       errors.push({
         type: 'invalid_step',
         message: `AI Process node "${step.name}" must have a prompt configured`,
-        stepId: step.id
+        stepId: step.id,
       });
     }
   });

@@ -50,26 +50,26 @@ const nodeTypes: NodeTypes = {
   start: StartNode,
   ai_process: AIProcessNode,
   end: EndNode,
-  
+
   // Trigger nodes
   customer_inquiry: CustomerInquiryNode,
   inventory_update: InventoryUpdateNode,
   service_appointment: ServiceAppointmentNode,
   lead_generation: StartNode,
-  
+
   // Action nodes
   send_email: SendEmailNode,
   update_crm: UpdateCRMNode,
   schedule_appointment: ScheduleAppointmentNode,
   generate_quote: GenerateQuoteNode,
   inventory_check: InventoryCheckNode,
-  
+
   // Condition nodes
   customer_type: CustomerTypeNode,
   budget_range: BudgetRangeNode,
   vehicle_preference: VehiclePreferenceNode,
   geographic_location: GeographicLocationNode,
-  
+
   // AI-powered nodes
   lead_qualification: LeadQualificationNode,
   price_optimization: PriceOptimizationNode,
@@ -87,7 +87,7 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
   onSave,
   onTest,
   selectedNode,
-  onNodeSelect
+  onNodeSelect,
 }) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -118,25 +118,31 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
     }),
   });
 
-  const addNodeFromTemplate = useCallback((template: { type: string; name: string; category: string }, position: { x: number; y: number }) => {
-    const nodeId = uuidv4();
-    
-    // Convert template to ReactFlow node format
-    const newNode: Node<LegacyNodeData> = {
-      id: nodeId,
-      type: template.type,
-      position,
-      data: {
-        label: template.label,
-        description: template.description,
-        type: template.type,
-        config: template.config || {},
-        validationErrors: [],
-      },
-    };
+  const addNodeFromTemplate = useCallback(
+    (
+      template: { type: string; name: string; category: string },
+      position: { x: number; y: number }
+    ) => {
+      const nodeId = uuidv4();
 
-    setNodes((nds) => [...nds, newNode]);
-  }, [setNodes]);
+      // Convert template to ReactFlow node format
+      const newNode: Node<LegacyNodeData> = {
+        id: nodeId,
+        type: template.type,
+        position,
+        data: {
+          label: template.label,
+          description: template.description,
+          type: template.type,
+          config: template.config || {},
+          validationErrors: [],
+        },
+      };
+
+      setNodes((nds) => [...nds, newNode]);
+    },
+    [setNodes]
+  );
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -151,28 +157,37 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
     [setEdges]
   );
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    // Convert ReactFlow node to WorkflowNode format
-    const workflowNode: WorkflowNode = {
-      id: node.id,
-      type: node.data.type === 'start' ? 'trigger' : 
-            node.data.type === 'end' ? 'action' :
-            node.data.type.includes('condition') ? 'condition' :
-            node.data.type.includes('ai') ? 'ai_step' : 'action',
-      position: node.position,
-      data: {
-        label: node.data.label,
-        description: node.data.description,
-        type: node.data.type,
-        config: node.data.config,
-        validation: [],
-        validationErrors: node.data.validationErrors,
-      },
-      connections: [], // We'll populate this from edges if needed
-    };
-    
-    onNodeSelect(workflowNode);
-  }, [onNodeSelect]);
+  const onNodeClick = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      // Convert ReactFlow node to WorkflowNode format
+      const workflowNode: WorkflowNode = {
+        id: node.id,
+        type:
+          node.data.type === 'start'
+            ? 'trigger'
+            : node.data.type === 'end'
+              ? 'action'
+              : node.data.type.includes('condition')
+                ? 'condition'
+                : node.data.type.includes('ai')
+                  ? 'ai_step'
+                  : 'action',
+        position: node.position,
+        data: {
+          label: node.data.label,
+          description: node.data.description,
+          type: node.data.type,
+          config: node.data.config,
+          validation: [],
+          validationErrors: node.data.validationErrors,
+        },
+        connections: [], // We'll populate this from edges if needed
+      };
+
+      onNodeSelect(workflowNode);
+    },
+    [onNodeSelect]
+  );
 
   const onPaneClick = useCallback(() => {
     onNodeSelect(null);
@@ -181,9 +196,9 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
   const deleteSelectedNode = useCallback(() => {
     if (selectedNode) {
       setNodes((nds) => nds.filter((node) => node.id !== selectedNode.id));
-      setEdges((eds) => eds.filter((edge) => 
-        edge.source !== selectedNode.id && edge.target !== selectedNode.id
-      ));
+      setEdges((eds) =>
+        eds.filter((edge) => edge.source !== selectedNode.id && edge.target !== selectedNode.id)
+      );
       onNodeSelect(null);
     }
   }, [selectedNode, setNodes, setEdges, onNodeSelect]);
@@ -204,12 +219,15 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
   }, [selectedNode, deleteSelectedNode]);
 
   // Combine refs for drop functionality
-  const combinedRef = useCallback((node: HTMLDivElement | null) => {
-    if (reactFlowWrapper.current !== node) {
-      (reactFlowWrapper as React.MutableRefObject<HTMLDivElement | null>).current = node;
-    }
-    drop(node);
-  }, [drop]);
+  const combinedRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (reactFlowWrapper.current !== node) {
+        (reactFlowWrapper as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      }
+      drop(node);
+    },
+    [drop]
+  );
 
   const handleSave = useCallback(() => {
     const workflow = {
@@ -217,7 +235,7 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
       name: 'Automotive Workflow',
       description: 'Auto-generated workflow',
       category: 'sales' as const,
-      steps: nodes.map(node => ({
+      steps: nodes.map((node) => ({
         id: node.id,
         type: node.data.type,
         name: node.data.label,
@@ -225,7 +243,7 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
         config: node.data.config,
         position: node.position,
       })),
-      connections: edges.map(edge => ({
+      connections: edges.map((edge) => ({
         id: edge.id,
         source: edge.source,
         target: edge.target,
@@ -248,7 +266,7 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
       name: 'Automotive Workflow',
       description: 'Auto-generated workflow',
       category: 'sales' as const,
-      steps: nodes.map(node => ({
+      steps: nodes.map((node) => ({
         id: node.id,
         type: node.data.type,
         name: node.data.label,
@@ -256,7 +274,7 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
         config: node.data.config,
         position: node.position,
       })),
-      connections: edges.map(edge => ({
+      connections: edges.map((edge) => ({
         id: edge.id,
         source: edge.source,
         target: edge.target,
@@ -305,7 +323,7 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
       >
         <Background color="#e5e7eb" gap={20} size={1} />
         <Controls className="bg-white border border-gray-200 rounded-lg shadow-sm" />
-        <MiniMap 
+        <MiniMap
           className="bg-white border border-gray-200 rounded-lg shadow-sm"
           nodeColor={(node) => {
             switch (node.data?.type) {
@@ -349,7 +367,12 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
                 className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors flex items-center space-x-1"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"
+                  />
                 </svg>
                 <span>Save</span>
               </button>
@@ -359,19 +382,29 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
                 className="px-3 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-1"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 <span>Test</span>
               </button>
             </div>
-            
+
             {selectedNode && (
               <button
                 onClick={deleteSelectedNode}
                 className="w-full px-3 py-1.5 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors flex items-center justify-center space-x-1"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
                 </svg>
                 <span>Delete Node</span>
               </button>
@@ -406,7 +439,12 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
 };
 
 // Wrapper component with ReactFlowProvider
-const WorkflowCanvas: React.FC<WorkflowCanvasProps & { selectedNode: WorkflowNode | null; onNodeSelect: (node: WorkflowNode | null) => void }> = (props) => {
+const WorkflowCanvas: React.FC<
+  WorkflowCanvasProps & {
+    selectedNode: WorkflowNode | null;
+    onNodeSelect: (node: WorkflowNode | null) => void;
+  }
+> = (props) => {
   return (
     <ReactFlowProvider>
       <WorkflowCanvasInternal {...props} />

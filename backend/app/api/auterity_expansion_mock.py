@@ -1,44 +1,57 @@
 """Mock Auterity AI Platform Expansion API endpoints for testing."""
 
 import logging
-import time
-from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.tenant import Tenant
+from app.schemas.auterity_expansion import (
+    AgentDeployRequest,
+    AgentDeployResponse,
+    AgentMemoryCreate,
+    AgentMemoryResponse,
+    ChannelTriggerCreate,
+    ChannelTriggerRequest,
+)
+from app.schemas.auterity_expansion import (
+    ChannelTriggerResponse,  # Triage schemas; Vector and similarity schemas; Integration schemas; Channel trigger schemas; Custom model schemas; Agent and execution schemas
+)
+from app.schemas.auterity_expansion import ChannelTriggerResponse as ChannelTriggerResp
+from app.schemas.auterity_expansion import (
+    ChannelTriggerUpdate,
+    CustomModelCreate,
+    CustomModelHealthCheck,
+    CustomModelResponse,
+    CustomModelUpdate,
+    ExecutionMetricCreate,
+    ExecutionMetricResponse,
+    IntegrationCreate,
+    IntegrationResponse,
+    IntegrationSyncRequest,
+    IntegrationSyncResponse,
+    IntegrationUpdate,
+    IntegrationWebhookCreate,
+    IntegrationWebhookResponse,
+    LiveInsightsRequest,
+    LiveInsightsResponse,
+    SimilarityResult,
+    SimilaritySearchRequest,
+    SimilaritySearchResponse,
+    TriageRequest,
+    TriageResponse,
+    TriageResultCreate,
+    TriageResultResponse,
+    TriageRuleCreate,
+    TriageRuleResponse,
+    TriageRuleUpdate,
+    VectorEmbeddingCreate,
+    VectorEmbeddingResponse,
+)
+from app.services.autonomous_agent_service_mock import MockAutonomousAgentService
 from app.services.smart_triage_service_mock import MockSmartTriageService
 from app.services.vector_duplicate_service_mock import MockVectorDuplicateService
-from app.services.autonomous_agent_service_mock import MockAutonomousAgentService
-from app.schemas.auterity_expansion import (
-    # Triage schemas
-    TriageRuleCreate, TriageRuleUpdate, TriageRuleResponse,
-    TriageRequest, TriageResponse, TriageResultCreate, TriageResultResponse,
-    
-    # Vector and similarity schemas
-    VectorEmbeddingCreate, VectorEmbeddingResponse, SimilarityResult,
-    SimilaritySearchRequest, SimilaritySearchResponse,
-    
-    # Integration schemas
-    IntegrationCreate, IntegrationUpdate, IntegrationResponse,
-    IntegrationWebhookCreate, IntegrationWebhookResponse,
-    IntegrationSyncRequest, IntegrationSyncResponse,
-    
-    # Channel trigger schemas
-    ChannelTriggerCreate, ChannelTriggerUpdate, ChannelTriggerResponse,
-    ChannelTriggerRequest, ChannelTriggerResponse as ChannelTriggerResp,
-    
-    # Custom model schemas
-    CustomModelCreate, CustomModelUpdate, CustomModelResponse,
-    CustomModelHealthCheck,
-    
-    # Agent and execution schemas
-    AgentMemoryCreate, AgentMemoryResponse, ExecutionMetricCreate, ExecutionMetricResponse,
-    AgentDeployRequest, AgentDeployResponse, LiveInsightsRequest, LiveInsightsResponse
-)
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +66,7 @@ async def get_current_tenant(db: Session = Depends(get_db)) -> Tenant:
     tenant = db.query(Tenant).first()
     if not tenant:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No tenant found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="No tenant found"
         )
     return tenant
 
@@ -64,31 +76,29 @@ async def get_current_tenant(db: Session = Depends(get_db)) -> Tenant:
 async def triage_input(
     request: TriageRequest,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Mock triage input content using AI-powered routing."""
     try:
         service = MockSmartTriageService()
         decision = await service.triage_content(
-            tenant_id=tenant.id,
-            content=request.content,
-            context=request.context
+            tenant_id=tenant.id, content=request.content, context=request.context
         )
-        
+
         return TriageResponse(
             routing_decision=decision["routing_decision"],
             confidence_score=decision["confidence_score"],
             rule_applied=decision["rule_applied"],
             reasoning="Mock reasoning based on content analysis",
             suggested_actions=["Route to appropriate team", "Escalate if urgent"],
-            processing_time_ms=decision["processing_time_ms"]
+            processing_time_ms=decision["processing_time_ms"],
         )
-        
+
     except Exception as e:
         logger.error(f"Mock triage failed: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Mock triage failed: {str(e)}"
+            detail=f"Mock triage failed: {str(e)}",
         )
 
 
@@ -96,16 +106,15 @@ async def triage_input(
 async def create_triage_rule(
     rule_data: TriageRuleCreate,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Mock create a new triage rule."""
     try:
         service = MockSmartTriageService()
         rule = await service.create_triage_rule(
-            tenant_id=tenant.id,
-            rule_data=rule_data.dict()
+            tenant_id=tenant.id, rule_data=rule_data.dict()
         )
-        
+
         return TriageRuleResponse(
             id=rule["id"],
             tenant_id=rule["tenant_id"],
@@ -116,14 +125,14 @@ async def create_triage_rule(
             confidence_threshold=rule["confidence_threshold"],
             priority=rule["priority"],
             is_active=rule["is_active"],
-            created_at=rule["created_at"]
+            created_at=rule["created_at"],
         )
-        
+
     except Exception as e:
         logger.error(f"Failed to create triage rule: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create triage rule: {str(e)}"
+            detail=f"Failed to create triage rule: {str(e)}",
         )
 
 
@@ -131,23 +140,20 @@ async def create_triage_rule(
 async def get_triage_accuracy(
     days: int = Query(30, ge=1, le=365),
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Mock get triage accuracy metrics."""
     try:
         service = MockSmartTriageService()
-        accuracy = await service.get_triage_accuracy(
-            tenant_id=tenant.id,
-            days=days
-        )
-        
+        accuracy = await service.get_triage_accuracy(tenant_id=tenant.id, days=days)
+
         return accuracy
-        
+
     except Exception as e:
         logger.error(f"Failed to get triage accuracy: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get triage accuracy: {str(e)}"
+            detail=f"Failed to get triage accuracy: {str(e)}",
         )
 
 
@@ -156,54 +162,56 @@ async def get_triage_accuracy(
 async def search_similar_items(
     request: SimilaritySearchRequest,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Mock search for similar items using vector embeddings."""
     try:
         service = MockVectorDuplicateService()
-        
+
         # Generate mock embedding for search
         query_embedding = await service.generate_embedding(request.content)
-        
+
         # Mock similar items
         mock_items = [
             {
                 "id": "mock-item-1",
-                "embedding": await service.generate_embedding("Similar content example"),
+                "embedding": await service.generate_embedding(
+                    "Similar content example"
+                ),
                 "content": "Mock similar content",
-                "metadata": {"type": request.item_type}
+                "metadata": {"type": request.item_type},
             }
         ]
-        
+
         similar_items = await service.find_similar_items(
             query_embedding=query_embedding,
             embeddings=mock_items,
-            threshold=request.threshold
+            threshold=request.threshold,
         )
-        
+
         results = [
             SimilarityResult(
                 item_id=item["id"],
                 item_type=request.item_type,
                 similarity_score=item["similarity_score"],
                 content_preview=item["content"],
-                metadata=item["metadata"]
+                metadata=item["metadata"],
             )
             for item in similar_items
         ]
-        
+
         return SimilaritySearchResponse(
             query_content=request.content,
             results=results,
             total_found=len(results),
-            search_time_ms=120
+            search_time_ms=120,
         )
-        
+
     except Exception as e:
         logger.error(f"Similarity search failed: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Similarity search failed: {str(e)}"
+            detail=f"Similarity search failed: {str(e)}",
         )
 
 
@@ -211,13 +219,13 @@ async def search_similar_items(
 async def create_embedding(
     embedding_data: VectorEmbeddingCreate,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Mock create a new vector embedding."""
     try:
         service = MockVectorDuplicateService()
         embedding = await service.generate_embedding("Mock content for embedding")
-        
+
         return VectorEmbeddingResponse(
             id="mock-embedding-id",
             tenant_id=tenant.id,
@@ -226,14 +234,14 @@ async def create_embedding(
             content_hash=embedding_data.content_hash,
             embedding_vector=embedding,
             embedding_metadata=embedding_data.embedding_metadata,
-            created_at="2024-01-01T00:00:00Z"
+            created_at="2024-01-01T00:00:00Z",
         )
-        
+
     except Exception as e:
         logger.error(f"Failed to create embedding: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create embedding: {str(e)}"
+            detail=f"Failed to create embedding: {str(e)}",
         )
 
 
@@ -242,29 +250,27 @@ async def create_similarity_clusters(
     items: List[dict],
     threshold: float = Query(0.7, ge=0.0, le=1.0),
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Mock create similarity clusters."""
     try:
         service = MockVectorDuplicateService()
         clusters = await service.create_similarity_cluster(
-            tenant_id=tenant.id,
-            items=items,
-            threshold=threshold
+            tenant_id=tenant.id, items=items, threshold=threshold
         )
-        
+
         return {
             "clusters": clusters,
             "total_clusters": len(clusters),
             "threshold_used": threshold,
-            "processing_time_ms": 180
+            "processing_time_ms": 180,
         }
-        
+
     except Exception as e:
         logger.error(f"Failed to create similarity clusters: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create similarity clusters: {str(e)}"
+            detail=f"Failed to create similarity clusters: {str(e)}",
         )
 
 
@@ -273,29 +279,28 @@ async def create_similarity_clusters(
 async def deploy_agent(
     request: AgentDeployRequest,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Mock deploy an autonomous agent."""
     try:
         service = MockAutonomousAgentService()
         agent = await service.deploy_agent(
-            tenant_id=tenant.id,
-            agent_config=request.agent_config
+            tenant_id=tenant.id, agent_config=request.agent_config
         )
-        
+
         return AgentDeployResponse(
             agent_id=agent["id"],
             status=agent["status"],
             deployment_time_ms=150,
             memory_configured=request.memory_config is not None,
-            coordination_enabled=request.coordination_rules is not None
+            coordination_enabled=request.coordination_rules is not None,
         )
-        
+
     except Exception as e:
         logger.error(f"Failed to deploy agent: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to deploy agent: {str(e)}"
+            detail=f"Failed to deploy agent: {str(e)}",
         )
 
 
@@ -304,23 +309,20 @@ async def assign_task_to_agent(
     agent_id: UUID,
     task_data: dict,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Mock assign a task to an agent."""
     try:
         service = MockAutonomousAgentService()
-        task = await service.assign_task(
-            agent_id=agent_id,
-            task_data=task_data
-        )
-        
+        task = await service.assign_task(agent_id=agent_id, task_data=task_data)
+
         return task
-        
+
     except Exception as e:
         logger.error(f"Failed to assign task: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to assign task: {str(e)}"
+            detail=f"Failed to assign task: {str(e)}",
         )
 
 
@@ -328,20 +330,20 @@ async def assign_task_to_agent(
 async def get_agent_memory(
     agent_id: UUID,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Mock get agent memory."""
     try:
         service = MockAutonomousAgentService()
         memories = await service.get_agent_memory(agent_id=agent_id)
-        
+
         return memories
-        
+
     except Exception as e:
         logger.error(f"Failed to get agent memory: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get agent memory: {str(e)}"
+            detail=f"Failed to get agent memory: {str(e)}",
         )
 
 
@@ -349,23 +351,22 @@ async def get_agent_memory(
 async def coordinate_agents(
     coordination_request: dict,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Mock coordinate multiple agents."""
     try:
         service = MockAutonomousAgentService()
         coordination = await service.coordinate_agents(
-            tenant_id=tenant.id,
-            coordination_request=coordination_request
+            tenant_id=tenant.id, coordination_request=coordination_request
         )
-        
+
         return coordination
-        
+
     except Exception as e:
         logger.error(f"Failed to coordinate agents: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to coordinate agents: {str(e)}"
+            detail=f"Failed to coordinate agents: {str(e)}",
         )
 
 
@@ -373,21 +374,20 @@ async def coordinate_agents(
 async def get_agent_performance(
     agent_id: Optional[UUID] = None,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Mock get agent performance metrics."""
     try:
         service = MockAutonomousAgentService()
         performance = await service.get_agent_performance(
-            tenant_id=tenant.id,
-            agent_id=agent_id
+            tenant_id=tenant.id, agent_id=agent_id
         )
-        
+
         return performance
-        
+
     except Exception as e:
         logger.error(f"Failed to get agent performance: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get agent performance: {str(e)}"
+            detail=f"Failed to get agent performance: {str(e)}",
         )

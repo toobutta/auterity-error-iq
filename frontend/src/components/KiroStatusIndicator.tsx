@@ -5,9 +5,7 @@ interface KiroStatusIndicatorProps {
   className?: string;
 }
 
-export const KiroStatusIndicator: React.FC<KiroStatusIndicatorProps> = ({ 
-  className = '' 
-}) => {
+export const KiroStatusIndicator: React.FC<KiroStatusIndicatorProps> = ({ className = '' }) => {
   const enabledModules = getEnabledKiroModules();
   const isActive = enabledModules.length > 0;
 

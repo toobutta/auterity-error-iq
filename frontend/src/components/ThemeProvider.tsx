@@ -25,12 +25,12 @@ interface ThemeContextType {
   isDark: boolean;
   mode: ThemeMode;
   config: ThemeConfig;
-  
+
   // Theme actions
   setMode: (mode: ThemeMode) => void;
   toggleTheme: () => void;
   updateConfig: (config: Partial<ThemeConfig>) => void;
-  
+
   // System preferences
   systemPreference: 'light' | 'dark';
   isSystemMode: boolean;
@@ -41,7 +41,7 @@ const defaultThemeConfig: ThemeConfig = {
   mode: 'auto',
   automotive: {
     primary: '#2563eb', // Modern blue
-    accent: '#f59e0b',  // Amber
+    accent: '#f59e0b', // Amber
     surface: '#f8fafc', // Very light gray
   },
   glassmorphism: {
@@ -78,7 +78,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   // Theme configuration state
   const [config, setConfig] = useState<ThemeConfig>(() => {
     if (typeof window === 'undefined') return defaultThemeConfig;
-    
+
     try {
       const stored = localStorage.getItem(`${storageKey}-config`);
       return stored ? { ...defaultThemeConfig, ...JSON.parse(stored) } : defaultThemeConfig;
@@ -90,7 +90,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   // Current theme mode
   const [mode, setModeState] = useState<ThemeMode>(() => {
     if (typeof window === 'undefined') return defaultMode;
-    
+
     try {
       const stored = localStorage.getItem(storageKey);
       return (stored as ThemeMode) || defaultMode;
@@ -108,7 +108,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     if (typeof window === 'undefined') return;
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     const handleChange = (e: MediaQueryListEvent) => {
       setSystemPreference(e.matches ? 'dark' : 'light');
     };
@@ -177,7 +177,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   };
 
   const updateConfig = (newConfig: Partial<ThemeConfig>) => {
-    setConfig(prev => ({ ...prev, ...newConfig }));
+    setConfig((prev) => ({ ...prev, ...newConfig }));
   };
 
   // Context value
@@ -192,21 +192,17 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     isSystemMode,
   };
 
-  return (
-    <ThemeContext.Provider value={contextValue}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
 };
 
 // Custom hook to use theme context
 export const useTheme = (): ThemeContextType => {
   const context = useContext(ThemeContext);
-  
+
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
-  
+
   return context;
 };
 
@@ -234,7 +230,7 @@ export const useAnimations = () => {
 // Theme preference persistence utilities
 export const getStoredTheme = (storageKey = 'autmatrix-theme'): ThemeMode | null => {
   if (typeof window === 'undefined') return null;
-  
+
   try {
     return localStorage.getItem(storageKey) as ThemeMode;
   } catch {
@@ -244,7 +240,7 @@ export const getStoredTheme = (storageKey = 'autmatrix-theme'): ThemeMode | null
 
 export const clearStoredTheme = (storageKey = 'autmatrix-theme'): void => {
   if (typeof window === 'undefined') return;
-  
+
   try {
     localStorage.removeItem(storageKey);
     localStorage.removeItem(`${storageKey}-config`);
@@ -289,7 +285,7 @@ export const glassmorphismCSS = (intensity: 'subtle' | 'medium' | 'strong' = 'me
   };
 
   const config = intensityMap[intensity];
-  
+
   return {
     background: config.background,
     backdropFilter: config.backdrop,

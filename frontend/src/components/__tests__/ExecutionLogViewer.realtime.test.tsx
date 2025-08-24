@@ -6,7 +6,9 @@ import { useWebSocketLogs } from '../../hooks/useWebSocketLogs';
 
 // Mock the API
 jest.mock('../../api/workflows');
-const mockGetExecutionLogs = workflowsApi.getExecutionLogs as jest.MockedFunction<typeof workflowsApi.getExecutionLogs>;
+const mockGetExecutionLogs = workflowsApi.getExecutionLogs as jest.MockedFunction<
+  typeof workflowsApi.getExecutionLogs
+>;
 
 // Mock the WebSocket hook
 jest.mock('../../hooks/useWebSocketLogs');
@@ -14,7 +16,7 @@ const mockUseWebSocketLogs = useWebSocketLogs as jest.MockedFunction<typeof useW
 
 describe('ExecutionLogViewer - Real-time Integration', () => {
   const mockExecutionId = 'test-execution-123';
-  
+
   const mockWebSocketReturn = {
     logs: [],
     connectionStatus: 'disconnected' as const,
@@ -34,12 +36,7 @@ describe('ExecutionLogViewer - Real-time Integration', () => {
   });
 
   it('should show real-time indicator when enabled', async () => {
-    render(
-      <ExecutionLogViewer 
-        executionId={mockExecutionId} 
-        enableRealTime={true}
-      />
-    );
+    render(<ExecutionLogViewer executionId={mockExecutionId} enableRealTime={true} />);
 
     await waitFor(() => {
       expect(screen.getByText('Real-time')).toBeInTheDocument();
@@ -47,12 +44,7 @@ describe('ExecutionLogViewer - Real-time Integration', () => {
   });
 
   it('should not show real-time indicator when disabled', async () => {
-    render(
-      <ExecutionLogViewer 
-        executionId={mockExecutionId} 
-        enableRealTime={false}
-      />
-    );
+    render(<ExecutionLogViewer executionId={mockExecutionId} enableRealTime={false} />);
 
     await waitFor(() => {
       expect(screen.queryByText('Real-time')).not.toBeInTheDocument();
@@ -65,12 +57,7 @@ describe('ExecutionLogViewer - Real-time Integration', () => {
       connectionStatus: 'connected',
     });
 
-    render(
-      <ExecutionLogViewer 
-        executionId={mockExecutionId} 
-        enableRealTime={true}
-      />
-    );
+    render(<ExecutionLogViewer executionId={mockExecutionId} enableRealTime={true} />);
 
     await waitFor(() => {
       expect(screen.getByText('Live')).toBeInTheDocument();
@@ -83,12 +70,7 @@ describe('ExecutionLogViewer - Real-time Integration', () => {
       connectionStatus: 'connecting',
     });
 
-    render(
-      <ExecutionLogViewer 
-        executionId={mockExecutionId} 
-        enableRealTime={true}
-      />
-    );
+    render(<ExecutionLogViewer executionId={mockExecutionId} enableRealTime={true} />);
 
     await waitFor(() => {
       expect(screen.getByText('Connecting...')).toBeInTheDocument();
@@ -102,12 +84,7 @@ describe('ExecutionLogViewer - Real-time Integration', () => {
       error: 'Connection failed',
     });
 
-    render(
-      <ExecutionLogViewer 
-        executionId={mockExecutionId} 
-        enableRealTime={true}
-      />
-    );
+    render(<ExecutionLogViewer executionId={mockExecutionId} enableRealTime={true} />);
 
     await waitFor(() => {
       expect(screen.getByText('Error')).toBeInTheDocument();
@@ -124,12 +101,7 @@ describe('ExecutionLogViewer - Real-time Integration', () => {
       reconnect: mockReconnect,
     });
 
-    render(
-      <ExecutionLogViewer 
-        executionId={mockExecutionId} 
-        enableRealTime={true}
-      />
-    );
+    render(<ExecutionLogViewer executionId={mockExecutionId} enableRealTime={true} />);
 
     const reconnectButton = await screen.findByText('Reconnect');
     fireEvent.click(reconnectButton);
@@ -158,12 +130,7 @@ describe('ExecutionLogViewer - Real-time Integration', () => {
       connectionStatus: 'connected',
     });
 
-    render(
-      <ExecutionLogViewer 
-        executionId={mockExecutionId} 
-        enableRealTime={true}
-      />
-    );
+    render(<ExecutionLogViewer executionId={mockExecutionId} enableRealTime={true} />);
 
     await waitFor(() => {
       expect(screen.getByText('Real-time Step')).toBeInTheDocument();
@@ -172,12 +139,7 @@ describe('ExecutionLogViewer - Real-time Integration', () => {
   });
 
   it('should show auto-scroll toggle button', async () => {
-    render(
-      <ExecutionLogViewer 
-        executionId={mockExecutionId} 
-        enableRealTime={true}
-      />
-    );
+    render(<ExecutionLogViewer executionId={mockExecutionId} enableRealTime={true} />);
 
     await waitFor(() => {
       expect(screen.getByText('Auto-scroll')).toBeInTheDocument();
@@ -185,12 +147,7 @@ describe('ExecutionLogViewer - Real-time Integration', () => {
   });
 
   it('should show clear button when real-time is enabled', async () => {
-    render(
-      <ExecutionLogViewer 
-        executionId={mockExecutionId} 
-        enableRealTime={true}
-      />
-    );
+    render(<ExecutionLogViewer executionId={mockExecutionId} enableRealTime={true} />);
 
     await waitFor(() => {
       expect(screen.getByText('Clear')).toBeInTheDocument();
@@ -204,12 +161,7 @@ describe('ExecutionLogViewer - Real-time Integration', () => {
       clearLogs: mockClearLogs,
     });
 
-    render(
-      <ExecutionLogViewer 
-        executionId={mockExecutionId} 
-        enableRealTime={true}
-      />
-    );
+    render(<ExecutionLogViewer executionId={mockExecutionId} enableRealTime={true} />);
 
     const clearButton = await screen.findByText('Clear');
     fireEvent.click(clearButton);
@@ -218,12 +170,7 @@ describe('ExecutionLogViewer - Real-time Integration', () => {
   });
 
   it('should not show refresh button when real-time is enabled', async () => {
-    render(
-      <ExecutionLogViewer 
-        executionId={mockExecutionId} 
-        enableRealTime={true}
-      />
-    );
+    render(<ExecutionLogViewer executionId={mockExecutionId} enableRealTime={true} />);
 
     await waitFor(() => {
       expect(screen.queryByText('Refresh')).not.toBeInTheDocument();
@@ -231,12 +178,7 @@ describe('ExecutionLogViewer - Real-time Integration', () => {
   });
 
   it('should show refresh button when real-time is disabled', async () => {
-    render(
-      <ExecutionLogViewer 
-        executionId={mockExecutionId} 
-        enableRealTime={false}
-      />
-    );
+    render(<ExecutionLogViewer executionId={mockExecutionId} enableRealTime={false} />);
 
     await waitFor(() => {
       expect(screen.getByText('Refresh')).toBeInTheDocument();
@@ -244,23 +186,13 @@ describe('ExecutionLogViewer - Real-time Integration', () => {
   });
 
   it('should not call WebSocket hook when real-time is disabled', () => {
-    render(
-      <ExecutionLogViewer 
-        executionId={mockExecutionId} 
-        enableRealTime={false}
-      />
-    );
+    render(<ExecutionLogViewer executionId={mockExecutionId} enableRealTime={false} />);
 
     expect(mockUseWebSocketLogs).toHaveBeenCalledWith(mockExecutionId, { enabled: false });
   });
 
   it('should call WebSocket hook with correct parameters when enabled', () => {
-    render(
-      <ExecutionLogViewer 
-        executionId={mockExecutionId} 
-        enableRealTime={true}
-      />
-    );
+    render(<ExecutionLogViewer executionId={mockExecutionId} enableRealTime={true} />);
 
     expect(mockUseWebSocketLogs).toHaveBeenCalledWith(mockExecutionId, { enabled: true });
   });
@@ -302,8 +234,8 @@ describe('ExecutionLogViewer - Real-time Integration', () => {
     });
 
     render(
-      <ExecutionLogViewer 
-        executionId={mockExecutionId} 
+      <ExecutionLogViewer
+        executionId={mockExecutionId}
         enableRealTime={false} // This will fetch API logs
       />
     );

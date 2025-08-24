@@ -1,8 +1,7 @@
 """Seed script for creating common dealership workflow templates."""
 
 import asyncio
-from typing import Any
-from typing import Dict
+from typing import Any, Dict
 
 from app.database import SessionLocal
 from app.services.template_engine import TemplateEngine

@@ -1,11 +1,13 @@
 """Template schemas."""
 
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel
 
 
 class TemplateCreate(BaseModel):
     """Template creation request."""
+
     name: str
     description: Optional[str] = None
     category: str
@@ -16,6 +18,7 @@ class TemplateCreate(BaseModel):
 
 class TemplateUpdate(BaseModel):
     """Template update request."""
+
     name: Optional[str] = None
     description: Optional[str] = None
     category: Optional[str] = None
@@ -26,6 +29,7 @@ class TemplateUpdate(BaseModel):
 
 class TemplateResponse(BaseModel):
     """Template response model."""
+
     id: str
     name: str
     description: Optional[str] = None
@@ -39,6 +43,7 @@ class TemplateResponse(BaseModel):
 
 class TemplateListResponse(BaseModel):
     """Template list response."""
+
     templates: List[TemplateResponse]
     total: int
     page: int
@@ -47,5 +52,6 @@ class TemplateListResponse(BaseModel):
 
 class TemplateInstantiateRequest(BaseModel):
     """Template instantiation request."""
+
     template_id: str
     variables: Dict[str, Any] = {}

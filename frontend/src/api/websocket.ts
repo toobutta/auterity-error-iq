@@ -37,11 +37,15 @@ export class WebSocketClient {
   private heartbeatTimer: NodeJS.Timeout | null = null;
   private reconnectTimer: NodeJS.Timeout | null = null;
   private messageHandlers = new Map<string, Set<(data: unknown) => void>>();
-  private statusHandlers = new Set<(status: 'connecting' | 'connected' | 'disconnected' | 'error') => void>();
+  private statusHandlers = new Set<
+    (status: 'connecting' | 'connected' | 'disconnected' | 'error') => void
+  >();
 
   constructor(config: WebSocketConfig = {}) {
     this.config = {
-      baseUrl: config.baseUrl || (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(/^http/, 'ws'),
+      baseUrl:
+        config.baseUrl ||
+        (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(/^http/, 'ws'),
       reconnectAttempts: config.reconnectAttempts || 5,
       reconnectInterval: config.reconnectInterval || 3000,
       heartbeatInterval: config.heartbeatInterval || 30000,
@@ -56,7 +60,7 @@ export class WebSocketClient {
       try {
         const url = `${this.config.baseUrl}${endpoint}`;
         this.ws = new WebSocket(url);
-        
+
         this.notifyStatusHandlers('connecting');
 
         this.ws.onopen = () => {
@@ -78,9 +82,13 @@ export class WebSocketClient {
         this.ws.onclose = (event) => {
           this.stopHeartbeat();
           this.notifyStatusHandlers('disconnected');
-          
+
           // Attempt reconnection for unexpected closures
-          if (event.code !== 1000 && event.code !== 1001 && this.reconnectCount < this.config.reconnectAttempts) {
+          if (
+            event.code !== 1000 &&
+            event.code !== 1001 &&
+            this.reconnectCount < this.config.reconnectAttempts
+          ) {
             this.scheduleReconnect(endpoint);
           }
         };
@@ -89,7 +97,6 @@ export class WebSocketClient {
           this.notifyStatusHandlers('error');
           reject(new Error('WebSocket connection failed'));
         };
-
       } catch (error) {
         reject(error);
       }
@@ -102,7 +109,7 @@ export class WebSocketClient {
   disconnect(): void {
     this.stopHeartbeat();
     this.clearReconnectTimer();
-    
+
     if (this.ws) {
       this.ws.close(1000, 'Client disconnect');
       this.ws = null;
@@ -127,9 +134,9 @@ export class WebSocketClient {
     if (!this.messageHandlers.has(messageType)) {
       this.messageHandlers.set(messageType, new Set());
     }
-    
+
     this.messageHandlers.get(messageType)!.add(handler);
-    
+
     // Return unsubscribe function
     return () => {
       const handlers = this.messageHandlers.get(messageType);
@@ -145,9 +152,11 @@ export class WebSocketClient {
   /**
    * Subscribe to connection status changes
    */
-  onStatusChange(handler: (status: 'connecting' | 'connected' | 'disconnected' | 'error') => void): () => void {
+  onStatusChange(
+    handler: (status: 'connecting' | 'connected' | 'disconnected' | 'error') => void
+  ): () => void {
     this.statusHandlers.add(handler);
-    
+
     return () => {
       this.statusHandlers.delete(handler);
     };
@@ -158,7 +167,7 @@ export class WebSocketClient {
    */
   getStatus(): 'connecting' | 'connected' | 'disconnected' | 'error' {
     if (!this.ws) return 'disconnected';
-    
+
     switch (this.ws.readyState) {
       case WebSocket.CONNECTING:
         return 'connecting';
@@ -174,7 +183,7 @@ export class WebSocketClient {
   private handleMessage(message: WebSocketMessage): void {
     const handlers = this.messageHandlers.get(message.type);
     if (handlers) {
-      handlers.forEach(handler => {
+      handlers.forEach((handler) => {
         try {
           handler(message.data);
         } catch (error) {
@@ -184,8 +193,10 @@ export class WebSocketClient {
     }
   }
 
-  private notifyStatusHandlers(status: 'connecting' | 'connected' | 'disconnected' | 'error'): void {
-    this.statusHandlers.forEach(handler => {
+  private notifyStatusHandlers(
+    status: 'connecting' | 'connected' | 'disconnected' | 'error'
+  ): void {
+    this.statusHandlers.forEach((handler) => {
       try {
         handler(status);
       } catch (error) {
@@ -196,7 +207,7 @@ export class WebSocketClient {
 
   private startHeartbeat(): void {
     this.stopHeartbeat();
-    
+
     this.heartbeatTimer = setInterval(() => {
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
         this.send({ type: 'ping', data: null });
@@ -214,10 +225,12 @@ export class WebSocketClient {
   private scheduleReconnect(endpoint: string): void {
     this.clearReconnectTimer();
     this.reconnectCount++;
-    
+
     this.reconnectTimer = setTimeout(() => {
-      console.log(`Attempting WebSocket reconnection ${this.reconnectCount}/${this.config.reconnectAttempts}`);
-      this.connect(endpoint).catch(error => {
+      console.log(
+        `Attempting WebSocket reconnection ${this.reconnectCount}/${this.config.reconnectAttempts}`
+      );
+      this.connect(endpoint).catch((error) => {
         console.error('Reconnection failed:', error);
       });
     }, this.config.reconnectInterval);

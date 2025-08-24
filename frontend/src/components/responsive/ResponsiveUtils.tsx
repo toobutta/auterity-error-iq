@@ -16,7 +16,7 @@ export const defaultBreakpoints: BreakpointConfig = {
   md: 768,
   lg: 1024,
   xl: 1280,
-  '2xl': 1536
+  '2xl': 1536,
 };
 
 export type BreakpointKey = keyof BreakpointConfig;
@@ -26,14 +26,14 @@ export const useBreakpoint = (breakpoints: BreakpointConfig = defaultBreakpoints
   const [currentBreakpoint, setCurrentBreakpoint] = useState<BreakpointKey>('lg');
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== 'undefined' ? window.innerWidth : 1024,
-    height: typeof window !== 'undefined' ? window.innerHeight : 768
+    height: typeof window !== 'undefined' ? window.innerHeight : 768,
   });
 
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      
+
       setWindowSize({ width, height });
 
       // Determine current breakpoint
@@ -64,7 +64,8 @@ export const useBreakpoint = (breakpoints: BreakpointConfig = defaultBreakpoints
 
   const isBreakpoint = (breakpoint: BreakpointKey) => currentBreakpoint === breakpoint;
   const isBreakpointUp = (breakpoint: BreakpointKey) => windowSize.width >= breakpoints[breakpoint];
-  const isBreakpointDown = (breakpoint: BreakpointKey) => windowSize.width < breakpoints[breakpoint];
+  const isBreakpointDown = (breakpoint: BreakpointKey) =>
+    windowSize.width < breakpoints[breakpoint];
   const isMobile = isBreakpointDown('md');
   const isTablet = isBreakpoint('md') || isBreakpoint('lg');
   const isDesktop = isBreakpointUp('lg');
@@ -77,7 +78,7 @@ export const useBreakpoint = (breakpoints: BreakpointConfig = defaultBreakpoints
     isBreakpointDown,
     isMobile,
     isTablet,
-    isDesktop
+    isDesktop,
   };
 };
 
@@ -100,19 +101,19 @@ export const ResponsiveGrid: React.FC<ResponsiveGridProps> = ({
   children,
   cols = { xs: 1, sm: 2, md: 3, lg: 4, xl: 5, '2xl': 6 },
   gap = 4,
-  className = ''
+  className = '',
 }) => {
   const { currentBreakpoint } = useBreakpoint();
-  
+
   const getCurrentCols = () => {
     const breakpointOrder: BreakpointKey[] = ['2xl', 'xl', 'lg', 'md', 'sm', 'xs'];
-    
+
     for (const bp of breakpointOrder) {
       if (cols[bp] !== undefined && currentBreakpoint === bp) {
         return cols[bp];
       }
     }
-    
+
     // Fallback logic
     const currentIndex = breakpointOrder.indexOf(currentBreakpoint);
     for (let i = currentIndex; i < breakpointOrder.length; i++) {
@@ -120,7 +121,7 @@ export const ResponsiveGrid: React.FC<ResponsiveGridProps> = ({
         return cols[breakpointOrder[i]];
       }
     }
-    
+
     return 1;
   };
 
@@ -130,7 +131,7 @@ export const ResponsiveGrid: React.FC<ResponsiveGridProps> = ({
     <div
       className={`grid gap-${gap} ${className}`}
       style={{
-        gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))`
+        gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))`,
       }}
     >
       {children}
@@ -168,7 +169,7 @@ export const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
     md: '768px',
     lg: '1024px',
     xl: '1280px',
-    '2xl': '1536px'
+    '2xl': '1536px',
   },
   padding = {
     xs: 4,
@@ -176,33 +177,33 @@ export const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
     md: 8,
     lg: 12,
     xl: 16,
-    '2xl': 20
+    '2xl': 20,
   },
-  className = ''
+  className = '',
 }) => {
   const { currentBreakpoint } = useBreakpoint();
 
   const getCurrentMaxWidth = () => {
     const breakpointOrder: BreakpointKey[] = ['2xl', 'xl', 'lg', 'md', 'sm', 'xs'];
-    
+
     for (const bp of breakpointOrder) {
       if (maxWidth[bp] && (currentBreakpoint === bp || currentBreakpoint === 'xs')) {
         return maxWidth[bp];
       }
     }
-    
+
     return maxWidth.lg || '1024px';
   };
 
   const getCurrentPadding = () => {
     const breakpointOrder: BreakpointKey[] = ['2xl', 'xl', 'lg', 'md', 'sm', 'xs'];
-    
+
     for (const bp of breakpointOrder) {
       if (padding[bp] !== undefined && currentBreakpoint === bp) {
         return padding[bp];
       }
     }
-    
+
     return padding.md || 8;
   };
 
@@ -211,7 +212,7 @@ export const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
       className={`mx-auto ${className}`}
       style={{
         maxWidth: getCurrentMaxWidth(),
-        padding: `${getCurrentPadding() * 0.25}rem`
+        padding: `${getCurrentPadding() * 0.25}rem`,
       }}
     >
       {children}
@@ -250,16 +251,16 @@ export const ResponsiveText: React.FC<ResponsiveTextProps> = ({
     md: 'text-lg',
     lg: 'text-xl',
     xl: 'text-2xl',
-    '2xl': 'text-3xl'
+    '2xl': 'text-3xl',
   },
   weight = {
     xs: 'font-normal',
     sm: 'font-medium',
     md: 'font-semibold',
-    lg: 'font-bold'
+    lg: 'font-bold',
   },
   className = '',
-  as: Component = 'div'
+  as: Component = 'div',
 }) => {
   const { currentBreakpoint } = useBreakpoint();
 
@@ -292,7 +293,7 @@ export const ResponsiveNav: React.FC<ResponsiveNavProps> = ({
   mobileBreakpoint = 'md',
   mobileLayout = 'bottom',
   desktopLayout = 'sidebar',
-  className = ''
+  className = '',
 }) => {
   const { isBreakpointDown } = useBreakpoint();
   const isMobileView = isBreakpointDown(mobileBreakpoint);
@@ -301,30 +302,24 @@ export const ResponsiveNav: React.FC<ResponsiveNavProps> = ({
     switch (mobileLayout) {
       case 'bottom':
         return (
-          <nav className={`fixed bottom-0 left-0 right-0 z-50 glass-card-strong border-t ${className}`}>
-            <div className="flex justify-around items-center h-16">
-              {children}
-            </div>
+          <nav
+            className={`fixed bottom-0 left-0 right-0 z-50 glass-card-strong border-t ${className}`}
+          >
+            <div className="flex justify-around items-center h-16">{children}</div>
           </nav>
         );
       case 'slide':
         return (
-          <nav className={`fixed top-0 left-0 h-full z-50 glass-card-strong transform transition-transform ${className}`}>
+          <nav
+            className={`fixed top-0 left-0 h-full z-50 glass-card-strong transform transition-transform ${className}`}
+          >
             {children}
           </nav>
         );
       case 'collapse':
-        return (
-          <nav className={`w-full glass-card border-b ${className}`}>
-            {children}
-          </nav>
-        );
+        return <nav className={`w-full glass-card border-b ${className}`}>{children}</nav>;
       default:
-        return (
-          <nav className={className}>
-            {children}
-          </nav>
-        );
+        return <nav className={className}>{children}</nav>;
     }
   }
 
@@ -337,11 +332,7 @@ export const ResponsiveNav: React.FC<ResponsiveNavProps> = ({
         </nav>
       );
     case 'top':
-      return (
-        <nav className={`w-full glass-card border-b ${className}`}>
-          {children}
-        </nav>
-      );
+      return <nav className={`w-full glass-card border-b ${className}`}>{children}</nav>;
     case 'horizontal':
       return (
         <nav className={`flex items-center justify-between glass-card ${className}`}>
@@ -349,11 +340,7 @@ export const ResponsiveNav: React.FC<ResponsiveNavProps> = ({
         </nav>
       );
     default:
-      return (
-        <nav className={className}>
-          {children}
-        </nav>
-      );
+      return <nav className={className}>{children}</nav>;
   }
 };
 
@@ -370,7 +357,7 @@ export const useOrientation = () => {
 
     handleOrientationChange();
     window.addEventListener('resize', handleOrientationChange);
-    
+
     return () => window.removeEventListener('resize', handleOrientationChange);
   }, []);
 
@@ -383,9 +370,7 @@ export const useTouchDevice = () => {
 
   useEffect(() => {
     setIsTouchDevice(
-      'ontouchstart' in window ||
-      navigator.maxTouchPoints > 0 ||
-      navigator.maxTouchPoints > 0
+      'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.maxTouchPoints > 0
     );
   }, []);
 

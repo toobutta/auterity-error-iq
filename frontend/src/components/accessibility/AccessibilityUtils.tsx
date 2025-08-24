@@ -19,7 +19,7 @@ export const useFocusManagement = () => {
     focusedElement,
     setFocusedElement,
     captureFocus,
-    restoreFocus
+    restoreFocus,
   };
 };
 
@@ -70,11 +70,11 @@ export const useKeyboardNavigation = (
   const [isNavigating, setIsNavigating] = useState(false);
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    const enabledItems = items.filter(item => !item.disabled);
+    const enabledItems = items.filter((item) => !item.disabled);
     if (enabledItems.length === 0) return;
 
-    const currentEnabledIndex = enabledItems.findIndex(item => 
-      item.id === items[activeIndex]?.id
+    const currentEnabledIndex = enabledItems.findIndex(
+      (item) => item.id === items[activeIndex]?.id
     );
 
     let nextIndex = currentEnabledIndex;
@@ -128,7 +128,7 @@ export const useKeyboardNavigation = (
     }
 
     if (nextIndex !== currentEnabledIndex) {
-      const actualIndex = items.findIndex(item => item.id === enabledItems[nextIndex].id);
+      const actualIndex = items.findIndex((item) => item.id === enabledItems[nextIndex].id);
       setActiveIndex(actualIndex);
     }
   };
@@ -138,7 +138,7 @@ export const useKeyboardNavigation = (
     setActiveIndex,
     isNavigating,
     setIsNavigating,
-    handleKeyDown
+    handleKeyDown,
   };
 };
 
@@ -147,21 +147,21 @@ export const useScreenReader = () => {
   const [announcements, setAnnouncements] = useState<string[]>([]);
 
   const announce = (message: string, priority: 'polite' | 'assertive' = 'polite') => {
-    setAnnouncements(prev => [...prev, message]);
-    
+    setAnnouncements((prev) => [...prev, message]);
+
     // Create temporary announcement element
     const announcement = document.createElement('div');
     announcement.setAttribute('aria-live', priority);
     announcement.setAttribute('aria-atomic', 'true');
     announcement.className = 'sr-only';
     announcement.textContent = message;
-    
+
     document.body.appendChild(announcement);
-    
+
     // Remove after announcement
     setTimeout(() => {
       document.body.removeChild(announcement);
-      setAnnouncements(prev => prev.filter(msg => msg !== message));
+      setAnnouncements((prev) => prev.filter((msg) => msg !== message));
     }, 1000);
   };
 
@@ -172,7 +172,7 @@ export const useScreenReader = () => {
   return {
     announcements,
     announce,
-    clearAnnouncements
+    clearAnnouncements,
   };
 };
 
@@ -199,19 +199,20 @@ export const AccessibleButton: React.FC<AccessibleButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const baseClasses = 'font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
-  
+  const baseClasses =
+    'font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+
   const variantClasses = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
     secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500',
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-    ghost: 'bg-transparent text-blue-600 hover:bg-blue-50 focus:ring-blue-500'
+    ghost: 'bg-transparent text-blue-600 hover:bg-blue-50 focus:ring-blue-500',
   };
 
   const sizeClasses = {
     sm: 'px-3 py-1.5 text-sm',
     md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg'
+    lg: 'px-6 py-3 text-lg',
   };
 
   return (
@@ -253,7 +254,7 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
   children,
   size = 'md',
   closeOnOverlayClick = true,
-  closeOnEscape = true
+  closeOnEscape = true,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const { captureFocus, restoreFocus } = useFocusManagement();
@@ -292,7 +293,7 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
     sm: 'max-w-md',
     md: 'max-w-lg',
     lg: 'max-w-2xl',
-    xl: 'max-w-4xl'
+    xl: 'max-w-4xl',
   };
 
   return (
@@ -308,7 +309,7 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
         onClick={closeOnOverlayClick ? onClose : undefined}
         aria-hidden="true"
       />
-      
+
       {/* Modal */}
       <div
         ref={modalRef}
@@ -325,15 +326,18 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
             aria-label="Close modal"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
-        
+
         {/* Content */}
-        <div className="p-6">
-          {children}
-        </div>
+        <div className="p-6">{children}</div>
       </div>
     </div>
   );

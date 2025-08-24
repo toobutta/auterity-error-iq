@@ -7,7 +7,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.models.tenant import SSOConfiguration, Tenant, TenantStatus
-from app.models.user import Role, User
+from app.models.user import User
 from app.services.audit_service import AuditService
 
 
@@ -25,18 +25,20 @@ class TenantService:
         domain: str,
         admin_user: Optional[User] = None,
         sso_enabled: bool = False,
-        audit_enabled: bool = True
+        audit_enabled: bool = True,
     ) -> Tenant:
         """Create a new tenant."""
         # Check if tenant already exists
-        existing_tenant = self.db.query(Tenant).filter(
-            (Tenant.slug == slug) | (Tenant.domain == domain)
-        ).first()
-        
+        existing_tenant = (
+            self.db.query(Tenant)
+            .filter((Tenant.slug == slug) | (Tenant.domain == domain))
+            .first()
+        )
+
         if existing_tenant:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Tenant with this slug or domain already exists"
+                detail="Tenant with this slug or domain already exists",
             )
 
         # Create tenant
@@ -46,7 +48,7 @@ class TenantService:
             domain=domain,
             status=TenantStatus.ACTIVE,
             sso_enabled=sso_enabled,
-            audit_enabled=audit_enabled
+            audit_enabled=audit_enabled,
         )
 
         self.db.add(tenant)
@@ -63,8 +65,8 @@ class TenantService:
                 metadata={
                     "tenant_name": name,
                     "tenant_slug": slug,
-                    "tenant_domain": domain
-                }
+                    "tenant_domain": domain,
+                },
             )
 
         return tenant
@@ -82,17 +84,14 @@ class TenantService:
         return self.db.query(Tenant).filter(Tenant.id == tenant_id).first()
 
     def list_tenants(
-        self,
-        status: Optional[TenantStatus] = None,
-        limit: int = 100,
-        offset: int = 0
+        self, status: Optional[TenantStatus] = None, limit: int = 100, offset: int = 0
     ) -> List[Tenant]:
         """List tenants with optional filtering."""
         query = self.db.query(Tenant)
-        
+
         if status:
             query = query.filter(Tenant.status == status)
-        
+
         return query.offset(offset).limit(limit).all()
 
     def update_tenant(
@@ -103,14 +102,13 @@ class TenantService:
         status: Optional[TenantStatus] = None,
         sso_enabled: Optional[bool] = None,
         audit_enabled: Optional[bool] = None,
-        metadata: Optional[Dict] = None
+        metadata: Optional[Dict] = None,
     ) -> Tenant:
         """Update tenant configuration."""
         tenant = self.get_tenant_by_id(tenant_id)
         if not tenant:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Tenant not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Tenant not found"
             )
 
         # Store old values for audit
@@ -119,7 +117,7 @@ class TenantService:
             "status": tenant.status,
             "sso_enabled": tenant.sso_enabled,
             "audit_enabled": tenant.audit_enabled,
-            "metadata": tenant.metadata
+            "metadata": tenant.metadata,
         }
 
         # Update fields
@@ -143,7 +141,7 @@ class TenantService:
             "status": tenant.status,
             "sso_enabled": tenant.sso_enabled,
             "audit_enabled": tenant.audit_enabled,
-            "metadata": tenant.metadata
+            "metadata": tenant.metadata,
         }
 
         self.audit_service.log_configuration_change(
@@ -152,38 +150,37 @@ class TenantService:
             config_type="tenant",
             action="update_tenant",
             old_values=old_values,
-            new_values=new_values
+            new_values=new_values,
         )
 
         return tenant
 
     def configure_sso(
-        self,
-        tenant_id: UUID,
-        admin_user: User,
-        provider: str,
-        config: Dict
+        self, tenant_id: UUID, admin_user: User, provider: str, config: Dict
     ) -> SSOConfiguration:
         """Configure SSO for a tenant."""
         tenant = self.get_tenant_by_id(tenant_id)
         if not tenant:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Tenant not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Tenant not found"
             )
 
         # Check if SSO config already exists
-        existing_config = self.db.query(SSOConfiguration).filter(
-            SSOConfiguration.tenant_id == tenant_id,
-            SSOConfiguration.provider == provider
-        ).first()
+        existing_config = (
+            self.db.query(SSOConfiguration)
+            .filter(
+                SSOConfiguration.tenant_id == tenant_id,
+                SSOConfiguration.provider == provider,
+            )
+            .first()
+        )
 
         if existing_config:
             # Update existing configuration
             old_values = {
                 "provider": existing_config.provider,
                 "auto_provision_users": existing_config.auto_provision_users,
-                "default_role": existing_config.default_role
+                "default_role": existing_config.default_role,
             }
 
             # Update configuration based on provider
@@ -197,7 +194,9 @@ class TenantService:
                 existing_config.oidc_client_secret = config.get("client_secret")
                 existing_config.oidc_redirect_uri = config.get("redirect_uri")
 
-            existing_config.auto_provision_users = config.get("auto_provision_users", True)
+            existing_config.auto_provision_users = config.get(
+                "auto_provision_users", True
+            )
             existing_config.default_role = config.get("default_role", "user")
             existing_config.attribute_mapping = config.get("attribute_mapping")
 
@@ -208,7 +207,7 @@ class TenantService:
             new_values = {
                 "provider": existing_config.provider,
                 "auto_provision_users": existing_config.auto_provision_users,
-                "default_role": existing_config.default_role
+                "default_role": existing_config.default_role,
             }
 
             self.audit_service.log_configuration_change(
@@ -217,7 +216,7 @@ class TenantService:
                 config_type="sso_configuration",
                 action="update_sso_config",
                 old_values=old_values,
-                new_values=new_values
+                new_values=new_values,
             )
 
             return existing_config
@@ -229,7 +228,7 @@ class TenantService:
                 provider=provider,
                 auto_provision_users=config.get("auto_provision_users", True),
                 default_role=config.get("default_role", "user"),
-                attribute_mapping=config.get("attribute_mapping")
+                attribute_mapping=config.get("attribute_mapping"),
             )
 
             # Set provider-specific configuration
@@ -260,34 +259,35 @@ class TenantService:
                 new_values={
                     "provider": provider,
                     "auto_provision_users": sso_config.auto_provision_users,
-                    "default_role": sso_config.default_role
-                }
+                    "default_role": sso_config.default_role,
+                },
             )
 
             return sso_config
 
     def get_sso_configuration(
-        self,
-        tenant_id: UUID,
-        provider: Optional[str] = None
+        self, tenant_id: UUID, provider: Optional[str] = None
     ) -> Optional[SSOConfiguration]:
         """Get SSO configuration for a tenant."""
         query = self.db.query(SSOConfiguration).filter(
-            SSOConfiguration.tenant_id == tenant_id,
-            SSOConfiguration.is_active == True
+            SSOConfiguration.tenant_id == tenant_id, SSOConfiguration.is_active == True
         )
-        
+
         if provider:
             query = query.filter(SSOConfiguration.provider == provider)
-        
+
         return query.first()
 
     def disable_sso(self, tenant_id: UUID, admin_user: User, provider: str) -> bool:
         """Disable SSO for a tenant."""
-        sso_config = self.db.query(SSOConfiguration).filter(
-            SSOConfiguration.tenant_id == tenant_id,
-            SSOConfiguration.provider == provider
-        ).first()
+        sso_config = (
+            self.db.query(SSOConfiguration)
+            .filter(
+                SSOConfiguration.tenant_id == tenant_id,
+                SSOConfiguration.provider == provider,
+            )
+            .first()
+        )
 
         if not sso_config:
             return False
@@ -296,10 +296,14 @@ class TenantService:
         self.db.commit()
 
         # Check if any SSO configs are still active
-        active_configs = self.db.query(SSOConfiguration).filter(
-            SSOConfiguration.tenant_id == tenant_id,
-            SSOConfiguration.is_active == True
-        ).count()
+        active_configs = (
+            self.db.query(SSOConfiguration)
+            .filter(
+                SSOConfiguration.tenant_id == tenant_id,
+                SSOConfiguration.is_active == True,
+            )
+            .count()
+        )
 
         # If no active SSO configs, disable SSO for tenant
         if active_configs == 0:
@@ -314,41 +318,43 @@ class TenantService:
             user=admin_user,
             config_type="sso_configuration",
             action="disable_sso",
-            metadata={"provider": provider}
+            metadata={"provider": provider},
         )
 
         return True
 
     def get_tenant_users(
-        self,
-        tenant_id: UUID,
-        limit: int = 100,
-        offset: int = 0
+        self, tenant_id: UUID, limit: int = 100, offset: int = 0
     ) -> List[User]:
         """Get users for a tenant."""
-        return self.db.query(User).filter(
-            User.tenant_id == tenant_id
-        ).offset(offset).limit(limit).all()
+        return (
+            self.db.query(User)
+            .filter(User.tenant_id == tenant_id)
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
 
     def get_tenant_stats(self, tenant_id: UUID) -> Dict:
         """Get statistics for a tenant."""
         tenant = self.get_tenant_by_id(tenant_id)
         if not tenant:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Tenant not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Tenant not found"
             )
 
         # Count users
         total_users = self.db.query(User).filter(User.tenant_id == tenant_id).count()
-        active_users = self.db.query(User).filter(
-            User.tenant_id == tenant_id,
-            User.is_active == True
-        ).count()
-        sso_users = self.db.query(User).filter(
-            User.tenant_id == tenant_id,
-            User.sso_provider.isnot(None)
-        ).count()
+        active_users = (
+            self.db.query(User)
+            .filter(User.tenant_id == tenant_id, User.is_active == True)
+            .count()
+        )
+        sso_users = (
+            self.db.query(User)
+            .filter(User.tenant_id == tenant_id, User.sso_provider.isnot(None))
+            .count()
+        )
 
         # Get audit summary
         audit_summary = self.audit_service.get_audit_summary(tenant_id)
@@ -360,11 +366,11 @@ class TenantService:
             "users": {
                 "total": total_users,
                 "active": active_users,
-                "sso_users": sso_users
+                "sso_users": sso_users,
             },
             "sso_enabled": tenant.sso_enabled,
             "audit_enabled": tenant.audit_enabled,
-            "audit_summary": audit_summary
+            "audit_summary": audit_summary,
         }
 
     def delete_tenant(self, tenant_id: UUID, admin_user: User) -> bool:
@@ -383,10 +389,7 @@ class TenantService:
             event_type="tenant_management",
             action="delete_tenant",
             user=admin_user,
-            metadata={
-                "tenant_name": tenant.name,
-                "tenant_slug": tenant.slug
-            }
+            metadata={"tenant_name": tenant.name, "tenant_slug": tenant.slug},
         )
 
         return True

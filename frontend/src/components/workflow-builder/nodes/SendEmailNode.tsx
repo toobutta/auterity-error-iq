@@ -4,28 +4,36 @@ import { NodeData } from '../../../types/workflow';
 
 const SendEmailNode: React.FC<NodeProps<NodeData>> = ({ data, isConnectable }) => {
   const hasErrors = data.validationErrors && data.validationErrors.length > 0;
-  
+
   return (
-    <div className={`bg-blue-100 border-2 ${hasErrors ? 'border-red-400' : 'border-blue-300'} rounded-lg p-3 shadow-md min-w-[160px]`}>
-      <Handle 
-        type="target" 
-        position={Position.Top} 
-        isConnectable={isConnectable} 
-        className="w-3 h-3 bg-blue-500" 
+    <div
+      className={`bg-blue-100 border-2 ${hasErrors ? 'border-red-400' : 'border-blue-300'} rounded-lg p-3 shadow-md min-w-[160px]`}
+    >
+      <Handle
+        type="target"
+        position={Position.Top}
+        isConnectable={isConnectable}
+        className="w-3 h-3 bg-blue-500"
       />
-      
+
       <div className="text-center">
         <div className="w-8 h-8 bg-blue-500 rounded-full mx-auto mb-2 flex items-center justify-center">
           <span className="text-white text-sm font-bold">📤</span>
         </div>
         <h3 className="font-bold text-blue-800">{data.label}</h3>
-        {data.description && (
-          <p className="text-xs text-blue-600 mt-1">{data.description}</p>
-        )}
-        {(
-          (data.config as { emailTemplate?: { subject?: string } })?.emailTemplate?.subject &&
-          <p className="text-xs text-gray-500 mt-1 truncate" title={((data.config as { emailTemplate?: { subject?: string } }).emailTemplate?.subject || '')}>
-            Subject: {((data.config as { emailTemplate?: { subject?: string } }).emailTemplate?.subject || '').substring(0, 20)}...
+        {data.description && <p className="text-xs text-blue-600 mt-1">{data.description}</p>}
+        {(data.config as { emailTemplate?: { subject?: string } })?.emailTemplate?.subject && (
+          <p
+            className="text-xs text-gray-500 mt-1 truncate"
+            title={
+              (data.config as { emailTemplate?: { subject?: string } }).emailTemplate?.subject || ''
+            }
+          >
+            Subject:{' '}
+            {(
+              (data.config as { emailTemplate?: { subject?: string } }).emailTemplate?.subject || ''
+            ).substring(0, 20)}
+            ...
           </p>
         )}
       </div>
@@ -35,12 +43,12 @@ const SendEmailNode: React.FC<NodeProps<NodeData>> = ({ data, isConnectable }) =
           {data.validationErrors![0]}
         </div>
       )}
-      
-      <Handle 
-        type="source" 
-        position={Position.Bottom} 
-        isConnectable={isConnectable} 
-        className="w-3 h-3 bg-blue-500" 
+
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        isConnectable={isConnectable}
+        className="w-3 h-3 bg-blue-500"
       />
     </div>
   );

@@ -1,12 +1,16 @@
 """
 SQLAlchemy models for Agent and AgentCapability.
 """
+
+import enum
 import uuid
-from sqlalchemy import Column, String, JSON, Enum, ForeignKey, DateTime, Boolean
+
+from sqlalchemy import JSON, Boolean, Column, DateTime, Enum, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+
 from app.models.base import Base
-import enum
+
 
 class AgentType(enum.Enum):
     MCP = "MCP"
@@ -14,11 +18,13 @@ class AgentType(enum.Enum):
     CUSTOM = "CUSTOM"
     A2A = "A2A"
 
+
 class AgentStatus(enum.Enum):
     ACTIVE = "ACTIVE"
     INACTIVE = "INACTIVE"
     UNHEALTHY = "UNHEALTHY"
     MAINTENANCE = "MAINTENANCE"
+
 
 class Agent(Base):
     __tablename__ = "agents"
@@ -34,9 +40,12 @@ class Agent(Base):
     created_at = Column(DateTime(timezone=True))
     updated_at = Column(DateTime(timezone=True))
     capabilities_rel = relationship("AgentCapability", back_populates="agent")
-    
+
     # Auterity Expansion Relationships
-    memories = relationship("AgentMemory", back_populates="agent", cascade="all, delete-orphan")
+    memories = relationship(
+        "AgentMemory", back_populates="agent", cascade="all, delete-orphan"
+    )
+
 
 class AgentCapability(Base):
     __tablename__ = "agent_capabilities"

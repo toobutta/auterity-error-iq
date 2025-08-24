@@ -5,8 +5,7 @@ Test script for cross-system error correlation and handling.
 
 import asyncio
 import logging
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -230,9 +229,11 @@ async def test_correlation_patterns():
     logger.info("\n🧪 Testing Correlation Pattern Detection")
 
     try:
-        from app.services.error_correlation import SystemError
-        from app.services.error_correlation import SystemType
-        from app.services.error_correlation import get_correlation_service
+        from app.services.error_correlation import (
+            SystemError,
+            SystemType,
+            get_correlation_service,
+        )
 
         correlation_service = await get_correlation_service()
 

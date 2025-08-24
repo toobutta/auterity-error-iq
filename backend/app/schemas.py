@@ -2,11 +2,6 @@
 
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional
-
-from pydantic import BaseModel, EmailStr, validator
-
-from app.models.tenant import TenantStatus, SSOProvider
 
 
 # Authentication schemas
@@ -522,8 +517,11 @@ class TenantCreate(BaseModel):
             raise ValueError("Tenant slug cannot be empty")
         # Allow only alphanumeric and hyphens
         import re
-        if not re.match(r'^[a-z0-9-]+$', v):
-            raise ValueError("Tenant slug can only contain lowercase letters, numbers, and hyphens")
+
+        if not re.match(r"^[a-z0-9-]+$", v):
+            raise ValueError(
+                "Tenant slug can only contain lowercase letters, numbers, and hyphens"
+            )
         return v.strip()
 
     @validator("domain")
@@ -532,7 +530,8 @@ class TenantCreate(BaseModel):
             raise ValueError("Tenant domain cannot be empty")
         # Basic domain validation
         import re
-        if not re.match(r'^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', v):
+
+        if not re.match(r"^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", v):
             raise ValueError("Invalid domain format")
         return v.strip().lower()
 
@@ -577,7 +576,7 @@ class TenantResponse(BaseModel):
             audit_enabled=tenant.audit_enabled,
             metadata=tenant.metadata,
             created_at=tenant.created_at,
-            updated_at=tenant.updated_at
+            updated_at=tenant.updated_at,
         )
 
 
@@ -634,7 +633,7 @@ class SSOConfigurationResponse(BaseModel):
             default_role=config.default_role,
             is_active=config.is_active,
             created_at=config.created_at,
-            updated_at=config.updated_at
+            updated_at=config.updated_at,
         )
 
 
@@ -695,5 +694,5 @@ class AuditLogResponse(BaseModel):
             metadata=log.metadata,
             status=log.status,
             error_message=log.error_message,
-            timestamp=log.timestamp
+            timestamp=log.timestamp,
         )

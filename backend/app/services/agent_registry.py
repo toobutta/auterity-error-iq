@@ -1,12 +1,16 @@
 """
 AgentRegistry service for agent registration, discovery, capability matching, health checks, and config validation.
 """
-from typing import List, Optional, Dict, Any
+
+from typing import Any, Dict, List, Optional
 from uuid import UUID
-from sqlalchemy.orm import Session
-from app.models.agent import Agent, AgentCapability, AgentStatus, AgentType
-from app.schemas.agent import AgentCreate, AgentCapabilityCreate
+
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
+
+from app.models.agent import Agent, AgentCapability, AgentStatus
+from app.schemas.agent import AgentCreate
+
 
 class AgentRegistry:
     def __init__(self, db: Session):
@@ -22,7 +26,7 @@ class AgentRegistry:
             status=agent_data.status,
             health_url=agent_data.health_url,
             mcp_server_id=agent_data.mcp_server_id,
-            user_id=agent_data.user_id
+            user_id=agent_data.user_id,
         )
         self.db.add(agent)
         self.db.commit()
@@ -32,7 +36,7 @@ class AgentRegistry:
                 agent_id=agent.id,
                 capability_name=cap.capability_name,
                 capability_data=cap.capability_data,
-                is_active=cap.is_active
+                is_active=cap.is_active,
             )
             self.db.add(capability)
         self.db.commit()
@@ -48,10 +52,15 @@ class AgentRegistry:
         return query.all()
 
     def discover_agents_by_capability(self, capability_name: str) -> List[Agent]:
-        agents = self.db.query(Agent).join(AgentCapability).filter(
-            AgentCapability.capability_name == capability_name,
-            AgentCapability.is_active == True
-        ).all()
+        agents = (
+            self.db.query(Agent)
+            .join(AgentCapability)
+            .filter(
+                AgentCapability.capability_name == capability_name,
+                AgentCapability.is_active == True,
+            )
+            .all()
+        )
         return agents
 
     def health_check(self, agent_id: UUID) -> Dict[str, Any]:

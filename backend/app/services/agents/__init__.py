@@ -8,14 +8,9 @@ This module integrates LangChain, Haystack, and LlamaIndex to provide:
 - Unified API for agent management across all Auterity systems
 """
 
+from .compliance_layer import ComplianceLayer
 from .orchestrator import AgentOrchestrator
 from .rag_engine import RAGEngine
-from .compliance_layer import ComplianceLayer
 from .security_manager import SecurityManager
 
-__all__ = [
-    "AgentOrchestrator",
-    "RAGEngine", 
-    "ComplianceLayer",
-    "SecurityManager"
-]
+__all__ = ["AgentOrchestrator", "RAGEngine", "ComplianceLayer", "SecurityManager"]

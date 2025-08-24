@@ -15,7 +15,7 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
   executionId,
   workflowId,
   onRetrySuccess,
-  className = ''
+  className = '',
 }) => {
   const [execution, setExecution] = useState<WorkflowExecution | null>(null);
   const [loading, setLoading] = useState(true);
@@ -36,7 +36,7 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
           timestamp: new Date().toISOString(),
           errorType: err instanceof Error ? err.constructor.name : 'UnknownError',
           errorMessage,
-          stack: err instanceof Error ? err.stack : undefined
+          stack: err instanceof Error ? err.stack : undefined,
         };
         console.error('Execution fetch failed:', errorContext);
         setError(`Failed to fetch execution results: ${errorMessage}`);
@@ -82,13 +82,13 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
 
   const copyToClipboard = async () => {
     if (!execution?.outputData) return;
-    
+
     try {
       await navigator.clipboard.writeText(formatValue(execution.outputData));
       console.log('Clipboard operation successful', {
         operation: 'copyToClipboard',
         timestamp: new Date().toISOString(),
-        dataLength: formatValue(execution.outputData).length
+        dataLength: formatValue(execution.outputData).length,
       });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown clipboard error';
@@ -97,7 +97,7 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
         timestamp: new Date().toISOString(),
         hasOutputData: !!execution?.outputData,
         errorMessage,
-        errorType: err instanceof Error ? err.constructor.name : 'UnknownError'
+        errorType: err instanceof Error ? err.constructor.name : 'UnknownError',
       };
       console.error('Clipboard operation failed:', errorContext);
       // Could add user notification here if needed
@@ -108,8 +108,18 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
     return (
       <div className={`bg-white border border-gray-200 rounded-lg p-6 ${className}`}>
         <div className="flex items-center justify-center">
-          <svg className="w-6 h-6 text-gray-400 animate-spin mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          <svg
+            className="w-6 h-6 text-gray-400 animate-spin mr-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
           </svg>
           <span className="text-gray-600">Loading execution results...</span>
         </div>
@@ -121,8 +131,18 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
     return (
       <div className={`bg-red-50 border border-red-200 rounded-lg p-6 ${className}`}>
         <div className="flex items-center">
-          <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-5 h-5 text-red-600 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           <span className="text-red-800 font-medium">Error Loading Results</span>
         </div>
@@ -135,8 +155,18 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
     return (
       <div className={`bg-gray-50 border border-gray-200 rounded-lg p-6 ${className}`}>
         <div className="text-center text-gray-600">
-          <svg className="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <svg
+            className="w-12 h-12 mx-auto mb-3 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
           </svg>
           <p>No execution found</p>
         </div>
@@ -166,13 +196,16 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
         <div className="border-b border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900">Execution Results</h3>
-            <span className={`
+            <span
+              className={`
               px-3 py-1 rounded-full text-sm font-medium capitalize
-              ${execution.status === 'running'
-                ? 'bg-blue-100 text-blue-800'
-                : 'bg-yellow-100 text-yellow-800'
+              ${
+                execution.status === 'running'
+                  ? 'bg-blue-100 text-blue-800'
+                  : 'bg-yellow-100 text-yellow-800'
               }
-            `}>
+            `}
+            >
               {execution.status}
             </span>
           </div>
@@ -189,14 +222,23 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
         </div>
         <div className="p-6 space-y-6">
           <div className="text-center py-8 text-gray-500">
-            <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <svg
+              className="w-12 h-12 mx-auto mb-3 text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
             </svg>
             <p>
-              {execution.status === 'pending' || execution.status === 'running' 
+              {execution.status === 'pending' || execution.status === 'running'
                 ? 'Output data will appear here when execution completes'
-                : 'No output data available'
-              }
+                : 'No output data available'}
             </p>
           </div>
         </div>
@@ -210,13 +252,16 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
       <div className="border-b border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">Execution Results</h3>
-          <span className={`
+          <span
+            className={`
             px-3 py-1 rounded-full text-sm font-medium capitalize
-            ${execution.status === 'completed' 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-red-100 text-red-800'
+            ${
+              execution.status === 'completed'
+                ? 'bg-green-100 text-green-800'
+                : 'bg-red-100 text-red-800'
             }
-          `}>
+          `}
+          >
             {execution.status}
           </span>
         </div>
@@ -249,8 +294,18 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
         {execution.errorMessage && (
           <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
             <div className="flex items-start">
-              <svg className="w-5 h-5 text-red-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5 text-red-600 mr-2 mt-0.5 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               <div>
                 <p className="text-red-800 font-medium">Execution Failed</p>
@@ -267,8 +322,18 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
         <div>
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-md font-medium text-gray-900 flex items-center">
-              <svg className="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <svg
+                className="w-5 h-5 mr-2 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
               Output Data
             </h4>
@@ -278,18 +343,23 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
                 className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors flex items-center"
               >
                 <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M16 18h2a2 2 0 002-2v-2m-2 0v-2m-2 0V7m-2 5v2m-2 0v2" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M16 18h2a2 2 0 002-2v-2m-2 0v-2m-2 0V7m-2 5v2m-2 0v2"
+                  />
                 </svg>
                 Copy Output
               </button>
             )}
           </div>
-          
+
           {hasOutputData ? (
             <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
               <div className="overflow-x-auto">
-                <LazyCodeHighlighter 
-                  language={getValueType(execution.outputData) === 'string' ? 'text' : 'json'} 
+                <LazyCodeHighlighter
+                  language={getValueType(execution.outputData) === 'string' ? 'text' : 'json'}
                   className="rounded"
                 >
                   {formatValue(execution.outputData)}
@@ -298,8 +368,18 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
             </div>
           ) : (
             <div className="text-center py-8 text-gray-500">
-              <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <svg
+                className="w-12 h-12 mx-auto mb-3 text-gray-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
               <p>No output data available</p>
             </div>
@@ -310,17 +390,24 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
         {hasInputData && (
           <div>
             <h4 className="text-md font-medium text-gray-900 mb-3 flex items-center">
-              <svg className="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+              <svg
+                className="w-5 h-5 mr-2 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                />
               </svg>
               Input Data
             </h4>
             <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
               <div className="overflow-x-auto">
-                <LazyCodeHighlighter 
-                  language="json" 
-                  className="rounded"
-                >
+                <LazyCodeHighlighter language="json" className="rounded">
                   {formatValue(execution.inputData)}
                 </LazyCodeHighlighter>
               </div>

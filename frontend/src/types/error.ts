@@ -6,7 +6,7 @@ export enum ErrorSeverity {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  CRITICAL = 'critical'
+  CRITICAL = 'critical',
 }
 
 export enum ErrorCategory {
@@ -20,7 +20,7 @@ export enum ErrorCategory {
   DATABASE = 'database',
   SYSTEM = 'system',
   USER_INPUT = 'user_input',
-  UNKNOWN = 'unknown'
+  UNKNOWN = 'unknown',
 }
 
 export interface ErrorContext {

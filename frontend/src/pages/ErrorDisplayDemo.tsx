@@ -17,7 +17,7 @@ const ErrorDisplayDemo: React.FC = () => {
     {
       workflowId: 'workflow-demo-123',
       executionId: 'exec-demo-456',
-      component: 'WorkflowEngine'
+      component: 'WorkflowEngine',
     },
     'The AI service failed to respond within the timeout period. This may be due to high load or service maintenance.',
     undefined,
@@ -28,18 +28,18 @@ const ErrorDisplayDemo: React.FC = () => {
     {
       id: 'workflow-error',
       title: 'Workflow Error Display',
-      description: 'Comprehensive error display for failed workflow executions'
+      description: 'Comprehensive error display for failed workflow executions',
     },
     {
       id: 'recovery-guide',
       title: 'Error Recovery Guide',
-      description: 'Step-by-step recovery instructions for different error types'
+      description: 'Step-by-step recovery instructions for different error types',
     },
     {
       id: 'error-categories',
       title: 'Error Categories',
-      description: 'Different error categories and their recovery steps'
-    }
+      description: 'Different error categories and their recovery steps',
+    },
   ];
 
   const errorCategories = [
@@ -48,7 +48,7 @@ const ErrorDisplayDemo: React.FC = () => {
     { category: ErrorCategory.NETWORK, severity: ErrorSeverity.MEDIUM },
     { category: ErrorCategory.AI_SERVICE, severity: ErrorSeverity.MEDIUM },
     { category: ErrorCategory.WORKFLOW, severity: ErrorSeverity.HIGH },
-    { category: ErrorCategory.DATABASE, severity: ErrorSeverity.CRITICAL }
+    { category: ErrorCategory.DATABASE, severity: ErrorSeverity.CRITICAL },
   ];
 
   const handleRetrySuccess = (newExecutionId: string) => {
@@ -61,7 +61,7 @@ const ErrorDisplayDemo: React.FC = () => {
 
   const handleRetryAction = async () => {
     // Simulate retry action
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     alert('Retry completed successfully!');
   };
 
@@ -101,12 +101,11 @@ const ErrorDisplayDemo: React.FC = () => {
           {selectedDemo === 'workflow-error' && (
             <div>
               <div className="mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                  Workflow Error Display
-                </h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">Workflow Error Display</h2>
                 <p className="text-gray-600">
                   This component provides a comprehensive view of workflow execution failures,
-                  including error categorization, detailed logs, retry functionality, and error reporting.
+                  including error categorization, detailed logs, retry functionality, and error
+                  reporting.
                 </p>
               </div>
 
@@ -135,7 +134,7 @@ const ErrorDisplayDemo: React.FC = () => {
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <h3 className="font-medium text-gray-900 mb-2">Usage Example:</h3>
                 <pre className="text-sm text-gray-700 overflow-x-auto">
-{`<WorkflowErrorDisplay
+                  {`<WorkflowErrorDisplay
   executionId="exec-123"
   workflowId="workflow-456"
   onRetrySuccess={(newExecutionId) => {
@@ -156,11 +155,10 @@ const ErrorDisplayDemo: React.FC = () => {
           {selectedDemo === 'recovery-guide' && (
             <div>
               <div className="mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                  Error Recovery Guide
-                </h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">Error Recovery Guide</h2>
                 <p className="text-gray-600">
-                  Interactive step-by-step recovery instructions tailored to specific error categories and severities.
+                  Interactive step-by-step recovery instructions tailored to specific error
+                  categories and severities.
                 </p>
               </div>
 
@@ -180,9 +178,7 @@ const ErrorDisplayDemo: React.FC = () => {
 
               {/* Network Error Example */}
               <div className="mb-8">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  Network Error Recovery
-                </h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Network Error Recovery</h3>
                 <ErrorRecoveryGuide
                   category={ErrorCategory.NETWORK}
                   severity={ErrorSeverity.MEDIUM}
@@ -195,7 +191,7 @@ const ErrorDisplayDemo: React.FC = () => {
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <h3 className="font-medium text-gray-900 mb-2">Usage Example:</h3>
                 <pre className="text-sm text-gray-700 overflow-x-auto">
-{`<ErrorRecoveryGuide
+                  {`<ErrorRecoveryGuide
   category={ErrorCategory.AI_SERVICE}
   severity={ErrorSeverity.MEDIUM}
   errorMessage="AI service timeout"
@@ -221,7 +217,8 @@ const ErrorDisplayDemo: React.FC = () => {
                   Error Categories & Recovery
                 </h2>
                 <p className="text-gray-600">
-                  Different error categories provide tailored recovery steps based on the type and severity of the error.
+                  Different error categories provide tailored recovery steps based on the type and
+                  severity of the error.
                 </p>
               </div>
 
@@ -232,16 +229,16 @@ const ErrorDisplayDemo: React.FC = () => {
                       <h3 className="font-medium text-gray-900 capitalize">
                         {category.replace('_', ' ')} Error
                       </h3>
-                      <p className="text-sm text-gray-600 capitalize">
-                        Severity: {severity}
-                      </p>
+                      <p className="text-sm text-gray-600 capitalize">Severity: {severity}</p>
                     </div>
                     <div className="p-4">
                       <ErrorRecoveryGuide
                         category={category}
                         severity={severity}
                         errorMessage={`Sample ${category.replace('_', ' ')} error message`}
-                        onRetry={category !== ErrorCategory.VALIDATION ? handleRetryAction : undefined}
+                        onRetry={
+                          category !== ErrorCategory.VALIDATION ? handleRetryAction : undefined
+                        }
                         onContactSupport={
                           severity === ErrorSeverity.HIGH || severity === ErrorSeverity.CRITICAL
                             ? handleContactSupport
@@ -258,9 +255,7 @@ const ErrorDisplayDemo: React.FC = () => {
 
         {/* Error Report Modal Demo Button */}
         <div className="mt-8 p-6 bg-white border border-gray-200 rounded-lg">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Error Reporting
-          </h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Error Reporting</h3>
           <p className="text-gray-600 mb-4">
             Users can provide detailed feedback about errors to help improve the system.
           </p>
@@ -285,24 +280,27 @@ const ErrorDisplayDemo: React.FC = () => {
 
         {/* Integration Guide */}
         <div className="mt-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <h3 className="text-lg font-medium text-yellow-900 mb-2">
-            Integration Guide
-          </h3>
+          <h3 className="text-lg font-medium text-yellow-900 mb-2">Integration Guide</h3>
           <div className="text-yellow-800 text-sm space-y-2">
             <p>
-              <strong>1. Error Context:</strong> Wrap your app with ErrorProvider to enable global error handling.
+              <strong>1. Error Context:</strong> Wrap your app with ErrorProvider to enable global
+              error handling.
             </p>
             <p>
-              <strong>2. Workflow Errors:</strong> Use WorkflowErrorDisplay for failed workflow executions.
+              <strong>2. Workflow Errors:</strong> Use WorkflowErrorDisplay for failed workflow
+              executions.
             </p>
             <p>
-              <strong>3. Recovery Guidance:</strong> Include ErrorRecoveryGuide for user-friendly error resolution.
+              <strong>3. Recovery Guidance:</strong> Include ErrorRecoveryGuide for user-friendly
+              error resolution.
             </p>
             <p>
-              <strong>4. Error Reporting:</strong> Implement ErrorReportModal for collecting user feedback.
+              <strong>4. Error Reporting:</strong> Implement ErrorReportModal for collecting user
+              feedback.
             </p>
             <p>
-              <strong>5. Error Categorization:</strong> Errors are automatically categorized and assigned severity levels.
+              <strong>5. Error Categorization:</strong> Errors are automatically categorized and
+              assigned severity levels.
             </p>
           </div>
         </div>

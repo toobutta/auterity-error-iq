@@ -3,14 +3,14 @@ import { getWorkflowPerformance, getSystemPerformance } from '../api/workflows';
 import { PerformanceMetrics } from '../types/performance';
 
 // Lazy load chart components to reduce initial bundle size
-const LineChart = lazy(() => 
-  import('./charts/LineChart').then(module => ({
-    default: module.LineChart
+const LineChart = lazy(() =>
+  import('./charts/LineChart').then((module) => ({
+    default: module.LineChart,
   }))
 );
-const BarChart = lazy(() => 
-  import('./charts/BarChart').then(module => ({
-    default: module.BarChart
+const BarChart = lazy(() =>
+  import('./charts/BarChart').then((module) => ({
+    default: module.BarChart,
   }))
 );
 
@@ -20,21 +20,23 @@ interface PerformanceDashboardProps {
   className?: string;
 }
 
-export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ 
-  workflowId, 
+export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
+  workflowId,
   showSystemMetrics = false,
-  className = ''
+  className = '',
 }) => {
   const [metrics, setMetrics] = useState<PerformanceMetrics[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'execution-time' | 'success-rate' | 'resource-usage'>('execution-time');
+  const [activeTab, setActiveTab] = useState<'execution-time' | 'success-rate' | 'resource-usage'>(
+    'execution-time'
+  );
 
   // Generate mock data for demonstration
   const generateMockData = useCallback((): PerformanceMetrics[] => {
     const now = new Date();
     const data: PerformanceMetrics[] = [];
-    
+
     for (let i = 23; i >= 0; i--) {
       const timestamp = new Date(now.getTime() - i * 60 * 60 * 1000); // Last 24 hours
       data.push({
@@ -49,7 +51,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         successRate: Math.random() * 0.3 + 0.7, // 70-100%
       });
     }
-    
+
     return data;
   }, [workflowId]);
 
@@ -57,7 +59,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
     try {
       setError(null);
       setLoading(true);
-      
+
       let data: PerformanceMetrics[];
       if (workflowId) {
         data = await getWorkflowPerformance(workflowId);
@@ -67,7 +69,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         // Generate mock data for demo purposes
         data = generateMockData();
       }
-      
+
       setMetrics(data);
     } catch (err) {
       setError('Failed to load performance data');
@@ -76,7 +78,6 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
       setLoading(false);
     }
   }, [workflowId, showSystemMetrics, generateMockData]);
-
 
   useEffect(() => {
     fetchMetrics();
@@ -123,14 +124,20 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         <div className="text-center py-12">
           <div className="text-gray-400 text-4xl mb-4">📊</div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">No Performance Data</h3>
-          <p className="text-gray-600">No performance metrics available yet. Execute some workflows to see data here.</p>
+          <p className="text-gray-600">
+            No performance metrics available yet. Execute some workflows to see data here.
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className}`} role="region" aria-label="Workflow Performance Dashboard">
+    <div
+      className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className}`}
+      role="region"
+      aria-label="Workflow Performance Dashboard"
+    >
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
@@ -138,9 +145,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
             <h2 className="text-lg font-semibold text-gray-900">
               {workflowId ? 'Workflow Performance' : 'System Performance'}
             </h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Performance metrics over the last 24 hours
-            </p>
+            <p className="text-sm text-gray-600 mt-1">Performance metrics over the last 24 hours</p>
           </div>
           <button
             onClick={fetchMetrics}
@@ -148,7 +153,12 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
             className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
           >
             <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
             </svg>
             Refresh
           </button>
@@ -183,15 +193,17 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           {/* Line Chart */}
           <div className="bg-gray-50 rounded-lg p-4">
             <h3 className="text-sm font-medium text-gray-900 mb-4">Trend Over Time</h3>
-            <Suspense fallback={
-              <div className="h-80 bg-gray-200 rounded animate-pulse flex items-center justify-center">
-                <span className="text-gray-500">Loading chart...</span>
-              </div>
-            }>
-              <LineChart 
-                data={metrics} 
+            <Suspense
+              fallback={
+                <div className="h-80 bg-gray-200 rounded animate-pulse flex items-center justify-center">
+                  <span className="text-gray-500">Loading chart...</span>
+                </div>
+              }
+            >
+              <LineChart
+                data={metrics}
                 type={activeTab}
-                aria-label={`${tabs.find(t => t.id === activeTab)?.label} trend over time`}
+                aria-label={`${tabs.find((t) => t.id === activeTab)?.label} trend over time`}
               />
             </Suspense>
           </div>
@@ -199,15 +211,17 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           {/* Bar Chart */}
           <div className="bg-gray-50 rounded-lg p-4">
             <h3 className="text-sm font-medium text-gray-900 mb-4">Hourly Comparison</h3>
-            <Suspense fallback={
-              <div className="h-80 bg-gray-200 rounded animate-pulse flex items-center justify-center">
-                <span className="text-gray-500">Loading chart...</span>
-              </div>
-            }>
-              <BarChart 
+            <Suspense
+              fallback={
+                <div className="h-80 bg-gray-200 rounded animate-pulse flex items-center justify-center">
+                  <span className="text-gray-500">Loading chart...</span>
+                </div>
+              }
+            >
+              <BarChart
                 data={metrics.slice(-12)} // Last 12 hours
                 type={activeTab}
-                aria-label={`${tabs.find(t => t.id === activeTab)?.label} hourly comparison`}
+                aria-label={`${tabs.find((t) => t.id === activeTab)?.label} hourly comparison`}
               />
             </Suspense>
           </div>
@@ -218,39 +232,36 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           <div className="bg-blue-50 rounded-lg p-4">
             <div className="text-sm font-medium text-blue-900">Average</div>
             <div className="text-2xl font-bold text-blue-600">
-              {activeTab === 'execution-time' 
+              {activeTab === 'execution-time'
                 ? `${Math.round(metrics.reduce((sum, m) => sum + m.executionTime, 0) / metrics.length)}ms`
                 : activeTab === 'success-rate'
-                ? `${((metrics.reduce((sum, m) => sum + (m.successRate || 0), 0) / metrics.length) * 100).toFixed(1)}%`
-                : `${(metrics.reduce((sum, m) => sum + m.resourceUsage.cpu, 0) / metrics.length).toFixed(1)}%`
-              }
+                  ? `${((metrics.reduce((sum, m) => sum + (m.successRate || 0), 0) / metrics.length) * 100).toFixed(1)}%`
+                  : `${(metrics.reduce((sum, m) => sum + m.resourceUsage.cpu, 0) / metrics.length).toFixed(1)}%`}
             </div>
           </div>
-          
+
           <div className="bg-green-50 rounded-lg p-4">
             <div className="text-sm font-medium text-green-900">Best</div>
             <div className="text-2xl font-bold text-green-600">
-              {activeTab === 'execution-time' 
-                ? `${Math.min(...metrics.map(m => m.executionTime))}ms`
+              {activeTab === 'execution-time'
+                ? `${Math.min(...metrics.map((m) => m.executionTime))}ms`
                 : activeTab === 'success-rate'
-                ? `${(Math.max(...metrics.map(m => m.successRate || 0)) * 100).toFixed(1)}%`
-                : `${Math.min(...metrics.map(m => m.resourceUsage.cpu)).toFixed(1)}%`
-              }
+                  ? `${(Math.max(...metrics.map((m) => m.successRate || 0)) * 100).toFixed(1)}%`
+                  : `${Math.min(...metrics.map((m) => m.resourceUsage.cpu)).toFixed(1)}%`}
             </div>
           </div>
-          
+
           <div className="bg-red-50 rounded-lg p-4">
             <div className="text-sm font-medium text-red-900">Worst</div>
             <div className="text-2xl font-bold text-red-600">
-              {activeTab === 'execution-time' 
-                ? `${Math.max(...metrics.map(m => m.executionTime))}ms`
+              {activeTab === 'execution-time'
+                ? `${Math.max(...metrics.map((m) => m.executionTime))}ms`
                 : activeTab === 'success-rate'
-                ? `${(Math.min(...metrics.map(m => m.successRate || 0)) * 100).toFixed(1)}%`
-                : `${Math.max(...metrics.map(m => m.resourceUsage.cpu)).toFixed(1)}%`
-              }
+                  ? `${(Math.min(...metrics.map((m) => m.successRate || 0)) * 100).toFixed(1)}%`
+                  : `${Math.max(...metrics.map((m) => m.resourceUsage.cpu)).toFixed(1)}%`}
             </div>
           </div>
-          
+
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="text-sm font-medium text-gray-900">Data Points</div>
             <div className="text-2xl font-bold text-gray-600">{metrics.length}</div>

@@ -23,12 +23,10 @@ const KiroTestPage: React.FC = () => {
   };
 
   const testErrorHook = async () => {
-    const mockError = createAppError(
-      'TEST_ERROR',
-      'This is a test error for Kiro integration',
-      { component: 'KiroTestPage' }
-    );
-    
+    const mockError = createAppError('TEST_ERROR', 'This is a test error for Kiro integration', {
+      component: 'KiroTestPage',
+    });
+
     await triggerKiroHook('test-workflow-123', mockError);
     alert('Kiro hook triggered! Check browser console and backend logs.');
   };
@@ -37,9 +35,7 @@ const KiroTestPage: React.FC = () => {
     <Layout>
       <div className="px-4 py-6">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">
-            Kiro Integration Test Dashboard
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">Kiro Integration Test Dashboard</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Integration Test */}
@@ -52,7 +48,7 @@ const KiroTestPage: React.FC = () => {
               >
                 {isLoading ? 'Testing...' : 'Run Integration Test'}
               </button>
-              
+
               {testResults && (
                 <div className="mt-4 p-4 bg-gray-50 rounded">
                   <pre className="text-sm overflow-auto">
@@ -90,7 +86,9 @@ const KiroTestPage: React.FC = () => {
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold mb-4">Steering Test</h2>
               <div className="space-y-2 text-sm">
-                <div>Validation Error → {getErrorRoute(createAppError('VALIDATION_ERROR', 'Test'))}</div>
+                <div>
+                  Validation Error → {getErrorRoute(createAppError('VALIDATION_ERROR', 'Test'))}
+                </div>
                 <div>System Error → {getErrorRoute(createAppError('SYSTEM_ERROR', 'Test'))}</div>
                 <div>AI Error → {getErrorRoute(createAppError('AI_SERVICE_ERROR', 'Test'))}</div>
               </div>

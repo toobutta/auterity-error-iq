@@ -17,67 +17,85 @@ const sanitizeCode = (code: string): string => {
 
 // Security: Validate language parameter
 const validateLanguage = (language: string): string => {
-  const allowedLanguages = ['javascript', 'json', 'markup', 'text', 'html', 'css', 'python', 'bash'];
+  const allowedLanguages = [
+    'javascript',
+    'json',
+    'markup',
+    'text',
+    'html',
+    'css',
+    'python',
+    'bash',
+  ];
   return allowedLanguages.includes(language.toLowerCase()) ? language.toLowerCase() : 'text';
 };
 
 // Dynamically import syntax highlighter with style bundled together
-const SyntaxHighlighterWithStyle = lazy(() => 
+const SyntaxHighlighterWithStyle = lazy(() =>
   Promise.all([
     import('react-syntax-highlighter/dist/esm/languages/prism/javascript'),
     import('react-syntax-highlighter/dist/esm/languages/prism/json'),
     import('react-syntax-highlighter/dist/esm/languages/prism/markup'),
-    import('react-syntax-highlighter/dist/esm/styles/prism/dark')
-  ]).then(([jsLang, jsonLang, markupLang, { default: darkStyle }]) => {
-    // Import the main Prism component
-    return import('react-syntax-highlighter/dist/esm/prism-light').then(({ default: SyntaxHighlighter }) => {
-      try {
-        // Register languages
-        SyntaxHighlighter.registerLanguage('javascript', jsLang.default);
-        SyntaxHighlighter.registerLanguage('json', jsonLang.default);
-        SyntaxHighlighter.registerLanguage('text', markupLang.default);
-        SyntaxHighlighter.registerLanguage('markup', markupLang.default);
-        
-        return {
-          default: ({ language, children, className, showLineNumbers }: LazyCodeHighlighterProps) => {
-            const sanitizedCode = sanitizeCode(children);
-            const validatedLanguage = validateLanguage(language);
-            
-            return (
-              <SyntaxHighlighter
-                language={validatedLanguage === 'text' ? 'markup' : validatedLanguage}
-                style={darkStyle}
-                className={className}
-                showLineNumbers={showLineNumbers}
-                PreTag="div"
-                customStyle={{
-                  margin: 0,
-                  padding: '1rem',
-                  background: '#1a1a1a'
-                }}
-              >
-                {sanitizedCode}
-              </SyntaxHighlighter>
-            );
+    import('react-syntax-highlighter/dist/esm/styles/prism/dark'),
+  ])
+    .then(([jsLang, jsonLang, markupLang, { default: darkStyle }]) => {
+      // Import the main Prism component
+      return import('react-syntax-highlighter/dist/esm/prism-light').then(
+        ({ default: SyntaxHighlighter }) => {
+          try {
+            // Register languages
+            SyntaxHighlighter.registerLanguage('javascript', jsLang.default);
+            SyntaxHighlighter.registerLanguage('json', jsonLang.default);
+            SyntaxHighlighter.registerLanguage('text', markupLang.default);
+            SyntaxHighlighter.registerLanguage('markup', markupLang.default);
+
+            return {
+              default: ({
+                language,
+                children,
+                className,
+                showLineNumbers,
+              }: LazyCodeHighlighterProps) => {
+                const sanitizedCode = sanitizeCode(children);
+                const validatedLanguage = validateLanguage(language);
+
+                return (
+                  <SyntaxHighlighter
+                    language={validatedLanguage === 'text' ? 'markup' : validatedLanguage}
+                    style={darkStyle}
+                    className={className}
+                    showLineNumbers={showLineNumbers}
+                    PreTag="div"
+                    customStyle={{
+                      margin: 0,
+                      padding: '1rem',
+                      background: '#1a1a1a',
+                    }}
+                  >
+                    {sanitizedCode}
+                  </SyntaxHighlighter>
+                );
+              },
+            };
+          } catch (error) {
+            console.error('Failed to register syntax highlighter languages', {
+              component: 'LazyCodeHighlighter',
+              timestamp: new Date().toISOString(),
+              error: error instanceof Error ? error.message : 'Unknown error',
+            });
+            throw error;
           }
-        };
-      } catch (error) {
-        console.error('Failed to register syntax highlighter languages', {
-          component: 'LazyCodeHighlighter',
-          timestamp: new Date().toISOString(),
-          error: error instanceof Error ? error.message : 'Unknown error'
-        });
-        throw error;
-      }
-    });
-  }).catch(error => {
-    console.error('Failed to load syntax highlighter modules', {
-      component: 'LazyCodeHighlighter',
-      timestamp: new Date().toISOString(),
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
-    throw error;
-  })
+        }
+      );
+    })
+    .catch((error) => {
+      console.error('Failed to load syntax highlighter modules', {
+        component: 'LazyCodeHighlighter',
+        timestamp: new Date().toISOString(),
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      throw error;
+    })
 );
 
 interface LazyCodeHighlighterProps {
@@ -104,9 +122,7 @@ const ErrorFallback: React.FC<{ children: string }> = ({ children }) => {
   const sanitizedCode = sanitizeCode(children);
   return (
     <div className="bg-gray-100 border border-gray-300 p-4 rounded">
-      <div className="text-red-600 text-sm mb-2">
-        Failed to load syntax highlighter
-      </div>
+      <div className="text-red-600 text-sm mb-2">Failed to load syntax highlighter</div>
       <pre className="whitespace-pre-wrap text-gray-800 font-mono text-sm overflow-x-auto">
         {sanitizedCode}
       </pre>
@@ -118,7 +134,11 @@ class SyntaxHighlighterErrorBoundary extends React.Component<
   { children: React.ReactNode; fallback: React.ComponentType<{ children: string }>; code: string },
   { hasError: boolean }
 > {
-  constructor(props: { children: React.ReactNode; fallback: React.ComponentType<{ children: string }>; code: string }) {
+  constructor(props: {
+    children: React.ReactNode;
+    fallback: React.ComponentType<{ children: string }>;
+    code: string;
+  }) {
     super(props);
     this.state = { hasError: false };
   }
@@ -135,7 +155,7 @@ class SyntaxHighlighterErrorBoundary extends React.Component<
       action: 'fallback_rendered',
       error: error.message,
       stack: error.stack,
-      componentStack: errorInfo.componentStack
+      componentStack: errorInfo.componentStack,
     });
   }
 
@@ -153,7 +173,7 @@ export const LazyCodeHighlighter: React.FC<LazyCodeHighlighterProps> = ({
   language,
   children,
   className = '',
-  showLineNumbers = false
+  showLineNumbers = false,
 }) => {
   return (
     <SyntaxHighlighterErrorBoundary fallback={ErrorFallback} code={children}>

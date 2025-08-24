@@ -7,7 +7,9 @@ import { Template } from '../../types/template';
 // Mock ReactFlow
 vi.mock('reactflow', () => ({
   __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => <div data-testid="react-flow">{children}</div>,
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="react-flow">{children}</div>
+  ),
   Background: () => <div data-testid="background" />,
   Controls: () => <div data-testid="controls" />,
   MiniMap: () => <div data-testid="minimap" />,
@@ -31,7 +33,7 @@ const mockTemplate: Template = {
         type: 'start',
         position: { x: 0, y: 0 },
         description: 'Starting step',
-        config: {}
+        config: {},
       },
       {
         id: 'step-2',
@@ -39,17 +41,17 @@ const mockTemplate: Template = {
         type: 'ai_process',
         position: { x: 200, y: 0 },
         description: 'AI processing step',
-        config: {}
-      }
+        config: {},
+      },
     ],
     connections: [
       {
         id: 'conn-1',
         source: 'step-1',
         target: 'step-2',
-        label: 'Next'
-      }
-    ]
+        label: 'Next',
+      },
+    ],
   },
   isActive: true,
   createdAt: '2024-01-01T00:00:00Z',
@@ -62,7 +64,7 @@ const mockTemplate: Template = {
       description: 'Customer name',
       parameterType: 'string',
       isRequired: true,
-      defaultValue: ''
+      defaultValue: '',
     },
     {
       id: 'param-2',
@@ -71,9 +73,9 @@ const mockTemplate: Template = {
       description: 'Priority level',
       parameterType: 'number',
       isRequired: false,
-      defaultValue: 1
-    }
-  ]
+      defaultValue: 1,
+    },
+  ],
 };
 
 describe('TemplatePreviewModal', () => {
@@ -271,7 +273,7 @@ describe('TemplatePreviewModal', () => {
         mockTemplate,
         expect.objectContaining({
           customerName: 'John Doe',
-          priority: 1
+          priority: 1,
         })
       );
     });
@@ -317,7 +319,7 @@ describe('TemplatePreviewModal', () => {
   it('shows empty state when template has no workflow steps', () => {
     const templateWithoutSteps = {
       ...mockTemplate,
-      definition: { steps: [], connections: [] }
+      definition: { steps: [], connections: [] },
     };
 
     render(
@@ -335,7 +337,7 @@ describe('TemplatePreviewModal', () => {
   it('shows empty state when template has no parameters', () => {
     const templateWithoutParams = {
       ...mockTemplate,
-      parameters: []
+      parameters: [],
     };
 
     render(

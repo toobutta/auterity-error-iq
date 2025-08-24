@@ -1,13 +1,17 @@
 """Workflow engine configuration and factory setup."""
 
-from app.interfaces.step_executor import StepExecutorFactory
 from app.executors.step_executors import (
-    InputStepExecutor, ProcessStepExecutor, OutputStepExecutor,
-    AIStepExecutor, DataValidationStepExecutor, DefaultStepExecutor
+    AIStepExecutor,
+    DataValidationStepExecutor,
+    DefaultStepExecutor,
+    InputStepExecutor,
+    OutputStepExecutor,
+    ProcessStepExecutor,
 )
-from app.types.workflow import RetryConfig
-from app.services.workflow_engine import WorkflowEngine
+from app.interfaces.step_executor import StepExecutorFactory
 from app.monitoring.performance import PerformanceMonitor
+from app.services.workflow_engine import WorkflowEngine
+from app.types.workflow import RetryConfig
 
 
 def create_workflow_engine() -> WorkflowEngine:
@@ -26,7 +30,7 @@ def create_workflow_engine() -> WorkflowEngine:
         max_attempts=3,
         delay_seconds=1.0,
         backoff_multiplier=2.0,
-        retryable_errors=["ConnectionError", "TimeoutError", "AIServiceError"]
+        retryable_errors=["ConnectionError", "TimeoutError", "AIServiceError"],
     )
 
     # Create performance monitor
@@ -35,6 +39,5 @@ def create_workflow_engine() -> WorkflowEngine:
     return WorkflowEngine(
         step_factory=factory,
         retry_config=retry_config,
-        performance_monitor=performance_monitor
+        performance_monitor=performance_monitor,
     )
-

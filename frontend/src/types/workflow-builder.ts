@@ -95,16 +95,16 @@ export interface NodeConfig {
     recipients: string[];
     attachments?: string[];
   };
-  
+
   // CRM Update Node
   crmFields?: {
     leadScore?: number;
     status?: string;
     notes?: string;
     tags?: string[];
-     customFields?: Record<string, unknown>;
+    customFields?: Record<string, unknown>;
   };
-  
+
   // AI Node
   aiPrompt?: {
     model: 'gpt-4' | 'gpt-3.5-turbo';
@@ -113,31 +113,31 @@ export interface NodeConfig {
     maxTokens?: number;
     systemMessage?: string;
   };
-  
+
   // Condition Node
   conditions?: {
     field: string;
     operator: 'equals' | 'contains' | 'greater_than' | 'less_than' | 'in' | 'not_in';
-     value: unknown;
+    value: unknown;
     logicalOperator?: 'and' | 'or';
   }[];
-  
+
   // Trigger Nodes
   customerInquiry?: {
     sources: ('email' | 'phone' | 'web_form' | 'chat')[];
-     filters?: Record<string, unknown>;
+    filters?: Record<string, unknown>;
   };
-  
+
   inventoryUpdate?: {
     eventTypes: ('new_arrival' | 'price_change' | 'status_change')[];
-     vehicleFilters?: {
+    vehicleFilters?: {
       make?: string[];
       model?: string[];
       year?: number[];
       priceRange?: { min: number; max: number };
-     };
+    };
   };
-  
+
   serviceAppointment?: {
     serviceTypes: ('maintenance' | 'repair' | 'inspection')[];
     reminderSettings?: {
@@ -145,7 +145,7 @@ export interface NodeConfig {
       daysBefore: number;
     };
   };
-  
+
   // Action Nodes
   scheduleAppointment?: {
     appointmentType: 'service' | 'sales' | 'test_drive';
@@ -153,7 +153,7 @@ export interface NodeConfig {
     location?: string;
     autoConfirm: boolean;
   };
-  
+
   inventoryCheck?: {
     searchCriteria: {
       make?: string;
@@ -163,12 +163,12 @@ export interface NodeConfig {
     };
     includeNearbyDealerships: boolean;
   };
-  
+
   generateQuote?: {
     includeFinancing: boolean;
     includeTradeIn: boolean;
     validityDays: number;
-     discountRules?: Record<string, unknown>;
+    discountRules?: Record<string, unknown>;
   };
 }
 
@@ -245,7 +245,7 @@ export interface VehicleData {
   status: 'available' | 'sold' | 'reserved' | 'maintenance';
   features: string[];
   images?: string[];
-   specifications?: Record<string, unknown>;
+  specifications?: Record<string, unknown>;
 }
 
 export interface ServiceAppointmentData {
@@ -266,34 +266,34 @@ export const AUTOMOTIVE_NODE_CATEGORIES: NodeCategory[] = [
     name: 'Triggers',
     icon: '⚡',
     color: 'yellow',
-    nodes: []
+    nodes: [],
   },
   {
     id: 'actions',
     name: 'Actions',
     icon: '🔄',
     color: 'blue',
-    nodes: []
+    nodes: [],
   },
   {
     id: 'conditions',
     name: 'Conditions',
     icon: '❓',
     color: 'purple',
-    nodes: []
+    nodes: [],
   },
   {
     id: 'ai_powered',
     name: 'AI Powered',
     icon: '🤖',
     color: 'green',
-    nodes: []
+    nodes: [],
   },
   {
     id: 'integrations',
     name: 'Integrations',
     icon: '🔌',
     color: 'orange',
-    nodes: []
-  }
+    nodes: [],
+  },
 ];

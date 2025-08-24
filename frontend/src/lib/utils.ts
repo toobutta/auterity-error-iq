@@ -8,17 +8,17 @@
 export function cn(...classes: (string | undefined | null | false)[]): string {
   const classList = classes.filter(Boolean) as string[];
   const classMap = new Map<string, string>();
-  
+
   // Simple deduplication for Tailwind classes
-  classList.forEach(cls => {
-    cls.split(' ').forEach(singleClass => {
+  classList.forEach((cls) => {
+    cls.split(' ').forEach((singleClass) => {
       if (singleClass) {
         // Keep the last occurrence of conflicting classes
         classMap.set(singleClass, singleClass);
       }
     });
   });
-  
+
   return Array.from(classMap.values()).join(' ');
 }
 
@@ -84,9 +84,11 @@ export function formatNumber(num: number): string {
  */
 export function getSeverityStyles(severity: 'critical' | 'high' | 'medium' | 'low' | 'info') {
   const styles = {
-    critical: 'bg-red-50 dark:bg-red-900/10 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
+    critical:
+      'bg-red-50 dark:bg-red-900/10 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
     high: 'bg-orange-50 dark:bg-orange-900/10 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800',
-    medium: 'bg-yellow-50 dark:bg-yellow-900/10 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800',
+    medium:
+      'bg-yellow-50 dark:bg-yellow-900/10 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800',
     low: 'bg-green-50 dark:bg-green-900/10 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
     info: 'bg-blue-50 dark:bg-blue-900/10 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
   };
@@ -100,12 +102,12 @@ export function getSeverityStyles(severity: 'critical' | 'high' | 'medium' | 'lo
 export function getSeverityIcon(severity: 'critical' | 'high' | 'medium' | 'low' | 'info'): string {
   const icons = {
     critical: '🔴',
-    high: '🟠', 
+    high: '🟠',
     medium: '🟡',
     low: '🟢',
     info: '🔵',
   };
-  
+
   return icons[severity];
 }
 
@@ -117,7 +119,7 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
   delay: number
 ): (...args: Parameters<T>) => void {
   let timeoutId: NodeJS.Timeout;
-  
+
   return (...args: Parameters<T>) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => func.apply(null, args), delay);
@@ -127,7 +129,7 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 /**
  * Generate unique IDs for components
  */
-export function generateId(prefix: string = 'component'): string {
+export function generateId(prefix = 'component'): string {
   return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
@@ -145,7 +147,7 @@ export function getAriaLabel(
     low: 'Low severity',
     info: 'Information',
   };
-  
+
   return `${severityText[severity]} ${context}`;
 }
 
@@ -153,10 +155,7 @@ export function getAriaLabel(
  * Modern loading state generator
  */
 export function createSkeletonClass(className?: string): string {
-  return cn(
-    'animate-pulse bg-neutral-200 dark:bg-neutral-800 rounded',
-    className || 'h-4 w-full'
-  );
+  return cn('animate-pulse bg-neutral-200 dark:bg-neutral-800 rounded', className || 'h-4 w-full');
 }
 
 /**
@@ -164,11 +163,11 @@ export function createSkeletonClass(className?: string): string {
  */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 B';
-  
+
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 }
 

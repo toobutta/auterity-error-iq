@@ -1,4 +1,3 @@
-
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { PerformanceDashboard } from '../PerformanceDashboard';
@@ -23,16 +22,33 @@ vi.mock('../../api/workflows', () => ({
 
 // Mock Recharts components
 vi.mock('recharts', () => ({
-  LineChart: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => <div data-testid="line-chart" {...props}>{children}</div>,
-  BarChart: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => <div data-testid="bar-chart" {...props}>{children}</div>,
+  LineChart: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <div data-testid="line-chart" {...props}>
+      {children}
+    </div>
+  ),
+  BarChart: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <div data-testid="bar-chart" {...props}>
+      {children}
+    </div>
+  ),
   Line: (props: Record<string, unknown>) => <div data-testid="line" {...props} />,
   Bar: (props: Record<string, unknown>) => <div data-testid="bar" {...props} />,
   XAxis: (props: Record<string, unknown>) => <div data-testid="x-axis" {...props} />,
   YAxis: (props: Record<string, unknown>) => <div data-testid="y-axis" {...props} />,
-  CartesianGrid: (props: Record<string, unknown>) => <div data-testid="cartesian-grid" {...props} />,
+  CartesianGrid: (props: Record<string, unknown>) => (
+    <div data-testid="cartesian-grid" {...props} />
+  ),
   Tooltip: (props: Record<string, unknown>) => <div data-testid="tooltip" {...props} />,
   Legend: (props: Record<string, unknown>) => <div data-testid="legend" {...props} />,
-  ResponsiveContainer: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => <div data-testid="responsive-container" {...props}>{children}</div>,
+  ResponsiveContainer: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <div data-testid="responsive-container" {...props}>
+      {children}
+    </div>
+  ),
 }));
 
 const mockPerformanceData = [
@@ -61,17 +77,17 @@ describe('PerformanceDashboard', () => {
 
   it('renders loading state initially', () => {
     vi.mocked(workflowsApi.getSystemPerformance).mockImplementation(() => new Promise(() => {}));
-    
+
     render(<PerformanceDashboard showSystemMetrics={true} />);
-    
+
     expect(screen.getByTestId('loading-skeleton')).toBeInTheDocument();
   });
 
   it('renders error state when API call fails', async () => {
     vi.mocked(workflowsApi.getSystemPerformance).mockRejectedValue(new Error('API Error'));
-    
+
     render(<PerformanceDashboard showSystemMetrics={true} />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Error Loading Performance Data')).toBeInTheDocument();
       expect(screen.getByText('Failed to load performance data')).toBeInTheDocument();
@@ -80,20 +96,24 @@ describe('PerformanceDashboard', () => {
 
   it('renders no data state when no metrics available', async () => {
     vi.mocked(workflowsApi.getSystemPerformance).mockResolvedValue([]);
-    
+
     render(<PerformanceDashboard showSystemMetrics={true} />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('No Performance Data')).toBeInTheDocument();
-      expect(screen.getByText('No performance metrics available yet. Execute some workflows to see data here.')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'No performance metrics available yet. Execute some workflows to see data here.'
+        )
+      ).toBeInTheDocument();
     });
   });
 
   it('renders performance data with charts', async () => {
     vi.mocked(workflowsApi.getSystemPerformance).mockResolvedValue(mockPerformanceData);
-    
+
     render(<PerformanceDashboard showSystemMetrics={true} />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('System Performance')).toBeInTheDocument();
       expect(screen.getByTestId('line-chart')).toBeInTheDocument();
@@ -103,9 +123,9 @@ describe('PerformanceDashboard', () => {
 
   it('switches between different chart types', async () => {
     vi.mocked(workflowsApi.getSystemPerformance).mockResolvedValue(mockPerformanceData);
-    
+
     render(<PerformanceDashboard showSystemMetrics={true} />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Execution Time')).toBeInTheDocument();
     });
@@ -121,9 +141,9 @@ describe('PerformanceDashboard', () => {
 
   it('displays summary statistics', async () => {
     vi.mocked(workflowsApi.getSystemPerformance).mockResolvedValue(mockPerformanceData);
-    
+
     render(<PerformanceDashboard showSystemMetrics={true} />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Average')).toBeInTheDocument();
       expect(screen.getByText('Best')).toBeInTheDocument();
@@ -135,9 +155,9 @@ describe('PerformanceDashboard', () => {
 
   it('calls workflow-specific API when workflowId provided', async () => {
     vi.mocked(workflowsApi.getWorkflowPerformance).mockResolvedValue(mockPerformanceData);
-    
+
     render(<PerformanceDashboard workflowId="test-workflow-123" />);
-    
+
     await waitFor(() => {
       expect(workflowsApi.getWorkflowPerformance).toHaveBeenCalledWith('test-workflow-123');
       expect(screen.getByText('Workflow Performance')).toBeInTheDocument();
@@ -146,9 +166,9 @@ describe('PerformanceDashboard', () => {
 
   it('refreshes data when refresh button clicked', async () => {
     vi.mocked(workflowsApi.getSystemPerformance).mockResolvedValue(mockPerformanceData);
-    
+
     render(<PerformanceDashboard showSystemMetrics={true} />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('System Performance')).toBeInTheDocument();
     });
@@ -163,9 +183,9 @@ describe('PerformanceDashboard', () => {
     vi.mocked(workflowsApi.getSystemPerformance)
       .mockRejectedValueOnce(new Error('API Error'))
       .mockResolvedValueOnce(mockPerformanceData);
-    
+
     render(<PerformanceDashboard showSystemMetrics={true} />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Error Loading Performance Data')).toBeInTheDocument();
     });
@@ -180,9 +200,9 @@ describe('PerformanceDashboard', () => {
 
   it('applies custom className', async () => {
     vi.mocked(workflowsApi.getSystemPerformance).mockResolvedValue(mockPerformanceData);
-    
+
     render(<PerformanceDashboard className="custom-class" showSystemMetrics={true} />);
-    
+
     await waitFor(() => {
       const dashboard = screen.getByRole('region', { name: 'Workflow Performance Dashboard' });
       expect(dashboard).toHaveClass('custom-class');

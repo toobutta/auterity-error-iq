@@ -1,10 +1,13 @@
 """
 Pydantic schemas for Agent and AgentCapability.
 """
-from typing import Optional, List, Dict, Any
-from uuid import UUID
-from pydantic import BaseModel, Field
+
 import enum
+from typing import Any, Dict, List, Optional
+from uuid import UUID
+
+from pydantic import BaseModel
+
 
 class AgentType(str, enum.Enum):
     MCP = "MCP"
@@ -12,19 +15,23 @@ class AgentType(str, enum.Enum):
     CUSTOM = "CUSTOM"
     A2A = "A2A"
 
+
 class AgentStatus(str, enum.Enum):
     ACTIVE = "ACTIVE"
     INACTIVE = "INACTIVE"
     UNHEALTHY = "UNHEALTHY"
     MAINTENANCE = "MAINTENANCE"
 
+
 class AgentCapabilityBase(BaseModel):
     capability_name: str
     capability_data: Dict[str, Any]
     is_active: bool = True
 
+
 class AgentCapabilityCreate(AgentCapabilityBase):
     pass
+
 
 class AgentCapability(AgentCapabilityBase):
     id: UUID
@@ -34,6 +41,7 @@ class AgentCapability(AgentCapabilityBase):
 
     class Config:
         orm_mode = True
+
 
 class AgentBase(BaseModel):
     name: str
@@ -45,8 +53,10 @@ class AgentBase(BaseModel):
     mcp_server_id: Optional[UUID]
     user_id: UUID
 
+
 class AgentCreate(AgentBase):
     pass
+
 
 class Agent(AgentBase):
     id: UUID

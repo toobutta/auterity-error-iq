@@ -1,17 +1,18 @@
 """Tests for authentication functionality."""
 
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app.auth import authenticate_user
-from app.auth import create_access_token
-from app.auth import get_password_hash
-from app.auth import verify_password
-from app.auth import verify_token
+from app.auth import (
+    authenticate_user,
+    create_access_token,
+    get_password_hash,
+    verify_password,
+    verify_token,
+)
 from app.database import get_db
 from app.main import app
 from app.models.user import User

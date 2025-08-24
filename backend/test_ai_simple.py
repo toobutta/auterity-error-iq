@@ -5,9 +5,7 @@ import asyncio
 import os
 import sys
 import traceback
-from unittest.mock import AsyncMock
-from unittest.mock import MagicMock
-from unittest.mock import patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 # Add the app directory to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "app"))
@@ -18,10 +16,12 @@ sys.modules["openai.RateLimitError"] = Exception
 sys.modules["openai.APIError"] = Exception
 
 from app.services.ai_service import AIModelType  # noqa: E402
-from app.services.ai_service import AIResponse
-from app.services.ai_service import AIService
-from app.services.ai_service import AIServiceError
-from app.services.ai_service import PromptTemplate
+from app.services.ai_service import (
+    AIResponse,
+    AIService,
+    AIServiceError,
+    PromptTemplate,
+)
 
 
 async def test_prompt_template():

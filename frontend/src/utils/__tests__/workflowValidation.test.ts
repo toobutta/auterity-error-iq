@@ -210,7 +210,7 @@ describe('workflowValidation', () => {
       };
 
       const errors = validateWorkflow(workflow);
-      expect(errors.some(error => error.type === 'circular_dependency')).toBe(true);
+      expect(errors.some((error) => error.type === 'circular_dependency')).toBe(true);
     });
 
     it('detects AI process nodes without prompts', () => {

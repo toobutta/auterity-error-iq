@@ -3,8 +3,7 @@
 
 import sys
 import traceback
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from jose import jwt
 from passlib.context import CryptContext

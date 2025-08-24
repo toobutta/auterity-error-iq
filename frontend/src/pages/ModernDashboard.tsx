@@ -1,5 +1,12 @@
 import React, { Suspense, useState, useEffect } from 'react';
-import { MetricCard, MetricGrid, RevenueMetricCard, CustomerMetricCard, WorkflowMetricCard, ServiceMetricCard } from '../components/MetricCard';
+import {
+  MetricCard,
+  MetricGrid,
+  RevenueMetricCard,
+  CustomerMetricCard,
+  WorkflowMetricCard,
+  ServiceMetricCard,
+} from '../components/MetricCard';
 
 // Mock data - replace with real API calls
 const mockMetrics = {
@@ -34,17 +41,50 @@ const QuickActions = () => {
 // Recent activity feed
 const RecentActivityFeed = () => {
   const activities = [
-    { id: 1, type: 'sale', message: 'New vehicle sold: 2024 Honda Civic', time: '2 minutes ago', icon: '🚗' },
-    { id: 2, type: 'service', message: 'Service appointment completed for Customer #1234', time: '15 minutes ago', icon: '🔧' },
-    { id: 3, type: 'inquiry', message: 'New customer inquiry for SUV models', time: '1 hour ago', icon: '📞' },
-    { id: 4, type: 'finance', message: 'Loan application approved for $25,000', time: '2 hours ago', icon: '💰' },
-    { id: 5, type: 'inventory', message: 'Low stock alert: 2024 Toyota Camry', time: '3 hours ago', icon: '📦' },
+    {
+      id: 1,
+      type: 'sale',
+      message: 'New vehicle sold: 2024 Honda Civic',
+      time: '2 minutes ago',
+      icon: '🚗',
+    },
+    {
+      id: 2,
+      type: 'service',
+      message: 'Service appointment completed for Customer #1234',
+      time: '15 minutes ago',
+      icon: '🔧',
+    },
+    {
+      id: 3,
+      type: 'inquiry',
+      message: 'New customer inquiry for SUV models',
+      time: '1 hour ago',
+      icon: '📞',
+    },
+    {
+      id: 4,
+      type: 'finance',
+      message: 'Loan application approved for $25,000',
+      time: '2 hours ago',
+      icon: '💰',
+    },
+    {
+      id: 5,
+      type: 'inventory',
+      message: 'Low stock alert: 2024 Toyota Camry',
+      time: '3 hours ago',
+      icon: '📦',
+    },
   ];
 
   return (
     <div className="space-y-4 max-h-96 overflow-y-auto">
       {activities.map((activity) => (
-        <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-white/10 dark:hover:bg-slate-800/30 transition-colors">
+        <div
+          key={activity.id}
+          className="flex items-start space-x-3 p-3 rounded-lg hover:bg-white/10 dark:hover:bg-slate-800/30 transition-colors"
+        >
           <div className="text-2xl">{activity.icon}</div>
           <div className="flex-1 min-w-0">
             <p className="text-sm text-gray-900 dark:text-white font-medium">{activity.message}</p>
@@ -68,7 +108,10 @@ const SystemStatus = () => {
   return (
     <div className="space-y-3">
       {systems.map((system) => (
-        <div key={system.name} className="flex items-center justify-between p-3 rounded-lg bg-white/5 dark:bg-slate-800/20">
+        <div
+          key={system.name}
+          className="flex items-center justify-between p-3 rounded-lg bg-white/5 dark:bg-slate-800/20"
+        >
           <div className="flex items-center space-x-3">
             <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
             <span className="text-sm font-medium text-gray-900 dark:text-white">{system.name}</span>
@@ -212,13 +255,15 @@ const Dashboard: React.FC = () => {
                 </button>
               </div>
             </div>
-            
+
             {/* Chart placeholder */}
             <div className="h-64 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-slate-800/50 dark:to-slate-700/50 flex items-center justify-center">
               <div className="text-center">
                 <div className="text-4xl mb-2">📈</div>
                 <p className="text-gray-600 dark:text-gray-400">Performance Chart</p>
-                <p className="text-sm text-gray-500 dark:text-gray-500">Integration with charting library needed</p>
+                <p className="text-sm text-gray-500 dark:text-gray-500">
+                  Integration with charting library needed
+                </p>
               </div>
             </div>
           </div>

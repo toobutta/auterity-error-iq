@@ -27,21 +27,21 @@ describe('AIProcessNode', () => {
 
   it('renders AI process node with label and description', () => {
     render(<AIProcessNode data={mockData} isConnectable={true} />);
-    
+
     expect(screen.getByText('AI Process')).toBeInTheDocument();
     expect(screen.getByText('This is an AI process node')).toBeInTheDocument();
   });
 
   it('renders truncated prompt when provided', () => {
     render(<AIProcessNode data={mockData} isConnectable={true} />);
-    
+
     // The prompt gets truncated to 30 characters plus "..."
     expect(screen.getByText(/This is a test prompt for AI p.../)).toBeInTheDocument();
   });
 
   it('renders both target and source handles', () => {
     render(<AIProcessNode data={mockData} isConnectable={true} />);
-    
+
     expect(screen.getByTestId('handle-target-top')).toBeInTheDocument();
     expect(screen.getByTestId('handle-source-bottom')).toBeInTheDocument();
   });
@@ -51,9 +51,9 @@ describe('AIProcessNode', () => {
       ...mockData,
       validationErrors: ['AI prompt is required', 'Step name is required'],
     };
-    
+
     render(<AIProcessNode data={dataWithErrors} isConnectable={true} />);
-    
+
     expect(screen.getByText('AI prompt is required')).toBeInTheDocument();
   });
 
@@ -62,16 +62,16 @@ describe('AIProcessNode', () => {
       ...mockData,
       validationErrors: ['AI prompt is required'],
     };
-    
+
     const { container } = render(<AIProcessNode data={dataWithErrors} isConnectable={true} />);
-    
+
     const nodeElement = container.querySelector('.border-red-400');
     expect(nodeElement).toBeInTheDocument();
   });
 
   it('applies normal styling when no validation errors', () => {
     const { container } = render(<AIProcessNode data={mockData} isConnectable={true} />);
-    
+
     const nodeElement = container.querySelector('.border-blue-300');
     expect(nodeElement).toBeInTheDocument();
   });
@@ -81,9 +81,9 @@ describe('AIProcessNode', () => {
       ...mockData,
       config: {},
     };
-    
+
     render(<AIProcessNode data={dataWithoutPrompt} isConnectable={true} />);
-    
+
     expect(screen.queryByText(/\.\.\./)).not.toBeInTheDocument();
   });
 });

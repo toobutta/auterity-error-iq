@@ -6,36 +6,34 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import (
     agents,
+    auterity_expansion,
     auth,
+    ecosystem_management,
     error_correlation,
     error_management,
     logs,
     monitoring,
+    service_status_enhanced,
     sso,
     tasks,
     templates,
     tenants,
     websockets,
     workflows,
-    auterity_expansion,
-    service_status_enhanced,
-    ecosystem_management,
-)
-from app.middleware.error_handler import (
-    ErrorReportingMiddleware,
-    GlobalErrorHandlerMiddleware,
 )
 from app.middleware.enhanced_error_middleware import (
     EnhancedErrorHandlingMiddleware,
     ErrorMetricsMiddleware,
     HealthCheckMiddleware,
 )
+from app.middleware.error_handler import (
+    ErrorReportingMiddleware,
+    GlobalErrorHandlerMiddleware,
+)
 from app.middleware.logging import StructuredLoggingMiddleware
+from app.middleware.otel_middleware import setup_opentelemetry
 from app.middleware.prometheus import prometheus_middleware
 from app.middleware.tracing import setup_tracing
-from app.middleware.otel_middleware import setup_opentelemetry
-from app.middleware.tenant_middleware import TenantIsolationMiddleware, AuditLoggingMiddleware
-from app.startup.ai_ecosystem_startup import startup_event, shutdown_event, ecosystem_manager
 
 # Environment configuration
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
@@ -59,7 +57,7 @@ app = FastAPI(
     debug=DEBUG,
     docs_url="/docs" if DEBUG else None,  # Disable docs in production
     redoc_url="/redoc" if DEBUG else None,  # Disable redoc in production
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Add error handling middleware (order matters - add first to catch all errors)
@@ -70,8 +68,7 @@ app.add_middleware(
 
 # Add enhanced error handling middleware
 app.add_middleware(
-    EnhancedErrorHandlingMiddleware, 
-    enable_auto_recovery=ENVIRONMENT == "production"
+    EnhancedErrorHandlingMiddleware, enable_auto_recovery=ENVIRONMENT == "production"
 )
 app.add_middleware(ErrorMetricsMiddleware)
 app.add_middleware(HealthCheckMiddleware)
@@ -132,30 +129,48 @@ async def root():
         "version": "0.2.0",
         "features": [
             "AI Service Orchestration",
-            "Predictive Analytics", 
+            "Predictive Analytics",
             "Autonomous Optimization",
             "Real-time Monitoring",
             "RelayCore Message Routing",
-            "NeuroWeaver ML Pipeline"
+            "NeuroWeaver ML Pipeline",
         ],
-        "ecosystem_status": ecosystem_manager.get_ecosystem_status()
+        "ecosystem_status": ecosystem_manager.get_ecosystem_status(),
     }
 
 
 @app.get("/health")
 async def health_check():
     ecosystem_status = ecosystem_manager.get_ecosystem_status()
-    
+
     return {
-        "status": "healthy" if ecosystem_status.get("ready_for_production") else "starting",
+        "status": (
+            "healthy" if ecosystem_status.get("ready_for_production") else "starting"
+        ),
         "ecosystem": ecosystem_status,
         "components": {
-            "ai_orchestrator": "healthy" if ecosystem_status.get("components_status", {}).get("ai_orchestrator") else "offline",
-            "relay_core": "healthy" if ecosystem_status.get("components_status", {}).get("relay_core") else "offline", 
-            "neuro_weaver": "healthy" if ecosystem_status.get("components_status", {}).get("neuro_weaver") else "offline",
-            "service_registry": "healthy" if ecosystem_status.get("components_status", {}).get("service_registry") else "offline"
+            "ai_orchestrator": (
+                "healthy"
+                if ecosystem_status.get("components_status", {}).get("ai_orchestrator")
+                else "offline"
+            ),
+            "relay_core": (
+                "healthy"
+                if ecosystem_status.get("components_status", {}).get("relay_core")
+                else "offline"
+            ),
+            "neuro_weaver": (
+                "healthy"
+                if ecosystem_status.get("components_status", {}).get("neuro_weaver")
+                else "offline"
+            ),
+            "service_registry": (
+                "healthy"
+                if ecosystem_status.get("components_status", {}).get("service_registry")
+                else "offline"
+            ),
         },
-        "timestamp": "2025-08-23T00:00:00Z"
+        "timestamp": "2025-08-23T00:00:00Z",
     }
 
 

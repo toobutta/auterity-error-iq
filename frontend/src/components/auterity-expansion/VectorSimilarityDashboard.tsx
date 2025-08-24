@@ -44,7 +44,9 @@ const VectorSimilarityDashboard: React.FC = () => {
   const [clusters, setClusters] = useState<SimilarityCluster[]>([]);
   const [metrics, setMetrics] = useState<VectorMetrics | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'embeddings' | 'similarity' | 'clusters'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'embeddings' | 'similarity' | 'clusters'>(
+    'overview'
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItemType, setSelectedItemType] = useState<string>('all');
 
@@ -64,7 +66,7 @@ const VectorSimilarityDashboard: React.FC = () => {
           content_hash: 'abc123',
           embedding_vector: [0.1, 0.2, 0.3, 0.4, 0.5],
           embedding_metadata: { title: 'Customer Support Workflow', category: 'support' },
-          created_at: '2025-01-27T10:00:00Z'
+          created_at: '2025-01-27T10:00:00Z',
         },
         {
           id: '2',
@@ -73,8 +75,8 @@ const VectorSimilarityDashboard: React.FC = () => {
           content_hash: 'def456',
           embedding_vector: [0.11, 0.21, 0.31, 0.41, 0.51],
           embedding_metadata: { title: 'Customer Support Process', category: 'support' },
-          created_at: '2025-01-27T09:00:00Z'
-        }
+          created_at: '2025-01-27T09:00:00Z',
+        },
       ];
 
       const mockSimilarityResults: SimilarityResult[] = [
@@ -84,7 +86,7 @@ const VectorSimilarityDashboard: React.FC = () => {
           item_type: 'workflow',
           item_id: 'wf-002',
           content_preview: 'Customer Support Process - Automated ticket routing...',
-          metadata: { title: 'Customer Support Process', category: 'support' }
+          metadata: { title: 'Customer Support Process', category: 'support' },
         },
         {
           id: '2',
@@ -92,8 +94,8 @@ const VectorSimilarityDashboard: React.FC = () => {
           item_type: 'workflow',
           item_id: 'wf-003',
           content_preview: 'Support Ticket Management - Handle customer inquiries...',
-          metadata: { title: 'Support Ticket Management', category: 'support' }
-        }
+          metadata: { title: 'Support Ticket Management', category: 'support' },
+        },
       ];
 
       const mockClusters: SimilarityCluster[] = [
@@ -102,8 +104,8 @@ const VectorSimilarityDashboard: React.FC = () => {
           items: mockSimilarityResults,
           average_similarity: 0.91,
           cluster_size: 3,
-          primary_category: 'support'
-        }
+          primary_category: 'support',
+        },
       ];
 
       const mockMetrics: VectorMetrics = {
@@ -111,7 +113,7 @@ const VectorSimilarityDashboard: React.FC = () => {
         average_similarity: 0.78,
         duplicate_detection_rate: 0.15,
         processing_time_ms: 245,
-        clusters_found: 8
+        clusters_found: 8,
       };
 
       setEmbeddings(mockEmbeddings);
@@ -134,15 +136,21 @@ const VectorSimilarityDashboard: React.FC = () => {
 
   const getItemTypeColor = (type: string) => {
     switch (type) {
-      case 'workflow': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'ticket': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'template': return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+      case 'workflow':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+      case 'ticket':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case 'template':
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
     }
   };
 
-  const filteredEmbeddings = embeddings.filter(embedding => {
-    const matchesSearch = embedding.embedding_metadata.title.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredEmbeddings = embeddings.filter((embedding) => {
+    const matchesSearch = embedding.embedding_metadata.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
     const matchesType = selectedItemType === 'all' || embedding.item_type === selectedItemType;
     return matchesSearch && matchesType;
   });
@@ -168,13 +176,18 @@ const VectorSimilarityDashboard: React.FC = () => {
               AI-powered duplicate detection and similarity analysis using vector embeddings
             </p>
           </div>
-          <Button 
-            variant="default" 
+          <Button
+            variant="default"
             size="lg"
             onClick={fetchVectorData}
             leftIcon={
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
             }
           >
@@ -189,7 +202,7 @@ const VectorSimilarityDashboard: React.FC = () => {
           { id: 'overview', label: 'Overview', icon: '📊' },
           { id: 'embeddings', label: 'Embeddings', icon: '🧠' },
           { id: 'similarity', label: 'Similarity', icon: '🔍' },
-          { id: 'clusters', label: 'Clusters', icon: '📦' }
+          { id: 'clusters', label: 'Clusters', icon: '📦' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -257,27 +270,72 @@ const VectorSimilarityDashboard: React.FC = () => {
             <div className="p-6 pt-0">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <Button variant="outline" className="h-20 flex-col justify-center">
-                  <svg className="w-8 h-8 mb-2 text-automotive-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <svg
+                    className="w-8 h-8 mb-2 text-automotive-primary"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
                   </svg>
                   Search Similar
                 </Button>
                 <Button variant="outline" className="h-20 flex-col justify-center">
-                  <svg className="w-8 h-8 mb-2 text-automotive-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  <svg
+                    className="w-8 h-8 mb-2 text-automotive-primary"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
                   </svg>
                   Generate Embeddings
                 </Button>
                 <Button variant="outline" className="h-20 flex-col justify-center">
-                  <svg className="w-8 h-8 mb-2 text-automotive-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  <svg
+                    className="w-8 h-8 mb-2 text-automotive-primary"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
                   </svg>
                   View Analytics
                 </Button>
                 <Button variant="outline" className="h-20 flex-col justify-center">
-                  <svg className="w-8 h-8 mb-2 text-automotive-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <svg
+                    className="w-8 h-8 mb-2 text-automotive-primary"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
                   </svg>
                   Configure Models
                 </Button>
@@ -290,10 +348,17 @@ const VectorSimilarityDashboard: React.FC = () => {
       {activeTab === 'embeddings' && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Vector Embeddings</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              Vector Embeddings
+            </h2>
             <Button variant="default" size="lg">
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
               </svg>
               Generate New Embeddings
             </Button>
@@ -345,7 +410,9 @@ const VectorSimilarityDashboard: React.FC = () => {
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                           {embedding.embedding_metadata.title}
                         </h3>
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getItemTypeColor(embedding.item_type)}`}>
+                        <span
+                          className={`px-2 py-1 text-xs font-medium rounded-full ${getItemTypeColor(embedding.item_type)}`}
+                        >
                           {embedding.item_type.toUpperCase()}
                         </span>
                         <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
@@ -363,7 +430,9 @@ const VectorSimilarityDashboard: React.FC = () => {
                         </div>
                         <div>
                           <span className="font-medium">Created:</span>
-                          <span className="ml-2">{new Date(embedding.created_at).toLocaleDateString()}</span>
+                          <span className="ml-2">
+                            {new Date(embedding.created_at).toLocaleDateString()}
+                          </span>
                         </div>
                       </div>
                       <div className="mt-3">
@@ -373,9 +442,15 @@ const VectorSimilarityDashboard: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex space-x-2">
-                      <Button variant="outline" size="sm">View Details</Button>
-                      <Button variant="outline" size="sm">Find Similar</Button>
-                      <Button variant="destructive" size="sm">Delete</Button>
+                      <Button variant="outline" size="sm">
+                        View Details
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Find Similar
+                      </Button>
+                      <Button variant="destructive" size="sm">
+                        Delete
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -388,7 +463,9 @@ const VectorSimilarityDashboard: React.FC = () => {
       {activeTab === 'similarity' && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Similarity Results</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              Similarity Results
+            </h2>
             <Button variant="outline">View All Results</Button>
           </div>
 
@@ -399,19 +476,30 @@ const VectorSimilarityDashboard: React.FC = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getItemTypeColor(result.item_type)}`}>
+                        <span
+                          className={`px-2 py-1 text-xs font-medium rounded-full ${getItemTypeColor(result.item_type)}`}
+                        >
                           {result.item_type.toUpperCase()}
                         </span>
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          result.similarity_score >= 0.9 ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
-                          result.similarity_score >= 0.7 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                          'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                        }`}>
-                          {result.similarity_score >= 0.9 ? 'HIGH SIMILARITY' :
-                           result.similarity_score >= 0.7 ? 'MEDIUM SIMILARITY' : 'LOW SIMILARITY'}
+                        <span
+                          className={`px-2 py-1 text-xs font-medium rounded-full ${
+                            result.similarity_score >= 0.9
+                              ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                              : result.similarity_score >= 0.7
+                                ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                                : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                          }`}
+                        >
+                          {result.similarity_score >= 0.9
+                            ? 'HIGH SIMILARITY'
+                            : result.similarity_score >= 0.7
+                              ? 'MEDIUM SIMILARITY'
+                              : 'LOW SIMILARITY'}
                         </span>
                       </div>
-                      <p className="text-gray-900 dark:text-gray-100 mb-2">{result.content_preview}</p>
+                      <p className="text-gray-900 dark:text-gray-100 mb-2">
+                        {result.content_preview}
+                      </p>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400">
                         <div>
                           <span className="font-medium">Similarity Score:</span>
@@ -430,9 +518,15 @@ const VectorSimilarityDashboard: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex space-x-2">
-                      <Button variant="outline" size="sm">Review</Button>
-                      <Button variant="outline" size="sm">Merge</Button>
-                      <Button variant="outline" size="sm">Ignore</Button>
+                      <Button variant="outline" size="sm">
+                        Review
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Merge
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Ignore
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -444,8 +538,10 @@ const VectorSimilarityDashboard: React.FC = () => {
 
       {activeTab === 'clusters' && (
         <div className="space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Similarity Clusters</h2>
-          
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+            Similarity Clusters
+          </h2>
+
           <div className="grid gap-6">
             {clusters.map((cluster) => (
               <Card key={cluster.id} variant="glass">
@@ -468,7 +564,10 @@ const VectorSimilarityDashboard: React.FC = () => {
                 <div className="p-6 pt-0">
                   <div className="space-y-3">
                     {cluster.items.map((item, index) => (
-                      <div key={item.id} className="flex items-center justify-between p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between p-3 bg-white/50 dark:bg-black/20 rounded-lg"
+                      >
                         <div className="flex items-center space-x-3">
                           <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
                             #{index + 1}
@@ -483,7 +582,9 @@ const VectorSimilarityDashboard: React.FC = () => {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className={`font-semibold ${getSimilarityColor(item.similarity_score)}`}>
+                          <div
+                            className={`font-semibold ${getSimilarityColor(item.similarity_score)}`}
+                          >
                             {(item.similarity_score * 100).toFixed(1)}%
                           </div>
                           <div className="text-xs text-gray-500 dark:text-gray-400">similarity</div>
@@ -497,9 +598,15 @@ const VectorSimilarityDashboard: React.FC = () => {
                         Cluster Actions
                       </span>
                       <div className="flex space-x-2">
-                        <Button variant="outline" size="sm">Review Cluster</Button>
-                        <Button variant="outline" size="sm">Merge Items</Button>
-                        <Button variant="destructive" size="sm">Dissolve</Button>
+                        <Button variant="outline" size="sm">
+                          Review Cluster
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          Merge Items
+                        </Button>
+                        <Button variant="destructive" size="sm">
+                          Dissolve
+                        </Button>
                       </div>
                     </div>
                   </div>

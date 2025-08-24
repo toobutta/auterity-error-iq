@@ -5,13 +5,14 @@ from uuid import uuid4
 
 import pytest
 
-from app.models.execution import ExecutionStatus
-from app.models.execution import WorkflowExecution
+from app.models.execution import ExecutionStatus, WorkflowExecution
 from app.models.user import User
 from app.models.workflow import Workflow
-from app.services.workflow_engine import ExecutionResult
-from app.services.workflow_engine import WorkflowEngine
-from app.services.workflow_engine import WorkflowExecutionError
+from app.services.workflow_engine import (
+    ExecutionResult,
+    WorkflowEngine,
+    WorkflowExecutionError,
+)
 
 
 @pytest.fixture

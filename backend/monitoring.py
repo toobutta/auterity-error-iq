@@ -1,8 +1,9 @@
 """
 Performance and Health Monitoring Scaffold
 """
-import time
+
 import logging
+
 
 class Monitor:
     def __init__(self):
@@ -13,5 +14,6 @@ class Monitor:
 
     def log_health(self, status: str):
         self.logger.info(f"Health status: {status}")
+
 
 monitor = Monitor()

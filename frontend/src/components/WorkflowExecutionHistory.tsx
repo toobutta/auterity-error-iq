@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { getExecutionHistory, ExecutionHistoryParams, ExecutionHistoryResponse } from '../api/workflows';
+import {
+  getExecutionHistory,
+  ExecutionHistoryParams,
+  ExecutionHistoryResponse,
+} from '../api/workflows';
 import { WorkflowExecution } from '../types/workflow';
 
 // Interface for API error responses
@@ -18,14 +22,14 @@ interface WorkflowExecutionHistoryProps {
 
 const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
   onExecutionSelect,
-  refreshTrigger
+  refreshTrigger,
 }) => {
   const [executions, setExecutions] = useState<WorkflowExecution[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(0);
   const [total, setTotal] = useState(0);
-  
+
   // Filter and pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -33,35 +37,44 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [sortBy, setSortBy] = useState<'started_at' | 'completed_at' | 'duration' | 'status'>('started_at');
+  const [sortBy, setSortBy] = useState<'started_at' | 'completed_at' | 'duration' | 'status'>(
+    'started_at'
+  );
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const fetchExecutions = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const params: ExecutionHistoryParams = {
         page: currentPage,
         pageSize,
         sortBy,
-        sortOrder
+        sortOrder,
       };
-      
-      if (statusFilter) params.status = statusFilter as 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+
+      if (statusFilter)
+        params.status = statusFilter as
+          | 'pending'
+          | 'running'
+          | 'completed'
+          | 'failed'
+          | 'cancelled';
       if (searchQuery.trim()) params.search = searchQuery.trim();
       if (startDate) params.startDate = startDate;
       if (endDate) params.endDate = endDate;
-      
+
       const response: ExecutionHistoryResponse = await getExecutionHistory(params);
-      
+
       setExecutions(response.executions);
       setTotalPages(response.totalPages);
       setTotal(response.total);
-      
     } catch (err: unknown) {
       const apiError = err as ApiErrorResponse;
-      const errorMessage = apiError?.response?.data?.detail || (err instanceof Error ? err.message : 'Failed to load execution history');
+      const errorMessage =
+        apiError?.response?.data?.detail ||
+        (err instanceof Error ? err.message : 'Failed to load execution history');
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -94,11 +107,11 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
 
   const formatDuration = (startedAt: string, completedAt?: string) => {
     if (!completedAt) return '-';
-    
+
     const start = new Date(startedAt).getTime();
     const end = new Date(completedAt).getTime();
     const duration = end - start;
-    
+
     if (duration < 1000) return `${duration}ms`;
     if (duration < 60000) return `${(duration / 1000).toFixed(1)}s`;
     if (duration < 3600000) return `${(duration / 60000).toFixed(1)}m`;
@@ -106,8 +119,8 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
   };
 
   const getStatusBadge = (status: WorkflowExecution['status']) => {
-    const baseClasses = "px-2 py-1 text-xs font-medium rounded-full";
-    
+    const baseClasses = 'px-2 py-1 text-xs font-medium rounded-full';
+
     switch (status) {
       case 'pending':
         return `${baseClasses} bg-yellow-100 text-yellow-800`;
@@ -126,14 +139,18 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
     if (sortBy !== column) {
       return <span className="text-gray-400">↕</span>;
     }
-    return sortOrder === 'asc' ? <span className="text-blue-600">↑</span> : <span className="text-blue-600">↓</span>;
+    return sortOrder === 'asc' ? (
+      <span className="text-blue-600">↑</span>
+    ) : (
+      <span className="text-blue-600">↓</span>
+    );
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md">
       <div className="p-6 border-b border-gray-200">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Execution History</h2>
-        
+
         {/* Filters */}
         <div className="space-y-4">
           <form onSubmit={handleSearch} className="flex flex-wrap gap-4 items-end">
@@ -150,7 +167,7 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-            
+
             <div>
               <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
                 Status
@@ -168,7 +185,7 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                 <option value="failed">Failed</option>
               </select>
             </div>
-            
+
             <div>
               <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
                 Start Date
@@ -181,7 +198,7 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                 className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-            
+
             <div>
               <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
                 End Date
@@ -194,14 +211,14 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                 className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-            
+
             <button
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Search
             </button>
-            
+
             <button
               type="button"
               onClick={() => {
@@ -247,7 +264,7 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Workflow Name
                   </th>
-                  <th 
+                  <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('status')}
                   >
@@ -256,7 +273,7 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                       {getSortIcon('status')}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('started_at')}
                   >
@@ -265,7 +282,7 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                       {getSortIcon('started_at')}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('completed_at')}
                   >
@@ -274,7 +291,7 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                       {getSortIcon('completed_at')}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('duration')}
                   >
@@ -309,9 +326,7 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={getStatusBadge(execution.status)}>
-                          {execution.status}
-                        </span>
+                        <span className={getStatusBadge(execution.status)}>{execution.status}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {formatDate(execution.startedAt)}
@@ -365,7 +380,7 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                 </select>
                 <span className="text-sm text-gray-700">per page</span>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
@@ -374,11 +389,11 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                 >
                   Previous
                 </button>
-                
+
                 <span className="text-sm text-gray-700">
                   Page {currentPage} of {totalPages}
                 </span>
-                
+
                 <button
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}

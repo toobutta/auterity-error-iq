@@ -1,10 +1,13 @@
 """
 Pydantic schemas for MCP Server operations.
 """
-from typing import Optional, Dict, Any
-from uuid import UUID
-from pydantic import BaseModel
+
 from enum import Enum
+from typing import Any, Dict, Optional
+from uuid import UUID
+
+from pydantic import BaseModel
+
 
 class MCPServerStatus(str, Enum):
     STOPPED = "STOPPED"
@@ -13,9 +16,11 @@ class MCPServerStatus(str, Enum):
     STOPPING = "STOPPING"
     ERROR = "ERROR"
 
+
 class MCPProtocolVersion(str, Enum):
     V1_0 = "1.0"
     V2_0 = "2.0"
+
 
 class MCPServerBase(BaseModel):
     name: str
@@ -24,8 +29,10 @@ class MCPServerBase(BaseModel):
     capabilities: Dict[str, Any]
     user_id: UUID
 
+
 class MCPServerCreate(MCPServerBase):
     pass
+
 
 class MCPServer(MCPServerBase):
     id: UUID

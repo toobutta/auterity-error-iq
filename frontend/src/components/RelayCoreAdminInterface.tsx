@@ -19,23 +19,27 @@ export const RelayCoreAdminInterface: React.FC<RelayCoreAdminInterfaceProps> = (
   return (
     <div className="bg-gray-50 p-6 rounded-lg shadow-md max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">RelayCore Admin Interface</h2>
-      
+
       {/* Budget Management */}
       <div className="mb-8">
         <h3 className="text-lg font-semibold text-gray-700 mb-4">Budget Management</h3>
         <div className="bg-white p-4 rounded-lg shadow">
           <div className="flex justify-between items-center mb-2">
             <span className="text-gray-600">Monthly Budget Limit: ${budgetLimit}</span>
-            <span className="text-gray-800 font-medium">${currentUsage} / ${budgetLimit}</span>
+            <span className="text-gray-800 font-medium">
+              ${currentUsage} / ${budgetLimit}
+            </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-4">
-            <div 
-              className="bg-blue-600 h-4 rounded-full" 
+            <div
+              className="bg-blue-600 h-4 rounded-full"
               style={{ width: `${usagePercent}%` }}
             ></div>
           </div>
           <div className="mt-4">
-            <label htmlFor="budget" className="block text-sm font-medium text-gray-700">Set Budget Limit</label>
+            <label htmlFor="budget" className="block text-sm font-medium text-gray-700">
+              Set Budget Limit
+            </label>
             <input
               type="range"
               id="budget"
@@ -54,11 +58,16 @@ export const RelayCoreAdminInterface: React.FC<RelayCoreAdminInterfaceProps> = (
         <h3 className="text-lg font-semibold text-gray-700 mb-4">Provider Configuration</h3>
         <div className="bg-white p-4 rounded-lg shadow">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {providers.map(provider => (
-              <div key={provider.id} className={`p-4 rounded-lg border-2 ${provider.status === 'active' ? 'border-green-500' : 'border-gray-300'}`}>
+            {providers.map((provider) => (
+              <div
+                key={provider.id}
+                className={`p-4 rounded-lg border-2 ${provider.status === 'active' ? 'border-green-500' : 'border-gray-300'}`}
+              >
                 <div className="flex justify-between items-start">
                   <h4 className="font-bold text-gray-800">{provider.name}</h4>
-                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${provider.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                  <span
+                    className={`px-2 py-1 text-xs font-semibold rounded-full ${provider.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}
+                  >
                     {provider.status}
                   </span>
                 </div>

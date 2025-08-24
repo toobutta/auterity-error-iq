@@ -7,7 +7,7 @@ export const mockAppError = createAppError(
   'TEST_ERROR',
   'Test error message',
   {
-    component: 'TestComponent'
+    component: 'TestComponent',
   },
   'Test error details',
   ErrorSeverity.MEDIUM,
@@ -23,5 +23,5 @@ export const mockFunctions = {
 
 // Reset all mocks
 export const resetMocks = () => {
-  Object.values(mockFunctions).forEach(mock => mock.mockReset());
+  Object.values(mockFunctions).forEach((mock) => mock.mockReset());
 };

@@ -1,13 +1,13 @@
 import React from 'react';
-import { 
-  LineChart as RechartsLine, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer 
+import {
+  LineChart as RechartsLine,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
 } from 'recharts';
 import { PerformanceMetrics } from '../../types/performance';
 
@@ -18,11 +18,11 @@ interface LineChartProps {
   className?: string;
 }
 
-export const LineChart: React.FC<LineChartProps> = ({ 
-  data, 
-  type, 
+export const LineChart: React.FC<LineChartProps> = ({
+  data,
+  type,
   'aria-label': ariaLabel,
-  className = ''
+  className = '',
 }) => {
   const getLineColor = () => {
     switch (type) {
@@ -74,18 +74,18 @@ export const LineChart: React.FC<LineChartProps> = ({
 
   const formatXAxisValue = (value: string | Date): string => {
     const date = new Date(value);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
-  const chartData = data.map(item => ({
+  const chartData = data.map((item) => ({
     ...item,
     timestamp: item.timestamp instanceof Date ? item.timestamp.toISOString() : item.timestamp,
-    successRate: item.successRate ? item.successRate * 100 : 0 // Convert to percentage for display
+    successRate: item.successRate ? item.successRate * 100 : 0, // Convert to percentage for display
   }));
 
   return (
@@ -101,22 +101,22 @@ export const LineChart: React.FC<LineChartProps> = ({
           }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-          <XAxis 
+          <XAxis
             dataKey="timestamp"
             stroke="#6B7280"
             fontSize={12}
             tickFormatter={formatXAxisValue}
           />
-          <YAxis 
+          <YAxis
             stroke="#6B7280"
             fontSize={12}
-            label={{ 
-              value: getYAxisLabel(), 
-              angle: -90, 
-              position: 'insideLeft' 
+            label={{
+              value: getYAxisLabel(),
+              angle: -90,
+              position: 'insideLeft',
             }}
           />
-          <Tooltip 
+          <Tooltip
             contentStyle={{
               backgroundColor: '#F9FAFB',
               border: '1px solid #E5E7EB',
@@ -126,8 +126,8 @@ export const LineChart: React.FC<LineChartProps> = ({
             labelFormatter={(label: string) => `Time: ${formatXAxisValue(label)}`}
           />
           <Legend />
-          <Line 
-            type="monotone" 
+          <Line
+            type="monotone"
             dataKey={getDataKey()}
             stroke={getLineColor()}
             strokeWidth={2}

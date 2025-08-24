@@ -1,4 +1,3 @@
-
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import TemplateCard from '../TemplateCard';
@@ -22,9 +21,9 @@ const mockTemplate: Template = {
       parameterType: 'string',
       isRequired: true,
       defaultValue: undefined,
-      validationRules: undefined
-    }
-  ]
+      validationRules: undefined,
+    },
+  ],
 };
 
 describe('TemplateCard', () => {
@@ -33,11 +32,7 @@ describe('TemplateCard', () => {
     const mockOnPreview = vi.fn();
 
     render(
-      <TemplateCard
-        template={mockTemplate}
-        onSelect={mockOnSelect}
-        onPreview={mockOnPreview}
-      />
+      <TemplateCard template={mockTemplate} onSelect={mockOnSelect} onPreview={mockOnPreview} />
     );
 
     expect(screen.getByText('Customer Inquiry Template')).toBeInTheDocument();
@@ -52,11 +47,7 @@ describe('TemplateCard', () => {
     const mockOnPreview = vi.fn();
 
     render(
-      <TemplateCard
-        template={mockTemplate}
-        onSelect={mockOnSelect}
-        onPreview={mockOnPreview}
-      />
+      <TemplateCard template={mockTemplate} onSelect={mockOnSelect} onPreview={mockOnPreview} />
     );
 
     fireEvent.click(screen.getByText('Use Template'));
@@ -68,11 +59,7 @@ describe('TemplateCard', () => {
     const mockOnPreview = vi.fn();
 
     render(
-      <TemplateCard
-        template={mockTemplate}
-        onSelect={mockOnSelect}
-        onPreview={mockOnPreview}
-      />
+      <TemplateCard template={mockTemplate} onSelect={mockOnSelect} onPreview={mockOnPreview} />
     );
 
     fireEvent.click(screen.getByText('Preview'));
@@ -89,38 +76,22 @@ describe('TemplateCard', () => {
     const mockOnPreview = vi.fn();
 
     const { rerender } = render(
-      <TemplateCard
-        template={salesTemplate}
-        onSelect={mockOnSelect}
-        onPreview={mockOnPreview}
-      />
+      <TemplateCard template={salesTemplate} onSelect={mockOnSelect} onPreview={mockOnPreview} />
     );
     expect(screen.getByText('sales')).toHaveClass('bg-blue-100', 'text-blue-800');
 
     rerender(
-      <TemplateCard
-        template={serviceTemplate}
-        onSelect={mockOnSelect}
-        onPreview={mockOnPreview}
-      />
+      <TemplateCard template={serviceTemplate} onSelect={mockOnSelect} onPreview={mockOnPreview} />
     );
     expect(screen.getByText('service')).toHaveClass('bg-green-100', 'text-green-800');
 
     rerender(
-      <TemplateCard
-        template={partsTemplate}
-        onSelect={mockOnSelect}
-        onPreview={mockOnPreview}
-      />
+      <TemplateCard template={partsTemplate} onSelect={mockOnSelect} onPreview={mockOnPreview} />
     );
     expect(screen.getByText('parts')).toHaveClass('bg-yellow-100', 'text-yellow-800');
 
     rerender(
-      <TemplateCard
-        template={generalTemplate}
-        onSelect={mockOnSelect}
-        onPreview={mockOnPreview}
-      />
+      <TemplateCard template={generalTemplate} onSelect={mockOnSelect} onPreview={mockOnPreview} />
     );
     expect(screen.getByText('general')).toHaveClass('bg-gray-100', 'text-gray-800');
   });

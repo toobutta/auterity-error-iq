@@ -49,9 +49,9 @@ export interface Position {
   y: number;
 }
 
-export type NodeType = 
+export type NodeType =
   | 'input'
-  | 'output' 
+  | 'output'
   | 'process'
   | 'decision'
   | 'api'
@@ -166,4 +166,3 @@ export interface LogEntry {
 }
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal';
-

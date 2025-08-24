@@ -33,7 +33,7 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
   executionId,
   className = '',
   maxHeight = 'max-h-96',
-  enableRealTime = true
+  enableRealTime = true,
 }) => {
   const [logs, setLogs] = useState<ExecutionLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,18 +42,18 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
   const [filterLevel, setFilterLevel] = useState<'all' | 'info' | 'warning' | 'error'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [autoScroll, setAutoScroll] = useState(true);
-  
+
   // Refs for auto-scroll functionality
   const logsContainerRef = useRef<HTMLDivElement>(null);
   const logsEndRef = useRef<HTMLDivElement>(null);
-  
+
   // WebSocket hook for real-time logs
   const {
     logs: realtimeLogs,
     connectionStatus,
     error: wsError,
     reconnect,
-    clearLogs: clearRealtimeLogs
+    clearLogs: clearRealtimeLogs,
   } = useWebSocketLogs(executionId, { enabled: enableRealTime });
 
   const fetchLogs = useCallback(async () => {
@@ -72,9 +72,9 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
         duration_ms: log.duration || 0,
         timestamp: log.timestamp,
         error_message: log.level === 'error' ? log.message : undefined,
-        level: log.level === 'debug' ? 'info' : log.level as 'info' | 'warning' | 'error'
+        level: log.level === 'debug' ? 'info' : (log.level as 'info' | 'warning' | 'error'),
       }));
-      
+
       setLogs(transformedLogs);
     } catch (err) {
       setError('Failed to load execution logs');
@@ -87,19 +87,21 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
   // Merge real-time logs with existing logs
   useEffect(() => {
     if (enableRealTime && realtimeLogs.length > 0) {
-      setLogs(prevLogs => {
+      setLogs((prevLogs) => {
         // Create a map of existing logs by ID to avoid duplicates
-        const existingLogsMap = new Map(prevLogs.map(log => [log.id, log]));
-        
+        const existingLogsMap = new Map(prevLogs.map((log) => [log.id, log]));
+
         // Add new real-time logs that don't already exist
-        const newLogs = realtimeLogs.filter(log => !existingLogsMap.has(log.id));
-        
+        const newLogs = realtimeLogs.filter((log) => !existingLogsMap.has(log.id));
+
         if (newLogs.length > 0) {
           const mergedLogs = [...prevLogs, ...newLogs];
           // Sort by timestamp to maintain chronological order
-          return mergedLogs.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+          return mergedLogs.sort(
+            (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+          );
         }
-        
+
         return prevLogs;
       });
     }
@@ -142,13 +144,14 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
     setExpandedLogs(newExpanded);
   };
 
-  const filteredLogs = logs.filter(log => {
+  const filteredLogs = logs.filter((log) => {
     const matchesLevel = filterLevel === 'all' || log.level === filterLevel;
-    const matchesSearch = searchTerm === '' ||
+    const matchesSearch =
+      searchTerm === '' ||
       log.step_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.step_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (log.error_message && log.error_message.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+
     return matchesLevel && matchesSearch;
   });
 
@@ -170,17 +173,23 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
 
   const getLevelIcon = (level: string) => {
     switch (level) {
-      case 'error': return '❌';
-      case 'warning': return '⚠️';
-      default: return 'ℹ️';
+      case 'error':
+        return '❌';
+      case 'warning':
+        return '⚠️';
+      default:
+        return 'ℹ️';
     }
   };
 
   const getLevelColor = (level: string) => {
     switch (level) {
-      case 'error': return 'text-red-600 bg-red-50 border-red-200';
-      case 'warning': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      default: return 'text-blue-600 bg-blue-50 border-blue-200';
+      case 'error':
+        return 'text-red-600 bg-red-50 border-red-200';
+      case 'warning':
+        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      default:
+        return 'text-blue-600 bg-blue-50 border-blue-200';
     }
   };
 
@@ -197,7 +206,7 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
-      hour12: false
+      hour12: false,
     });
   };
 
@@ -248,14 +257,8 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
           <div className="flex items-center justify-between mb-3 p-2 bg-gray-50 rounded-md">
             <div className="flex items-center space-x-2">
               <div className={`w-2 h-2 rounded-full ${connectionInfo.color}`} />
-              <span className="text-sm text-gray-600">
-                {connectionInfo.text}
-              </span>
-              {wsError && (
-                <span className="text-xs text-red-600 ml-2">
-                  {wsError}
-                </span>
-              )}
+              <span className="text-sm text-gray-600">{connectionInfo.text}</span>
+              {wsError && <span className="text-xs text-red-600 ml-2">{wsError}</span>}
             </div>
             <div className="flex items-center space-x-2">
               {connectionStatus === 'error' && (
@@ -263,8 +266,18 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
                   onClick={reconnect}
                   className="inline-flex items-center px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
-                  <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  <svg
+                    className="h-3 w-3 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
                   </svg>
                   Reconnect
                 </button>
@@ -278,14 +291,19 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
                 }`}
               >
                 <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                  />
                 </svg>
                 Auto-scroll
               </button>
             </div>
           </div>
         )}
-        
+
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">
             Execution Logs
@@ -306,7 +324,12 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
                 className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
               >
                 <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
                 </svg>
                 Refresh
               </button>
@@ -317,7 +340,12 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
                 className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
                 </svg>
                 Clear
               </button>
@@ -331,8 +359,18 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
           <div className="flex-1">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                  className="h-4 w-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
               </div>
               <input
@@ -349,7 +387,9 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
           <div className="sm:w-40">
             <select
               value={filterLevel}
-              onChange={(e) => setFilterLevel(e.target.value as 'all' | 'info' | 'warning' | 'error')}
+              onChange={(e) =>
+                setFilterLevel(e.target.value as 'all' | 'info' | 'warning' | 'error')
+              }
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
             >
               <option value="all">All Levels</option>
@@ -372,10 +412,9 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
             <div className="text-gray-400 text-4xl mb-4">📝</div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">No Logs Found</h3>
             <p className="text-gray-600">
-              {logs.length === 0 
+              {logs.length === 0
                 ? 'No execution logs available for this workflow.'
-                : 'No logs match your current filters.'
-              }
+                : 'No logs match your current filters.'}
             </p>
           </div>
         ) : (
@@ -392,7 +431,9 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
                           <h4 className="text-sm font-medium text-gray-900 truncate">
                             {log.step_name}
                           </h4>
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getLevelColor(log.level)}`}>
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getLevelColor(log.level)}`}
+                          >
                             {log.step_type}
                           </span>
                         </div>
@@ -437,13 +478,18 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
                     onClick={() => toggleLogExpansion(log.id)}
                     className="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600"
                   >
-                    <svg 
-                      className={`h-5 w-5 transform transition-transform ${expandedLogs.has(log.id) ? 'rotate-180' : ''}`} 
-                      fill="none" 
-                      stroke="currentColor" 
+                    <svg
+                      className={`h-5 w-5 transform transition-transform ${expandedLogs.has(log.id) ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </button>
                 </div>

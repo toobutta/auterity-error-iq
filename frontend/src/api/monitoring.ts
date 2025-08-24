@@ -68,52 +68,54 @@ export const getUnifiedMetrics = async (
 ): Promise<SystemMetrics[]> => {
   const params = new URLSearchParams({
     timeRange,
-    ...(systems && { systems: systems.join(',') })
+    ...(systems && { systems: systems.join(',') }),
   });
 
   const response = await apiClient.get<SystemMetrics[]>(`/api/monitoring/metrics?${params}`);
-  
+
   // Transform response to ensure proper date parsing
   return response.map((metric: SystemMetrics) => ({
     ...metric,
     timestamp: new Date(metric.timestamp),
     alerts: metric.alerts.map((alert: Alert) => ({
       ...alert,
-      timestamp: new Date(alert.timestamp)
-    }))
+      timestamp: new Date(alert.timestamp),
+    })),
   }));
 };
 
 /**
  * Fetch AutoMatrix specific metrics
  */
-export const getAutoMatrixMetrics = async (timeRange: string = '24h'): Promise<SystemMetrics[]> => {
-  const response = await apiClient.get<SystemMetrics[]>(`/api/autmatrix/metrics?timeRange=${timeRange}`);
+export const getAutoMatrixMetrics = async (timeRange = '24h'): Promise<SystemMetrics[]> => {
+  const response = await apiClient.get<SystemMetrics[]>(
+    `/api/autmatrix/metrics?timeRange=${timeRange}`
+  );
   return response.map((metric: SystemMetrics) => ({
     ...metric,
-    timestamp: new Date(metric.timestamp)
+    timestamp: new Date(metric.timestamp),
   }));
 };
 
 /**
  * Fetch RelayCore specific metrics
  */
-export const getRelayCoreMetrics = async (timeRange: string = '24h'): Promise<SystemMetrics[]> => {
+export const getRelayCoreMetrics = async (timeRange = '24h'): Promise<SystemMetrics[]> => {
   const response = await apiClient.get(`/api/relaycore/metrics?timeRange=${timeRange}`);
   return response.map((metric: SystemMetrics) => ({
     ...metric,
-    timestamp: new Date(metric.timestamp)
+    timestamp: new Date(metric.timestamp),
   }));
 };
 
 /**
  * Fetch NeuroWeaver specific metrics
  */
-export const getNeuroWeaverMetrics = async (timeRange: string = '24h'): Promise<SystemMetrics[]> => {
+export const getNeuroWeaverMetrics = async (timeRange = '24h'): Promise<SystemMetrics[]> => {
   const response = await apiClient.get(`/api/neuroweaver/metrics?timeRange=${timeRange}`);
   return response.map((metric: SystemMetrics) => ({
     ...metric,
-    timestamp: new Date(metric.timestamp)
+    timestamp: new Date(metric.timestamp),
   }));
 };
 
@@ -124,7 +126,7 @@ export const getActiveAlerts = async (): Promise<Alert[]> => {
   const response = await apiClient.get<Alert[]>('/api/monitoring/alerts');
   return response.map((alert: Alert) => ({
     ...alert,
-    timestamp: new Date(alert.timestamp)
+    timestamp: new Date(alert.timestamp),
   }));
 };
 
@@ -175,23 +177,25 @@ export const getSystemHealth = async (): Promise<{
   return {
     autmatrix: {
       ...response.autmatrix,
-      lastCheck: new Date(response.autmatrix.lastCheck)
+      lastCheck: new Date(response.autmatrix.lastCheck),
     },
     relaycore: {
       ...response.relaycore,
-      lastCheck: new Date(response.relaycore.lastCheck)
+      lastCheck: new Date(response.relaycore.lastCheck),
     },
     neuroweaver: {
       ...response.neuroweaver,
-      lastCheck: new Date(response.neuroweaver.lastCheck)
-    }
+      lastCheck: new Date(response.neuroweaver.lastCheck),
+    },
   };
 };
 
 /**
  * Fetch cost breakdown by system
  */
-export const getCostBreakdown = async (timeRange: string = '24h'): Promise<{
+export const getCostBreakdown = async (
+  timeRange = '24h'
+): Promise<{
   autmatrix: { total: number; breakdown: { [key: string]: number } };
   relaycore: { total: number; breakdown: { [key: string]: number } };
   neuroweaver: { total: number; breakdown: { [key: string]: number } };
@@ -202,7 +206,9 @@ export const getCostBreakdown = async (timeRange: string = '24h'): Promise<{
 /**
  * Fetch usage statistics
  */
-export const getUsageStatistics = async (timeRange: string = '24h'): Promise<{
+export const getUsageStatistics = async (
+  timeRange = '24h'
+): Promise<{
   totalRequests: number;
   requestsBySystem: { [key: string]: number };
   avgResponseTime: number;
@@ -218,19 +224,19 @@ export const getUsageStatistics = async (timeRange: string = '24h'): Promise<{
  */
 export const exportMonitoringData = async (
   format: 'csv' | 'json' | 'pdf',
-  timeRange: string = '24h',
+  timeRange = '24h',
   systems?: string[]
 ): Promise<Blob> => {
   const params = new URLSearchParams({
     format,
     timeRange,
-    ...(systems && { systems: systems.join(',') })
+    ...(systems && { systems: systems.join(',') }),
   });
 
   const response = await fetch(`/api/monitoring/export?${params}`, {
     method: 'GET',
     headers: {
-      'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+      Authorization: `Bearer ${localStorage.getItem('access_token')}`,
     },
   });
 

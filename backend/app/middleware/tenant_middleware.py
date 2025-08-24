@@ -24,7 +24,7 @@ class TenantIsolationMiddleware(BaseHTTPMiddleware):
             "/api/auth/login",
             "/api/auth/register",
             "/api/sso/",
-            "/.well-known/"
+            "/.well-known/",
         ]
 
     async def dispatch(self, request: Request, call_next):
@@ -35,16 +35,15 @@ class TenantIsolationMiddleware(BaseHTTPMiddleware):
 
         # Extract tenant information
         tenant_id = await self._extract_tenant_id(request)
-        
+
         if tenant_id:
             # Add tenant context to request state
             request.state.tenant_id = tenant_id
-            
+
             # Validate tenant is active
             if not await self._validate_tenant(tenant_id):
                 raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Tenant is not active"
+                    status_code=status.HTTP_403_FORBIDDEN, detail="Tenant is not active"
                 )
 
         response = await call_next(request)
@@ -102,6 +101,7 @@ class TenantIsolationMiddleware(BaseHTTPMiddleware):
         """Get user from JWT token."""
         try:
             from app.auth import verify_token
+
             payload = verify_token(token)
             if not payload:
                 return None
@@ -129,7 +129,7 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
             "/redoc",
             "/openapi.json",
             "/health",
-            "/metrics"
+            "/metrics",
         ]
 
     async def dispatch(self, request: Request, call_next):
@@ -145,27 +145,25 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
         # Capture request details
         start_time = time.time()
         request_body = await self._get_request_body(request)
-        
+
         response = await call_next(request)
-        
+
         # Log the request
         await self._log_request(
             request=request,
             response=response,
             request_body=request_body,
-            duration_ms=int((time.time() - start_time) * 1000)
+            duration_ms=int((time.time() - start_time) * 1000),
         )
 
         return response
 
     def _should_audit_read(self, path: str) -> bool:
         """Determine if read operations should be audited."""
-        sensitive_paths = [
-            "/api/tenants/",
-            "/api/auth/",
-            "/api/users/"
-        ]
-        return any(path.startswith(sensitive_path) for sensitive_path in sensitive_paths)
+        sensitive_paths = ["/api/tenants/", "/api/auth/", "/api/users/"]
+        return any(
+            path.startswith(sensitive_path) for sensitive_path in sensitive_paths
+        )
 
     async def _get_request_body(self, request: Request) -> Optional[dict]:
         """Safely extract request body."""
@@ -174,6 +172,7 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
                 body = await request.body()
                 if body:
                     import json
+
                     return json.loads(body.decode())
         except Exception:
             pass
@@ -184,30 +183,32 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
         request: Request,
         response: Response,
         request_body: Optional[dict],
-        duration_ms: int
+        duration_ms: int,
     ):
         """Log the request to audit system."""
         try:
             from app.services.audit_service import AuditService
-            
+
             # Get tenant and user context
             tenant_id = getattr(request.state, "tenant_id", None)
             user = getattr(request.state, "user", None)
-            
+
             if not tenant_id:
                 return  # Skip if no tenant context
 
             db = SessionLocal()
             try:
                 audit_service = AuditService(db)
-                
+
                 # Determine event type and action
                 event_type = self._get_event_type(request.url.path)
                 action = f"{request.method.lower()}_{self._get_resource_action(request.url.path)}"
-                
+
                 # Determine resource type and ID
-                resource_type, resource_id = self._extract_resource_info(request.url.path)
-                
+                resource_type, resource_id = self._extract_resource_info(
+                    request.url.path
+                )
+
                 # Log the event
                 audit_service.log_event(
                     tenant_id=tenant_id,
@@ -223,15 +224,16 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
                         "path": str(request.url.path),
                         "status_code": response.status_code,
                         "duration_ms": duration_ms,
-                        "request_body": self._sanitize_request_body(request_body)
-                    }
+                        "request_body": self._sanitize_request_body(request_body),
+                    },
                 )
             finally:
                 db.close()
-                
+
         except Exception as e:
             # Log audit failure but don't break the request
             import logging
+
             logger = logging.getLogger(__name__)
             logger.error(f"Audit logging failed: {str(e)}")
 
@@ -264,10 +266,10 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
     def _extract_resource_info(self, path: str) -> tuple:
         """Extract resource type and ID from path."""
         parts = path.strip("/").split("/")
-        
+
         if len(parts) >= 3 and parts[0] == "api":
             resource_type = parts[1].rstrip("s")  # Remove plural
-            
+
             # Try to extract UUID from path
             for part in parts[2:]:
                 try:
@@ -275,28 +277,35 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
                     return resource_type, part
                 except ValueError:
                     continue
-            
+
             return resource_type, None
-        
+
         return "unknown", None
 
     def _sanitize_request_body(self, body: Optional[dict]) -> Optional[dict]:
         """Sanitize sensitive data from request body."""
         if not body:
             return body
-        
+
         sensitive_fields = {
-            "password", "hashed_password", "secret", "token", "key",
-            "private_key", "client_secret", "api_key", "saml_x509_cert"
+            "password",
+            "hashed_password",
+            "secret",
+            "token",
+            "key",
+            "private_key",
+            "client_secret",
+            "api_key",
+            "saml_x509_cert",
         }
-        
+
         sanitized = {}
         for key, value in body.items():
             if any(field in key.lower() for field in sensitive_fields):
                 sanitized[key] = "[REDACTED]"
             else:
                 sanitized[key] = value
-        
+
         return sanitized
 
 

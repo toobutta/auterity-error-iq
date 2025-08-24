@@ -23,10 +23,10 @@ apiClient.interceptors.request.use(
       config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     // Add request start time for duration calculation
     config.requestStartTime = Date.now();
-    
+
     return { ...config, requestStartTime: Date.now() };
   },
   (error: AxiosError) => {
@@ -40,13 +40,15 @@ apiClient.interceptors.response.use(
     // Calculate request duration
     const startTime = (response.config as TimedAxiosRequestConfig).requestStartTime;
     const duration = startTime ? Date.now() - startTime : undefined;
-    
+
     // Extract correlation ID from response headers
-    const correlationId = response.headers['x-correlation-id'];
-    if (correlationId) {
-      response.data._correlationId = correlationId;
+    const correlationId = response.headers['x-correlation-id'] as string | undefined;
+
+    // Safely add correlation ID to response data if it's an object
+    if (correlationId && response.data && typeof response.data === 'object') {
+      (response.data as Record<string, unknown>)._correlationId = correlationId;
     }
-    
+
     // Log successful API call
     logApiCall(
       response.config.method?.toUpperCase() || 'UNKNOWN',
@@ -55,17 +57,17 @@ apiClient.interceptors.response.use(
       duration,
       correlationId
     );
-    
+
     return response.data;
   },
   (error: AxiosError) => {
     // Calculate request duration
-    const startTime = (error.config as TimedAxiosRequestConfig)?.requestStartTime;
+    const startTime = (error.config as TimedAxiosRequestConfig | undefined)?.requestStartTime;
     const duration = startTime ? Date.now() - startTime : undefined;
-    
+
     // Extract correlation ID from error response
-    const correlationId = error.response?.headers['x-correlation-id'];
-    
+    const correlationId = error.response?.headers?.['x-correlation-id'] as string | undefined;
+
     // Log failed API call
     logApiCall(
       error.config?.method?.toUpperCase() || 'UNKNOWN',
@@ -74,44 +76,63 @@ apiClient.interceptors.response.use(
       duration,
       correlationId
     );
-    
+
+    // Define our custom error type
+    interface EnhancedError {
+      correlationId?: string;
+      code: string;
+      message: string;
+      userMessage?: string;
+      category: string;
+      severity: 'low' | 'medium' | 'high';
+      details?: string | Record<string, unknown>;
+      retryable: boolean;
+      originalError?: AxiosError;
+    }
+
     // Handle authentication errors
     if (error.response?.status === 401) {
       localStorage.removeItem('access_token');
       localStorage.removeItem('user');
       window.location.href = '/login';
-      return Promise.reject({
-        ...error,
+
+      const authError: EnhancedError = {
         correlationId,
         code: 'AUTHENTICATION_ERROR',
         message: 'Authentication failed. Please log in again.',
         category: 'authentication',
         severity: 'high',
         retryable: false,
-      });
+        originalError: error,
+      };
+
+      return Promise.reject(authError);
     }
 
     // Check if the error response contains structured error information
-    const errorData = error.response?.data;
+    const errorData = error.response?.data as Record<string, unknown> | undefined;
+
     if (errorData && typeof errorData === 'object' && errorData.code) {
       // Backend returned structured error
-      return Promise.reject({
-        ...error,
-        code: errorData.code,
-        message: errorData.message || error.message,
-        userMessage: errorData.user_message,
-        category: errorData.category,
-        severity: errorData.severity,
-        details: errorData.details,
-        retryable: errorData.retryable || false,
-        correlationId: errorData.correlation_id || correlationId,
-      });
+      const structuredError: EnhancedError = {
+        correlationId: (errorData.correlation_id as string) || correlationId,
+        code: errorData.code as string,
+        message: (errorData.message as string) || error.message || 'An error occurred',
+        userMessage: errorData.user_message as string | undefined,
+        category: (errorData.category as string) || 'unknown',
+        severity: (errorData.severity as 'low' | 'medium' | 'high') || 'medium',
+        details: errorData.details as string | Record<string, unknown> | undefined,
+        retryable: Boolean(errorData.retryable) || false,
+        originalError: error,
+      };
+
+      return Promise.reject(structuredError);
     }
 
     // Handle other HTTP errors with fallback mapping
     const statusCode = error.response?.status;
     let category = 'api';
-    let severity = 'medium';
+    let severity: 'low' | 'medium' | 'high' = 'medium';
     let retryable = false;
 
     // Map status codes to categories and properties
@@ -143,15 +164,21 @@ apiClient.interceptors.response.use(
         break;
     }
 
-    const errorResponse = {
-      ...error,
+    const errorResponse: EnhancedError = {
       correlationId,
       code: `HTTP_${statusCode || 'UNKNOWN'}`,
-      message: error.response?.data?.message || error.message || 'An unexpected error occurred',
-      details: error.response?.data?.details || error.response?.statusText,
+      message:
+        (error.response?.data?.message as string) ||
+        error.message ||
+        'An unexpected error occurred',
+      details:
+        (error.response?.data?.details as string | Record<string, unknown>) ||
+        error.response?.statusText ||
+        '',
       category,
       severity,
       retryable,
+      originalError: error,
     };
 
     return Promise.reject(errorResponse);

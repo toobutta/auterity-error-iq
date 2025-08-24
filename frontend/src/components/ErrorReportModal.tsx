@@ -12,7 +12,7 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
   isOpen,
   onClose,
   error,
-  onSubmit
+  onSubmit,
 }) => {
   const [category, setCategory] = useState('general');
   const [feedback, setFeedback] = useState('');
@@ -26,13 +26,13 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
     e.preventDefault();
     setIsLoading(true);
     setErrorState(null);
-    
+
     const reportData: ErrorReportData = {
       error,
       userFeedback: feedback,
       reproductionSteps,
       expectedBehavior,
-      actualBehavior
+      actualBehavior,
     };
 
     try {
@@ -48,25 +48,23 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div 
-      role="dialog" 
-      aria-modal="true" 
+    <div
+      role="dialog"
+      aria-modal="true"
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
     >
-      <div 
-        className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm" 
+      <div
+        className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm"
         onClick={onClose}
       ></div>
-      
+
       <div className="relative z-10 w-full max-w-3xl rounded-lg bg-white p-6 shadow-xl">
         <h2 className="mb-4 text-xl font-bold">Report Error: {error.message}</h2>
-        
+
         {errorState && (
-          <div className="mb-4 rounded-md bg-red-50 p-3 text-red-700">
-            {errorState}
-          </div>
+          <div className="mb-4 rounded-md bg-red-50 p-3 text-red-700">{errorState}</div>
         )}
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Error Category</label>
@@ -82,7 +80,7 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
               <option value="api">API Error</option>
             </select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700">User Feedback</label>
             <textarea
@@ -93,7 +91,7 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
               disabled={isLoading}
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700">Reproduction Steps</label>
             <textarea
@@ -104,7 +102,7 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
               disabled={isLoading}
             />
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">Expected Behavior</label>
@@ -116,7 +114,7 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
                 disabled={isLoading}
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Actual Behavior</label>
               <textarea
@@ -128,7 +126,7 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
               />
             </div>
           </div>
-          
+
           <div className="flex justify-end space-x-3 pt-6">
             <button
               type="button"
@@ -138,7 +136,7 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
             >
               Cancel
             </button>
-            
+
             <button
               type="submit"
               className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"

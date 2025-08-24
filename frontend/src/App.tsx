@@ -29,164 +29,166 @@ const LoadingSpinner = () => (
 
 function App() {
   return (
-    <ErrorBoundary 
+    <ErrorBoundary
       showDetails={process.env.NODE_ENV === 'development'}
       enableReporting={true}
       component="App"
     >
       <ThemeProvider defaultMode="auto" storageKey="autmatrix-theme">
         <NotificationProvider position="top-right" maxNotifications={5}>
-          <ErrorProvider 
-            maxErrors={10}
-            enableErrorReporting={true}
-            toastPosition="top-right"
-        >
-          <AuthProvider>
-            <Router>
-              <div className="App">
-                <Routes>
-                  {/* Public routes */}
-                  <Route path="/login" element={
-                    <ErrorBoundary component="LoginForm">
-                      <LoginForm />
-                    </ErrorBoundary>
-                  } />
-                  <Route path="/register" element={
-                    <ErrorBoundary component="RegisterForm">
-                      <RegisterForm />
-                    </ErrorBoundary>
-                  } />
-                  
-                  {/* Protected routes */}
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <ProtectedRoute>
-                        <ErrorBoundary component="ModernDashboard">
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <ModernDashboard />
-                          </Suspense>
+          <ErrorProvider maxErrors={10} enableErrorReporting={true} toastPosition="top-right">
+            <AuthProvider>
+              <Router>
+                <div className="App">
+                  <Routes>
+                    {/* Public routes */}
+                    <Route
+                      path="/login"
+                      element={
+                        <ErrorBoundary component="LoginForm">
+                          <LoginForm />
                         </ErrorBoundary>
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/legacy"
-                    element={
-                      <ProtectedRoute>
-                        <ErrorBoundary component="Dashboard">
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <Dashboard />
-                          </Suspense>
+                      }
+                    />
+                    <Route
+                      path="/register"
+                      element={
+                        <ErrorBoundary component="RegisterForm">
+                          <RegisterForm />
                         </ErrorBoundary>
-                      </ProtectedRoute>
-                    }
-                  />
-                <Route
-                  path="/workflows"
-                  element={
-                    <ProtectedRoute>
-                      <ErrorBoundary component="Workflows">
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <Workflows />
-                        </Suspense>
-                      </ErrorBoundary>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/templates"
-                  element={
-                    <ProtectedRoute>
-                      <ErrorBoundary component="Templates">
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <Templates />
-                        </Suspense>
-                      </ErrorBoundary>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/workflows/builder"
-                  element={
-                    <ProtectedRoute>
-                      <ErrorBoundary component="WorkflowBuilder">
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <WorkflowBuilderPage />
-                        </Suspense>
-                      </ErrorBoundary>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/workflows/builder/:id"
-                  element={
-                    <ProtectedRoute>
-                      <ErrorBoundary component="WorkflowBuilder">
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <WorkflowBuilderPage />
-                        </Suspense>
-                      </ErrorBoundary>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/error-demo"
-                  element={
-                    <ProtectedRoute>
-                      <ErrorBoundary component="ErrorDisplayDemo">
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <ErrorDisplayDemo />
-                        </Suspense>
-                      </ErrorBoundary>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/agent-correlation"
-                  element={
-                    <ProtectedRoute>
-                      <ErrorBoundary component="AgentModelCorrelation">
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <AgentModelCorrelationPage />
-                        </Suspense>
-                      </ErrorBoundary>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/kiro-test"
-                  element={
-                    <ProtectedRoute>
-                      <ErrorBoundary component="KiroTestPage">
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <KiroTestPage />
-                        </Suspense>
-                      </ErrorBoundary>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/auterity-expansion"
-                  element={
-                    <ProtectedRoute>
-                      <ErrorBoundary component="AuterityExpansion">
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <AuterityExpansion />
-                        </Suspense>
-                      </ErrorBoundary>
-                    </ProtectedRoute>
-                  }
-                />
-                
-                {/* Default redirect */}
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              </Routes>
-            </div>
-          </Router>
-        </AuthProvider>
-      </ErrorProvider>
-      </NotificationProvider>
+                      }
+                    />
+
+                    {/* Protected routes */}
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary component="ModernDashboard">
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <ModernDashboard />
+                            </Suspense>
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/legacy"
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary component="Dashboard">
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <Dashboard />
+                            </Suspense>
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/workflows"
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary component="Workflows">
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <Workflows />
+                            </Suspense>
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/templates"
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary component="Templates">
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <Templates />
+                            </Suspense>
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/workflows/builder"
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary component="WorkflowBuilder">
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <WorkflowBuilderPage />
+                            </Suspense>
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/workflows/builder/:id"
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary component="WorkflowBuilder">
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <WorkflowBuilderPage />
+                            </Suspense>
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/error-demo"
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary component="ErrorDisplayDemo">
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <ErrorDisplayDemo />
+                            </Suspense>
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/agent-correlation"
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary component="AgentModelCorrelation">
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <AgentModelCorrelationPage />
+                            </Suspense>
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/kiro-test"
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary component="KiroTestPage">
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <KiroTestPage />
+                            </Suspense>
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/auterity-expansion"
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary component="AuterityExpansion">
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <AuterityExpansion />
+                            </Suspense>
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      }
+                    />
+
+                    {/* Default redirect */}
+                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                  </Routes>
+                </div>
+              </Router>
+            </AuthProvider>
+          </ErrorProvider>
+        </NotificationProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

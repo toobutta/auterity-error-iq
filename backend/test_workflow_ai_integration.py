@@ -4,9 +4,7 @@
 import asyncio
 import os
 import sys
-from unittest.mock import AsyncMock
-from unittest.mock import MagicMock
-from unittest.mock import patch
+from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 # Add the app directory to the path
@@ -33,8 +31,7 @@ sys.modules["app.database"] = MagicMock()
 from app.services.ai_service import AIResponse  # noqa: E402
 from app.services.ai_service import AIService
 from app.services.workflow_engine import ExecutionResult  # noqa: E402
-from app.services.workflow_engine import ExecutionStatus
-from app.services.workflow_engine import WorkflowEngine
+from app.services.workflow_engine import ExecutionStatus, WorkflowEngine
 
 
 async def test_workflow_ai_integration():

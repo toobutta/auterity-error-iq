@@ -68,7 +68,7 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
   onLogSelect,
   selectedLogId,
   enableFiltering = true,
-  enableSearch = true
+  enableSearch = true,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterAgent, setFilterAgent] = useState('');
@@ -78,8 +78,8 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
   const [expandedLogs, setExpandedLogs] = useState<Set<string>>(new Set());
 
   // Get unique agents for filtering
-  const uniqueAgents = useMemo(() => 
-    Array.from(new Set(logs.map(log => log.agentName))).sort(),
+  const uniqueAgents = useMemo(
+    () => Array.from(new Set(logs.map((log) => log.agentName))).sort(),
     [logs]
   );
 
@@ -89,20 +89,21 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(log =>
-        log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        log.agentName.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (log) =>
+          log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          log.agentName.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Apply agent filter
     if (filterAgent) {
-      filtered = filtered.filter(log => log.agentName === filterAgent);
+      filtered = filtered.filter((log) => log.agentName === filterAgent);
     }
 
     // Apply message type filter
     if (filterMessageType) {
-      filtered = filtered.filter(log => log.messageType === filterMessageType);
+      filtered = filtered.filter((log) => log.messageType === filterMessageType);
     }
 
     // Sort logs
@@ -137,21 +138,31 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
 
   const getMessageTypeIcon = (type: AgentLog['messageType']) => {
     switch (type) {
-      case 'user': return '👤';
-      case 'assistant': return '🤖';
-      case 'system': return '⚙️';
-      case 'error': return '❌';
-      default: return '💬';
+      case 'user':
+        return '👤';
+      case 'assistant':
+        return '🤖';
+      case 'system':
+        return '⚙️';
+      case 'error':
+        return '❌';
+      default:
+        return '💬';
     }
   };
 
   const getMessageTypeColor = (type: AgentLog['messageType']) => {
     switch (type) {
-      case 'user': return 'text-blue-600 bg-blue-50 border-blue-200';
-      case 'assistant': return 'text-green-600 bg-green-50 border-green-200';
-      case 'system': return 'text-gray-600 bg-gray-50 border-gray-200';
-      case 'error': return 'text-red-600 bg-red-50 border-red-200';
-      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+      case 'user':
+        return 'text-blue-600 bg-blue-50 border-blue-200';
+      case 'assistant':
+        return 'text-green-600 bg-green-50 border-green-200';
+      case 'system':
+        return 'text-gray-600 bg-gray-50 border-gray-200';
+      case 'error':
+        return 'text-red-600 bg-red-50 border-red-200';
+      default:
+        return 'text-gray-600 bg-gray-50 border-gray-200';
     }
   };
 
@@ -172,7 +183,7 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
                 />
               </div>
             )}
-            
+
             {enableFiltering && (
               <>
                 <select
@@ -181,8 +192,10 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
                   className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 >
                   <option value="">All Agents</option>
-                  {uniqueAgents.map(agent => (
-                    <option key={agent} value={agent}>{agent}</option>
+                  {uniqueAgents.map((agent) => (
+                    <option key={agent} value={agent}>
+                      {agent}
+                    </option>
                   ))}
                 </select>
 
@@ -230,13 +243,17 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
           <div
             key={log.id}
             className={`glass-card p-4 cursor-pointer transition-all duration-200 hover:shadow-lg ${
-              selectedLogId === log.id ? 'ring-2 ring-blue-500 bg-blue-50/50 dark:bg-blue-900/20' : ''
+              selectedLogId === log.id
+                ? 'ring-2 ring-blue-500 bg-blue-50/50 dark:bg-blue-900/20'
+                : ''
             }`}
             onClick={() => onLogSelect?.(log)}
           >
             <div className="flex items-start space-x-3">
               {/* Message Type Icon */}
-              <div className={`px-2 py-1 rounded text-xs font-medium border ${getMessageTypeColor(log.messageType)}`}>
+              <div
+                className={`px-2 py-1 rounded text-xs font-medium border ${getMessageTypeColor(log.messageType)}`}
+              >
                 <span className="mr-1">{getMessageTypeIcon(log.messageType)}</span>
                 {log.messageType}
               </div>
@@ -245,12 +262,14 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-2">
-                    <span className="font-medium text-gray-900 dark:text-gray-100">{log.agentName}</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                      {log.agentName}
+                    </span>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
                       {log.timestamp.toLocaleString()}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2">
                     {log.tokens && (
                       <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">

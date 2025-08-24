@@ -1,28 +1,27 @@
 """Enhanced Industry Specializations Service - Dynamic specialization formats replacing compliance kits."""
 
-import logging
 import json
+import logging
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import Dict, List, Optional, Any, Union
-from uuid import UUID
-from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any, Dict, List, Union
+from uuid import UUID
 
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func
 import yaml
+from sqlalchemy import and_
+from sqlalchemy.orm import Session
 
-from app.models.tenant import Tenant, UsageLog
-from app.models.user import User
-from app.models.models import IndustryProfile, Template
 from app.core.saas_config import SaaSConfig
+from app.models.tenant import Tenant, UsageLog
 
 logger = logging.getLogger(__name__)
 
 
 class SpecializationType(str, Enum):
     """Types of industry specializations."""
+
     COMPLIANCE = "compliance"
     WORKFLOW = "workflow"
     AI_MODEL = "ai_model"
@@ -33,6 +32,7 @@ class SpecializationType(str, Enum):
 
 class ComplianceLevel(str, Enum):
     """Compliance requirement levels."""
+
     BASIC = "basic"
     STANDARD = "standard"
     STRICT = "strict"
@@ -41,6 +41,7 @@ class ComplianceLevel(str, Enum):
 
 class SpecializationFormat(str, Enum):
     """Formats for specialization configuration."""
+
     YAML = "yaml"
     JSON = "json"
     PYTHON = "python"
@@ -50,6 +51,7 @@ class SpecializationFormat(str, Enum):
 @dataclass
 class SpecializationConfig:
     """Configuration for a specific industry specialization."""
+
     id: str
     name: str
     description: str
@@ -67,6 +69,7 @@ class SpecializationConfig:
 @dataclass
 class ComplianceRequirement:
     """Compliance requirement specification."""
+
     id: str
     name: str
     description: str
@@ -81,6 +84,7 @@ class ComplianceRequirement:
 @dataclass
 class WorkflowTemplate:
     """Workflow template specification."""
+
     id: str
     name: str
     description: str
@@ -94,6 +98,7 @@ class WorkflowTemplate:
 @dataclass
 class AISpecialization:
     """AI model specialization configuration."""
+
     id: str
     name: str
     description: str
@@ -106,6 +111,7 @@ class AISpecialization:
 @dataclass
 class SpecializationResult:
     """Result of applying a specialization."""
+
     success: bool
     specialization_id: str
     applied_changes: List[str] = field(default_factory=list)
@@ -129,7 +135,7 @@ class IndustrySpecializationService:
         self,
         tenant_id: UUID,
         config_data: Dict[str, Any],
-        format_type: SpecializationFormat = SpecializationFormat.JSON
+        format_type: SpecializationFormat = SpecializationFormat.JSON,
     ) -> SpecializationResult:
         """Create a new industry specialization with dynamic format support."""
         try:
@@ -146,7 +152,7 @@ class IndustrySpecializationService:
                     success=False,
                     specialization_id=config.id,
                     errors=validation_result["errors"],
-                    warnings=validation_result["warnings"]
+                    warnings=validation_result["warnings"],
                 )
 
             # Store specialization
@@ -162,7 +168,7 @@ class IndustrySpecializationService:
                 success=True,
                 specialization_id=config.id,
                 applied_changes=applied_changes,
-                validation_results=validation_result
+                validation_results=validation_result,
             )
 
         except Exception as e:
@@ -170,13 +176,11 @@ class IndustrySpecializationService:
             return SpecializationResult(
                 success=False,
                 specialization_id=config_data.get("id", "unknown"),
-                errors=[str(e)]
+                errors=[str(e)],
             )
 
     async def _parse_specialization_config(
-        self,
-        config_data: Dict[str, Any],
-        format_type: SpecializationFormat
+        self, config_data: Dict[str, Any], format_type: SpecializationFormat
     ) -> SpecializationConfig:
         """Parse specialization configuration from various formats."""
         if format_type == SpecializationFormat.JSON:
@@ -191,7 +195,9 @@ class IndustrySpecializationService:
         else:
             raise ValueError(f"Unsupported format: {format_type}")
 
-    async def _parse_python_config(self, config_data: Dict[str, Any]) -> SpecializationConfig:
+    async def _parse_python_config(
+        self, config_data: Dict[str, Any]
+    ) -> SpecializationConfig:
         """Parse Python-based configuration (simplified implementation)."""
         # In a real implementation, this would safely execute Python code
         # For now, we'll just convert it to a standard config
@@ -203,15 +209,13 @@ class IndustrySpecializationService:
             "name": config_data.get("name", "Python Generated"),
             "description": config_data.get("description", ""),
             "type": config_data.get("type", SpecializationType.CUSTOM),
-            "configuration": config_data.get("config", {})
+            "configuration": config_data.get("config", {}),
         }
 
         return SpecializationConfig(**config_dict)
 
     async def _validate_specialization_requirements(
-        self,
-        tenant_id: UUID,
-        config: SpecializationConfig
+        self, tenant_id: UUID, config: SpecializationConfig
     ) -> Dict[str, Any]:
         """Validate specialization requirements against tenant capabilities."""
         tenant = self.db.query(Tenant).filter(Tenant.id == tenant_id).first()
@@ -247,28 +251,26 @@ class IndustrySpecializationService:
             if not await self._check_integration_availability(tenant_id, integration):
                 warnings.append(f"Integration may not be available: {integration}")
 
-        return {
-            "valid": len(errors) == 0,
-            "errors": errors,
-            "warnings": warnings
-        }
+        return {"valid": len(errors) == 0, "errors": errors, "warnings": warnings}
 
-    async def _check_compliance_compatibility(self, tenant_id: UUID, compliance: str) -> bool:
+    async def _check_compliance_compatibility(
+        self, tenant_id: UUID, compliance: str
+    ) -> bool:
         """Check if tenant meets compliance requirements."""
         # Implementation would check tenant's compliance certifications
         # For now, return True for demonstration
         return True
 
-    async def _check_integration_availability(self, tenant_id: UUID, integration: str) -> bool:
+    async def _check_integration_availability(
+        self, tenant_id: UUID, integration: str
+    ) -> bool:
         """Check if integration is available for tenant."""
         # Implementation would check available integrations
         # For now, return True for demonstration
         return True
 
     async def _store_specialization(
-        self,
-        tenant_id: UUID,
-        config: SpecializationConfig
+        self, tenant_id: UUID, config: SpecializationConfig
     ) -> None:
         """Store specialization configuration."""
         # In a real implementation, this would store in database
@@ -277,9 +279,7 @@ class IndustrySpecializationService:
         self._specialization_cache[cache_key] = config
 
     async def apply_specialization(
-        self,
-        tenant_id: UUID,
-        specialization_id: str
+        self, tenant_id: UUID, specialization_id: str
     ) -> SpecializationResult:
         """Apply specialization to tenant configuration."""
         try:
@@ -290,7 +290,7 @@ class IndustrySpecializationService:
                 return SpecializationResult(
                     success=False,
                     specialization_id=specialization_id,
-                    errors=["Specialization not found"]
+                    errors=["Specialization not found"],
                 )
 
             applied_changes = []
@@ -301,7 +301,7 @@ class IndustrySpecializationService:
                 return SpecializationResult(
                     success=False,
                     specialization_id=specialization_id,
-                    errors=["Tenant not found"]
+                    errors=["Tenant not found"],
                 )
 
             # Apply industry settings
@@ -313,7 +313,9 @@ class IndustrySpecializationService:
             if config.configuration.get("ai_model_preferences"):
                 if not tenant.industry_settings:
                     tenant.industry_settings = {}
-                tenant.industry_settings["ai_model_preferences"] = config.configuration["ai_model_preferences"]
+                tenant.industry_settings["ai_model_preferences"] = config.configuration[
+                    "ai_model_preferences"
+                ]
                 applied_changes.append("Updated AI model preferences")
 
             # Apply workflow templates
@@ -324,7 +326,9 @@ class IndustrySpecializationService:
             if config.configuration.get("compliance_settings"):
                 if not tenant.industry_settings:
                     tenant.industry_settings = {}
-                tenant.industry_settings["compliance_settings"] = config.configuration["compliance_settings"]
+                tenant.industry_settings["compliance_settings"] = config.configuration[
+                    "compliance_settings"
+                ]
                 applied_changes.append("Applied compliance settings")
 
             # Apply security settings
@@ -336,22 +340,20 @@ class IndustrySpecializationService:
             return SpecializationResult(
                 success=True,
                 specialization_id=specialization_id,
-                applied_changes=applied_changes
+                applied_changes=applied_changes,
             )
 
         except Exception as e:
             logger.error(f"Specialization application failed: {str(e)}")
             return SpecializationResult(
-                success=False,
-                specialization_id=specialization_id,
-                errors=[str(e)]
+                success=False, specialization_id=specialization_id, errors=[str(e)]
             )
 
     async def create_compliance_specialization(
         self,
         tenant_id: UUID,
         compliance_requirements: List[Dict[str, Any]],
-        level: ComplianceLevel = ComplianceLevel.STANDARD
+        level: ComplianceLevel = ComplianceLevel.STANDARD,
     ) -> SpecializationResult:
         """Create a compliance-focused specialization (replaces old compliance kits)."""
         try:
@@ -367,12 +369,14 @@ class IndustrySpecializationService:
                     "auto_apply": True,
                     "monitoring": True,
                     "reporting": True,
-                    "remediation": True
+                    "remediation": True,
                 },
                 "requirements": {
                     "features": ["advanced_compliance", "audit_logging"],
-                    "compliance": [req.get("standard", "") for req in compliance_requirements]
-                }
+                    "compliance": [
+                        req.get("standard", "") for req in compliance_requirements
+                    ],
+                },
             }
 
             return await self.create_specialization(
@@ -384,14 +388,14 @@ class IndustrySpecializationService:
             return SpecializationResult(
                 success=False,
                 specialization_id="compliance_specialization",
-                errors=[str(e)]
+                errors=[str(e)],
             )
 
     async def create_workflow_specialization(
         self,
         tenant_id: UUID,
         workflow_templates: List[Dict[str, Any]],
-        industry_context: str
+        industry_context: str,
     ) -> SpecializationResult:
         """Create a workflow-focused specialization."""
         try:
@@ -404,11 +408,9 @@ class IndustrySpecializationService:
                     "workflow_templates": workflow_templates,
                     "industry_context": industry_context,
                     "auto_apply": True,
-                    "customizable": True
+                    "customizable": True,
                 },
-                "requirements": {
-                    "features": ["workflow_engine", "template_system"]
-                }
+                "requirements": {"features": ["workflow_engine", "template_system"]},
             }
 
             return await self.create_specialization(
@@ -420,14 +422,14 @@ class IndustrySpecializationService:
             return SpecializationResult(
                 success=False,
                 specialization_id="workflow_specialization",
-                errors=[str(e)]
+                errors=[str(e)],
             )
 
     async def create_ai_model_specialization(
         self,
         tenant_id: UUID,
         model_requirements: Dict[str, Any],
-        optimization_goals: List[str]
+        optimization_goals: List[str],
     ) -> SpecializationResult:
         """Create an AI model-focused specialization."""
         try:
@@ -440,11 +442,9 @@ class IndustrySpecializationService:
                     "model_requirements": model_requirements,
                     "optimization_goals": optimization_goals,
                     "auto_optimization": True,
-                    "performance_monitoring": True
+                    "performance_monitoring": True,
                 },
-                "requirements": {
-                    "features": ["ai_optimization", "model_routing"]
-                }
+                "requirements": {"features": ["ai_optimization", "model_routing"]},
             }
 
             return await self.create_specialization(
@@ -456,7 +456,7 @@ class IndustrySpecializationService:
             return SpecializationResult(
                 success=False,
                 specialization_id="ai_model_specialization",
-                errors=[str(e)]
+                errors=[str(e)],
             )
 
     async def get_tenant_specializations(self, tenant_id: UUID) -> List[Dict[str, Any]]:
@@ -465,24 +465,23 @@ class IndustrySpecializationService:
 
         for cache_key, config in self._specialization_cache.items():
             if cache_key.startswith(f"{tenant_id}:"):
-                specializations.append({
-                    "id": config.id,
-                    "name": config.name,
-                    "description": config.description,
-                    "type": config.type,
-                    "enabled": config.enabled,
-                    "priority": config.priority,
-                    "created_at": config.created_at.isoformat(),
-                    "updated_at": config.updated_at.isoformat()
-                })
+                specializations.append(
+                    {
+                        "id": config.id,
+                        "name": config.name,
+                        "description": config.description,
+                        "type": config.type,
+                        "enabled": config.enabled,
+                        "priority": config.priority,
+                        "created_at": config.created_at.isoformat(),
+                        "updated_at": config.updated_at.isoformat(),
+                    }
+                )
 
         return specializations
 
     async def update_specialization(
-        self,
-        tenant_id: UUID,
-        specialization_id: str,
-        updates: Dict[str, Any]
+        self, tenant_id: UUID, specialization_id: str, updates: Dict[str, Any]
     ) -> SpecializationResult:
         """Update an existing specialization."""
         try:
@@ -493,7 +492,7 @@ class IndustrySpecializationService:
                 return SpecializationResult(
                     success=False,
                     specialization_id=specialization_id,
-                    errors=["Specialization not found"]
+                    errors=["Specialization not found"],
                 )
 
             # Update configuration
@@ -510,28 +509,26 @@ class IndustrySpecializationService:
 
             applied_changes = []
             if validation_result["valid"]:
-                apply_result = await self.apply_specialization(tenant_id, specialization_id)
+                apply_result = await self.apply_specialization(
+                    tenant_id, specialization_id
+                )
                 applied_changes = apply_result.applied_changes
 
             return SpecializationResult(
                 success=True,
                 specialization_id=specialization_id,
                 applied_changes=applied_changes,
-                validation_results=validation_result
+                validation_results=validation_result,
             )
 
         except Exception as e:
             logger.error(f"Specialization update failed: {str(e)}")
             return SpecializationResult(
-                success=False,
-                specialization_id=specialization_id,
-                errors=[str(e)]
+                success=False, specialization_id=specialization_id, errors=[str(e)]
             )
 
     async def delete_specialization(
-        self,
-        tenant_id: UUID,
-        specialization_id: str
+        self, tenant_id: UUID, specialization_id: str
     ) -> bool:
         """Delete a specialization."""
         try:
@@ -548,10 +545,7 @@ class IndustrySpecializationService:
             return False
 
     async def get_specialization_analytics(
-        self,
-        tenant_id: UUID,
-        specialization_id: str,
-        time_period_days: int = 30
+        self, tenant_id: UUID, specialization_id: str, time_period_days: int = 30
     ) -> Dict[str, Any]:
         """Get analytics for a specific specialization."""
         try:
@@ -560,28 +554,40 @@ class IndustrySpecializationService:
 
             period_start = datetime.utcnow() - timedelta(days=time_period_days)
 
-            usage_logs = self.db.query(UsageLog).filter(
-                and_(
-                    UsageLog.tenant_id == tenant_id,
-                    UsageLog.created_at >= period_start
+            usage_logs = (
+                self.db.query(UsageLog)
+                .filter(
+                    and_(
+                        UsageLog.tenant_id == tenant_id,
+                        UsageLog.created_at >= period_start,
+                    )
                 )
-            ).all()
+                .all()
+            )
 
             analytics = {
                 "specialization_id": specialization_id,
                 "period_days": time_period_days,
                 "total_requests": len(usage_logs),
-                "successful_requests": sum(1 for log in usage_logs if log.status == "success"),
-                "total_cost": sum(log.cost_amount or Decimal("0") for log in usage_logs),
+                "successful_requests": sum(
+                    1 for log in usage_logs if log.status == "success"
+                ),
+                "total_cost": sum(
+                    log.cost_amount or Decimal("0") for log in usage_logs
+                ),
                 "avg_cost_per_request": Decimal("0"),
                 "performance_metrics": {},
                 "compliance_metrics": {},
-                "effectiveness_score": 0.0
+                "effectiveness_score": 0.0,
             }
 
             if analytics["total_requests"] > 0:
-                analytics["avg_cost_per_request"] = analytics["total_cost"] / Decimal(analytics["total_requests"])
-                analytics["effectiveness_score"] = analytics["successful_requests"] / analytics["total_requests"]
+                analytics["avg_cost_per_request"] = analytics["total_cost"] / Decimal(
+                    analytics["total_requests"]
+                )
+                analytics["effectiveness_score"] = (
+                    analytics["successful_requests"] / analytics["total_requests"]
+                )
 
             return analytics
 
@@ -593,7 +599,7 @@ class IndustrySpecializationService:
         self,
         tenant_id: UUID,
         specialization_id: str,
-        format_type: SpecializationFormat = SpecializationFormat.JSON
+        format_type: SpecializationFormat = SpecializationFormat.JSON,
     ) -> Dict[str, Any]:
         """Export specialization configuration."""
         try:
@@ -615,7 +621,7 @@ class IndustrySpecializationService:
                 "requirements": config.requirements,
                 "configuration": config.configuration,
                 "exported_at": datetime.utcnow().isoformat(),
-                "format": format_type.value
+                "format": format_type.value,
             }
 
             if format_type == SpecializationFormat.YAML:
@@ -631,7 +637,7 @@ class IndustrySpecializationService:
         self,
         tenant_id: UUID,
         import_data: Union[Dict[str, Any], str],
-        format_type: SpecializationFormat = SpecializationFormat.JSON
+        format_type: SpecializationFormat = SpecializationFormat.JSON,
     ) -> SpecializationResult:
         """Import specialization from external source."""
         try:
@@ -641,14 +647,10 @@ class IndustrySpecializationService:
                 else:
                     import_data = json.loads(import_data)
 
-            return await self.create_specialization(
-                tenant_id, import_data, format_type
-            )
+            return await self.create_specialization(tenant_id, import_data, format_type)
 
         except Exception as e:
             logger.error(f"Specialization import failed: {str(e)}")
             return SpecializationResult(
-                success=False,
-                specialization_id="import_failed",
-                errors=[str(e)]
+                success=False, specialization_id="import_failed", errors=[str(e)]
             )

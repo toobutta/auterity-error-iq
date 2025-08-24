@@ -30,7 +30,7 @@ export class AuthApi {
     const formData = new FormData();
     formData.append('username', credentials.email);
     formData.append('password', credentials.password);
-    
+
     return apiClient.post('/api/auth/login', formData);
   }
 

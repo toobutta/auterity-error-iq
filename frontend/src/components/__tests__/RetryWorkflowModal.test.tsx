@@ -14,7 +14,7 @@ describe('RetryWorkflowModal', () => {
     workflowId: 'workflow-1',
     executionId: 'execution-1',
     error: mockAppError,
-    onRetry: mockFunctions.onRetry
+    onRetry: mockFunctions.onRetry,
   };
 
   it('renders correctly', () => {

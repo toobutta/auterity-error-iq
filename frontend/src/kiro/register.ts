@@ -11,10 +11,10 @@ export const kiroModules: KiroModule[] = [
   {
     name: 'error-intelligence',
     hook: onErrorEvent,
-    enabled: true
-  }
+    enabled: true,
+  },
 ];
 
 export const getEnabledKiroModules = (): KiroModule[] => {
-  return kiroModules.filter(module => module.enabled);
+  return kiroModules.filter((module) => module.enabled);
 };

@@ -1,37 +1,36 @@
 """AI Cost Optimization Engine - Dynamic model selection and cost management."""
 
 import logging
-import asyncio
-from datetime import datetime, timedelta
-from decimal import Decimal, ROUND_HALF_UP
-from typing import Dict, List, Optional, Tuple, Any
-from uuid import UUID
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from decimal import ROUND_HALF_UP, Decimal
 from enum import Enum
+from typing import Any, Dict, List
+from uuid import UUID
 
 import numpy as np
+from sqlalchemy import and_, func
 from sqlalchemy.orm import Session
-from sqlalchemy import func, and_, or_
 
-from app.models.tenant import Tenant, UsageLog
-from app.models.user import User
-from app.models.workflow import Workflow
 from app.core.config import settings
 from app.core.saas_config import SaaSConfig
+from app.models.tenant import Tenant, UsageLog
 
 logger = logging.getLogger(__name__)
 
 
 class OptimizationStrategy(str, Enum):
     """AI model optimization strategies."""
+
     AGGRESSIVE = "aggressive"  # Always choose cheapest
-    BALANCED = "balanced"      # Balance cost vs quality
+    BALANCED = "balanced"  # Balance cost vs quality
     QUALITY_FIRST = "quality"  # Prioritize quality
     BUDGET_FOCUSED = "budget"  # Stay within budget constraints
 
 
 class CostOptimizationLevel(str, Enum):
     """Cost optimization aggressiveness levels."""
+
     CONSERVATIVE = "conservative"
     MODERATE = "moderate"
     AGGRESSIVE = "aggressive"
@@ -40,6 +39,7 @@ class CostOptimizationLevel(str, Enum):
 @dataclass
 class ModelCostProfile:
     """Cost profile for an AI model."""
+
     model_id: str
     provider: str
     cost_per_1k_tokens: Decimal
@@ -53,6 +53,7 @@ class ModelCostProfile:
 @dataclass
 class CostPrediction:
     """Cost prediction result."""
+
     estimated_cost: Decimal
     confidence: float
     recommended_model: str
@@ -64,6 +65,7 @@ class CostPrediction:
 @dataclass
 class OptimizationRecommendation:
     """AI cost optimization recommendation."""
+
     strategy: OptimizationStrategy
     recommended_model: str
     expected_cost_savings: Decimal
@@ -76,6 +78,7 @@ class OptimizationRecommendation:
 @dataclass
 class BudgetAnalysis:
     """Budget analysis and forecasting."""
+
     current_spend: Decimal
     projected_spend: Decimal
     budget_remaining: Decimal
@@ -97,19 +100,21 @@ class AICostOptimizationService:
         profiles = {}
 
         # Load from model policies configuration
-        if hasattr(settings, 'MODEL_POLICIES'):
+        if hasattr(settings, "MODEL_POLICIES"):
             for provider, provider_data in settings.MODEL_POLICIES.items():
                 for model_id, model_data in provider_data.items():
                     if isinstance(model_data, dict):
                         profiles[model_id] = ModelCostProfile(
                             model_id=model_id,
                             provider=provider,
-                            cost_per_1k_tokens=Decimal(str(model_data.get('cost_per_1k_tokens', 0.002))),
-                            max_tokens=model_data.get('max_tokens', 4096),
-                            avg_latency_ms=model_data.get('avg_latency_ms', 500),
-                            success_rate=model_data.get('success_rate', 0.99),
-                            capabilities=model_data.get('capabilities', []),
-                            use_cases=model_data.get('use_cases', [])
+                            cost_per_1k_tokens=Decimal(
+                                str(model_data.get("cost_per_1k_tokens", 0.002))
+                            ),
+                            max_tokens=model_data.get("max_tokens", 4096),
+                            avg_latency_ms=model_data.get("avg_latency_ms", 500),
+                            success_rate=model_data.get("success_rate", 0.99),
+                            capabilities=model_data.get("capabilities", []),
+                            use_cases=model_data.get("use_cases", []),
                         )
 
         # Fallback profiles if config not available
@@ -123,7 +128,7 @@ class AICostOptimizationService:
                     avg_latency_ms=300,
                     success_rate=0.99,
                     capabilities=["text", "chat", "reasoning"],
-                    use_cases=["general", "customer_service", "quick_responses"]
+                    use_cases=["general", "customer_service", "quick_responses"],
                 ),
                 "gpt-4": ModelCostProfile(
                     model_id="gpt-4",
@@ -133,7 +138,11 @@ class AICostOptimizationService:
                     avg_latency_ms=800,
                     success_rate=0.98,
                     capabilities=["text", "chat", "complex_reasoning", "analysis"],
-                    use_cases=["complex_analysis", "detailed_responses", "critical_tasks"]
+                    use_cases=[
+                        "complex_analysis",
+                        "detailed_responses",
+                        "critical_tasks",
+                    ],
                 ),
                 "claude-3-haiku": ModelCostProfile(
                     model_id="claude-3-haiku",
@@ -143,7 +152,7 @@ class AICostOptimizationService:
                     avg_latency_ms=250,
                     success_rate=0.99,
                     capabilities=["text", "chat", "reasoning"],
-                    use_cases=["general", "cost_sensitive"]
+                    use_cases=["general", "cost_sensitive"],
                 ),
                 "llama2": ModelCostProfile(
                     model_id="llama2",
@@ -153,8 +162,8 @@ class AICostOptimizationService:
                     avg_latency_ms=400,
                     success_rate=0.95,
                     capabilities=["text", "chat"],
-                    use_cases=["development", "testing", "cost_sensitive"]
-                )
+                    use_cases=["development", "testing", "cost_sensitive"],
+                ),
             }
 
         return profiles
@@ -165,7 +174,7 @@ class AICostOptimizationService:
         model_id: str,
         input_tokens: int,
         output_tokens: int = None,
-        context: Dict[str, Any] = None
+        context: Dict[str, Any] = None,
     ) -> CostPrediction:
         """Predict the cost of an AI request with confidence interval."""
         try:
@@ -180,13 +189,17 @@ class AICostOptimizationService:
 
             # Calculate cost
             total_tokens = input_tokens + output_tokens
-            base_cost = (Decimal(total_tokens) / Decimal(1000)) * profile.cost_per_1k_tokens
+            base_cost = (
+                Decimal(total_tokens) / Decimal(1000)
+            ) * profile.cost_per_1k_tokens
 
             # Apply context-based adjustments
             adjusted_cost = self._apply_context_adjustments(base_cost, context or {})
 
             # Calculate confidence based on historical data
-            confidence = await self._calculate_prediction_confidence(tenant_id, model_id, total_tokens)
+            confidence = await self._calculate_prediction_confidence(
+                tenant_id, model_id, total_tokens
+            )
 
             # Find alternative models
             alternative_models = await self._find_alternative_models(
@@ -194,7 +207,9 @@ class AICostOptimizationService:
             )
 
             # Generate reasoning
-            reasoning = self._generate_cost_reasoning(model_id, adjusted_cost, confidence, alternative_models)
+            reasoning = self._generate_cost_reasoning(
+                model_id, adjusted_cost, confidence, alternative_models
+            )
 
             return CostPrediction(
                 estimated_cost=adjusted_cost,
@@ -207,15 +222,17 @@ class AICostOptimizationService:
                     "output_tokens": output_tokens,
                     "base_cost": base_cost,
                     "adjustments": adjusted_cost - base_cost,
-                    "model_cost_per_1k": profile.cost_per_1k_tokens
-                }
+                    "model_cost_per_1k": profile.cost_per_1k_tokens,
+                },
             )
 
         except Exception as e:
             logger.error(f"Cost prediction failed: {str(e)}")
             raise
 
-    def _apply_context_adjustments(self, base_cost: Decimal, context: Dict[str, Any]) -> Decimal:
+    def _apply_context_adjustments(
+        self, base_cost: Decimal, context: Dict[str, Any]
+    ) -> Decimal:
         """Apply context-based cost adjustments."""
         adjusted_cost = base_cost
 
@@ -238,30 +255,33 @@ class AICostOptimizationService:
         return adjusted_cost.quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
 
     async def _calculate_prediction_confidence(
-        self,
-        tenant_id: UUID,
-        model_id: str,
-        total_tokens: int
+        self, tenant_id: UUID, model_id: str, total_tokens: int
     ) -> float:
         """Calculate confidence in cost prediction based on historical data."""
         try:
             # Query historical usage for this tenant and model
             thirty_days_ago = datetime.utcnow() - timedelta(days=30)
 
-            historical_usage = self.db.query(UsageLog).filter(
-                and_(
-                    UsageLog.tenant_id == tenant_id,
-                    UsageLog.resource_type == "ai_request",
-                    UsageLog.metadata_json.contains({"model": model_id}),
-                    UsageLog.created_at >= thirty_days_ago
+            historical_usage = (
+                self.db.query(UsageLog)
+                .filter(
+                    and_(
+                        UsageLog.tenant_id == tenant_id,
+                        UsageLog.resource_type == "ai_request",
+                        UsageLog.metadata_json.contains({"model": model_id}),
+                        UsageLog.created_at >= thirty_days_ago,
+                    )
                 )
-            ).all()
+                .all()
+            )
 
             if not historical_usage:
                 return 0.7  # Default confidence for new models
 
             # Calculate variance in historical costs
-            historical_costs = [usage.cost_amount for usage in historical_usage if usage.cost_amount]
+            historical_costs = [
+                usage.cost_amount for usage in historical_usage if usage.cost_amount
+            ]
 
             if len(historical_costs) < 5:
                 return 0.75
@@ -290,7 +310,7 @@ class AICostOptimizationService:
         current_model: str,
         current_cost: Decimal,
         input_tokens: int,
-        output_tokens: int
+        output_tokens: int,
     ) -> List[str]:
         """Find alternative models that could handle the same request."""
         alternatives = []
@@ -303,9 +323,13 @@ class AICostOptimizationService:
             current_profile = self.model_profiles[current_model]
 
             # Must have at least one common capability
-            if set(profile.capabilities).intersection(set(current_profile.capabilities)):
+            if set(profile.capabilities).intersection(
+                set(current_profile.capabilities)
+            ):
                 # Calculate cost for alternative
-                alt_cost = (Decimal(input_tokens + output_tokens) / Decimal(1000)) * profile.cost_per_1k_tokens
+                alt_cost = (
+                    Decimal(input_tokens + output_tokens) / Decimal(1000)
+                ) * profile.cost_per_1k_tokens
 
                 # Only include if significantly cheaper or same price range
                 cost_ratio = alt_cost / current_cost
@@ -315,11 +339,7 @@ class AICostOptimizationService:
         return alternatives[:3]  # Return top 3 alternatives
 
     def _generate_cost_reasoning(
-        self,
-        model_id: str,
-        cost: Decimal,
-        confidence: float,
-        alternatives: List[str]
+        self, model_id: str, cost: Decimal, confidence: float, alternatives: List[str]
     ) -> str:
         """Generate human-readable reasoning for cost prediction."""
         profile = self.model_profiles[model_id]
@@ -344,7 +364,7 @@ class AICostOptimizationService:
         input_tokens: int,
         context: Dict[str, Any] = None,
         cost_constraint: Decimal = None,
-        strategy: OptimizationStrategy = OptimizationStrategy.BALANCED
+        strategy: OptimizationStrategy = OptimizationStrategy.BALANCED,
     ) -> OptimizationRecommendation:
         """Optimize AI model selection based on cost, performance, and constraints."""
         try:
@@ -373,26 +393,30 @@ class AICostOptimizationService:
                 performance_score = self._calculate_performance_score(profile, context)
 
                 # Calculate cost efficiency score (0-100)
-                cost_efficiency = self._calculate_cost_efficiency_score(prediction.estimated_cost, performance_score)
+                cost_efficiency = self._calculate_cost_efficiency_score(
+                    prediction.estimated_cost, performance_score
+                )
 
                 # Calculate overall score based on strategy
                 overall_score = self._calculate_strategy_score(
                     strategy, performance_score, cost_efficiency, prediction.confidence
                 )
 
-                model_evaluations.append({
-                    "model_id": model_id,
-                    "prediction": prediction,
-                    "performance_score": performance_score,
-                    "cost_efficiency": cost_efficiency,
-                    "overall_score": overall_score
-                })
+                model_evaluations.append(
+                    {
+                        "model_id": model_id,
+                        "prediction": prediction,
+                        "performance_score": performance_score,
+                        "cost_efficiency": cost_efficiency,
+                        "overall_score": overall_score,
+                    }
+                )
 
             if not model_evaluations:
                 # Fallback to cheapest available model
                 cheapest_model = min(
                     self.model_profiles.keys(),
-                    key=lambda m: self.model_profiles[m].cost_per_1k_tokens
+                    key=lambda m: self.model_profiles[m].cost_per_1k_tokens,
                 )
                 return OptimizationRecommendation(
                     strategy=strategy,
@@ -400,7 +424,7 @@ class AICostOptimizationService:
                     expected_cost_savings=Decimal("0"),
                     expected_performance_impact=0.0,
                     confidence=0.5,
-                    reasoning="No models meet cost constraint, using cheapest available"
+                    reasoning="No models meet cost constraint, using cheapest available",
                 )
 
             # Sort by overall score (descending)
@@ -413,8 +437,13 @@ class AICostOptimizationService:
                 default_cost = await self.predict_request_cost(
                     tenant_id, default_model, input_tokens, context=context
                 )
-                savings = default_cost.estimated_cost - best_option["prediction"].estimated_cost
-                performance_impact = best_option["performance_score"] - self._calculate_performance_score(
+                savings = (
+                    default_cost.estimated_cost
+                    - best_option["prediction"].estimated_cost
+                )
+                performance_impact = best_option[
+                    "performance_score"
+                ] - self._calculate_performance_score(
                     self.model_profiles[default_model], context
                 )
             else:
@@ -425,7 +454,7 @@ class AICostOptimizationService:
             steps = self._generate_implementation_steps(
                 best_option["model_id"],
                 best_option["prediction"].estimated_cost,
-                savings
+                savings,
             )
 
             return OptimizationRecommendation(
@@ -435,14 +464,16 @@ class AICostOptimizationService:
                 expected_performance_impact=performance_impact,
                 confidence=best_option["prediction"].confidence,
                 reasoning=self._generate_optimization_reasoning(best_option, strategy),
-                implementation_steps=steps
+                implementation_steps=steps,
             )
 
         except Exception as e:
             logger.error(f"Model optimization failed: {str(e)}")
             raise
 
-    def _calculate_performance_score(self, profile: ModelCostProfile, context: Dict[str, Any]) -> float:
+    def _calculate_performance_score(
+        self, profile: ModelCostProfile, context: Dict[str, Any]
+    ) -> float:
         """Calculate performance score for a model (0-100)."""
         base_score = 50.0
 
@@ -455,7 +486,9 @@ class AICostOptimizationService:
             base_score -= 15
 
         # Success rate component
-        success_bonus = (profile.success_rate - 0.95) * 200  # Convert to 0-20 point scale
+        success_bonus = (
+            profile.success_rate - 0.95
+        ) * 200  # Convert to 0-20 point scale
         base_score += success_bonus
 
         # Max tokens component
@@ -465,7 +498,10 @@ class AICostOptimizationService:
             base_score -= 10
 
         # Context-based adjustments
-        if context.get("requires_complex_reasoning") and "complex_reasoning" in profile.capabilities:
+        if (
+            context.get("requires_complex_reasoning")
+            and "complex_reasoning" in profile.capabilities
+        ):
             base_score += 15
 
         if context.get("requires_analysis") and "analysis" in profile.capabilities:
@@ -473,7 +509,9 @@ class AICostOptimizationService:
 
         return max(0.0, min(100.0, base_score))
 
-    def _calculate_cost_efficiency_score(self, cost: Decimal, performance_score: float) -> float:
+    def _calculate_cost_efficiency_score(
+        self, cost: Decimal, performance_score: float
+    ) -> float:
         """Calculate cost efficiency score (0-100)."""
         # Lower cost for same performance = higher efficiency
         # This is a simplified model - in practice, you'd use historical data
@@ -491,7 +529,7 @@ class AICostOptimizationService:
         strategy: OptimizationStrategy,
         performance_score: float,
         cost_efficiency: float,
-        confidence: float
+        confidence: float,
     ) -> float:
         """Calculate overall score based on optimization strategy."""
         if strategy == OptimizationStrategy.AGGRESSIVE:
@@ -509,7 +547,9 @@ class AICostOptimizationService:
         else:
             return (0.5 * cost_efficiency) + (0.5 * performance_score)
 
-    def _generate_optimization_reasoning(self, evaluation: Dict, strategy: OptimizationStrategy) -> str:
+    def _generate_optimization_reasoning(
+        self, evaluation: Dict, strategy: OptimizationStrategy
+    ) -> str:
         """Generate reasoning for optimization recommendation."""
         model_id = evaluation["model_id"]
         profile = self.model_profiles[model_id]
@@ -524,32 +564,26 @@ class AICostOptimizationService:
             return f"Selected {model_id} for budget compliance. Cost efficiency: {evaluation['cost_efficiency']:.1f}/100"
 
     def _generate_implementation_steps(
-        self,
-        model_id: str,
-        estimated_cost: Decimal,
-        savings: Decimal
+        self, model_id: str, estimated_cost: Decimal, savings: Decimal
     ) -> List[str]:
         """Generate implementation steps for the optimization."""
-        steps = [
-            f"Switch to model: {model_id}",
-            ".4f"
-        ]
+        steps = [f"Switch to model: {model_id}", ".4f"]
 
         if savings > 0:
             steps.append(".4f")
 
-        steps.extend([
-            "Monitor performance impact for 24-48 hours",
-            "Adjust optimization strategy if needed",
-            "Update usage tracking for new model"
-        ])
+        steps.extend(
+            [
+                "Monitor performance impact for 24-48 hours",
+                "Adjust optimization strategy if needed",
+                "Update usage tracking for new model",
+            ]
+        )
 
         return steps
 
     async def analyze_budget_utilization(
-        self,
-        tenant_id: UUID,
-        time_period_days: int = 30
+        self, tenant_id: UUID, time_period_days: int = 30
     ) -> BudgetAnalysis:
         """Analyze tenant's AI budget utilization and provide recommendations."""
         try:
@@ -560,13 +594,11 @@ class AICostOptimizationService:
             # Calculate current spend
             period_start = datetime.utcnow() - timedelta(days=time_period_days)
 
-            current_spend = self.db.query(
-                func.sum(UsageLog.cost_amount)
-            ).filter(
+            current_spend = self.db.query(func.sum(UsageLog.cost_amount)).filter(
                 and_(
                     UsageLog.tenant_id == tenant_id,
                     UsageLog.resource_type == "ai_request",
-                    UsageLog.created_at >= period_start
+                    UsageLog.created_at >= period_start,
                 )
             ).scalar() or Decimal("0")
 
@@ -580,28 +612,42 @@ class AICostOptimizationService:
 
             # Calculate budget metrics
             budget_remaining = tenant.monthly_budget - current_spend
-            budget_utilization = float(current_spend / tenant.monthly_budget) if tenant.monthly_budget > 0 else 0.0
+            budget_utilization = (
+                float(current_spend / tenant.monthly_budget)
+                if tenant.monthly_budget > 0
+                else 0.0
+            )
 
             # Generate recommendations
             recommendations = []
             alerts = []
 
             if budget_utilization > 0.9:
-                alerts.append("Budget utilization over 90% - consider cost optimization")
+                alerts.append(
+                    "Budget utilization over 90% - consider cost optimization"
+                )
             elif budget_utilization > 0.8:
                 alerts.append("Budget utilization over 80% - monitor closely")
 
             if projected_spend > tenant.monthly_budget * Decimal("1.1"):
-                recommendations.append("Projected spend exceeds budget by >10% - implement aggressive optimization")
+                recommendations.append(
+                    "Projected spend exceeds budget by >10% - implement aggressive optimization"
+                )
             elif projected_spend > tenant.monthly_budget:
-                recommendations.append("Projected spend exceeds budget - consider cost optimization measures")
+                recommendations.append(
+                    "Projected spend exceeds budget - consider cost optimization measures"
+                )
 
             # Model usage analysis
             model_usage = await self._analyze_model_usage(tenant_id, period_start)
 
             if model_usage:
-                most_expensive = max(model_usage.items(), key=lambda x: x[1]['total_cost'])
-                recommendations.append(f"Consider alternatives to {most_expensive[0]} (cost: ${most_expensive[1]['total_cost']:.2f})")
+                most_expensive = max(
+                    model_usage.items(), key=lambda x: x[1]["total_cost"]
+                )
+                recommendations.append(
+                    f"Consider alternatives to {most_expensive[0]} (cost: ${most_expensive[1]['total_cost']:.2f})"
+                )
 
             return BudgetAnalysis(
                 current_spend=current_spend,
@@ -609,7 +655,7 @@ class AICostOptimizationService:
                 budget_remaining=budget_remaining,
                 budget_utilization=budget_utilization,
                 recommendations=recommendations,
-                alerts=alerts
+                alerts=alerts,
             )
 
         except Exception as e:
@@ -617,19 +663,21 @@ class AICostOptimizationService:
             raise
 
     async def _analyze_model_usage(
-        self,
-        tenant_id: UUID,
-        period_start: datetime
+        self, tenant_id: UUID, period_start: datetime
     ) -> Dict[str, Dict[str, Any]]:
         """Analyze AI model usage patterns for a tenant."""
         try:
-            usage_logs = self.db.query(UsageLog).filter(
-                and_(
-                    UsageLog.tenant_id == tenant_id,
-                    UsageLog.resource_type == "ai_request",
-                    UsageLog.created_at >= period_start
+            usage_logs = (
+                self.db.query(UsageLog)
+                .filter(
+                    and_(
+                        UsageLog.tenant_id == tenant_id,
+                        UsageLog.resource_type == "ai_request",
+                        UsageLog.created_at >= period_start,
+                    )
                 )
-            ).all()
+                .all()
+            )
 
             model_stats = {}
 
@@ -642,7 +690,7 @@ class AICostOptimizationService:
                     model_stats[model] = {
                         "total_cost": Decimal("0"),
                         "request_count": 0,
-                        "avg_cost": Decimal("0")
+                        "avg_cost": Decimal("0"),
                     }
 
                 model_stats[model]["total_cost"] += log.cost_amount or Decimal("0")
@@ -651,7 +699,9 @@ class AICostOptimizationService:
             # Calculate averages
             for stats in model_stats.values():
                 if stats["request_count"] > 0:
-                    stats["avg_cost"] = stats["total_cost"] / Decimal(stats["request_count"])
+                    stats["avg_cost"] = stats["total_cost"] / Decimal(
+                        stats["request_count"]
+                    )
 
             return model_stats
 
@@ -662,7 +712,7 @@ class AICostOptimizationService:
     async def get_cost_optimization_suggestions(
         self,
         tenant_id: UUID,
-        optimization_level: CostOptimizationLevel = CostOptimizationLevel.MODERATE
+        optimization_level: CostOptimizationLevel = CostOptimizationLevel.MODERATE,
     ) -> List[Dict[str, Any]]:
         """Get specific cost optimization suggestions for a tenant."""
         try:
@@ -678,56 +728,74 @@ class AICostOptimizationService:
 
             # Find expensive models
             expensive_models = [
-                (model, stats) for model, stats in model_usage.items()
+                (model, stats)
+                for model, stats in model_usage.items()
                 if stats["avg_cost"] > Decimal("0.01")
             ]
 
             for model, stats in expensive_models:
                 # Find cheaper alternatives
                 alternatives = await self._find_alternative_models(
-                    tenant_id, model, stats["avg_cost"] * Decimal(stats["request_count"]),
-                    1000, 1000  # Default token estimates
+                    tenant_id,
+                    model,
+                    stats["avg_cost"] * Decimal(stats["request_count"]),
+                    1000,
+                    1000,  # Default token estimates
                 )
 
                 if alternatives:
-                    potential_savings = stats["total_cost"] * Decimal("0.3")  # Estimate 30% savings
+                    potential_savings = stats["total_cost"] * Decimal(
+                        "0.3"
+                    )  # Estimate 30% savings
 
-                    suggestions.append({
-                        "type": "model_replacement",
-                        "current_model": model,
-                        "alternatives": alternatives,
-                        "current_cost": float(stats["total_cost"]),
-                        "potential_savings": float(potential_savings),
-                        "impact": "medium" if optimization_level == CostOptimizationLevel.MODERATE else "high",
-                        "description": f"Replace {model} with cheaper alternatives to save ~${potential_savings:.2f}"
-                    })
+                    suggestions.append(
+                        {
+                            "type": "model_replacement",
+                            "current_model": model,
+                            "alternatives": alternatives,
+                            "current_cost": float(stats["total_cost"]),
+                            "potential_savings": float(potential_savings),
+                            "impact": (
+                                "medium"
+                                if optimization_level == CostOptimizationLevel.MODERATE
+                                else "high"
+                            ),
+                            "description": f"Replace {model} with cheaper alternatives to save ~${potential_savings:.2f}",
+                        }
+                    )
 
             # Budget-based suggestions
             if tenant.monthly_budget > 0:
                 budget_analysis = await self.analyze_budget_utilization(tenant_id)
 
                 if budget_analysis.budget_utilization > 0.8:
-                    suggestions.append({
-                        "type": "budget_optimization",
-                        "current_utilization": budget_analysis.budget_utilization,
-                        "recommended_action": "Implement strict cost controls",
-                        "potential_savings": float(budget_analysis.budget_remaining * Decimal("0.5")),
-                        "impact": "high",
-                        "description": f"Budget at {budget_analysis.budget_utilization:.1%} utilization - implement cost controls"
-                    })
+                    suggestions.append(
+                        {
+                            "type": "budget_optimization",
+                            "current_utilization": budget_analysis.budget_utilization,
+                            "recommended_action": "Implement strict cost controls",
+                            "potential_savings": float(
+                                budget_analysis.budget_remaining * Decimal("0.5")
+                            ),
+                            "impact": "high",
+                            "description": f"Budget at {budget_analysis.budget_utilization:.1%} utilization - implement cost controls",
+                        }
+                    )
 
             # Usage pattern suggestions
             usage_patterns = await self._analyze_usage_patterns(tenant_id, period_start)
 
             if usage_patterns.get("peak_hours_usage", 0) > 0.7:
-                suggestions.append({
-                    "type": "usage_optimization",
-                    "issue": "Peak hour concentration",
-                    "recommended_action": "Distribute usage across hours",
-                    "potential_savings": "10-20%",
-                    "impact": "medium",
-                    "description": "High usage during peak hours - distribute across day for potential savings"
-                })
+                suggestions.append(
+                    {
+                        "type": "usage_optimization",
+                        "issue": "Peak hour concentration",
+                        "recommended_action": "Distribute usage across hours",
+                        "potential_savings": "10-20%",
+                        "impact": "medium",
+                        "description": "High usage during peak hours - distribute across day for potential savings",
+                    }
+                )
 
             return suggestions
 
@@ -736,32 +804,33 @@ class AICostOptimizationService:
             return []
 
     async def _analyze_usage_patterns(
-        self,
-        tenant_id: UUID,
-        period_start: datetime
+        self, tenant_id: UUID, period_start: datetime
     ) -> Dict[str, Any]:
         """Analyze AI usage patterns for optimization opportunities."""
         try:
-            usage_logs = self.db.query(UsageLog).filter(
-                and_(
-                    UsageLog.tenant_id == tenant_id,
-                    UsageLog.resource_type == "ai_request",
-                    UsageLog.created_at >= period_start
+            usage_logs = (
+                self.db.query(UsageLog)
+                .filter(
+                    and_(
+                        UsageLog.tenant_id == tenant_id,
+                        UsageLog.resource_type == "ai_request",
+                        UsageLog.created_at >= period_start,
+                    )
                 )
-            ).all()
+                .all()
+            )
 
             patterns = {
                 "total_requests": len(usage_logs),
                 "peak_hours_usage": 0.0,
                 "avg_cost_per_request": Decimal("0"),
-                "cost_variance": 0.0
+                "cost_variance": 0.0,
             }
 
             if usage_logs:
                 # Analyze peak hours (9-5 business hours)
                 peak_hour_requests = sum(
-                    1 for log in usage_logs
-                    if 9 <= log.created_at.hour <= 17
+                    1 for log in usage_logs if 9 <= log.created_at.hour <= 17
                 )
                 patterns["peak_hours_usage"] = peak_hour_requests / len(usage_logs)
 

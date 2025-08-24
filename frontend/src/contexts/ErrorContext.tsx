@@ -1,6 +1,13 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useErrorHandler } from '../hooks/useErrorHandler';
-import { AppError, ErrorContext as ErrorContextType, ErrorRecoveryAction, ErrorReportData, ErrorCategory, ErrorSeverity } from '../types/error';
+import {
+  AppError,
+  ErrorContext as ErrorContextType,
+  ErrorRecoveryAction,
+  ErrorReportData,
+  ErrorCategory,
+  ErrorSeverity,
+} from '../types/error';
 import { ErrorToast } from '../components/ErrorToast';
 
 interface ExtendedErrorContextType {
@@ -12,7 +19,12 @@ interface ExtendedErrorContextType {
   removeError: (error: AppError) => void;
   clearErrors: () => void;
   handleApiError: (error: unknown, context?: Partial<ErrorContextType>) => AppError;
-  handleWorkflowError: (error: unknown, workflowId?: string, executionId?: string, context?: Partial<ErrorContextType>) => AppError;
+  handleWorkflowError: (
+    error: unknown,
+    workflowId?: string,
+    executionId?: string,
+    context?: Partial<ErrorContextType>
+  ) => AppError;
   retryError: (error: AppError, retryAction: () => Promise<void>) => Promise<void>;
   reportError: (reportData: ErrorReportData) => Promise<void>;
   getErrorsByCategory: (category: ErrorCategory) => AppError[];
@@ -36,15 +48,15 @@ interface ErrorProviderProps {
   toastPosition?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
 }
 
-export const ErrorProvider: React.FC<ErrorProviderProps> = ({ 
-  children, 
+export const ErrorProvider: React.FC<ErrorProviderProps> = ({
+  children,
   maxErrors = 10,
   enableErrorReporting = true,
-  toastPosition = 'top-right'
+  toastPosition = 'top-right',
 }) => {
-  const errorHandler = useErrorHandler({ 
-    maxErrors, 
-    enableErrorReporting 
+  const errorHandler = useErrorHandler({
+    maxErrors,
+    enableErrorReporting,
   });
 
   const handleRetry = async (error: AppError) => {
@@ -68,22 +80,22 @@ export const ErrorProvider: React.FC<ErrorProviderProps> = ({
             localStorage.removeItem('access_token');
             window.location.href = '/login';
           },
-          primary: true
+          primary: true,
         });
         break;
-      
+
       case 'network':
         actions.push({
           label: 'Refresh Page',
           action: () => window.location.reload(),
-          primary: true
+          primary: true,
         });
         break;
-      
+
       case 'workflow':
         actions.push({
           label: 'Go to Workflows',
-          action: () => window.location.href = '/workflows'
+          action: () => (window.location.href = '/workflows'),
         });
         break;
     }
@@ -94,14 +106,19 @@ export const ErrorProvider: React.FC<ErrorProviderProps> = ({
   return (
     <ErrorContext.Provider value={errorHandler}>
       {children}
-      
+
       {/* Render error toasts */}
-      <div className={`fixed ${
-        toastPosition === 'top-right' ? 'top-4 right-4' :
-        toastPosition === 'top-left' ? 'top-4 left-4' :
-        toastPosition === 'bottom-right' ? 'bottom-4 right-4' :
-        'bottom-4 left-4'
-      } space-y-4 z-50`}>
+      <div
+        className={`fixed ${
+          toastPosition === 'top-right'
+            ? 'top-4 right-4'
+            : toastPosition === 'top-left'
+              ? 'top-4 left-4'
+              : toastPosition === 'bottom-right'
+                ? 'bottom-4 right-4'
+                : 'bottom-4 left-4'
+        } space-y-4 z-50`}
+      >
         {errorHandler.errors.map((error) => (
           <ErrorToast
             key={error.id}

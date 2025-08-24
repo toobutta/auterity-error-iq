@@ -14,20 +14,20 @@ export const TRIGGER_TEMPLATES: NodeTemplate[] = [
         id: 'customer_data',
         name: 'Customer Data',
         type: 'object',
-        description: 'Customer contact information and inquiry details'
+        description: 'Customer contact information and inquiry details',
       },
       {
         id: 'inquiry_type',
         name: 'Inquiry Type',
         type: 'string',
-        description: 'Type of inquiry (sales, service, parts)'
-      }
+        description: 'Type of inquiry (sales, service, parts)',
+      },
     ],
     config: {
       customerInquiry: {
         sources: ['email', 'phone', 'web_form'],
-        filters: {}
-      }
+        filters: {},
+      },
     },
     defaultData: {
       label: 'Customer Inquiry',
@@ -36,10 +36,10 @@ export const TRIGGER_TEMPLATES: NodeTemplate[] = [
         {
           field: 'sources',
           type: 'required',
-          message: 'At least one inquiry source must be selected'
-        }
-      ]
-    }
+          message: 'At least one inquiry source must be selected',
+        },
+      ],
+    },
   },
   {
     type: 'inventory_update',
@@ -53,20 +53,20 @@ export const TRIGGER_TEMPLATES: NodeTemplate[] = [
         id: 'vehicle_data',
         name: 'Vehicle Data',
         type: 'object',
-        description: 'Updated vehicle information'
+        description: 'Updated vehicle information',
       },
       {
         id: 'update_type',
         name: 'Update Type',
         type: 'string',
-        description: 'Type of update (new_arrival, price_change, status_change)'
-      }
+        description: 'Type of update (new_arrival, price_change, status_change)',
+      },
     ],
     config: {
       inventoryUpdate: {
         eventTypes: ['new_arrival', 'price_change'],
-        vehicleFilters: {}
-      }
+        vehicleFilters: {},
+      },
     },
     defaultData: {
       label: 'Inventory Update',
@@ -75,10 +75,10 @@ export const TRIGGER_TEMPLATES: NodeTemplate[] = [
         {
           field: 'eventTypes',
           type: 'required',
-          message: 'At least one event type must be selected'
-        }
-      ]
-    }
+          message: 'At least one event type must be selected',
+        },
+      ],
+    },
   },
   {
     type: 'service_appointment',
@@ -92,23 +92,23 @@ export const TRIGGER_TEMPLATES: NodeTemplate[] = [
         id: 'appointment_data',
         name: 'Appointment Data',
         type: 'object',
-        description: 'Service appointment details'
+        description: 'Service appointment details',
       },
       {
         id: 'customer_data',
         name: 'Customer Data',
         type: 'object',
-        description: 'Customer information'
-      }
+        description: 'Customer information',
+      },
     ],
     config: {
       serviceAppointment: {
         serviceTypes: ['maintenance', 'repair'],
         reminderSettings: {
           enabled: true,
-          daysBefore: 1
-        }
-      }
+          daysBefore: 1,
+        },
+      },
     },
     defaultData: {
       label: 'Service Appointment',
@@ -117,10 +117,10 @@ export const TRIGGER_TEMPLATES: NodeTemplate[] = [
         {
           field: 'serviceTypes',
           type: 'required',
-          message: 'At least one service type must be selected'
-        }
-      ]
-    }
+          message: 'At least one service type must be selected',
+        },
+      ],
+    },
   },
   {
     type: 'lead_generation',
@@ -134,22 +134,22 @@ export const TRIGGER_TEMPLATES: NodeTemplate[] = [
         id: 'lead_data',
         name: 'Lead Data',
         type: 'object',
-        description: 'Lead information and source'
+        description: 'Lead information and source',
       },
       {
         id: 'lead_score',
         name: 'Lead Score',
         type: 'number',
-        description: 'Initial lead qualification score'
-      }
+        description: 'Initial lead qualification score',
+      },
     ],
     config: {},
     defaultData: {
       label: 'Lead Generation',
       description: 'Captures and processes new leads',
-      validation: []
-    }
-  }
+      validation: [],
+    },
+  },
 ];
 
 // Action Node Templates
@@ -166,31 +166,31 @@ export const ACTION_TEMPLATES: NodeTemplate[] = [
         name: 'Recipient',
         type: 'string',
         required: true,
-        description: 'Email recipient address'
+        description: 'Email recipient address',
       },
       {
         id: 'customer_data',
         name: 'Customer Data',
         type: 'object',
         required: false,
-        description: 'Customer data for personalization'
-      }
+        description: 'Customer data for personalization',
+      },
     ],
     outputs: [
       {
         id: 'email_sent',
         name: 'Email Sent',
         type: 'boolean',
-        description: 'Whether email was sent successfully'
-      }
+        description: 'Whether email was sent successfully',
+      },
     ],
     config: {
       emailTemplate: {
         subject: 'Thank you for your inquiry',
         body: 'Dear {{customer_name}},\n\nThank you for contacting us. We will get back to you shortly.\n\nBest regards,\nYour Dealership Team',
         recipients: [],
-        attachments: []
-      }
+        attachments: [],
+      },
     },
     defaultData: {
       label: 'Send Email',
@@ -199,15 +199,15 @@ export const ACTION_TEMPLATES: NodeTemplate[] = [
         {
           field: 'subject',
           type: 'required',
-          message: 'Email subject is required'
+          message: 'Email subject is required',
         },
         {
           field: 'body',
           type: 'required',
-          message: 'Email body is required'
-        }
-      ]
-    }
+          message: 'Email body is required',
+        },
+      ],
+    },
   },
   {
     type: 'update_crm',
@@ -221,23 +221,23 @@ export const ACTION_TEMPLATES: NodeTemplate[] = [
         name: 'Customer ID',
         type: 'string',
         required: true,
-        description: 'Customer identifier'
+        description: 'Customer identifier',
       },
       {
         id: 'update_data',
         name: 'Update Data',
         type: 'object',
         required: true,
-        description: 'Data to update in CRM'
-      }
+        description: 'Data to update in CRM',
+      },
     ],
     outputs: [
       {
         id: 'crm_updated',
         name: 'CRM Updated',
         type: 'boolean',
-        description: 'Whether CRM was updated successfully'
-      }
+        description: 'Whether CRM was updated successfully',
+      },
     ],
     config: {
       crmFields: {
@@ -245,8 +245,8 @@ export const ACTION_TEMPLATES: NodeTemplate[] = [
         status: 'new',
         notes: '',
         tags: [],
-        customFields: {}
-      }
+        customFields: {},
+      },
     },
     defaultData: {
       label: 'Update CRM',
@@ -255,10 +255,10 @@ export const ACTION_TEMPLATES: NodeTemplate[] = [
         {
           field: 'status',
           type: 'required',
-          message: 'Customer status is required'
-        }
-      ]
-    }
+          message: 'Customer status is required',
+        },
+      ],
+    },
   },
   {
     type: 'schedule_appointment',
@@ -272,37 +272,37 @@ export const ACTION_TEMPLATES: NodeTemplate[] = [
         name: 'Customer Data',
         type: 'object',
         required: true,
-        description: 'Customer information'
+        description: 'Customer information',
       },
       {
         id: 'preferred_time',
         name: 'Preferred Time',
         type: 'string',
         required: false,
-        description: 'Customer preferred appointment time'
-      }
+        description: 'Customer preferred appointment time',
+      },
     ],
     outputs: [
       {
         id: 'appointment_scheduled',
         name: 'Appointment Scheduled',
         type: 'boolean',
-        description: 'Whether appointment was scheduled'
+        description: 'Whether appointment was scheduled',
       },
       {
         id: 'appointment_details',
         name: 'Appointment Details',
         type: 'object',
-        description: 'Scheduled appointment information'
-      }
+        description: 'Scheduled appointment information',
+      },
     ],
     config: {
       scheduleAppointment: {
         appointmentType: 'sales',
         duration: 60,
         location: 'Main Showroom',
-        autoConfirm: false
-      }
+        autoConfirm: false,
+      },
     },
     defaultData: {
       label: 'Schedule Appointment',
@@ -311,15 +311,15 @@ export const ACTION_TEMPLATES: NodeTemplate[] = [
         {
           field: 'appointmentType',
           type: 'required',
-          message: 'Appointment type is required'
+          message: 'Appointment type is required',
         },
         {
           field: 'duration',
           type: 'required',
-          message: 'Appointment duration is required'
-        }
-      ]
-    }
+          message: 'Appointment duration is required',
+        },
+      ],
+    },
   },
   {
     type: 'generate_quote',
@@ -333,31 +333,31 @@ export const ACTION_TEMPLATES: NodeTemplate[] = [
         name: 'Vehicle Data',
         type: 'object',
         required: true,
-        description: 'Vehicle information for quote'
+        description: 'Vehicle information for quote',
       },
       {
         id: 'customer_preferences',
         name: 'Customer Preferences',
         type: 'object',
         required: false,
-        description: 'Customer financing preferences'
-      }
+        description: 'Customer financing preferences',
+      },
     ],
     outputs: [
       {
         id: 'quote_generated',
         name: 'Quote Generated',
         type: 'object',
-        description: 'Generated quote details'
-      }
+        description: 'Generated quote details',
+      },
     ],
     config: {
       generateQuote: {
         includeFinancing: true,
         includeTradeIn: true,
         validityDays: 30,
-        discountRules: {}
-      }
+        discountRules: {},
+      },
     },
     defaultData: {
       label: 'Generate Quote',
@@ -366,10 +366,10 @@ export const ACTION_TEMPLATES: NodeTemplate[] = [
         {
           field: 'validityDays',
           type: 'required',
-          message: 'Quote validity period is required'
-        }
-      ]
-    }
+          message: 'Quote validity period is required',
+        },
+      ],
+    },
   },
   {
     type: 'inventory_check',
@@ -383,22 +383,22 @@ export const ACTION_TEMPLATES: NodeTemplate[] = [
         name: 'Search Criteria',
         type: 'object',
         required: true,
-        description: 'Vehicle search parameters'
-      }
+        description: 'Vehicle search parameters',
+      },
     ],
     outputs: [
       {
         id: 'available_vehicles',
         name: 'Available Vehicles',
         type: 'object',
-        description: 'List of matching vehicles'
+        description: 'List of matching vehicles',
       },
       {
         id: 'inventory_count',
         name: 'Inventory Count',
         type: 'number',
-        description: 'Number of matching vehicles'
-      }
+        description: 'Number of matching vehicles',
+      },
     ],
     config: {
       inventoryCheck: {
@@ -406,17 +406,17 @@ export const ACTION_TEMPLATES: NodeTemplate[] = [
           make: '',
           model: '',
           year: new Date().getFullYear(),
-          features: []
+          features: [],
         },
-        includeNearbyDealerships: false
-      }
+        includeNearbyDealerships: false,
+      },
     },
     defaultData: {
       label: 'Inventory Check',
       description: 'Searches available vehicle inventory',
-      validation: []
-    }
-  }
+      validation: [],
+    },
+  },
 ];
 
 // Condition Node Templates
@@ -433,22 +433,22 @@ export const CONDITION_TEMPLATES: NodeTemplate[] = [
         name: 'Customer Data',
         type: 'object',
         required: true,
-        description: 'Customer information to evaluate'
-      }
+        description: 'Customer information to evaluate',
+      },
     ],
     outputs: [
       {
         id: 'is_new_customer',
         name: 'New Customer',
         type: 'boolean',
-        description: 'True if customer is new'
+        description: 'True if customer is new',
       },
       {
         id: 'customer_category',
         name: 'Customer Category',
         type: 'string',
-        description: 'Customer classification'
-      }
+        description: 'Customer classification',
+      },
     ],
     config: {
       conditions: [
@@ -456,9 +456,9 @@ export const CONDITION_TEMPLATES: NodeTemplate[] = [
           field: 'customer_history',
           operator: 'equals',
           value: null,
-          logicalOperator: 'and'
-        }
-      ]
+          logicalOperator: 'and',
+        },
+      ],
     },
     defaultData: {
       label: 'Customer Type',
@@ -467,10 +467,10 @@ export const CONDITION_TEMPLATES: NodeTemplate[] = [
         {
           field: 'conditions',
           type: 'required',
-          message: 'At least one condition must be defined'
-        }
-      ]
-    }
+          message: 'At least one condition must be defined',
+        },
+      ],
+    },
   },
   {
     type: 'budget_range',
@@ -484,22 +484,22 @@ export const CONDITION_TEMPLATES: NodeTemplate[] = [
         name: 'Budget Info',
         type: 'object',
         required: true,
-        description: 'Customer budget information'
-      }
+        description: 'Customer budget information',
+      },
     ],
     outputs: [
       {
         id: 'budget_category',
         name: 'Budget Category',
         type: 'string',
-        description: 'Budget classification (economy, mid-range, luxury)'
+        description: 'Budget classification (economy, mid-range, luxury)',
       },
       {
         id: 'financing_needed',
         name: 'Financing Needed',
         type: 'boolean',
-        description: 'Whether customer needs financing'
-      }
+        description: 'Whether customer needs financing',
+      },
     ],
     config: {
       conditions: [
@@ -507,9 +507,9 @@ export const CONDITION_TEMPLATES: NodeTemplate[] = [
           field: 'max_budget',
           operator: 'greater_than',
           value: 50000,
-          logicalOperator: 'and'
-        }
-      ]
+          logicalOperator: 'and',
+        },
+      ],
     },
     defaultData: {
       label: 'Budget Range',
@@ -518,10 +518,10 @@ export const CONDITION_TEMPLATES: NodeTemplate[] = [
         {
           field: 'conditions',
           type: 'required',
-          message: 'Budget conditions must be defined'
-        }
-      ]
-    }
+          message: 'Budget conditions must be defined',
+        },
+      ],
+    },
   },
   {
     type: 'vehicle_preference',
@@ -535,22 +535,22 @@ export const CONDITION_TEMPLATES: NodeTemplate[] = [
         name: 'Preferences',
         type: 'object',
         required: true,
-        description: 'Customer vehicle preferences'
-      }
+        description: 'Customer vehicle preferences',
+      },
     ],
     outputs: [
       {
         id: 'vehicle_category',
         name: 'Vehicle Category',
         type: 'string',
-        description: 'Preferred vehicle category'
+        description: 'Preferred vehicle category',
       },
       {
         id: 'feature_requirements',
         name: 'Feature Requirements',
         type: 'object',
-        description: 'Required vehicle features'
-      }
+        description: 'Required vehicle features',
+      },
     ],
     config: {
       conditions: [
@@ -558,15 +558,15 @@ export const CONDITION_TEMPLATES: NodeTemplate[] = [
           field: 'vehicle_type',
           operator: 'in',
           value: ['sedan', 'suv', 'truck'],
-          logicalOperator: 'or'
-        }
-      ]
+          logicalOperator: 'or',
+        },
+      ],
     },
     defaultData: {
       label: 'Vehicle Preference',
       description: 'Routes based on vehicle preferences',
-      validation: []
-    }
+      validation: [],
+    },
   },
   {
     type: 'geographic_location',
@@ -580,22 +580,22 @@ export const CONDITION_TEMPLATES: NodeTemplate[] = [
         name: 'Location Data',
         type: 'object',
         required: true,
-        description: 'Customer location information'
-      }
+        description: 'Customer location information',
+      },
     ],
     outputs: [
       {
         id: 'nearest_dealership',
         name: 'Nearest Dealership',
         type: 'string',
-        description: 'Closest dealership location'
+        description: 'Closest dealership location',
       },
       {
         id: 'distance_miles',
         name: 'Distance (Miles)',
         type: 'number',
-        description: 'Distance to nearest dealership'
-      }
+        description: 'Distance to nearest dealership',
+      },
     ],
     config: {
       conditions: [
@@ -603,16 +603,16 @@ export const CONDITION_TEMPLATES: NodeTemplate[] = [
           field: 'distance',
           operator: 'less_than',
           value: 50,
-          logicalOperator: 'and'
-        }
-      ]
+          logicalOperator: 'and',
+        },
+      ],
     },
     defaultData: {
       label: 'Geographic Location',
       description: 'Routes based on customer location',
-      validation: []
-    }
-  }
+      validation: [],
+    },
+  },
 ];
 
 // AI-Powered Node Templates
@@ -629,31 +629,33 @@ export const AI_TEMPLATES: NodeTemplate[] = [
         name: 'Lead Data',
         type: 'object',
         required: true,
-        description: 'Raw lead information'
-      }
+        description: 'Raw lead information',
+      },
     ],
     outputs: [
       {
         id: 'lead_score',
         name: 'Lead Score',
         type: 'number',
-        description: 'AI-generated lead score (0-100)'
+        description: 'AI-generated lead score (0-100)',
       },
       {
         id: 'qualification_notes',
         name: 'Qualification Notes',
         type: 'string',
-        description: 'AI analysis of lead quality'
-      }
+        description: 'AI analysis of lead quality',
+      },
     ],
     config: {
       aiPrompt: {
         model: 'gpt-4',
-        prompt: 'Analyze this automotive lead and provide a qualification score from 0-100 based on buying intent, budget indicators, and engagement level.',
+        prompt:
+          'Analyze this automotive lead and provide a qualification score from 0-100 based on buying intent, budget indicators, and engagement level.',
         temperature: 0.3,
         maxTokens: 500,
-        systemMessage: 'You are an expert automotive sales AI that qualifies leads for car dealerships.'
-      }
+        systemMessage:
+          'You are an expert automotive sales AI that qualifies leads for car dealerships.',
+      },
     },
     defaultData: {
       label: 'Lead Qualification',
@@ -662,10 +664,10 @@ export const AI_TEMPLATES: NodeTemplate[] = [
         {
           field: 'prompt',
           type: 'required',
-          message: 'AI prompt is required'
-        }
-      ]
-    }
+          message: 'AI prompt is required',
+        },
+      ],
+    },
   },
   {
     type: 'price_optimization',
@@ -679,43 +681,44 @@ export const AI_TEMPLATES: NodeTemplate[] = [
         name: 'Vehicle Data',
         type: 'object',
         required: true,
-        description: 'Vehicle specifications and current pricing'
+        description: 'Vehicle specifications and current pricing',
       },
       {
         id: 'market_data',
         name: 'Market Data',
         type: 'object',
         required: false,
-        description: 'Current market conditions and competitor pricing'
-      }
+        description: 'Current market conditions and competitor pricing',
+      },
     ],
     outputs: [
       {
         id: 'optimized_price',
         name: 'Optimized Price',
         type: 'number',
-        description: 'AI-recommended vehicle price'
+        description: 'AI-recommended vehicle price',
       },
       {
         id: 'pricing_rationale',
         name: 'Pricing Rationale',
         type: 'string',
-        description: 'Explanation of pricing decision'
-      }
+        description: 'Explanation of pricing decision',
+      },
     ],
     config: {
       aiPrompt: {
         model: 'gpt-4',
-        prompt: 'Analyze vehicle specifications, market conditions, and competitor pricing to recommend an optimal price that maximizes both competitiveness and profit margin.',
+        prompt:
+          'Analyze vehicle specifications, market conditions, and competitor pricing to recommend an optimal price that maximizes both competitiveness and profit margin.',
         temperature: 0.2,
-        maxTokens: 300
-      }
+        maxTokens: 300,
+      },
     },
     defaultData: {
       label: 'Price Optimization',
       description: 'AI-powered dynamic pricing optimization',
-      validation: []
-    }
+      validation: [],
+    },
   },
   {
     type: 'customer_sentiment',
@@ -729,42 +732,43 @@ export const AI_TEMPLATES: NodeTemplate[] = [
         name: 'Communication Text',
         type: 'string',
         required: true,
-        description: 'Customer communication to analyze'
-      }
+        description: 'Customer communication to analyze',
+      },
     ],
     outputs: [
       {
         id: 'sentiment_score',
         name: 'Sentiment Score',
         type: 'number',
-        description: 'Sentiment score (-1 to 1, negative to positive)'
+        description: 'Sentiment score (-1 to 1, negative to positive)',
       },
       {
         id: 'emotion_analysis',
         name: 'Emotion Analysis',
         type: 'object',
-        description: 'Detailed emotion breakdown'
+        description: 'Detailed emotion breakdown',
       },
       {
         id: 'response_recommendation',
         name: 'Response Recommendation',
         type: 'string',
-        description: 'Suggested response approach'
-      }
+        description: 'Suggested response approach',
+      },
     ],
     config: {
       aiPrompt: {
         model: 'gpt-3.5-turbo',
-        prompt: 'Analyze the sentiment and emotional tone of this customer communication. Provide a sentiment score and recommend the best response approach.',
+        prompt:
+          'Analyze the sentiment and emotional tone of this customer communication. Provide a sentiment score and recommend the best response approach.',
         temperature: 0.1,
-        maxTokens: 200
-      }
+        maxTokens: 200,
+      },
     },
     defaultData: {
       label: 'Customer Sentiment',
       description: 'AI sentiment analysis of customer communications',
-      validation: []
-    }
+      validation: [],
+    },
   },
   {
     type: 'recommendation_engine',
@@ -778,44 +782,45 @@ export const AI_TEMPLATES: NodeTemplate[] = [
         name: 'Customer Preferences',
         type: 'object',
         required: true,
-        description: 'Customer preferences and requirements'
+        description: 'Customer preferences and requirements',
       },
       {
         id: 'available_inventory',
         name: 'Available Inventory',
         type: 'object',
         required: true,
-        description: 'Current vehicle inventory'
-      }
+        description: 'Current vehicle inventory',
+      },
     ],
     outputs: [
       {
         id: 'recommended_vehicles',
         name: 'Recommended Vehicles',
         type: 'object',
-        description: 'List of recommended vehicles with match scores'
+        description: 'List of recommended vehicles with match scores',
       },
       {
         id: 'recommendation_reasoning',
         name: 'Recommendation Reasoning',
         type: 'string',
-        description: 'Explanation of why vehicles were recommended'
-      }
+        description: 'Explanation of why vehicles were recommended',
+      },
     ],
     config: {
       aiPrompt: {
         model: 'gpt-4',
-        prompt: 'Based on customer preferences and available inventory, recommend the top 3 vehicles that best match their needs. Explain your reasoning.',
+        prompt:
+          'Based on customer preferences and available inventory, recommend the top 3 vehicles that best match their needs. Explain your reasoning.',
         temperature: 0.4,
-        maxTokens: 600
-      }
+        maxTokens: 600,
+      },
     },
     defaultData: {
       label: 'Vehicle Recommendations',
       description: 'AI-powered vehicle matching and recommendations',
-      validation: []
-    }
-  }
+      validation: [],
+    },
+  },
 ];
 
 // Combine all templates into categories
@@ -825,27 +830,27 @@ export const AUTOMOTIVE_NODE_CATEGORIES: NodeCategory[] = [
     name: 'Triggers',
     icon: '⚡',
     color: 'yellow',
-    nodes: TRIGGER_TEMPLATES
+    nodes: TRIGGER_TEMPLATES,
   },
   {
     id: 'actions',
     name: 'Actions',
     icon: '🔄',
     color: 'blue',
-    nodes: ACTION_TEMPLATES
+    nodes: ACTION_TEMPLATES,
   },
   {
     id: 'conditions',
     name: 'Conditions',
     icon: '❓',
     color: 'purple',
-    nodes: CONDITION_TEMPLATES
+    nodes: CONDITION_TEMPLATES,
   },
   {
     id: 'ai_powered',
     name: 'AI Powered',
     icon: '🤖',
     color: 'green',
-    nodes: AI_TEMPLATES
-  }
+    nodes: AI_TEMPLATES,
+  },
 ];

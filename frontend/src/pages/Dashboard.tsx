@@ -4,9 +4,9 @@ import { MetricCard } from '../components/MetricCard';
 import { getDashboardMetrics, DashboardMetrics } from '../api/workflows';
 
 // Lazy load the PerformanceDashboard to reduce initial bundle size
-const PerformanceDashboard = lazy(() => 
-  import('../components/PerformanceDashboard').then(module => ({
-    default: module.PerformanceDashboard
+const PerformanceDashboard = lazy(() =>
+  import('../components/PerformanceDashboard').then((module) => ({
+    default: module.PerformanceDashboard,
   }))
 );
 
@@ -32,10 +32,10 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     fetchMetrics();
-    
+
     // Set up auto-refresh every 30 seconds
     const interval = setInterval(fetchMetrics, 30000);
-    
+
     return () => clearInterval(interval);
   }, []);
 
@@ -68,16 +68,41 @@ const Dashboard: React.FC = () => {
               >
                 {loading ? (
                   <>
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 818-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 818-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Refreshing...
                   </>
                 ) : (
                   <>
-                    <svg className="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    <svg
+                      className="-ml-1 mr-2 h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
                     </svg>
                     Refresh
                   </>
@@ -95,12 +120,24 @@ const Dashboard: React.FC = () => {
           <div className="glass-card border-l-4 border-red-500 p-4">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800 dark:text-red-200">Error loading dashboard</h3>
+                <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
+                  Error loading dashboard
+                </h3>
                 <p className="text-sm text-red-700 dark:text-red-300 mt-1">{error}</p>
               </div>
             </div>
@@ -121,7 +158,13 @@ const Dashboard: React.FC = () => {
             title="Success Rate"
             value={metrics ? formatPercentage(metrics.successRate) : '0%'}
             subtitle="Last 30 days"
-            trend={metrics && metrics.successRate > 0.85 ? 'up' : metrics && metrics.successRate < 0.7 ? 'down' : 'neutral'}
+            trend={
+              metrics && metrics.successRate > 0.85
+                ? 'up'
+                : metrics && metrics.successRate < 0.7
+                  ? 'down'
+                  : 'neutral'
+            }
             trendValue={metrics ? `${metrics.totalExecutions} executions` : '0 executions'}
             icon="✅"
             variant="performance"
@@ -176,12 +219,14 @@ const Dashboard: React.FC = () => {
 
         {/* Performance Dashboard */}
         <div className="glass-card p-6">
-          <Suspense fallback={
-            <div className="animate-pulse">
-              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
-              <div className="h-80 bg-gray-200 dark:bg-gray-700 rounded"></div>
-            </div>
-          }>
+          <Suspense
+            fallback={
+              <div className="animate-pulse">
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
+                <div className="h-80 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              </div>
+            }
+          >
             <PerformanceDashboard showSystemMetrics={true} />
           </Suspense>
         </div>

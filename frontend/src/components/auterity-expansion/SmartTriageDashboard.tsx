@@ -38,7 +38,9 @@ const SmartTriageDashboard: React.FC = () => {
   const [recentResults, setRecentResults] = useState<TriageResult[]>([]);
   const [metrics, setMetrics] = useState<TriageMetrics | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'rules' | 'results' | 'analytics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'rules' | 'results' | 'analytics'>(
+    'overview'
+  );
 
   useEffect(() => {
     // TODO: Replace with actual API calls
@@ -59,7 +61,7 @@ const SmartTriageDashboard: React.FC = () => {
           is_active: true,
           created_at: '2025-01-27T10:00:00Z',
           conditions: { category: 'support', urgency: 'high' },
-          routing_logic: { route_to: 'senior_support', escalation: true }
+          routing_logic: { route_to: 'senior_support', escalation: true },
         },
         {
           id: '2',
@@ -70,8 +72,8 @@ const SmartTriageDashboard: React.FC = () => {
           is_active: true,
           created_at: '2025-01-27T09:00:00Z',
           conditions: { category: 'technical', complexity: 'medium' },
-          routing_logic: { route_to: 'tech_support', auto_assign: true }
-        }
+          routing_logic: { route_to: 'tech_support', auto_assign: true },
+        },
       ];
 
       const mockResults: TriageResult[] = [
@@ -81,7 +83,7 @@ const SmartTriageDashboard: React.FC = () => {
           predicted_routing: 'senior_support',
           confidence_score: 0.92,
           processing_time_ms: 150,
-          created_at: '2025-01-27T10:30:00Z'
+          created_at: '2025-01-27T10:30:00Z',
         },
         {
           id: '2',
@@ -89,8 +91,8 @@ const SmartTriageDashboard: React.FC = () => {
           predicted_routing: 'general_support',
           confidence_score: 0.78,
           processing_time_ms: 120,
-          created_at: '2025-01-27T10:25:00Z'
-        }
+          created_at: '2025-01-27T10:25:00Z',
+        },
       ];
 
       const mockMetrics: TriageMetrics = {
@@ -98,7 +100,7 @@ const SmartTriageDashboard: React.FC = () => {
         average_confidence: 0.84,
         human_override_rate: 0.12,
         average_processing_time: 135,
-        accuracy_rate: 0.88
+        accuracy_rate: 0.88,
       };
 
       setTriageRules(mockRules);
@@ -113,10 +115,14 @@ const SmartTriageDashboard: React.FC = () => {
 
   const getRuleTypeColor = (type: string) => {
     switch (type) {
-      case 'ml': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'rule_based': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'hybrid': return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+      case 'ml':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+      case 'rule_based':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case 'hybrid':
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
     }
   };
 
@@ -147,13 +153,18 @@ const SmartTriageDashboard: React.FC = () => {
               AI-powered workflow routing and intelligent task triage
             </p>
           </div>
-          <Button 
-            variant="default" 
+          <Button
+            variant="default"
             size="lg"
             onClick={fetchTriageData}
             leftIcon={
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
             }
           >
@@ -168,7 +179,7 @@ const SmartTriageDashboard: React.FC = () => {
           { id: 'overview', label: 'Overview', icon: '📊' },
           { id: 'rules', label: 'Triage Rules', icon: '⚙️' },
           { id: 'results', label: 'Recent Results', icon: '📋' },
-          { id: 'analytics', label: 'Analytics', icon: '📈' }
+          { id: 'analytics', label: 'Analytics', icon: '📈' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -229,21 +240,56 @@ const SmartTriageDashboard: React.FC = () => {
             <div className="p-6 pt-0">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Button variant="outline" className="h-20 flex-col justify-center">
-                  <svg className="w-8 h-8 mb-2 text-automotive-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  <svg
+                    className="w-8 h-8 mb-2 text-automotive-primary"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
                   </svg>
                   Create New Rule
                 </Button>
                 <Button variant="outline" className="h-20 flex-col justify-center">
-                  <svg className="w-8 h-8 mb-2 text-automotive-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  <svg
+                    className="w-8 h-8 mb-2 text-automotive-primary"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
                   </svg>
                   View Analytics
                 </Button>
                 <Button variant="outline" className="h-20 flex-col justify-center">
-                  <svg className="w-8 h-8 mb-2 text-automotive-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <svg
+                    className="w-8 h-8 mb-2 text-automotive-primary"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
                   </svg>
                   Configure Settings
                 </Button>
@@ -256,10 +302,17 @@ const SmartTriageDashboard: React.FC = () => {
       {activeTab === 'rules' && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Triage Rules</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              Triage Rules
+            </h2>
             <Button variant="default" size="lg">
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
               </svg>
               Add New Rule
             </Button>
@@ -275,14 +328,18 @@ const SmartTriageDashboard: React.FC = () => {
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                           {rule.name}
                         </h3>
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getRuleTypeColor(rule.rule_type)}`}>
+                        <span
+                          className={`px-2 py-1 text-xs font-medium rounded-full ${getRuleTypeColor(rule.rule_type)}`}
+                        >
                           {rule.rule_type.toUpperCase()}
                         </span>
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          rule.is_active 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                            : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
-                        }`}>
+                        <span
+                          className={`px-2 py-1 text-xs font-medium rounded-full ${
+                            rule.is_active
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                              : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+                          }`}
+                        >
                           {rule.is_active ? 'Active' : 'Inactive'}
                         </span>
                       </div>
@@ -299,14 +356,22 @@ const SmartTriageDashboard: React.FC = () => {
                         </div>
                         <div>
                           <span className="font-medium">Created:</span>
-                          <span className="ml-2">{new Date(rule.created_at).toLocaleDateString()}</span>
+                          <span className="ml-2">
+                            {new Date(rule.created_at).toLocaleDateString()}
+                          </span>
                         </div>
                       </div>
                     </div>
                     <div className="flex space-x-2">
-                      <Button variant="outline" size="sm">Edit</Button>
-                      <Button variant="outline" size="sm">Duplicate</Button>
-                      <Button variant="destructive" size="sm">Delete</Button>
+                      <Button variant="outline" size="sm">
+                        Edit
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Duplicate
+                      </Button>
+                      <Button variant="destructive" size="sm">
+                        Delete
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -319,7 +384,9 @@ const SmartTriageDashboard: React.FC = () => {
       {activeTab === 'results' && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Recent Triage Results</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              Recent Triage Results
+            </h2>
             <Button variant="outline">View All Results</Button>
           </div>
 
@@ -329,11 +396,15 @@ const SmartTriageDashboard: React.FC = () => {
                 <div className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <p className="text-gray-900 dark:text-gray-100 mb-2">{result.input_content}</p>
+                      <p className="text-gray-900 dark:text-gray-100 mb-2">
+                        {result.input_content}
+                      </p>
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-gray-600 dark:text-gray-400">
                         <div>
                           <span className="font-medium">Routing:</span>
-                          <span className="ml-2 text-automotive-primary">{result.predicted_routing}</span>
+                          <span className="ml-2 text-automotive-primary">
+                            {result.predicted_routing}
+                          </span>
                         </div>
                         <div>
                           <span className="font-medium">Confidence:</span>
@@ -347,13 +418,19 @@ const SmartTriageDashboard: React.FC = () => {
                         </div>
                         <div>
                           <span className="font-medium">Created:</span>
-                          <span className="ml-2">{new Date(result.created_at).toLocaleString()}</span>
+                          <span className="ml-2">
+                            {new Date(result.created_at).toLocaleString()}
+                          </span>
                         </div>
                       </div>
                     </div>
                     <div className="flex space-x-2">
-                      <Button variant="outline" size="sm">Review</Button>
-                      <Button variant="outline" size="sm">Override</Button>
+                      <Button variant="outline" size="sm">
+                        Review
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Override
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -365,13 +442,17 @@ const SmartTriageDashboard: React.FC = () => {
 
       {activeTab === 'analytics' && (
         <div className="space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Triage Analytics</h2>
-          
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+            Triage Analytics
+          </h2>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card variant="glass">
               <CardHeader>
                 <CardTitle>Confidence Distribution</CardTitle>
-                <CardDescription>Distribution of confidence scores across all triage decisions</CardDescription>
+                <CardDescription>
+                  Distribution of confidence scores across all triage decisions
+                </CardDescription>
               </CardHeader>
               <div className="p-6 pt-0">
                 <div className="space-y-3">
@@ -380,13 +461,15 @@ const SmartTriageDashboard: React.FC = () => {
                     { range: '80-89%', count: 38, percentage: 30, color: 'bg-blue-500' },
                     { range: '70-79%', count: 25, percentage: 20, color: 'bg-yellow-500' },
                     { range: '60-69%', count: 12, percentage: 10, color: 'bg-orange-500' },
-                    { range: 'Below 60%', count: 5, percentage: 4, color: 'bg-red-500' }
+                    { range: 'Below 60%', count: 5, percentage: 4, color: 'bg-red-500' },
                   ].map((item) => (
                     <div key={item.range} className="flex items-center space-x-3">
-                      <div className="w-20 text-sm text-gray-600 dark:text-gray-400">{item.range}</div>
+                      <div className="w-20 text-sm text-gray-600 dark:text-gray-400">
+                        {item.range}
+                      </div>
                       <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div 
-                          className={`h-2 rounded-full ${item.color}`} 
+                        <div
+                          className={`h-2 rounded-full ${item.color}`}
                           style={{ width: `${item.percentage}%` }}
                         ></div>
                       </div>
@@ -413,24 +496,34 @@ const SmartTriageDashboard: React.FC = () => {
                     { day: 'Thu', time: 145, trend: 'up' },
                     { day: 'Fri', time: 125, trend: 'down' },
                     { day: 'Sat', time: 130, trend: 'up' },
-                    { day: 'Sun', time: 115, trend: 'down' }
+                    { day: 'Sun', time: 115, trend: 'down' },
                   ].map((item) => (
                     <div key={item.day} className="flex items-center justify-between">
                       <span className="text-sm text-gray-600 dark:text-gray-400">{item.day}</span>
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-medium">{item.time}ms</span>
-                        <svg 
+                        <svg
                           className={`w-4 h-4 ${
                             item.trend === 'down' ? 'text-green-500' : 'text-red-500'
-                          }`} 
-                          fill="none" 
-                          stroke="currentColor" 
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
                           viewBox="0 0 24 24"
                         >
                           {item.trend === 'down' ? (
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M5 10l7-7m0 0l7 7m-7-7v18"
+                            />
                           ) : (
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                            />
                           )}
                         </svg>
                       </div>

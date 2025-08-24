@@ -18,15 +18,12 @@ interface WorkflowErrorDisplayProps {
   className?: string;
 }
 
-
-
-
 const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
   executionId,
   workflowId,
   onRetrySuccess,
   onClose,
-  className = ''
+  className = '',
 }) => {
   const [execution, setExecution] = useState<WorkflowExecution | null>(null);
   const [logs, setLogs] = useState<ExecutionLog[]>([]);
@@ -49,7 +46,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
         // Fetch execution logs for detailed error analysis
         try {
           const logsData = await getExecutionLogs(executionId);
-          const transformedLogs: ExecutionLog[] = logsData.map(entry => ({
+          const transformedLogs: ExecutionLog[] = logsData.map((entry) => ({
             id: entry.id,
             stepName: entry.stepName || 'Unknown Step',
             level: (entry.level === 'warn' ? 'warning' : entry.level) || 'info',
@@ -60,7 +57,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
             duration: entry.duration || 0,
             timestamp: entry.timestamp,
             errorMessage: entry.level === 'error' ? entry.message : undefined,
-            stepType: entry.stepType
+            stepType: entry.stepType,
           })) as ExecutionLog[];
           setLogs(transformedLogs);
         } catch (logError) {
@@ -69,7 +66,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
       } catch (error) {
         addError('Failed to load execution details', {
           executionId,
-          component: 'WorkflowErrorDisplay'
+          component: 'WorkflowErrorDisplay',
         });
       } finally {
         setLoading(false);
@@ -81,14 +78,22 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
 
   const categorizeError = (errorMessage: string, logs: ExecutionLog[]): ErrorCategory => {
     const message = errorMessage.toLowerCase();
-    
-    if (message.includes('validation') || message.includes('invalid input') || message.includes('required field')) {
+
+    if (
+      message.includes('validation') ||
+      message.includes('invalid input') ||
+      message.includes('required field')
+    ) {
       return ErrorCategory.VALIDATION;
     }
     if (message.includes('ai service') || message.includes('openai') || message.includes('gpt')) {
       return ErrorCategory.AI_SERVICE;
     }
-    if (message.includes('network') || message.includes('timeout') || message.includes('connection')) {
+    if (
+      message.includes('network') ||
+      message.includes('timeout') ||
+      message.includes('connection')
+    ) {
       return ErrorCategory.NETWORK;
     }
     if (message.includes('database') || message.includes('sql')) {
@@ -100,22 +105,24 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
     if (message.includes('permission') || message.includes('forbidden')) {
       return ErrorCategory.AUTHORIZATION;
     }
-    
+
     // Check logs for more context
-    const hasAiErrors = logs.some(log => 
-      log.errorMessage?.toLowerCase().includes('ai') || 
-      log.stepType === 'ai_process'
+    const hasAiErrors = logs.some(
+      (log) => log.errorMessage?.toLowerCase().includes('ai') || log.stepType === 'ai_process'
     );
     if (hasAiErrors) return ErrorCategory.AI_SERVICE;
-    
+
     return ErrorCategory.WORKFLOW;
   };
 
   const getErrorSeverity = (category: ErrorCategory, errorMessage: string): ErrorSeverity => {
-    if (errorMessage.toLowerCase().includes('critical') || errorMessage.toLowerCase().includes('fatal')) {
+    if (
+      errorMessage.toLowerCase().includes('critical') ||
+      errorMessage.toLowerCase().includes('fatal')
+    ) {
       return ErrorSeverity.CRITICAL;
     }
-    
+
     switch (category) {
       case ErrorCategory.AUTHENTICATION:
       case ErrorCategory.DATABASE:
@@ -129,13 +136,15 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
     }
   };
 
-  const getFailurePoint = (logs: ExecutionLog[]): { stepName: string; stepIndex: number } | null => {
-    const errorLog = logs.find(log => log.errorMessage);
+  const getFailurePoint = (
+    logs: ExecutionLog[]
+  ): { stepName: string; stepIndex: number } | null => {
+    const errorLog = logs.find((log) => log.errorMessage);
     if (errorLog) {
-      const stepIndex = logs.findIndex(log => log.id === errorLog.id);
+      const stepIndex = logs.findIndex((log) => log.id === errorLog.id);
       return {
         stepName: errorLog.stepName,
-        stepIndex: stepIndex + 1
+        stepIndex: stepIndex + 1,
       };
     }
     return null;
@@ -184,8 +193,18 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
     return (
       <div className={`bg-white border border-gray-200 rounded-lg p-6 ${className}`}>
         <div className="flex items-center justify-center">
-          <svg className="w-6 h-6 text-gray-400 animate-spin mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          <svg
+            className="w-6 h-6 text-gray-400 animate-spin mr-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
           </svg>
           <span className="text-gray-600">Loading error details...</span>
         </div>
@@ -197,8 +216,18 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
     return (
       <div className={`bg-gray-50 border border-gray-200 rounded-lg p-6 ${className}`}>
         <div className="text-center text-gray-600">
-          <svg className="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <svg
+            className="w-12 h-12 mx-auto mb-3 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
           </svg>
           <p>No error information available</p>
         </div>
@@ -216,8 +245,18 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
       <div className="border-b border-gray-200 p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <svg className="w-8 h-8 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-8 h-8 text-red-600 mr-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <div>
               <h2 className="text-xl font-semibold text-gray-900">Workflow Execution Failed</h2>
@@ -230,7 +269,12 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           )}
@@ -244,7 +288,12 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
               Retry Execution
             </button>
@@ -254,7 +303,12 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
             className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
             </svg>
             Report Issue
           </button>
@@ -269,18 +323,33 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
             className="flex items-center justify-between w-full text-left"
           >
             <h3 className="text-lg font-medium text-gray-900 flex items-center">
-              <svg className="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5 mr-2 text-red-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               Error Overview
             </h3>
-            <svg 
+            <svg
               className={`w-5 h-5 text-gray-400 transition-transform ${expandedSections.has('overview') ? 'rotate-180' : ''}`}
-              fill="none" 
-              stroke="currentColor" 
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
 
@@ -299,7 +368,9 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                   <h4 className="font-medium text-yellow-800">Failure Point</h4>
                   <p className="text-yellow-700">
-                    {failurePoint ? `Step ${failurePoint.stepIndex}: ${failurePoint.stepName}` : 'Unknown'}
+                    {failurePoint
+                      ? `Step ${failurePoint.stepIndex}: ${failurePoint.stepName}`
+                      : 'Unknown'}
                   </p>
                 </div>
               </div>
@@ -316,12 +387,18 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <h4 className="font-medium text-gray-800 mb-2">Execution Timeline</h4>
                 <div className="text-sm text-gray-600 space-y-1">
-                  <p><strong>Started:</strong> {formatTimestamp(execution.startedAt)}</p>
+                  <p>
+                    <strong>Started:</strong> {formatTimestamp(execution.startedAt)}
+                  </p>
                   {execution.completedAt && (
-                    <p><strong>Failed:</strong> {formatTimestamp(execution.completedAt)}</p>
+                    <p>
+                      <strong>Failed:</strong> {formatTimestamp(execution.completedAt)}
+                    </p>
                   )}
                   {execution.duration && (
-                    <p><strong>Duration:</strong> {formatDuration(execution.duration)}</p>
+                    <p>
+                      <strong>Duration:</strong> {formatDuration(execution.duration)}
+                    </p>
                   )}
                 </div>
               </div>
@@ -337,41 +414,57 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
               className="flex items-center justify-between w-full text-left"
             >
               <h3 className="text-lg font-medium text-gray-900 flex items-center">
-                <svg className="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <svg
+                  className="w-5 h-5 mr-2 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
                 </svg>
                 Execution Logs ({logs.length} steps)
               </h3>
-              <svg 
+              <svg
                 className={`w-5 h-5 text-gray-400 transition-transform ${expandedSections.has('logs') ? 'rotate-180' : ''}`}
-                fill="none" 
-                stroke="currentColor" 
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
             {expandedSections.has('logs') && (
               <div className="mt-4 space-y-3">
                 {logs.map((log, index) => (
-                  <div 
-                    key={log.id} 
+                  <div
+                    key={log.id}
                     className={`border rounded-lg p-4 ${
-                      log.errorMessage 
-                        ? 'border-red-200 bg-red-50' 
-                        : 'border-gray-200 bg-white'
+                      log.errorMessage ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-white'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center">
-                        <span className={`
+                        <span
+                          className={`
                           w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium mr-3
-                          ${log.errorMessage 
-                            ? 'bg-red-200 text-red-800' 
-                            : 'bg-blue-200 text-blue-800'
+                          ${
+                            log.errorMessage
+                              ? 'bg-red-200 text-red-800'
+                              : 'bg-blue-200 text-blue-800'
                           }
-                        `}>
+                        `}
+                        >
                           {index + 1}
                         </span>
                         <h4 className="font-medium text-gray-900">{log.stepName}</h4>
@@ -380,7 +473,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
                         {formatTimestamp(log.timestamp)} • {formatDuration(log.duration)}
                       </div>
                     </div>
-                    
+
                     <p className="text-sm text-gray-600 mb-2 capitalize">
                       {log.level.replace('_', ' ')}
                     </p>
@@ -393,7 +486,8 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
                     )}
 
                     {/* Input/Output Data */}
-                    {(Object.keys(log.inputData || {}).length > 0 || Object.keys(log.outputData || {}).length > 0) && (
+                    {(Object.keys(log.inputData || {}).length > 0 ||
+                      Object.keys(log.outputData || {}).length > 0) && (
                       <details className="mt-2">
                         <summary className="text-sm text-gray-600 cursor-pointer hover:text-gray-800">
                           View Step Data
@@ -433,18 +527,33 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
               className="flex items-center justify-between w-full text-left"
             >
               <h3 className="text-lg font-medium text-gray-900 flex items-center">
-                <svg className="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                <svg
+                  className="w-5 h-5 mr-2 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                  />
                 </svg>
                 Technical Details
               </h3>
-              <svg 
+              <svg
                 className={`w-5 h-5 text-gray-400 transition-transform ${expandedSections.has('stack') ? 'rotate-180' : ''}`}
-                fill="none" 
-                stroke="currentColor" 
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
@@ -474,7 +583,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
             {
               workflowId,
               executionId,
-              component: 'WorkflowErrorDisplay'
+              component: 'WorkflowErrorDisplay',
             }
           )}
           onRetry={handleRetrySuccess}
@@ -492,7 +601,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
             {
               workflowId,
               executionId,
-              component: 'WorkflowErrorDisplay'
+              component: 'WorkflowErrorDisplay',
             },
             JSON.stringify({ logs, execution }),
             undefined,

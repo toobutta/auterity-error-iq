@@ -1,25 +1,23 @@
 """Enterprise AI Governance Platform - AI policy enforcement and enterprise governance."""
 
 import logging
-import asyncio
 import uuid
-from datetime import datetime, timedelta
-from decimal import Decimal, ROUND_HALF_UP
-from typing import Dict, List, Optional, Any, Tuple, Union
-from uuid import UUID
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from decimal import Decimal
 from enum import Enum
-import json
-import re
+from typing import Any, Dict, List, Optional
+from uuid import UUID
 
-from app.models.tenant import Tenant, UsageLog, AuditLog
 from app.core.saas_config import SaaSConfig
+from app.models.tenant import AuditLog
 
 logger = logging.getLogger(__name__)
 
 
 class PolicyType(str, Enum):
     """Types of governance policies."""
+
     USAGE_LIMIT = "usage_limit"
     COST_CONTROL = "cost_control"
     MODEL_RESTRICTION = "model_restriction"
@@ -32,6 +30,7 @@ class PolicyType(str, Enum):
 
 class PolicySeverity(str, Enum):
     """Policy violation severity levels."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -40,6 +39,7 @@ class PolicySeverity(str, Enum):
 
 class EnforcementAction(str, Enum):
     """Actions to take when policy is violated."""
+
     WARN = "warn"
     BLOCK = "block"
     QUARANTINE = "quarantine"
@@ -49,6 +49,7 @@ class EnforcementAction(str, Enum):
 
 class AuditEventType(str, Enum):
     """Types of audit events."""
+
     POLICY_VIOLATION = "policy_violation"
     USAGE_EXCEEDED = "usage_exceeded"
     MODEL_ACCESS = "model_access"
@@ -62,6 +63,7 @@ class AuditEventType(str, Enum):
 @dataclass
 class GovernancePolicy:
     """AI governance policy definition."""
+
     id: str
     name: str
     description: str
@@ -92,6 +94,7 @@ class GovernancePolicy:
 @dataclass
 class PolicyViolation:
     """Policy violation record."""
+
     id: str
     policy_id: str
     tenant_id: UUID
@@ -123,6 +126,7 @@ class PolicyViolation:
 @dataclass
 class ApprovalWorkflow:
     """Approval workflow for AI usage."""
+
     id: str
     name: str
     description: str
@@ -145,6 +149,7 @@ class ApprovalWorkflow:
 @dataclass
 class ApprovalRequest:
     """Approval request for AI usage."""
+
     id: str
     workflow_id: str
     tenant_id: UUID
@@ -171,6 +176,7 @@ class ApprovalRequest:
 @dataclass
 class GovernanceReport:
     """Governance compliance report."""
+
     tenant_id: UUID
     report_period: str
     generated_at: datetime
@@ -224,9 +230,9 @@ class EnterpriseGovernanceService:
                 "conditions": {
                     "max_daily_cost": 100.00,
                     "max_monthly_cost": 3000.00,
-                    "cost_increase_threshold": 0.50  # 50% increase
+                    "cost_increase_threshold": 0.50,  # 50% increase
                 },
-                "actions": [EnforcementAction.WARN, EnforcementAction.ESCALATE]
+                "actions": [EnforcementAction.WARN, EnforcementAction.ESCALATE],
             },
             {
                 "id": "model_restriction_sensitive",
@@ -237,9 +243,9 @@ class EnterpriseGovernanceService:
                 "conditions": {
                     "restricted_models": ["gpt-4", "claude-3-opus"],
                     "data_classification": ["confidential", "restricted"],
-                    "requires_approval": True
+                    "requires_approval": True,
                 },
-                "actions": [EnforcementAction.BLOCK, EnforcementAction.ESCALATE]
+                "actions": [EnforcementAction.BLOCK, EnforcementAction.ESCALATE],
             },
             {
                 "id": "usage_limit_standard",
@@ -250,9 +256,9 @@ class EnterpriseGovernanceService:
                 "conditions": {
                     "max_requests_per_hour": 1000,
                     "max_requests_per_day": 10000,
-                    "max_concurrent_requests": 50
+                    "max_concurrent_requests": 50,
                 },
-                "actions": [EnforcementAction.WARN, EnforcementAction.BLOCK]
+                "actions": [EnforcementAction.WARN, EnforcementAction.BLOCK],
             },
             {
                 "id": "audit_logging_comprehensive",
@@ -263,9 +269,9 @@ class EnterpriseGovernanceService:
                 "conditions": {
                     "log_all_requests": True,
                     "include_sensitive_data": False,
-                    "retention_period_days": 365
+                    "retention_period_days": 365,
                 },
-                "actions": [EnforcementAction.WARN]
+                "actions": [EnforcementAction.WARN],
             },
             {
                 "id": "data_classification_enforcement",
@@ -276,10 +282,10 @@ class EnterpriseGovernanceService:
                 "conditions": {
                     "require_classification": True,
                     "restricted_classifications": ["confidential", "restricted"],
-                    "auto_classify": True
+                    "auto_classify": True,
                 },
-                "actions": [EnforcementAction.BLOCK, EnforcementAction.ESCALATE]
-            }
+                "actions": [EnforcementAction.BLOCK, EnforcementAction.ESCALATE],
+            },
         ]
 
         for policy_data in default_policies:
@@ -290,17 +296,14 @@ class EnterpriseGovernanceService:
         self,
         tenant_id: UUID,
         policy_data: Dict[str, Any],
-        created_by: Optional[UUID] = None
+        created_by: Optional[UUID] = None,
     ) -> GovernancePolicy:
         """Create a new governance policy."""
         try:
             policy_id = f"policy_{uuid.uuid4().hex}"
 
             policy = GovernancePolicy(
-                id=policy_id,
-                tenant_id=tenant_id,
-                created_by=created_by,
-                **policy_data
+                id=policy_id, tenant_id=tenant_id, created_by=created_by, **policy_data
             )
 
             self.policies[policy_id] = policy
@@ -313,10 +316,7 @@ class EnterpriseGovernanceService:
             raise
 
     async def evaluate_request(
-        self,
-        tenant_id: UUID,
-        user_id: Optional[UUID],
-        request_data: Dict[str, Any]
+        self, tenant_id: UUID, user_id: Optional[UUID], request_data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Evaluate a request against governance policies."""
         try:
@@ -325,28 +325,39 @@ class EnterpriseGovernanceService:
                 "warnings": [],
                 "violations": [],
                 "recommendations": [],
-                "requires_approval": False
+                "requires_approval": False,
             }
 
             # Get applicable policies
-            applicable_policies = await self._get_applicable_policies(tenant_id, user_id, request_data)
+            applicable_policies = await self._get_applicable_policies(
+                tenant_id, user_id, request_data
+            )
 
             for policy in applicable_policies:
-                violation = await self._check_policy_violation(policy, tenant_id, user_id, request_data)
+                violation = await self._check_policy_violation(
+                    policy, tenant_id, user_id, request_data
+                )
 
                 if violation:
-                    evaluation_result["violations"].append({
-                        "policy_id": policy.id,
-                        "policy_name": policy.name,
-                        "severity": policy.severity.value,
-                        "description": violation["description"]
-                    })
+                    evaluation_result["violations"].append(
+                        {
+                            "policy_id": policy.id,
+                            "policy_name": policy.name,
+                            "severity": policy.severity.value,
+                            "description": violation["description"],
+                        }
+                    )
 
                     # Apply policy actions
-                    await self._apply_policy_actions(policy, violation, evaluation_result)
+                    await self._apply_policy_actions(
+                        policy, violation, evaluation_result
+                    )
 
             # Check if approval is required
-            if evaluation_result["requires_approval"] or evaluation_result["violations"]:
+            if (
+                evaluation_result["requires_approval"]
+                or evaluation_result["violations"]
+            ):
                 evaluation_result["approved"] = False
 
             return evaluation_result
@@ -358,14 +369,11 @@ class EnterpriseGovernanceService:
                 "errors": [str(e)],
                 "warnings": [],
                 "violations": [],
-                "recommendations": []
+                "recommendations": [],
             }
 
     async def _get_applicable_policies(
-        self,
-        tenant_id: UUID,
-        user_id: Optional[UUID],
-        request_data: Dict[str, Any]
+        self, tenant_id: UUID, user_id: Optional[UUID], request_data: Dict[str, Any]
     ) -> List[GovernancePolicy]:
         """Get policies applicable to the request."""
         try:
@@ -389,7 +397,9 @@ class EnterpriseGovernanceService:
             logger.error(f"Policy matching failed: {str(e)}")
             return []
 
-    async def _policy_matches_request(self, policy: GovernancePolicy, request_data: Dict[str, Any]) -> bool:
+    async def _policy_matches_request(
+        self, policy: GovernancePolicy, request_data: Dict[str, Any]
+    ) -> bool:
         """Check if policy conditions match the request."""
         conditions = policy.conditions
 
@@ -423,7 +433,7 @@ class EnterpriseGovernanceService:
         policy: GovernancePolicy,
         tenant_id: UUID,
         user_id: Optional[UUID],
-        request_data: Dict[str, Any]
+        request_data: Dict[str, Any],
     ) -> Optional[Dict[str, Any]]:
         """Check if request violates a policy."""
         try:
@@ -439,8 +449,8 @@ class EnterpriseGovernanceService:
                         "details": {
                             "estimated_cost": estimated_cost,
                             "limit": max_cost,
-                            "exceeded_by": estimated_cost - max_cost
-                        }
+                            "exceeded_by": estimated_cost - max_cost,
+                        },
                     }
 
             elif policy.type == PolicyType.MODEL_RESTRICTION:
@@ -453,8 +463,8 @@ class EnterpriseGovernanceService:
                         "severity": policy.severity,
                         "details": {
                             "model": model,
-                            "restricted_models": restricted_models
-                        }
+                            "restricted_models": restricted_models,
+                        },
                     }
 
             return None
@@ -467,7 +477,7 @@ class EnterpriseGovernanceService:
         self,
         policy: GovernancePolicy,
         violation: Dict[str, Any],
-        evaluation_result: Dict[str, Any]
+        evaluation_result: Dict[str, Any],
     ) -> None:
         """Apply policy enforcement actions."""
         try:
@@ -481,7 +491,9 @@ class EnterpriseGovernanceService:
                     evaluation_result["requires_approval"] = True
                 elif action == EnforcementAction.QUARANTINE:
                     evaluation_result["approved"] = False
-                    evaluation_result["recommendations"].append("Request requires manual review")
+                    evaluation_result["recommendations"].append(
+                        "Request requires manual review"
+                    )
 
         except Exception as e:
             logger.error(f"Policy action application failed: {str(e)}")
@@ -491,7 +503,7 @@ class EnterpriseGovernanceService:
         tenant_id: UUID,
         policy_id: str,
         user_id: Optional[UUID],
-        violation_details: Dict[str, Any]
+        violation_details: Dict[str, Any],
     ) -> PolicyViolation:
         """Record a policy violation."""
         try:
@@ -506,7 +518,7 @@ class EnterpriseGovernanceService:
                 severity=violation_details.get("severity", PolicySeverity.MEDIUM),
                 description=violation_details.get("description", ""),
                 details=violation_details.get("details", {}),
-                action_taken=violation_details.get("action_taken")
+                action_taken=violation_details.get("action_taken"),
             )
 
             self.violations[violation_id] = violation
@@ -519,8 +531,8 @@ class EnterpriseGovernanceService:
                 details={
                     "violation_id": violation_id,
                     "policy_id": policy_id,
-                    "description": violation.description
-                }
+                    "description": violation.description,
+                },
             )
 
             logger.info(f"Recorded policy violation: {violation_id}")
@@ -531,18 +543,14 @@ class EnterpriseGovernanceService:
             raise
 
     async def create_approval_workflow(
-        self,
-        tenant_id: UUID,
-        workflow_data: Dict[str, Any]
+        self, tenant_id: UUID, workflow_data: Dict[str, Any]
     ) -> ApprovalWorkflow:
         """Create an approval workflow."""
         try:
             workflow_id = f"workflow_{uuid.uuid4().hex}"
 
             workflow = ApprovalWorkflow(
-                id=workflow_id,
-                tenant_id=tenant_id,
-                **workflow_data
+                id=workflow_id, tenant_id=tenant_id, **workflow_data
             )
 
             self.workflows[workflow_id] = workflow
@@ -559,7 +567,7 @@ class EnterpriseGovernanceService:
         workflow_id: str,
         tenant_id: UUID,
         requested_by: UUID,
-        request_details: Dict[str, Any]
+        request_details: Dict[str, Any],
     ) -> ApprovalRequest:
         """Create an approval request."""
         try:
@@ -583,7 +591,7 @@ class EnterpriseGovernanceService:
                 requested_by=requested_by,
                 approvers=[],  # Would be populated from workflow
                 expires_at=expires_at,
-                **request_details
+                **request_details,
             )
 
             self.approval_requests[request_id] = approval_request
@@ -600,7 +608,7 @@ class EnterpriseGovernanceService:
         request_id: str,
         approver_id: UUID,
         approved: bool,
-        notes: Optional[str] = None
+        notes: Optional[str] = None,
     ) -> bool:
         """Process an approval decision."""
         try:
@@ -613,7 +621,7 @@ class EnterpriseGovernanceService:
                 "approver_id": approver_id,
                 "approved": approved,
                 "notes": notes,
-                "timestamp": datetime.utcnow()
+                "timestamp": datetime.utcnow(),
             }
 
             request.approvals_received.append(approval_record)
@@ -636,12 +644,16 @@ class EnterpriseGovernanceService:
             await self._create_audit_log(
                 tenant_id=request.tenant_id,
                 user_id=approver_id,
-                event_type=AuditEventType.APPROVAL_GRANTED if approved else AuditEventType.APPROVAL_DENIED,
+                event_type=(
+                    AuditEventType.APPROVAL_GRANTED
+                    if approved
+                    else AuditEventType.APPROVAL_DENIED
+                ),
                 details={
                     "request_id": request_id,
                     "approved": approved,
-                    "notes": notes
-                }
+                    "notes": notes,
+                },
             )
 
             return request.status in ["approved", "rejected"]
@@ -651,36 +663,38 @@ class EnterpriseGovernanceService:
             return False
 
     async def generate_governance_report(
-        self,
-        tenant_id: UUID,
-        days: int = 30
+        self, tenant_id: UUID, days: int = 30
     ) -> GovernanceReport:
         """Generate a comprehensive governance report."""
         try:
             period_start = datetime.utcnow() - timedelta(days=days)
 
             # Get tenant policies
-            tenant_policies = [p for p in self.policies.values() if p.tenant_id == tenant_id]
+            tenant_policies = [
+                p for p in self.policies.values() if p.tenant_id == tenant_id
+            ]
             total_policies = len(tenant_policies)
             enabled_policies = len([p for p in tenant_policies if p.enabled])
 
             # Get violations for the period
             period_violations = [
-                v for v in self.violations.values()
+                v
+                for v in self.violations.values()
                 if v.tenant_id == tenant_id and v.occurred_at >= period_start
             ]
 
             total_violations = len(period_violations)
             resolved_violations = len([v for v in period_violations if v.resolved])
-            critical_violations = len([
-                v for v in period_violations
-                if v.severity == PolicySeverity.CRITICAL
-            ])
+            critical_violations = len(
+                [v for v in period_violations if v.severity == PolicySeverity.CRITICAL]
+            )
 
             # Calculate compliance score
             compliance_score = 100.0
             if total_policies > 0:
-                violation_penalty = (total_violations / total_policies) * 20  # 20% penalty per violation
+                violation_penalty = (
+                    total_violations / total_policies
+                ) * 20  # 20% penalty per violation
                 compliance_score = max(0, 100 - violation_penalty)
 
             # Generate recommendations
@@ -691,11 +705,15 @@ class EnterpriseGovernanceService:
             # Identify critical issues
             critical_issues = []
             if critical_violations > 0:
-                critical_issues.append(f"{critical_violations} critical violations detected")
+                critical_issues.append(
+                    f"{critical_violations} critical violations detected"
+                )
             if compliance_score < 70:
                 critical_issues.append("Compliance score below 70%")
             if total_violations > resolved_violations:
-                critical_issues.append(f"{total_violations - resolved_violations} unresolved violations")
+                critical_issues.append(
+                    f"{total_violations - resolved_violations} unresolved violations"
+                )
 
             report = GovernanceReport(
                 tenant_id=tenant_id,
@@ -709,7 +727,7 @@ class EnterpriseGovernanceService:
                 resolved_violations=resolved_violations,
                 critical_violations=critical_violations,
                 recommendations=recommendations,
-                critical_issues=critical_issues
+                critical_issues=critical_issues,
             )
 
             return report
@@ -719,22 +737,23 @@ class EnterpriseGovernanceService:
             raise
 
     async def _generate_governance_recommendations(
-        self,
-        tenant_id: UUID,
-        violations: List[PolicyViolation],
-        enabled_policies: int
+        self, tenant_id: UUID, violations: List[PolicyViolation], enabled_policies: int
     ) -> List[str]:
         """Generate governance recommendations."""
         recommendations = []
 
         # Policy coverage recommendations
         if enabled_policies < 5:
-            recommendations.append("Consider implementing more governance policies for comprehensive coverage")
+            recommendations.append(
+                "Consider implementing more governance policies for comprehensive coverage"
+            )
 
         # Violation-based recommendations
         violation_types = {}
         for violation in violations:
-            violation_types[violation.violation_type] = violation_types.get(violation.violation_type, 0) + 1
+            violation_types[violation.violation_type] = (
+                violation_types.get(violation.violation_type, 0) + 1
+            )
 
         if violation_types.get("cost_control", 0) > 5:
             recommendations.append("Implement stricter cost control measures")
@@ -743,12 +762,14 @@ class EnterpriseGovernanceService:
             recommendations.append("Review model access policies and restrictions")
 
         # General recommendations
-        recommendations.extend([
-            "Regularly review and update governance policies",
-            "Provide governance training to users",
-            "Implement automated monitoring and alerting",
-            "Conduct periodic compliance audits"
-        ])
+        recommendations.extend(
+            [
+                "Regularly review and update governance policies",
+                "Provide governance training to users",
+                "Implement automated monitoring and alerting",
+                "Conduct periodic compliance audits",
+            ]
+        )
 
         return recommendations
 
@@ -757,7 +778,7 @@ class EnterpriseGovernanceService:
         tenant_id: UUID,
         user_id: Optional[UUID],
         event_type: AuditEventType,
-        details: Dict[str, Any]
+        details: Dict[str, Any],
     ) -> None:
         """Create an audit log entry."""
         try:
@@ -769,7 +790,7 @@ class EnterpriseGovernanceService:
                 resource_id=details.get("id", ""),
                 details=details,
                 ip_address="system",  # Would get actual IP
-                user_agent="governance_service"
+                user_agent="governance_service",
             )
 
             self.db.add(audit_log)
@@ -783,14 +804,15 @@ class EnterpriseGovernanceService:
         tenant_id: UUID,
         resolved: Optional[bool] = None,
         severity: Optional[PolicySeverity] = None,
-        days: int = 30
+        days: int = 30,
     ) -> List[PolicyViolation]:
         """Get policy violations with filtering."""
         try:
             period_start = datetime.utcnow() - timedelta(days=days)
 
             violations = [
-                v for v in self.violations.values()
+                v
+                for v in self.violations.values()
                 if v.tenant_id == tenant_id and v.occurred_at >= period_start
             ]
 
@@ -807,10 +829,7 @@ class EnterpriseGovernanceService:
             return []
 
     async def resolve_violation(
-        self,
-        violation_id: str,
-        resolved_by: UUID,
-        resolution_notes: str
+        self, violation_id: str, resolved_by: UUID, resolution_notes: str
     ) -> bool:
         """Resolve a policy violation."""
         try:
@@ -831,8 +850,8 @@ class EnterpriseGovernanceService:
                 details={
                     "violation_id": violation_id,
                     "action": "resolved",
-                    "notes": resolution_notes
-                }
+                    "notes": resolution_notes,
+                },
             )
 
             return True
@@ -842,9 +861,7 @@ class EnterpriseGovernanceService:
             return False
 
     async def get_tenant_governance_score(
-        self,
-        tenant_id: UUID,
-        days: int = 30
+        self, tenant_id: UUID, days: int = 30
     ) -> Dict[str, Any]:
         """Get tenant's governance score and metrics."""
         try:
@@ -852,11 +869,20 @@ class EnterpriseGovernanceService:
 
             score_details = {
                 "overall_score": report.compliance_score,
-                "policy_coverage": (report.compliant_policies / max(report.total_policies, 1)) * 100,
-                "violation_rate": (report.total_violations / max(report.compliant_policies, 1)) * 100,
-                "resolution_rate": (report.resolved_violations / max(report.total_violations, 1)) * 100,
+                "policy_coverage": (
+                    report.compliant_policies / max(report.total_policies, 1)
+                )
+                * 100,
+                "violation_rate": (
+                    report.total_violations / max(report.compliant_policies, 1)
+                )
+                * 100,
+                "resolution_rate": (
+                    report.resolved_violations / max(report.total_violations, 1)
+                )
+                * 100,
                 "critical_issues": len(report.critical_issues),
-                "period_days": days
+                "period_days": days,
             }
 
             return score_details
@@ -871,21 +897,30 @@ class EnterpriseGovernanceService:
             health_status = {
                 "status": "healthy",
                 "policies_count": len(self.policies),
-                "enabled_policies": len([p for p in self.policies.values() if p.enabled]),
+                "enabled_policies": len(
+                    [p for p in self.policies.values() if p.enabled]
+                ),
                 "violations_count": len(self.violations),
-                "unresolved_violations": len([v for v in self.violations.values() if not v.resolved]),
+                "unresolved_violations": len(
+                    [v for v in self.violations.values() if not v.resolved]
+                ),
                 "workflows_count": len(self.workflows),
-                "active_workflows": len([w for w in self.workflows.values() if w.enabled]),
+                "active_workflows": len(
+                    [w for w in self.workflows.values() if w.enabled]
+                ),
                 "approval_requests_count": len(self.approval_requests),
-                "pending_approvals": len([r for r in self.approval_requests.values() if r.status == "pending"]),
+                "pending_approvals": len(
+                    [
+                        r
+                        for r in self.approval_requests.values()
+                        if r.status == "pending"
+                    ]
+                ),
                 "policy_types_supported": len(PolicyType),
-                "enforcement_actions_supported": len(EnforcementAction)
+                "enforcement_actions_supported": len(EnforcementAction),
             }
 
             return health_status
 
         except Exception as e:
-            return {
-                "status": "unhealthy",
-                "error": str(e)
-            }
+            return {"status": "unhealthy", "error": str(e)}

@@ -43,7 +43,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  
+
   // Theme state (simplified version)
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -57,7 +57,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Sidebar state
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
-  
+
   // User menu state
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
@@ -95,19 +95,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       {/* Mobile sidebar overlay */}
       {sidebarMobileOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setSidebarMobileOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <aside className={`
+      <aside
+        className={`
         fixed left-0 top-0 h-full z-50 transition-all duration-300 ease-in-out
         lg:relative lg:translate-x-0
         ${sidebarCollapsed ? 'w-20' : 'w-72'}
         ${sidebarMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}>
+      `}
+      >
         <div className="h-full glass-card-strong border-r border-white/20 dark:border-slate-700/50">
           {/* Logo/Brand */}
           <div className="p-6 border-b border-white/10 dark:border-slate-700/50">
@@ -173,7 +175,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             {/* Page title */}
             <div className="flex-1 lg:ml-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {navigationItems.find(item => item.href === location.pathname)?.label || 'AutoMatrix AI Hub'}
+                {navigationItems.find((item) => item.href === location.pathname)?.label ||
+                  'AutoMatrix AI Hub'}
               </h2>
             </div>
 
@@ -253,9 +256,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         {/* Page Content */}
         <div className="p-6">
-          <div className="animate-fade-in">
-            {children}
-          </div>
+          <div className="animate-fade-in">{children}</div>
         </div>
       </main>
     </div>
@@ -277,9 +278,10 @@ const NavItem: React.FC<NavItemProps> = ({ item, isActive, collapsed }) => {
       to={item.href}
       className={`
         nav-item group relative flex items-center space-x-3 p-3 rounded-xl transition-all duration-200
-        ${isActive 
-          ? 'bg-automotive-primary text-white shadow-automotive' 
-          : 'text-gray-600 dark:text-gray-400 hover:bg-white/10 dark:hover:bg-slate-800/50 hover:text-automotive-primary'
+        ${
+          isActive
+            ? 'bg-automotive-primary text-white shadow-automotive'
+            : 'text-gray-600 dark:text-gray-400 hover:bg-white/10 dark:hover:bg-slate-800/50 hover:text-automotive-primary'
         }
         ${collapsed ? 'justify-center' : ''}
       `}
@@ -289,7 +291,7 @@ const NavItem: React.FC<NavItemProps> = ({ item, isActive, collapsed }) => {
       <div className={`transition-transform duration-200 ${!collapsed && 'group-hover:scale-110'}`}>
         <Icon />
       </div>
-      
+
       {/* Label */}
       {!collapsed && (
         <div className="flex-1 flex items-center justify-between">

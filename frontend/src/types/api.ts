@@ -100,4 +100,3 @@ export type {
   Alert as MonitoringAlert,
   AlertSettings as MonitoringAlertSettings,
 };
-

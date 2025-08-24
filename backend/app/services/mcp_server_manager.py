@@ -2,19 +2,21 @@
 MCPServerManager: Manages lifecycle and integration of external MCP servers.
 Implements process management, health checks, tool discovery, and configuration validation.
 """
+
 import asyncio
 import logging
-import json
-import httpx
-from typing import Dict, Optional, List, Any
-from uuid import UUID
 from datetime import datetime
+from typing import Dict, List
+from uuid import UUID
+
+import httpx
 from sqlalchemy.orm import Session
 
 # Import the models from the migration we created
 from app.models.mcp_server import MCPServer, MCPServerStatus
 
 logger = logging.getLogger(__name__)
+
 
 class MCPServerManager:
     def __init__(self, db: Session):
@@ -30,31 +32,31 @@ class MCPServerManager:
             if not server:
                 logger.error(f"MCP server {server_id} not found in database")
                 return False
-            
+
             # Construct command from config
-            command = config.get('command', [])
+            command = config.get("command", [])
             if not command:
                 logger.error(f"No command specified for MCP server {server_id}")
                 return False
-            
+
             # Start the process
             process = await asyncio.create_subprocess_exec(
                 *command,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-                env=config.get('env', {})
+                env=config.get("env", {}),
             )
-            
+
             self.active_servers[server_id] = process
-            
+
             # Update server status in database
             server.status = MCPServerStatus.RUNNING
             server.updated_at = datetime.utcnow()
             self.db.commit()
-            
+
             logger.info(f"Started MCP server {server_id} with PID {process.pid}")
             return True
-            
+
         except Exception as e:
             logger.error(f"Failed to start MCP server {server_id}: {str(e)}")
             return False

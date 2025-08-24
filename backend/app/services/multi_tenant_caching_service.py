@@ -1,26 +1,27 @@
 """Enhanced Multi-Tenant Caching & Performance Service - Redis cluster and CDN integration."""
 
-import logging
 import asyncio
-import hashlib
 import json
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Union, Tuple
-from uuid import UUID
-from dataclasses import dataclass, field
-from enum import Enum
-import redis.asyncio as redis
+import logging
 from contextlib import asynccontextmanager
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Optional
+from uuid import UUID
 
+import redis.asyncio as redis
+
+from app.core.saas_config import SaaSConfig
 from app.models.tenant import Tenant
 from app.models.user import User
-from app.core.saas_config import SaaSConfig
 
 logger = logging.getLogger(__name__)
 
 
 class CacheType(str, Enum):
     """Types of cache implementations."""
+
     REDIS = "redis"
     MEMORY = "memory"
     HYBRID = "hybrid"
@@ -28,6 +29,7 @@ class CacheType(str, Enum):
 
 class CacheStrategy(str, Enum):
     """Caching strategies for multi-tenant environments."""
+
     PER_TENANT = "per_tenant"
     SHARED = "shared"
     HYBRID = "hybrid"
@@ -35,6 +37,7 @@ class CacheStrategy(str, Enum):
 
 class CachePriority(str, Enum):
     """Cache priority levels."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -44,6 +47,7 @@ class CachePriority(str, Enum):
 @dataclass
 class CacheEntry:
     """Cache entry with metadata."""
+
     key: str
     value: Any
     tenant_id: Optional[UUID]
@@ -59,6 +63,7 @@ class CacheEntry:
 @dataclass
 class CacheMetrics:
     """Cache performance metrics."""
+
     hits: int = 0
     misses: int = 0
     evictions: int = 0
@@ -82,6 +87,7 @@ class CacheMetrics:
 @dataclass
 class CDNConfig:
     """CDN configuration for asset delivery."""
+
     provider: str = "cloudflare"
     enabled: bool = True
     custom_domain: Optional[str] = None
@@ -93,6 +99,7 @@ class CDNConfig:
 @dataclass
 class PerformanceMetrics:
     """Performance metrics for tenant operations."""
+
     tenant_id: UUID
     response_time_ms: float
     cache_hit: bool
@@ -150,18 +157,18 @@ class MultiTenantCachingService:
                 "socket_connect_timeout": 5,
                 "socket_timeout": 5,
                 "retry_on_timeout": True,
-                "max_connections": 50
+                "max_connections": 50,
             }
 
             # Check if Redis cluster is available
-            if hasattr(self.config, 'REDIS_CLUSTER_NODES'):
+            if hasattr(self.config, "REDIS_CLUSTER_NODES"):
                 # Initialize Redis cluster
                 startup_nodes = self.config.REDIS_CLUSTER_NODES
                 self.redis_cluster = redis.RedisCluster(
                     startup_nodes=startup_nodes,
                     decode_responses=True,
                     socket_connect_timeout=5,
-                    socket_timeout=5
+                    socket_timeout=5,
                 )
                 logger.info("Redis cluster initialized")
             else:
@@ -178,7 +185,7 @@ class MultiTenantCachingService:
         """Initialize CDN configuration."""
         try:
             # Load CDN configuration from settings
-            if hasattr(self.config, 'CDN_CONFIG'):
+            if hasattr(self.config, "CDN_CONFIG"):
                 cdn_settings = self.config.CDN_CONFIG
                 self.cdn_config = CDNConfig(**cdn_settings)
 
@@ -206,7 +213,7 @@ class MultiTenantCachingService:
                 cache_hit=False,  # Would be determined by cache operations
                 memory_usage=initial_memory,
                 db_queries=0,  # Would be counted by query monitoring
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow(),
             )
 
             self.performance_metrics.append(metrics)
@@ -230,7 +237,9 @@ class MultiTenantCachingService:
 
             elif self.cache_type == CacheType.MEMORY:
                 entry = self.memory_cache.get(cache_key)
-                if entry and (not entry.expires_at or entry.expires_at > datetime.utcnow()):
+                if entry and (
+                    not entry.expires_at or entry.expires_at > datetime.utcnow()
+                ):
                     entry.access_count += 1
                     entry.last_accessed = datetime.utcnow()
                     await self._record_cache_hit(tenant_id)
@@ -251,7 +260,7 @@ class MultiTenantCachingService:
         tenant_id: Optional[UUID] = None,
         ttl: Optional[int] = None,
         priority: CachePriority = CachePriority.MEDIUM,
-        tags: List[str] = None
+        tags: List[str] = None,
     ) -> bool:
         """Set value in cache."""
         cache_key = self._build_cache_key(key, tenant_id)
@@ -270,7 +279,7 @@ class MultiTenantCachingService:
                 created_at=datetime.utcnow(),
                 expires_at=datetime.utcnow() + timedelta(seconds=ttl) if ttl else None,
                 priority=priority,
-                tags=tags or []
+                tags=tags or [],
             )
 
             if self.cache_type == CacheType.REDIS and self.redis_client:
@@ -325,7 +334,9 @@ class MultiTenantCachingService:
 
             elif self.cache_type == CacheType.MEMORY:
                 # Remove tenant entries from memory cache
-                tenant_keys = [k for k in self.memory_cache.keys() if f"tenant:{tenant_id}" in k]
+                tenant_keys = [
+                    k for k in self.memory_cache.keys() if f"tenant:{tenant_id}" in k
+                ]
                 for key in tenant_keys:
                     del self.memory_cache[key]
                 cleared_count = len(tenant_keys)
@@ -366,17 +377,17 @@ class MultiTenantCachingService:
                 )
             elif self.cache_type == CacheType.REDIS and self.redis_client:
                 info = await self.redis_client.info()
-                total_metrics.total_size = info.get('used_memory', 0)
+                total_metrics.total_size = info.get("used_memory", 0)
 
             return {
                 "metrics": total_metrics,
                 "performance": {
                     "hit_rate": total_metrics.hit_rate,
                     "efficiency": total_metrics.efficiency,
-                    "total_size_mb": total_metrics.total_size / (1024 * 1024)
+                    "total_size_mb": total_metrics.total_size / (1024 * 1024),
                 },
                 "tenants": total_metrics.tenant_count,
-                "cache_type": self.cache_type.value
+                "cache_type": self.cache_type.value,
             }
 
         except Exception as e:
@@ -389,13 +400,14 @@ class MultiTenantCachingService:
             optimization_results = {
                 "expired_removed": 0,
                 "low_priority_removed": 0,
-                "memory_freed": 0
+                "memory_freed": 0,
             }
 
             if self.cache_type == CacheType.MEMORY:
                 # Clean up expired entries
                 expired_keys = [
-                    k for k, v in self.memory_cache.items()
+                    k
+                    for k, v in self.memory_cache.items()
                     if v.expires_at and v.expires_at < datetime.utcnow()
                 ]
 
@@ -406,17 +418,27 @@ class MultiTenantCachingService:
                 # Remove low priority items if memory is tight
                 if tenant_id:
                     tenant_entries = [
-                        (k, v) for k, v in self.memory_cache.items()
+                        (k, v)
+                        for k, v in self.memory_cache.items()
                         if v.tenant_id == tenant_id
                     ]
 
                     # Sort by priority and last access time
-                    tenant_entries.sort(key=lambda x: (x[1].priority.value, x[1].last_accessed or datetime.min))
+                    tenant_entries.sort(
+                        key=lambda x: (
+                            x[1].priority.value,
+                            x[1].last_accessed or datetime.min,
+                        )
+                    )
 
                     # Remove lowest priority items if needed
-                    memory_used = sum(len(json.dumps(v.value)) for _, v in tenant_entries)
+                    memory_used = sum(
+                        len(json.dumps(v.value)) for _, v in tenant_entries
+                    )
                     if memory_used > self.max_memory_per_tenant:
-                        to_remove = tenant_entries[:len(tenant_entries) // 4]  # Remove 25%
+                        to_remove = tenant_entries[
+                            : len(tenant_entries) // 4
+                        ]  # Remove 25%
                         for key, _ in to_remove:
                             if key in self.memory_cache:
                                 del self.memory_cache[key]
@@ -451,23 +473,25 @@ class MultiTenantCachingService:
                         "name": tenant.name,
                         "domain": tenant.domain,
                         "plan": tenant.subscription_plan,
-                        "features": tenant.get_plan_features()
+                        "features": tenant.get_plan_features(),
                     },
                     tenant_id=tenant_id,
                     ttl=3600,  # 1 hour
-                    priority=CachePriority.HIGH
+                    priority=CachePriority.HIGH,
                 )
                 preloaded_count += 1
 
             # Preload user count
             if "user_count" in data_types:
-                user_count = self.db.query(User).filter(User.tenant_id == tenant_id).count()
+                user_count = (
+                    self.db.query(User).filter(User.tenant_id == tenant_id).count()
+                )
                 await self.set(
                     "user_count",
                     user_count,
                     tenant_id=tenant_id,
                     ttl=1800,  # 30 minutes
-                    priority=CachePriority.MEDIUM
+                    priority=CachePriority.MEDIUM,
                 )
                 preloaded_count += 1
 
@@ -479,24 +503,31 @@ class MultiTenantCachingService:
                     {"last_updated": datetime.utcnow()},
                     tenant_id=tenant_id,
                     ttl=900,  # 15 minutes
-                    priority=CachePriority.MEDIUM
+                    priority=CachePriority.MEDIUM,
                 )
                 preloaded_count += 1
 
-            logger.info(f"Preloaded {preloaded_count} data items for tenant {tenant_id}")
+            logger.info(
+                f"Preloaded {preloaded_count} data items for tenant {tenant_id}"
+            )
             return preloaded_count
 
         except Exception as e:
             logger.error(f"Data preloading failed: {str(e)}")
             return 0
 
-    async def get_cdn_url(self, asset_path: str, tenant_id: Optional[UUID] = None) -> str:
+    async def get_cdn_url(
+        self, asset_path: str, tenant_id: Optional[UUID] = None
+    ) -> str:
         """Get CDN URL for asset delivery."""
         try:
             if not self.cdn_config.enabled:
                 return asset_path
 
-            base_url = self.cdn_config.custom_domain or f"https://{self.cdn_config.provider}.com"
+            base_url = (
+                self.cdn_config.custom_domain
+                or f"https://{self.cdn_config.provider}.com"
+            )
 
             if tenant_id:
                 # Tenant-specific CDN path
@@ -511,7 +542,9 @@ class MultiTenantCachingService:
             logger.error(f"CDN URL generation failed: {str(e)}")
             return asset_path
 
-    async def purge_cdn_cache(self, asset_path: str, tenant_id: Optional[UUID] = None) -> bool:
+    async def purge_cdn_cache(
+        self, asset_path: str, tenant_id: Optional[UUID] = None
+    ) -> bool:
         """Purge CDN cache for specific asset."""
         try:
             if not self.cdn_config.enabled or not self.cdn_config.purge_on_update:
@@ -529,9 +562,7 @@ class MultiTenantCachingService:
             return False
 
     async def get_performance_report(
-        self,
-        tenant_id: Optional[UUID] = None,
-        hours: int = 24
+        self, tenant_id: Optional[UUID] = None, hours: int = 24
     ) -> Dict[str, Any]:
         """Generate performance report."""
         try:
@@ -539,12 +570,16 @@ class MultiTenantCachingService:
 
             if tenant_id:
                 # Tenant-specific performance
-                metrics = [m for m in self.performance_metrics
-                          if m.tenant_id == tenant_id and m.timestamp >= cutoff_time]
+                metrics = [
+                    m
+                    for m in self.performance_metrics
+                    if m.tenant_id == tenant_id and m.timestamp >= cutoff_time
+                ]
             else:
                 # Global performance
-                metrics = [m for m in self.performance_metrics
-                          if m.timestamp >= cutoff_time]
+                metrics = [
+                    m for m in self.performance_metrics if m.timestamp >= cutoff_time
+                ]
 
             if not metrics:
                 return {"message": "No performance data available"}
@@ -557,12 +592,26 @@ class MultiTenantCachingService:
                 "time_period_hours": hours,
                 "total_requests": len(metrics),
                 "cache_hit_rate": (cache_hits / len(metrics) * 100) if metrics else 0,
-                "avg_response_time_ms": sum(response_times) / len(response_times) if response_times else 0,
+                "avg_response_time_ms": (
+                    sum(response_times) / len(response_times) if response_times else 0
+                ),
                 "min_response_time_ms": min(response_times) if response_times else 0,
                 "max_response_time_ms": max(response_times) if response_times else 0,
-                "p95_response_time_ms": self._calculate_percentile(response_times, 95) if response_times else 0,
-                "p99_response_time_ms": self._calculate_percentile(response_times, 99) if response_times else 0,
-                "cache_metrics": await self.get_global_cache_metrics() if not tenant_id else await self.get_tenant_cache_metrics(tenant_id)
+                "p95_response_time_ms": (
+                    self._calculate_percentile(response_times, 95)
+                    if response_times
+                    else 0
+                ),
+                "p99_response_time_ms": (
+                    self._calculate_percentile(response_times, 99)
+                    if response_times
+                    else 0
+                ),
+                "cache_metrics": (
+                    await self.get_global_cache_metrics()
+                    if not tenant_id
+                    else await self.get_tenant_cache_metrics(tenant_id)
+                ),
             }
 
             return report
@@ -586,7 +635,9 @@ class MultiTenantCachingService:
 
         # Linear interpolation
         weight = index - floor_index
-        return data_sorted[floor_index] * (1 - weight) + data_sorted[ceil_index] * weight
+        return (
+            data_sorted[floor_index] * (1 - weight) + data_sorted[ceil_index] * weight
+        )
 
     def _build_cache_key(self, key: str, tenant_id: Optional[UUID] = None) -> str:
         """Build cache key with tenant isolation."""
@@ -600,7 +651,9 @@ class MultiTenantCachingService:
         if self.cache_type != CacheType.MEMORY:
             return False
 
-        tenant_entries = [v for v in self.memory_cache.values() if v.tenant_id == tenant_id]
+        tenant_entries = [
+            v for v in self.memory_cache.values() if v.tenant_id == tenant_id
+        ]
         total_size = sum(len(json.dumps(entry.value)) for entry in tenant_entries)
 
         return total_size >= self.max_memory_per_tenant
@@ -642,7 +695,7 @@ class MultiTenantCachingService:
                 "redis_connected": False,
                 "memory_cache_entries": len(self.memory_cache),
                 "tenant_count": len(self.tenant_metrics),
-                "cdn_enabled": self.cdn_config.enabled
+                "cdn_enabled": self.cdn_config.enabled,
             }
 
             # Test Redis connection
@@ -669,7 +722,9 @@ class MultiTenantCachingService:
             # Clean up
             await self.delete(test_key)
 
-            if not (health_status["cache_set_works"] and health_status["cache_get_works"]):
+            if not (
+                health_status["cache_set_works"] and health_status["cache_get_works"]
+            ):
                 health_status["status"] = "unhealthy"
 
             return health_status
@@ -678,5 +733,5 @@ class MultiTenantCachingService:
             return {
                 "status": "unhealthy",
                 "error": str(e),
-                "cache_type": self.cache_type.value
+                "cache_type": self.cache_type.value,
             }

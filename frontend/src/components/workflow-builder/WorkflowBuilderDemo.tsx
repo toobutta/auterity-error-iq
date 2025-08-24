@@ -24,25 +24,21 @@ const WorkflowBuilderDemo: React.FC = () => {
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              🚗 Automotive Workflow Builder
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900">🚗 Automotive Workflow Builder</h1>
             <p className="text-sm text-gray-600 mt-1">
               Drag and drop components to build powerful automotive dealership workflows
             </p>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             <div className="text-sm text-gray-500">
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                 Enhanced Builder
               </span>
             </div>
-            
+
             {savedWorkflow && (
-              <div className="text-sm text-gray-600">
-                Last saved: {savedWorkflow.name}
-              </div>
+              <div className="text-sm text-gray-600">Last saved: {savedWorkflow.name}</div>
             )}
           </div>
         </div>
@@ -50,11 +46,7 @@ const WorkflowBuilderDemo: React.FC = () => {
 
       {/* Enhanced Workflow Builder */}
       <div className="h-full">
-        <EnhancedWorkflowBuilder
-          onSave={handleSave}
-          onTest={handleTest}
-          className="h-full"
-        />
+        <EnhancedWorkflowBuilder onSave={handleSave} onTest={handleTest} className="h-full" />
       </div>
 
       {/* Demo Instructions Overlay */}
@@ -67,7 +59,7 @@ const WorkflowBuilderDemo: React.FC = () => {
           <li>• Use the tester panel to run workflows with sample data</li>
           <li>• Save your workflow when ready</li>
         </ul>
-        
+
         <div className="mt-3 pt-3 border-t border-gray-200">
           <h4 className="font-medium text-gray-900 mb-1">Available Node Types:</h4>
           <div className="flex flex-wrap gap-1 text-xs">

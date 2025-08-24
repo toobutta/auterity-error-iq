@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Activity, RefreshCw, TrendingUp, Users, Clock, CheckCircle, XCircle } from 'lucide-react';
+import {
+  AlertTriangle,
+  Activity,
+  RefreshCw,
+  TrendingUp,
+  Users,
+  Clock,
+  CheckCircle,
+  XCircle,
+} from 'lucide-react';
 
 interface ErrorCorrelation {
   id: string;
@@ -61,7 +70,7 @@ const ErrorCorrelationDashboard: React.FC = () => {
   const fetchCorrelationData = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch correlation status
       const statusResponse = await fetch('/api/v1/error-correlation/status');
       if (!statusResponse.ok) throw new Error('Failed to fetch status');
@@ -99,7 +108,7 @@ const ErrorCorrelationDashboard: React.FC = () => {
       });
 
       if (!response.ok) throw new Error('Failed to trigger recovery');
-      
+
       // Refresh data after triggering recovery
       await fetchCorrelationData();
     } catch (err) {
@@ -109,29 +118,30 @@ const ErrorCorrelationDashboard: React.FC = () => {
 
   const getPatternColor = (pattern: string): string => {
     const colors: Record<string, string> = {
-      'cascading_failure': 'bg-red-100 text-red-800',
-      'common_root_cause': 'bg-orange-100 text-orange-800',
-      'dependency_failure': 'bg-yellow-100 text-yellow-800',
-      'resource_exhaustion': 'bg-purple-100 text-purple-800',
-      'authentication_propagation': 'bg-blue-100 text-blue-800',
-      'network_partition': 'bg-green-100 text-green-800',
+      cascading_failure: 'bg-red-100 text-red-800',
+      common_root_cause: 'bg-orange-100 text-orange-800',
+      dependency_failure: 'bg-yellow-100 text-yellow-800',
+      resource_exhaustion: 'bg-purple-100 text-purple-800',
+      authentication_propagation: 'bg-blue-100 text-blue-800',
+      network_partition: 'bg-green-100 text-green-800',
     };
     return colors[pattern] || 'bg-gray-100 text-gray-800';
   };
 
   const getSystemColor = (system: string): string => {
     const colors: Record<string, string> = {
-      'autmatrix': 'bg-blue-500',
-      'relaycore': 'bg-green-500',
-      'neuroweaver': 'bg-purple-500',
+      autmatrix: 'bg-blue-500',
+      relaycore: 'bg-green-500',
+      neuroweaver: 'bg-purple-500',
     };
     return colors[system] || 'bg-gray-500';
   };
 
   const formatPattern = (pattern: string): string => {
-    return pattern.split('_').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
+    return pattern
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   };
 
   const formatTimestamp = (timestamp: string): string => {
@@ -210,7 +220,9 @@ const ErrorCorrelationDashboard: React.FC = () => {
               <TrendingUp className="w-8 h-8 text-green-500" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Recovery Actions</p>
-                <p className="text-2xl font-bold text-gray-900">{status.recovery_actions_executed}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {status.recovery_actions_executed}
+                </p>
               </div>
             </div>
           </div>
@@ -235,8 +247,13 @@ const ErrorCorrelationDashboard: React.FC = () => {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Error Pattern Distribution</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {Object.entries(status.pattern_distribution).map(([pattern, count]) => (
-              <div key={pattern} className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                <span className={`px-2 py-1 rounded text-xs font-medium ${getPatternColor(pattern)}`}>
+              <div
+                key={pattern}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded"
+              >
+                <span
+                  className={`px-2 py-1 rounded text-xs font-medium ${getPatternColor(pattern)}`}
+                >
                   {formatPattern(pattern)}
                 </span>
                 <span className="text-lg font-bold text-gray-900">{count}</span>
@@ -252,10 +269,15 @@ const ErrorCorrelationDashboard: React.FC = () => {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Alerts</h2>
           <div className="space-y-3">
             {status.recent_alerts.slice(0, 5).map((alert, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded">
+              <div
+                key={index}
+                className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded"
+              >
                 <div className="flex-1">
                   <div className="flex items-center space-x-2">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${getPatternColor(alert.pattern)}`}>
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-medium ${getPatternColor(alert.pattern)}`}
+                    >
                       {formatPattern(alert.pattern)}
                     </span>
                     <span className="text-sm text-gray-600">
@@ -297,11 +319,12 @@ const ErrorCorrelationDashboard: React.FC = () => {
               className="px-3 py-1 border border-gray-300 rounded text-sm"
             >
               <option value="all">All Patterns</option>
-              {status && Object.keys(status.pattern_distribution).map((pattern) => (
-                <option key={pattern} value={pattern}>
-                  {formatPattern(pattern)}
-                </option>
-              ))}
+              {status &&
+                Object.keys(status.pattern_distribution).map((pattern) => (
+                  <option key={pattern} value={pattern}>
+                    {formatPattern(pattern)}
+                  </option>
+                ))}
             </select>
             <select
               value={selectedSystem}
@@ -309,11 +332,12 @@ const ErrorCorrelationDashboard: React.FC = () => {
               className="px-3 py-1 border border-gray-300 rounded text-sm"
             >
               <option value="all">All Systems</option>
-              {status && Object.keys(status.affected_systems).map((system) => (
-                <option key={system} value={system}>
-                  {system}
-                </option>
-              ))}
+              {status &&
+                Object.keys(status.affected_systems).map((system) => (
+                  <option key={system} value={system}>
+                    {system}
+                  </option>
+                ))}
             </select>
           </div>
         </div>
@@ -330,7 +354,9 @@ const ErrorCorrelationDashboard: React.FC = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${getPatternColor(correlation.pattern)}`}>
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-medium ${getPatternColor(correlation.pattern)}`}
+                      >
                         {formatPattern(correlation.pattern)}
                       </span>
                       <span className="text-sm text-gray-600">
@@ -342,9 +368,9 @@ const ErrorCorrelationDashboard: React.FC = () => {
                         <AlertTriangle className="w-4 h-4 text-orange-500" title="Active" />
                       )}
                     </div>
-                    
+
                     <p className="text-gray-900 mb-2">{correlation.root_cause}</p>
-                    
+
                     <div className="flex items-center space-x-4 text-sm text-gray-600">
                       <div className="flex items-center space-x-1">
                         <span>Systems:</span>
@@ -360,7 +386,7 @@ const ErrorCorrelationDashboard: React.FC = () => {
                       <span>Created: {formatTimestamp(correlation.created_at)}</span>
                     </div>
                   </div>
-                  
+
                   {!correlation.resolved_at && (
                     <div className="ml-4">
                       <select
@@ -375,7 +401,7 @@ const ErrorCorrelationDashboard: React.FC = () => {
                       >
                         <option value="">Recovery Actions</option>
                         {recoveryActions
-                          .filter(action => 
+                          .filter((action) =>
                             action.applicable_patterns.includes(correlation.pattern)
                           )
                           .map((action) => (

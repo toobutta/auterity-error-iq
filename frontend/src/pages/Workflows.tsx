@@ -20,7 +20,7 @@ const Workflows: React.FC = () => {
     executionId: null,
     workflowId: null,
     status: 'idle',
-    execution: null
+    execution: null,
   });
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -29,19 +29,19 @@ const Workflows: React.FC = () => {
       executionId,
       workflowId,
       status: 'executing',
-      execution: null
+      execution: null,
     });
     setActiveTab('execute');
   }, []);
 
   const handleExecutionComplete = useCallback((execution: WorkflowExecution) => {
-    setExecutionState(prev => ({
+    setExecutionState((prev) => ({
       ...prev,
       status: execution.status === 'completed' ? 'completed' : 'failed',
-      execution
+      execution,
     }));
     // Refresh history to show the new execution
-    setRefreshTrigger(prev => prev + 1);
+    setRefreshTrigger((prev) => prev + 1);
   }, []);
 
   const handleExecutionSelect = useCallback((execution: WorkflowExecution) => {
@@ -49,7 +49,7 @@ const Workflows: React.FC = () => {
       executionId: execution.id,
       workflowId: execution.workflowId,
       status: execution.status === 'completed' ? 'completed' : 'failed',
-      execution
+      execution,
     });
     setActiveTab('execute');
   }, []);
@@ -59,13 +59,13 @@ const Workflows: React.FC = () => {
       executionId: null,
       workflowId: null,
       status: 'idle',
-      execution: null
+      execution: null,
     });
   }, []);
 
   const tabs = [
     { id: 'execute' as const, name: 'Execute Workflow', icon: '▶️' },
-    { id: 'history' as const, name: 'Execution History', icon: '📋' }
+    { id: 'history' as const, name: 'Execution History', icon: '📋' },
   ];
 
   return (
@@ -73,9 +73,7 @@ const Workflows: React.FC = () => {
       <div className="px-4 py-6 sm:px-0">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900">Workflow Execution</h1>
-          <p className="mt-2 text-gray-600">
-            Execute workflows and monitor their progress
-          </p>
+          <p className="mt-2 text-gray-600">Execute workflows and monitor their progress</p>
         </div>
 
         {/* Tab Navigation */}
@@ -106,9 +104,7 @@ const Workflows: React.FC = () => {
             {/* Execution Form */}
             {executionState.status === 'idle' && (
               <div className="bg-white shadow rounded-lg p-6">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">
-                  Start New Execution
-                </h2>
+                <h2 className="text-lg font-medium text-gray-900 mb-4">Start New Execution</h2>
                 <WorkflowExecutionForm
                   onExecutionStart={(executionId) => {
                     // We need to get the workflowId from the form component
@@ -124,9 +120,7 @@ const Workflows: React.FC = () => {
             {executionState.executionId && executionState.status === 'executing' && (
               <div className="bg-white shadow rounded-lg p-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-medium text-gray-900">
-                    Execution Status
-                  </h2>
+                  <h2 className="text-lg font-medium text-gray-900">Execution Status</h2>
                   <button
                     onClick={handleNewExecution}
                     className="text-sm text-blue-600 hover:text-blue-800"
@@ -147,9 +141,7 @@ const Workflows: React.FC = () => {
             {executionState.executionId && executionState.status === 'completed' && (
               <div className="bg-white shadow rounded-lg p-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-medium text-gray-900">
-                    Execution Results
-                  </h2>
+                  <h2 className="text-lg font-medium text-gray-900">Execution Results</h2>
                   <button
                     onClick={handleNewExecution}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
@@ -168,9 +160,7 @@ const Workflows: React.FC = () => {
             {executionState.executionId && executionState.status === 'failed' && (
               <div className="bg-white shadow rounded-lg p-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-medium text-gray-900">
-                    Execution Failed
-                  </h2>
+                  <h2 className="text-lg font-medium text-gray-900">Execution Failed</h2>
                   <button
                     onClick={handleNewExecution}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
@@ -194,9 +184,7 @@ const Workflows: React.FC = () => {
 
         {activeTab === 'history' && (
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">
-              Execution History
-            </h2>
+            <h2 className="text-lg font-medium text-gray-900 mb-4">Execution History</h2>
             <WorkflowExecutionHistory
               onExecutionSelect={handleExecutionSelect}
               refreshTrigger={refreshTrigger}

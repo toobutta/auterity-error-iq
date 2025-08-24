@@ -24,7 +24,10 @@ const Templates: React.FC = () => {
     setPreviewTemplate(template);
   };
 
-  const handleTemplateInstantiate = async (template: Template, parameterValues: { [key: string]: string | number | boolean }) => {
+  const handleTemplateInstantiate = async (
+    template: Template,
+    parameterValues: { [key: string]: string | number | boolean }
+  ) => {
     setIsInstantiating(true);
     try {
       // First, instantiate the template to get the workflow definition
@@ -48,7 +51,7 @@ const Templates: React.FC = () => {
   };
 
   const handleAddToComparison = (template: Template) => {
-    if (comparisonTemplates.find(t => t.id === template.id)) {
+    if (comparisonTemplates.find((t) => t.id === template.id)) {
       // Template already in comparison, show comparison view
       setShowComparison(true);
       return;
@@ -59,8 +62,8 @@ const Templates: React.FC = () => {
       return;
     }
 
-    setComparisonTemplates(prev => [...prev, template]);
-    
+    setComparisonTemplates((prev) => [...prev, template]);
+
     // Auto-open comparison if we have 2 or more templates
     if (comparisonTemplates.length >= 1) {
       setShowComparison(true);
@@ -68,8 +71,8 @@ const Templates: React.FC = () => {
   };
 
   const handleRemoveFromComparison = (templateId: string) => {
-    setComparisonTemplates(prev => prev.filter(t => t.id !== templateId));
-    
+    setComparisonTemplates((prev) => prev.filter((t) => t.id !== templateId));
+
     // Close comparison if no templates left
     if (comparisonTemplates.length <= 1) {
       setShowComparison(false);
@@ -100,7 +103,7 @@ const Templates: React.FC = () => {
                 Browse and use pre-built workflow templates for common dealership scenarios
               </p>
             </div>
-            
+
             {/* Comparison indicator */}
             {comparisonTemplates.length > 0 && (
               <div className="flex items-center space-x-2">
@@ -108,8 +111,18 @@ const Templates: React.FC = () => {
                   onClick={() => setShowComparison(true)}
                   className="inline-flex items-center px-3 py-2 border border-indigo-300 shadow-sm text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                  <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  <svg
+                    className="h-4 w-4 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
                   </svg>
                   Compare ({comparisonTemplates.length})
                 </button>
@@ -119,14 +132,19 @@ const Templates: React.FC = () => {
                   title="Clear comparison"
                 >
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
             )}
           </div>
         </div>
-        
+
         <TemplateLibrary
           onTemplateSelect={handleTemplateSelect}
           onTemplatePreview={handleTemplatePreview}
@@ -144,7 +162,12 @@ const Templates: React.FC = () => {
                 className="text-gray-400 hover:text-gray-600"
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -157,7 +180,12 @@ const Templates: React.FC = () => {
                     className="text-gray-400 hover:text-red-600"
                   >
                     <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </button>
                 </div>

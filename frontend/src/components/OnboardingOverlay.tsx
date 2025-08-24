@@ -3,24 +3,27 @@ import React, { useState } from 'react';
 const onboardingSteps = [
   {
     title: 'Welcome to Auterity Unified!',
-    description: 'This platform lets you build, monitor, and optimize AI workflows with ease. Let’s take a quick tour!'
+    description:
+      'This platform lets you build, monitor, and optimize AI workflows with ease. Let’s take a quick tour!',
   },
   {
     title: 'Dashboard Overview',
-    description: 'Monitor workflow health, execution stats, and agent/server status in real time.'
+    description: 'Monitor workflow health, execution stats, and agent/server status in real time.',
   },
   {
     title: 'Workflow Builder',
-    description: 'Use the visual builder to create, edit, and test workflows with drag-and-drop simplicity.'
+    description:
+      'Use the visual builder to create, edit, and test workflows with drag-and-drop simplicity.',
   },
   {
     title: 'Notifications & Quick Actions',
-    description: 'Get instant feedback and take action directly from the notification center and dashboard.'
+    description:
+      'Get instant feedback and take action directly from the notification center and dashboard.',
   },
   {
     title: 'Need Help?',
-    description: 'Access documentation, support, and tips anytime from the help menu.'
-  }
+    description: 'Access documentation, support, and tips anytime from the help menu.',
+  },
 ];
 
 export const OnboardingOverlay: React.FC = () => {

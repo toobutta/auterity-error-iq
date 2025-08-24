@@ -8,9 +8,7 @@ import sys
 sys.path.insert(0, "/Users/andrew-thompson/Documents/Dryva/Dryva-IDE/Dryva/backend")
 
 from app.database import SessionLocal
-from app.models import Template
-from app.models import TemplateParameter
-from app.models import User
+from app.models import Template, TemplateParameter, User
 from app.services.template_engine import TemplateEngine
 
 

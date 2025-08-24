@@ -10,16 +10,14 @@ export const StartNode: React.FC<NodeProps<NodeData>> = ({ data, isConnectable }
           <span className="text-white text-sm font-bold">▶</span>
         </div>
         <h3 className="font-bold text-green-800">{data.label}</h3>
-        {data.description && (
-          <p className="text-xs text-green-600 mt-1">{data.description}</p>
-        )}
+        {data.description && <p className="text-xs text-green-600 mt-1">{data.description}</p>}
       </div>
-      
-      <Handle 
-        type="source" 
-        position={Position.Bottom} 
-        isConnectable={isConnectable} 
-        className="w-3 h-3 bg-green-500" 
+
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        isConnectable={isConnectable}
+        className="w-3 h-3 bg-green-500"
       />
     </div>
   );

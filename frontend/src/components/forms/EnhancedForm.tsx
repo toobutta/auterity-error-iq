@@ -47,14 +47,14 @@ export const EnhancedForm: React.FC<FormConfig> = ({
   submitText = 'Submit',
   onSubmit,
   autoSave = false,
-  autoSaveInterval = 5000
+  autoSaveInterval = 5000,
 }) => {
   const { success, error, info } = useNotificationHelpers();
-  
+
   // Initialize form data with default values
   const [formData, setFormData] = useState<FormData>(() => {
     const initial: FormData = {};
-    fields.forEach(field => {
+    fields.forEach((field) => {
       initial[field.name] = field.defaultValue || (field.type === 'checkbox' ? false : '');
     });
     return initial;
@@ -106,7 +106,7 @@ export const EnhancedForm: React.FC<FormConfig> = ({
     const newErrors: FormErrors = {};
     let hasErrors = false;
 
-    fields.forEach(field => {
+    fields.forEach((field) => {
       const error = validateField(field, formData[field.name]);
       if (error) {
         newErrors[field.name] = error;
@@ -119,29 +119,32 @@ export const EnhancedForm: React.FC<FormConfig> = ({
   }, [fields, formData, validateField]);
 
   // Handle field changes
-  const handleFieldChange = useCallback((fieldName: string, value: string | number | boolean | File | null) => {
-    setFormData(prev => ({ ...prev, [fieldName]: value }));
-    
-    // Mark field as touched
-    setTouchedFields(prev => new Set(prev).add(fieldName));
+  const handleFieldChange = useCallback(
+    (fieldName: string, value: string | number | boolean | File | null) => {
+      setFormData((prev) => ({ ...prev, [fieldName]: value }));
 
-    // Validate field on change if it was previously touched
-    if (touchedFields.has(fieldName)) {
-      const field = fields.find(f => f.name === fieldName);
-      if (field) {
-        const error = validateField(field, value);
-        setErrors(prev => ({
-          ...prev,
-          [fieldName]: error || ''
-        }));
+      // Mark field as touched
+      setTouchedFields((prev) => new Set(prev).add(fieldName));
+
+      // Validate field on change if it was previously touched
+      if (touchedFields.has(fieldName)) {
+        const field = fields.find((f) => f.name === fieldName);
+        if (field) {
+          const error = validateField(field, value);
+          setErrors((prev) => ({
+            ...prev,
+            [fieldName]: error || '',
+          }));
+        }
       }
-    }
-  }, [fields, touchedFields, validateField]);
+    },
+    [fields, touchedFields, validateField]
+  );
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       error('Validation Error', 'Please fix the errors in the form');
       return;
@@ -164,7 +167,7 @@ export const EnhancedForm: React.FC<FormConfig> = ({
     if (!autoSave) return;
 
     const interval = setInterval(async () => {
-      if (Object.keys(formData).some(key => formData[key] !== '')) {
+      if (Object.keys(formData).some((key) => formData[key] !== '')) {
         setIsAutoSaving(true);
         try {
           // In a real app, this would save to localStorage or backend
@@ -188,7 +191,7 @@ export const EnhancedForm: React.FC<FormConfig> = ({
         const draft = localStorage.getItem(`form-draft-${title}`);
         if (draft) {
           const draftData = JSON.parse(draft);
-          setFormData(prev => ({ ...prev, ...draftData }));
+          setFormData((prev) => ({ ...prev, ...draftData }));
           info('Draft Loaded', 'Your previous progress has been restored');
         }
       } catch (err) {
@@ -211,7 +214,7 @@ export const EnhancedForm: React.FC<FormConfig> = ({
           ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
           : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
       } text-gray-900 dark:text-gray-100`,
-      onBlur: () => setTouchedFields(prev => new Set(prev).add(field.name))
+      onBlur: () => setTouchedFields((prev) => new Set(prev).add(field.name)),
     };
 
     switch (field.type) {
@@ -223,7 +226,7 @@ export const EnhancedForm: React.FC<FormConfig> = ({
             onChange={(e) => handleFieldChange(field.name, e.target.value)}
           >
             <option value="">{field.placeholder || `Select ${field.label}`}</option>
-            {field.options?.map(option => (
+            {field.options?.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -287,15 +290,13 @@ export const EnhancedForm: React.FC<FormConfig> = ({
     <div className="glass-card p-6 max-w-2xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-          {title}
-        </h2>
-        {description && (
-          <p className="text-gray-600 dark:text-gray-400">{description}</p>
-        )}
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{title}</h2>
+        {description && <p className="text-gray-600 dark:text-gray-400">{description}</p>}
         {autoSave && (
           <div className="mt-2 flex items-center space-x-2">
-            <div className={`w-2 h-2 rounded-full ${isAutoSaving ? 'bg-blue-500 animate-pulse' : 'bg-gray-400'}`} />
+            <div
+              className={`w-2 h-2 rounded-full ${isAutoSaving ? 'bg-blue-500 animate-pulse' : 'bg-gray-400'}`}
+            />
             <span className="text-xs text-gray-500 dark:text-gray-400">
               {isAutoSaving ? 'Auto-saving...' : 'Auto-save enabled'}
             </span>
@@ -305,29 +306,28 @@ export const EnhancedForm: React.FC<FormConfig> = ({
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        {fields.map(field => (
+        {fields.map((field) => (
           <div key={field.name}>
             {field.type !== 'checkbox' && (
-              <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label
+                htmlFor={field.name}
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
                 {field.label}
                 {field.validation?.required && <span className="text-red-500 ml-1">*</span>}
               </label>
             )}
-            
+
             {renderField(field)}
 
             {/* Help text */}
             {field.helpText && (
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                {field.helpText}
-              </p>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{field.helpText}</p>
             )}
 
             {/* Error message */}
             {errors[field.name] && touchedFields.has(field.name) && (
-              <p className="mt-1 text-xs text-red-600 dark:text-red-400">
-                {errors[field.name]}
-              </p>
+              <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors[field.name]}</p>
             )}
           </div>
         ))}
@@ -356,8 +356,9 @@ export const EnhancedForm: React.FC<FormConfig> = ({
                 localStorage.removeItem(`form-draft-${title}`);
                 setFormData(() => {
                   const initial: FormData = {};
-                  fields.forEach(field => {
-                    initial[field.name] = field.defaultValue || (field.type === 'checkbox' ? false : '');
+                  fields.forEach((field) => {
+                    initial[field.name] =
+                      field.defaultValue || (field.type === 'checkbox' ? false : '');
                   });
                   return initial;
                 });

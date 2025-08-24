@@ -28,10 +28,10 @@ describe('Vitest Configuration', () => {
   it('should support timers', () => {
     vi.useFakeTimers();
     const callback = vi.fn();
-    
+
     setTimeout(callback, 1000);
     vi.advanceTimersByTime(1000);
-    
+
     expect(callback).toHaveBeenCalled();
     vi.useRealTimers();
   });

@@ -8,10 +8,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from app.exceptions import AIServiceError
-from app.services.litellm_service import (
-    LiteLLMService,
-    get_litellm_service
-)
+from app.services.litellm_service import LiteLLMService, get_litellm_service
 
 logger = logging.getLogger(__name__)
 

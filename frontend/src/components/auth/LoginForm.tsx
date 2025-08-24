@@ -7,7 +7,7 @@ const LoginForm: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -20,9 +20,10 @@ const LoginForm: React.FC = () => {
       await login({ email, password });
       navigate('/dashboard');
     } catch (err: unknown) {
-      const errorMessage = err && typeof err === 'object' && 'response' in err 
-        ? (err as { response?: { data?: { detail?: string } } }).response?.data?.detail 
-        : 'Login failed. Please try again.';
+      const errorMessage =
+        err && typeof err === 'object' && 'response' in err
+          ? (err as { response?: { data?: { detail?: string } } }).response?.data?.detail
+          : 'Login failed. Please try again.';
       setError(errorMessage || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
@@ -46,7 +47,7 @@ const LoginForm: React.FC = () => {
               {error}
             </div>
           )}
-          
+
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email" className="sr-only">

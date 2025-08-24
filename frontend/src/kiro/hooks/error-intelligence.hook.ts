@@ -19,20 +19,20 @@ export const onErrorEvent = async ({ workflowId, error }: KiroErrorEvent) => {
         errorType: error.type,
         stackTrace: error.stack,
         timestamp: new Date().toISOString(),
-        source: 'kiro_hook'
-      })
+        source: 'kiro_hook',
+      }),
     });
 
     // Optional: trigger Slack alert for system errors
-    if (error.type === "system") {
+    if (error.type === 'system') {
       const webhookUrl = import.meta.env.VITE_SLACK_WEBHOOK_URL;
       if (webhookUrl) {
         await fetch(webhookUrl, {
-          method: "POST",
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            text: `🚨 System Error in Workflow ${workflowId}: ${error.message}`
-          })
+            text: `🚨 System Error in Workflow ${workflowId}: ${error.message}`,
+          }),
         });
       }
     }

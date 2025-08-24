@@ -1,24 +1,24 @@
 """White-Label AI Agent Marketplace Service - Templates, revenue sharing, and custom agent training."""
 
-import logging
 import asyncio
+import logging
 import uuid
-from datetime import datetime, timedelta
-from decimal import Decimal, ROUND_HALF_UP
-from typing import Dict, List, Optional, Any, Tuple, Union
-from uuid import UUID
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from decimal import Decimal
 from enum import Enum
-import json
+from typing import Any, Dict, List, Optional
+from uuid import UUID
 
-from app.models.tenant import Tenant, UsageLog
 from app.core.saas_config import SaaSConfig
+from app.models.tenant import UsageLog
 
 logger = logging.getLogger(__name__)
 
 
 class AgentCategory(str, Enum):
     """AI agent categories."""
+
     CUSTOMER_SERVICE = "customer_service"
     SALES = "sales"
     MARKETING = "marketing"
@@ -33,6 +33,7 @@ class AgentCategory(str, Enum):
 
 class AgentTier(str, Enum):
     """Agent subscription tiers."""
+
     BASIC = "basic"
     PROFESSIONAL = "professional"
     ENTERPRISE = "enterprise"
@@ -41,6 +42,7 @@ class AgentTier(str, Enum):
 
 class MarketplaceStatus(str, Enum):
     """Marketplace item status."""
+
     DRAFT = "draft"
     REVIEW = "review"
     PUBLISHED = "published"
@@ -51,6 +53,7 @@ class MarketplaceStatus(str, Enum):
 @dataclass
 class AgentTemplate:
     """AI agent template."""
+
     id: str
     name: str
     description: str
@@ -85,6 +88,7 @@ class AgentTemplate:
 @dataclass
 class DeployedAgent:
     """Deployed AI agent instance."""
+
     id: str
     template_id: str
     tenant_id: UUID
@@ -112,6 +116,7 @@ class DeployedAgent:
 @dataclass
 class RevenueShare:
     """Revenue sharing record for agent marketplace."""
+
     id: str
     agent_id: str
     tenant_id: UUID
@@ -129,6 +134,7 @@ class RevenueShare:
 @dataclass
 class AgentReview:
     """User review for an agent template."""
+
     id: str
     template_id: str
     user_id: UUID
@@ -144,6 +150,7 @@ class AgentReview:
 @dataclass
 class CustomTrainingJob:
     """Custom agent training job."""
+
     id: str
     tenant_id: UUID
     agent_id: str
@@ -183,48 +190,60 @@ class AgentMarketplaceService:
                 "name": "Basic Customer Service Agent",
                 "description": "Handles common customer inquiries with predefined responses",
                 "category": AgentCategory.CUSTOMER_SERVICE,
-                "capabilities": ["faq_responses", "basic_routing", "sentiment_analysis"],
+                "capabilities": [
+                    "faq_responses",
+                    "basic_routing",
+                    "sentiment_analysis",
+                ],
                 "base_model": "gpt-3.5-turbo",
                 "pricing_tiers": {
                     "basic": {"price": 99.00, "max_requests": 10000},
                     "professional": {"price": 299.00, "max_requests": 50000},
-                    "enterprise": {"price": 999.00, "max_requests": -1}
+                    "enterprise": {"price": 999.00, "max_requests": -1},
                 },
                 "revenue_share_percentage": 0.15,
                 "tags": ["customer-service", "basic", "faq"],
-                "industries": ["retail", "ecommerce", "services"]
+                "industries": ["retail", "ecommerce", "services"],
             },
             {
                 "id": "sales_lead_qualifier",
                 "name": "Sales Lead Qualifier",
                 "description": "Qualifies leads and gathers prospect information",
                 "category": AgentCategory.SALES,
-                "capabilities": ["lead_scoring", "data_collection", "followup_scheduling"],
+                "capabilities": [
+                    "lead_scoring",
+                    "data_collection",
+                    "followup_scheduling",
+                ],
                 "base_model": "gpt-4",
                 "pricing_tiers": {
                     "basic": {"price": 199.00, "max_requests": 5000},
                     "professional": {"price": 499.00, "max_requests": 20000},
-                    "enterprise": {"price": 1299.00, "max_requests": -1}
+                    "enterprise": {"price": 1299.00, "max_requests": -1},
                 },
                 "revenue_share_percentage": 0.20,
                 "tags": ["sales", "lead-generation", "qualification"],
-                "industries": ["b2b", "saas", "consulting"]
+                "industries": ["b2b", "saas", "consulting"],
             },
             {
                 "id": "hr_policy_assistant",
                 "name": "HR Policy Assistant",
                 "description": "Provides instant answers to employee policy questions",
                 "category": AgentCategory.HR,
-                "capabilities": ["policy_lookup", "compliance_checking", "document_search"],
+                "capabilities": [
+                    "policy_lookup",
+                    "compliance_checking",
+                    "document_search",
+                ],
                 "base_model": "gpt-4",
                 "pricing_tiers": {
                     "basic": {"price": 149.00, "max_requests": 7500},
                     "professional": {"price": 399.00, "max_requests": 30000},
-                    "enterprise": {"price": 1099.00, "max_requests": -1}
+                    "enterprise": {"price": 1099.00, "max_requests": -1},
                 },
                 "revenue_share_percentage": 0.18,
                 "tags": ["hr", "policy", "compliance"],
-                "industries": ["technology", "finance", "healthcare"]
+                "industries": ["technology", "finance", "healthcare"],
             },
             {
                 "id": "marketing_content_creator",
@@ -236,12 +255,12 @@ class AgentMarketplaceService:
                 "pricing_tiers": {
                     "basic": {"price": 179.00, "max_requests": 6000},
                     "professional": {"price": 449.00, "max_requests": 25000},
-                    "enterprise": {"price": 1199.00, "max_requests": -1}
+                    "enterprise": {"price": 1199.00, "max_requests": -1},
                 },
                 "revenue_share_percentage": 0.22,
                 "tags": ["marketing", "content", "social-media"],
-                "industries": ["marketing", "advertising", "media"]
-            }
+                "industries": ["marketing", "advertising", "media"],
+            },
         ]
 
         for template_data in default_templates:
@@ -253,7 +272,7 @@ class AgentMarketplaceService:
         category: Optional[AgentCategory] = None,
         search_query: Optional[str] = None,
         sort_by: str = "downloads",
-        limit: int = 20
+        limit: int = 20,
     ) -> List[AgentTemplate]:
         """Get marketplace templates with filtering and sorting."""
         try:
@@ -267,10 +286,11 @@ class AgentMarketplaceService:
             if search_query:
                 search_lower = search_query.lower()
                 templates = [
-                    t for t in templates
-                    if search_lower in t.name.lower() or
-                       search_lower in t.description.lower() or
-                       any(search_lower in tag.lower() for tag in t.tags)
+                    t
+                    for t in templates
+                    if search_lower in t.name.lower()
+                    or search_lower in t.description.lower()
+                    or any(search_lower in tag.lower() for tag in t.tags)
                 ]
 
             # Sort
@@ -278,7 +298,9 @@ class AgentMarketplaceService:
                 "downloads": lambda x: x.total_downloads,
                 "rating": lambda x: x.average_rating,
                 "newest": lambda x: x.created_at,
-                "price": lambda x: min(tier.get("price", 0) for tier in x.pricing_tiers.values())
+                "price": lambda x: min(
+                    tier.get("price", 0) for tier in x.pricing_tiers.values()
+                ),
             }
 
             sort_func = sort_functions.get(sort_by, sort_functions["downloads"])
@@ -296,7 +318,7 @@ class AgentMarketplaceService:
         template_id: str,
         agent_name: str,
         configuration: Dict[str, Any],
-        deployed_by: Optional[UUID] = None
+        deployed_by: Optional[UUID] = None,
     ) -> DeployedAgent:
         """Deploy an agent from a marketplace template."""
         try:
@@ -318,7 +340,7 @@ class AgentMarketplaceService:
                 name=agent_name,
                 configuration=configuration,
                 deployed_by=deployed_by,
-                version=template.version
+                version=template.version,
             )
 
             self.deployed_agents[agent_id] = deployed_agent
@@ -334,9 +356,7 @@ class AgentMarketplaceService:
             raise
 
     async def _validate_agent_configuration(
-        self,
-        template: AgentTemplate,
-        configuration: Dict[str, Any]
+        self, template: AgentTemplate, configuration: Dict[str, Any]
     ) -> bool:
         """Validate agent configuration against template schema."""
         if not template.configuration_schema:
@@ -366,10 +386,7 @@ class AgentMarketplaceService:
         return True
 
     async def customize_agent(
-        self,
-        agent_id: str,
-        customizations: Dict[str, Any],
-        tenant_id: UUID
+        self, agent_id: str, customizations: Dict[str, Any], tenant_id: UUID
     ) -> DeployedAgent:
         """Customize a deployed agent."""
         try:
@@ -397,7 +414,7 @@ class AgentMarketplaceService:
         tenant_id: UUID,
         agent_id: str,
         training_data: Dict[str, Any],
-        configuration: Dict[str, Any]
+        configuration: Dict[str, Any],
     ) -> CustomTrainingJob:
         """Start custom training for an agent."""
         try:
@@ -417,7 +434,8 @@ class AgentMarketplaceService:
                 agent_id=agent_id,
                 training_data=training_data,
                 configuration=configuration,
-                estimated_completion=datetime.utcnow() + timedelta(hours=4)  # Estimate 4 hours
+                estimated_completion=datetime.utcnow()
+                + timedelta(hours=4),  # Estimate 4 hours
             )
 
             self.training_jobs[job_id] = training_job
@@ -458,10 +476,7 @@ class AgentMarketplaceService:
                 self.training_jobs[job_id].status = "failed"
 
     async def get_agent_analytics(
-        self,
-        agent_id: str,
-        tenant_id: UUID,
-        days: int = 30
+        self, agent_id: str, tenant_id: UUID, days: int = 30
     ) -> Dict[str, Any]:
         """Get analytics for a specific deployed agent."""
         try:
@@ -476,25 +491,41 @@ class AgentMarketplaceService:
             period_start = datetime.utcnow() - timedelta(days=days)
 
             # Get usage logs for this agent
-            usage_logs = self.db.query(UsageLog).filter(
-                and_(
-                    UsageLog.tenant_id == tenant_id,
-                    UsageLog.created_at >= period_start,
-                    UsageLog.metadata_json.contains({"agent_id": agent_id})
+            usage_logs = (
+                self.db.query(UsageLog)
+                .filter(
+                    and_(
+                        UsageLog.tenant_id == tenant_id,
+                        UsageLog.created_at >= period_start,
+                        UsageLog.metadata_json.contains({"agent_id": agent_id}),
+                    )
                 )
-            ).all()
+                .all()
+            )
 
             # Calculate analytics
             total_requests = len(usage_logs)
-            successful_requests = len([log for log in usage_logs if log.status == "success"])
+            successful_requests = len(
+                [log for log in usage_logs if log.status == "success"]
+            )
             total_cost = sum(log.cost_amount or Decimal("0") for log in usage_logs)
 
-            success_rate = (successful_requests / total_requests * 100) if total_requests > 0 else 0
-            avg_cost_per_request = float(total_cost / total_requests) if total_requests > 0 else 0
+            success_rate = (
+                (successful_requests / total_requests * 100)
+                if total_requests > 0
+                else 0
+            )
+            avg_cost_per_request = (
+                float(total_cost / total_requests) if total_requests > 0 else 0
+            )
 
             # Calculate response times if available
-            response_times = [log.execution_time_ms for log in usage_logs if log.execution_time_ms]
-            avg_response_time = sum(response_times) / len(response_times) if response_times else 0
+            response_times = [
+                log.execution_time_ms for log in usage_logs if log.execution_time_ms
+            ]
+            avg_response_time = (
+                sum(response_times) / len(response_times) if response_times else 0
+            )
 
             analytics = {
                 "agent_id": agent_id,
@@ -505,17 +536,19 @@ class AgentMarketplaceService:
                     "total_requests": total_requests,
                     "successful_requests": successful_requests,
                     "success_rate": round(success_rate, 2),
-                    "avg_response_time_ms": round(avg_response_time, 2)
+                    "avg_response_time_ms": round(avg_response_time, 2),
                 },
                 "cost": {
                     "total_cost": float(total_cost),
-                    "avg_cost_per_request": round(avg_cost_per_request, 4)
+                    "avg_cost_per_request": round(avg_cost_per_request, 4),
                 },
                 "performance": {
                     "status": agent.status,
-                    "last_used": agent.last_used.isoformat() if agent.last_used else None,
-                    "total_uptime": (datetime.utcnow() - agent.deployed_at).days
-                }
+                    "last_used": (
+                        agent.last_used.isoformat() if agent.last_used else None
+                    ),
+                    "total_uptime": (datetime.utcnow() - agent.deployed_at).days,
+                },
             }
 
             return analytics
@@ -533,7 +566,7 @@ class AgentMarketplaceService:
         review_text: Optional[str] = None,
         pros: Optional[List[str]] = None,
         cons: Optional[List[str]] = None,
-        use_case: Optional[str] = None
+        use_case: Optional[str] = None,
     ) -> AgentReview:
         """Submit a review for an agent template."""
         try:
@@ -554,7 +587,7 @@ class AgentMarketplaceService:
                 review_text=review_text,
                 pros=pros or [],
                 cons=cons or [],
-                use_case=use_case
+                use_case=use_case,
             )
 
             self.reviews[review_id] = review
@@ -578,7 +611,9 @@ class AgentMarketplaceService:
             template = self.templates[template_id]
 
             # Get all reviews for this template
-            template_reviews = [r for r in self.reviews.values() if r.template_id == template_id]
+            template_reviews = [
+                r for r in self.reviews.values() if r.template_id == template_id
+            ]
 
             if not template_reviews:
                 return
@@ -594,10 +629,7 @@ class AgentMarketplaceService:
             logger.error(f"Template rating update failed: {str(e)}")
 
     async def get_template_reviews(
-        self,
-        template_id: str,
-        limit: int = 10,
-        sort_by: str = "newest"
+        self, template_id: str, limit: int = 10, sort_by: str = "newest"
     ) -> List[AgentReview]:
         """Get reviews for a template."""
         try:
@@ -621,10 +653,7 @@ class AgentMarketplaceService:
             return []
 
     async def calculate_revenue_share(
-        self,
-        agent_id: str,
-        period_start: datetime,
-        period_end: datetime
+        self, agent_id: str, period_start: datetime, period_end: datetime
     ) -> List[RevenueShare]:
         """Calculate revenue sharing for an agent."""
         try:
@@ -638,19 +667,25 @@ class AgentMarketplaceService:
                 return []
 
             # Get usage data for the period
-            usage_logs = self.db.query(UsageLog).filter(
-                and_(
-                    UsageLog.tenant_id == agent.tenant_id,
-                    UsageLog.created_at >= period_start,
-                    UsageLog.created_at < period_end,
-                    UsageLog.metadata_json.contains({"agent_id": agent_id})
+            usage_logs = (
+                self.db.query(UsageLog)
+                .filter(
+                    and_(
+                        UsageLog.tenant_id == agent.tenant_id,
+                        UsageLog.created_at >= period_start,
+                        UsageLog.created_at < period_end,
+                        UsageLog.metadata_json.contains({"agent_id": agent_id}),
+                    )
                 )
-            ).all()
+                .all()
+            )
 
             total_revenue = sum(log.cost_amount or Decimal("0") for log in usage_logs)
 
             if total_revenue > 0 and template.revenue_share_percentage > 0:
-                creator_revenue = total_revenue * Decimal(str(template.revenue_share_percentage))
+                creator_revenue = total_revenue * Decimal(
+                    str(template.revenue_share_percentage)
+                )
                 platform_revenue = total_revenue - creator_revenue
 
                 revenue_share = RevenueShare(
@@ -663,7 +698,7 @@ class AgentMarketplaceService:
                     revenue_amount=total_revenue,
                     share_percentage=template.revenue_share_percentage,
                     creator_revenue=creator_revenue,
-                    platform_revenue=platform_revenue
+                    platform_revenue=platform_revenue,
                 )
 
                 self.revenue_shares[revenue_share.id] = revenue_share
@@ -675,10 +710,7 @@ class AgentMarketplaceService:
             logger.error(f"Revenue share calculation failed: {str(e)}")
             return []
 
-    async def get_marketplace_analytics(
-        self,
-        days: int = 30
-    ) -> Dict[str, Any]:
+    async def get_marketplace_analytics(self, days: int = 30) -> Dict[str, Any]:
         """Get marketplace-wide analytics."""
         try:
             period_start = datetime.utcnow() - timedelta(days=days)
@@ -687,21 +719,34 @@ class AgentMarketplaceService:
                 "period_days": days,
                 "templates": {
                     "total": len(self.templates),
-                    "published": len([t for t in self.templates.values() if t.status == MarketplaceStatus.PUBLISHED]),
-                    "categories": {}
+                    "published": len(
+                        [
+                            t
+                            for t in self.templates.values()
+                            if t.status == MarketplaceStatus.PUBLISHED
+                        ]
+                    ),
+                    "categories": {},
                 },
                 "deployments": {
                     "total": len(self.deployed_agents),
-                    "active": len([a for a in self.deployed_agents.values() if a.status == "active"])
+                    "active": len(
+                        [
+                            a
+                            for a in self.deployed_agents.values()
+                            if a.status == "active"
+                        ]
+                    ),
                 },
                 "usage": {
-                    "total_requests": sum(a.total_requests for a in self.deployed_agents.values()),
-                    "total_revenue": sum(float(a.total_cost) for a in self.deployed_agents.values())
+                    "total_requests": sum(
+                        a.total_requests for a in self.deployed_agents.values()
+                    ),
+                    "total_revenue": sum(
+                        float(a.total_cost) for a in self.deployed_agents.values()
+                    ),
                 },
-                "reviews": {
-                    "total_reviews": len(self.reviews),
-                    "average_rating": 0.0
-                }
+                "reviews": {"total_reviews": len(self.reviews), "average_rating": 0.0},
             }
 
             # Category breakdown
@@ -711,19 +756,25 @@ class AgentMarketplaceService:
                     analytics["templates"]["categories"][category] = {
                         "count": 0,
                         "downloads": 0,
-                        "avg_rating": 0.0
+                        "avg_rating": 0.0,
                     }
 
                 analytics["templates"]["categories"][category]["count"] += 1
-                analytics["templates"]["categories"][category]["downloads"] += template.total_downloads
+                analytics["templates"]["categories"][category][
+                    "downloads"
+                ] += template.total_downloads
 
                 if template.average_rating > 0:
-                    analytics["templates"]["categories"][category]["avg_rating"] = template.average_rating
+                    analytics["templates"]["categories"][category][
+                        "avg_rating"
+                    ] = template.average_rating
 
             # Overall average rating
             if analytics["reviews"]["total_reviews"] > 0:
                 total_rating = sum(review.rating for review in self.reviews.values())
-                analytics["reviews"]["average_rating"] = total_rating / analytics["reviews"]["total_reviews"]
+                analytics["reviews"]["average_rating"] = (
+                    total_rating / analytics["reviews"]["total_reviews"]
+                )
 
             return analytics
 
@@ -732,18 +783,14 @@ class AgentMarketplaceService:
             return {"error": str(e)}
 
     async def create_custom_template(
-        self,
-        creator_id: UUID,
-        template_data: Dict[str, Any]
+        self, creator_id: UUID, template_data: Dict[str, Any]
     ) -> AgentTemplate:
         """Create a custom agent template."""
         try:
             template_id = f"custom_{uuid.uuid4().hex}"
 
             template = AgentTemplate(
-                id=template_id,
-                creator_id=creator_id,
-                **template_data
+                id=template_id, creator_id=creator_id, **template_data
             )
 
             self.templates[template_id] = template
@@ -758,7 +805,11 @@ class AgentMarketplaceService:
     async def get_tenant_agents(self, tenant_id: UUID) -> List[DeployedAgent]:
         """Get all agents deployed by a tenant."""
         try:
-            return [agent for agent in self.deployed_agents.values() if agent.tenant_id == tenant_id]
+            return [
+                agent
+                for agent in self.deployed_agents.values()
+                if agent.tenant_id == tenant_id
+            ]
 
         except Exception as e:
             logger.error(f"Tenant agent retrieval failed: {str(e)}")
@@ -770,19 +821,24 @@ class AgentMarketplaceService:
             health_status = {
                 "status": "healthy",
                 "templates_count": len(self.templates),
-                "published_templates": len([t for t in self.templates.values() if t.status == MarketplaceStatus.PUBLISHED]),
+                "published_templates": len(
+                    [
+                        t
+                        for t in self.templates.values()
+                        if t.status == MarketplaceStatus.PUBLISHED
+                    ]
+                ),
                 "deployed_agents_count": len(self.deployed_agents),
-                "active_agents": len([a for a in self.deployed_agents.values() if a.status == "active"]),
+                "active_agents": len(
+                    [a for a in self.deployed_agents.values() if a.status == "active"]
+                ),
                 "reviews_count": len(self.reviews),
                 "training_jobs_count": len(self.training_jobs),
                 "revenue_shares_count": len(self.revenue_shares),
-                "categories_supported": len(AgentCategory)
+                "categories_supported": len(AgentCategory),
             }
 
             return health_status
 
         except Exception as e:
-            return {
-                "status": "unhealthy",
-                "error": str(e)
-            }
+            return {"status": "unhealthy", "error": str(e)}

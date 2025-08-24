@@ -7,20 +7,20 @@ import { ErrorCategory, ErrorSeverity } from '../../types/error';
 // Mock window.location
 const mockLocation = {
   href: '',
-  reload: vi.fn()
+  reload: vi.fn(),
 };
 Object.defineProperty(window, 'location', {
   value: mockLocation,
-  writable: true
+  writable: true,
 });
 
 // Mock localStorage
 const mockLocalStorage = {
-  removeItem: vi.fn()
+  removeItem: vi.fn(),
 };
 Object.defineProperty(window, 'localStorage', {
   value: mockLocalStorage,
-  writable: true
+  writable: true,
 });
 
 // Mock alert
@@ -30,7 +30,7 @@ describe('ErrorRecoveryGuide', () => {
   const defaultProps = {
     category: ErrorCategory.WORKFLOW,
     severity: ErrorSeverity.MEDIUM,
-    errorMessage: 'Workflow execution failed'
+    errorMessage: 'Workflow execution failed',
   };
 
   beforeEach(() => {
@@ -54,12 +54,7 @@ describe('ErrorRecoveryGuide', () => {
   });
 
   it('displays authentication-specific recovery steps', () => {
-    render(
-      <ErrorRecoveryGuide 
-        {...defaultProps}
-        category={ErrorCategory.AUTHENTICATION}
-      />
-    );
+    render(<ErrorRecoveryGuide {...defaultProps} category={ErrorCategory.AUTHENTICATION} />);
 
     expect(screen.getByText('Verify Login Credentials')).toBeInTheDocument();
     expect(screen.getByText('Clear Browser Cache')).toBeInTheDocument();
@@ -67,12 +62,7 @@ describe('ErrorRecoveryGuide', () => {
   });
 
   it('displays network-specific recovery steps', () => {
-    render(
-      <ErrorRecoveryGuide 
-        {...defaultProps}
-        category={ErrorCategory.NETWORK}
-      />
-    );
+    render(<ErrorRecoveryGuide {...defaultProps} category={ErrorCategory.NETWORK} />);
 
     expect(screen.getByText('Check Internet Connection')).toBeInTheDocument();
     expect(screen.getByText('Refresh the Page')).toBeInTheDocument();
@@ -80,12 +70,7 @@ describe('ErrorRecoveryGuide', () => {
   });
 
   it('displays AI service-specific recovery steps', () => {
-    render(
-      <ErrorRecoveryGuide 
-        {...defaultProps}
-        category={ErrorCategory.AI_SERVICE}
-      />
-    );
+    render(<ErrorRecoveryGuide {...defaultProps} category={ErrorCategory.AI_SERVICE} />);
 
     expect(screen.getByText('Simplify Your Request')).toBeInTheDocument();
     expect(screen.getByText('Review Content Guidelines')).toBeInTheDocument();
@@ -93,12 +78,7 @@ describe('ErrorRecoveryGuide', () => {
   });
 
   it('displays validation-specific recovery steps', () => {
-    render(
-      <ErrorRecoveryGuide 
-        {...defaultProps}
-        category={ErrorCategory.VALIDATION}
-      />
-    );
+    render(<ErrorRecoveryGuide {...defaultProps} category={ErrorCategory.VALIDATION} />);
 
     expect(screen.getByText('Review Input Fields')).toBeInTheDocument();
     expect(screen.getByText('Verify Data Format')).toBeInTheDocument();
@@ -107,13 +87,8 @@ describe('ErrorRecoveryGuide', () => {
 
   it('shows retry step when onRetry is provided', () => {
     const onRetry = vi.fn();
-    
-    render(
-      <ErrorRecoveryGuide 
-        {...defaultProps}
-        onRetry={onRetry}
-      />
-    );
+
+    render(<ErrorRecoveryGuide {...defaultProps} onRetry={onRetry} />);
 
     expect(screen.getByText('Retry the Action')).toBeInTheDocument();
     expect(screen.getByText('Retry Now')).toBeInTheDocument();
@@ -121,9 +96,9 @@ describe('ErrorRecoveryGuide', () => {
 
   it('shows contact support step for high severity errors', () => {
     const onContactSupport = vi.fn();
-    
+
     render(
-      <ErrorRecoveryGuide 
+      <ErrorRecoveryGuide
         {...defaultProps}
         severity={ErrorSeverity.HIGH}
         onContactSupport={onContactSupport}
@@ -135,9 +110,9 @@ describe('ErrorRecoveryGuide', () => {
 
   it('shows contact support step for critical severity errors', () => {
     const onContactSupport = vi.fn();
-    
+
     render(
-      <ErrorRecoveryGuide 
+      <ErrorRecoveryGuide
         {...defaultProps}
         severity={ErrorSeverity.CRITICAL}
         onContactSupport={onContactSupport}
@@ -149,9 +124,9 @@ describe('ErrorRecoveryGuide', () => {
 
   it('does not show contact support for low severity errors', () => {
     const onContactSupport = vi.fn();
-    
+
     render(
-      <ErrorRecoveryGuide 
+      <ErrorRecoveryGuide
         {...defaultProps}
         severity={ErrorSeverity.LOW}
         onContactSupport={onContactSupport}
@@ -171,12 +146,7 @@ describe('ErrorRecoveryGuide', () => {
   });
 
   it('executes action when action button is clicked', () => {
-    render(
-      <ErrorRecoveryGuide 
-        {...defaultProps}
-        category={ErrorCategory.NETWORK}
-      />
-    );
+    render(<ErrorRecoveryGuide {...defaultProps} category={ErrorCategory.NETWORK} />);
 
     const refreshButton = screen.getByText('Refresh Page');
     fireEvent.click(refreshButton);
@@ -185,12 +155,7 @@ describe('ErrorRecoveryGuide', () => {
   });
 
   it('handles clear cache action', () => {
-    render(
-      <ErrorRecoveryGuide 
-        {...defaultProps}
-        category={ErrorCategory.AUTHENTICATION}
-      />
-    );
+    render(<ErrorRecoveryGuide {...defaultProps} category={ErrorCategory.AUTHENTICATION} />);
 
     const clearCacheButton = screen.getByText('Clear Cache');
     fireEvent.click(clearCacheButton);
@@ -201,12 +166,7 @@ describe('ErrorRecoveryGuide', () => {
   });
 
   it('handles login redirect action', () => {
-    render(
-      <ErrorRecoveryGuide 
-        {...defaultProps}
-        category={ErrorCategory.AUTHENTICATION}
-      />
-    );
+    render(<ErrorRecoveryGuide {...defaultProps} category={ErrorCategory.AUTHENTICATION} />);
 
     const loginButton = screen.getByText('Go to Login');
     fireEvent.click(loginButton);
@@ -217,13 +177,8 @@ describe('ErrorRecoveryGuide', () => {
 
   it('handles retry action correctly', async () => {
     const onRetry = vi.fn().mockResolvedValue(undefined);
-    
-    render(
-      <ErrorRecoveryGuide 
-        {...defaultProps}
-        onRetry={onRetry}
-      />
-    );
+
+    render(<ErrorRecoveryGuide {...defaultProps} onRetry={onRetry} />);
 
     const retryButton = screen.getByText('Retry Now');
     fireEvent.click(retryButton);
@@ -241,9 +196,9 @@ describe('ErrorRecoveryGuide', () => {
 
   it('handles contact support action', () => {
     const onContactSupport = vi.fn();
-    
+
     render(
-      <ErrorRecoveryGuide 
+      <ErrorRecoveryGuide
         {...defaultProps}
         severity={ErrorSeverity.HIGH}
         onContactSupport={onContactSupport}
@@ -276,41 +231,32 @@ describe('ErrorRecoveryGuide', () => {
 
     // Mark all steps as done
     const markDoneButtons = screen.getAllByText('Mark as Done');
-    markDoneButtons.forEach(button => {
+    markDoneButtons.forEach((button) => {
       fireEvent.click(button);
     });
 
     expect(screen.getByText('All recovery steps completed!')).toBeInTheDocument();
-    expect(screen.getByText('You should now be able to proceed with your original action. If the issue persists, please contact support.')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'You should now be able to proceed with your original action. If the issue persists, please contact support.'
+      )
+    ).toBeInTheDocument();
   });
 
   it('applies correct severity styling', () => {
     const { rerender } = render(
-      <ErrorRecoveryGuide 
-        {...defaultProps}
-        severity={ErrorSeverity.CRITICAL}
-      />
+      <ErrorRecoveryGuide {...defaultProps} severity={ErrorSeverity.CRITICAL} />
     );
 
     expect(screen.getByText('critical severity')).toBeInTheDocument();
 
-    rerender(
-      <ErrorRecoveryGuide 
-        {...defaultProps}
-        severity={ErrorSeverity.LOW}
-      />
-    );
+    rerender(<ErrorRecoveryGuide {...defaultProps} severity={ErrorSeverity.LOW} />);
 
     expect(screen.getByText('low severity')).toBeInTheDocument();
   });
 
   it('handles unknown error category with default steps', () => {
-    render(
-      <ErrorRecoveryGuide 
-        {...defaultProps}
-        category={ErrorCategory.UNKNOWN}
-      />
-    );
+    render(<ErrorRecoveryGuide {...defaultProps} category={ErrorCategory.UNKNOWN} />);
 
     expect(screen.getByText('Refresh and Try Again')).toBeInTheDocument();
     expect(screen.getByText('Try a Different Browser')).toBeInTheDocument();
@@ -318,19 +264,14 @@ describe('ErrorRecoveryGuide', () => {
 
   it('prevents action execution on completed steps', async () => {
     const onRetry = vi.fn();
-    
-    render(
-      <ErrorRecoveryGuide 
-        {...defaultProps}
-        onRetry={onRetry}
-      />
-    );
+
+    render(<ErrorRecoveryGuide {...defaultProps} onRetry={onRetry} />);
 
     const retryButton = screen.getByText('Retry Now');
-    
+
     // Click once to complete
     fireEvent.click(retryButton);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Completed')).toBeInTheDocument();
     });

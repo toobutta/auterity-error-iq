@@ -1,20 +1,19 @@
 """Partner Ecosystem & Integration Framework Service - API marketplace and partner integrations."""
 
-import logging
-import asyncio
-import uuid
-from datetime import datetime, timedelta
-from decimal import Decimal, ROUND_HALF_UP
-from typing import Dict, List, Optional, Any, Tuple, Union
-from uuid import UUID
-from dataclasses import dataclass, field
-from enum import Enum
 import json
+import logging
+import uuid
+from dataclasses import dataclass, field
+from datetime import datetime
+from decimal import Decimal
+from enum import Enum
+from typing import Any, Dict, List, Optional
+from uuid import UUID
+
 import aiohttp
 import jwt
 from cryptography.fernet import Fernet
 
-from app.models.tenant import Tenant, UsageLog, BillingRecord
 from app.core.saas_config import SaaSConfig
 
 logger = logging.getLogger(__name__)
@@ -22,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 class IntegrationType(str, Enum):
     """Types of partner integrations."""
+
     API = "api"
     WEBHOOK = "webhook"
     OAUTH = "oauth"
@@ -32,6 +32,7 @@ class IntegrationType(str, Enum):
 
 class PartnerStatus(str, Enum):
     """Partner status in the ecosystem."""
+
     ACTIVE = "active"
     INACTIVE = "inactive"
     SUSPENDED = "suspended"
@@ -40,6 +41,7 @@ class PartnerStatus(str, Enum):
 
 class IntegrationStatus(str, Enum):
     """Integration status."""
+
     ACTIVE = "active"
     INACTIVE = "inactive"
     ERROR = "error"
@@ -48,6 +50,7 @@ class IntegrationStatus(str, Enum):
 
 class MarketplaceCategory(str, Enum):
     """API marketplace categories."""
+
     AI_MODELS = "ai_models"
     BUSINESS_TOOLS = "business_tools"
     COMMUNICATION = "communication"
@@ -62,6 +65,7 @@ class MarketplaceCategory(str, Enum):
 @dataclass
 class Partner:
     """Partner organization in the ecosystem."""
+
     id: str
     name: str
     description: str
@@ -95,6 +99,7 @@ class Partner:
 @dataclass
 class Integration:
     """Integration between tenant and partner."""
+
     id: str
     tenant_id: UUID
     partner_id: str
@@ -123,6 +128,7 @@ class Integration:
 @dataclass
 class MarketplaceListing:
     """API marketplace listing."""
+
     id: str
     partner_id: str
     name: str
@@ -151,6 +157,7 @@ class MarketplaceListing:
 @dataclass
 class RevenueShare:
     """Revenue sharing record."""
+
     id: str
     partner_id: str
     tenant_id: UUID
@@ -166,6 +173,7 @@ class RevenueShare:
 @dataclass
 class WebhookEvent:
     """Webhook event for partner integration."""
+
     id: str
     integration_id: str
     event_type: str
@@ -189,7 +197,11 @@ class PartnerEcosystemService:
         self.marketplace_listings: Dict[str, MarketplaceListing] = {}
 
         # Encryption for sensitive data
-        self.encryption_key = Fernet(self.config.ENCRYPTION_KEY.encode() if hasattr(self.config, 'ENCRYPTION_KEY') else Fernet.generate_key())
+        self.encryption_key = Fernet(
+            self.config.ENCRYPTION_KEY.encode()
+            if hasattr(self.config, "ENCRYPTION_KEY")
+            else Fernet.generate_key()
+        )
 
         # HTTP client for API calls
         self.http_client = None
@@ -213,7 +225,10 @@ class PartnerEcosystemService:
                 "website": "https://stripe.com",
                 "category": "payment",
                 "revenue_share_percentage": 0.029,  # 2.9% per transaction
-                "supported_integrations": [IntegrationType.API, IntegrationType.WEBHOOK]
+                "supported_integrations": [
+                    IntegrationType.API,
+                    IntegrationType.WEBHOOK,
+                ],
             },
             {
                 "id": "slack",
@@ -222,7 +237,10 @@ class PartnerEcosystemService:
                 "website": "https://slack.com",
                 "category": "communication",
                 "revenue_share_percentage": 0.0,  # Free integration
-                "supported_integrations": [IntegrationType.OAUTH, IntegrationType.WEBHOOK]
+                "supported_integrations": [
+                    IntegrationType.OAUTH,
+                    IntegrationType.WEBHOOK,
+                ],
             },
             {
                 "id": "google_workspace",
@@ -231,7 +249,7 @@ class PartnerEcosystemService:
                 "website": "https://workspace.google.com",
                 "category": "business_tools",
                 "revenue_share_percentage": 0.0,
-                "supported_integrations": [IntegrationType.OAUTH, IntegrationType.API]
+                "supported_integrations": [IntegrationType.OAUTH, IntegrationType.API],
             },
             {
                 "id": "salesforce",
@@ -240,7 +258,10 @@ class PartnerEcosystemService:
                 "website": "https://salesforce.com",
                 "category": "crm",
                 "revenue_share_percentage": 0.15,
-                "supported_integrations": [IntegrationType.API, IntegrationType.WEBHOOK]
+                "supported_integrations": [
+                    IntegrationType.API,
+                    IntegrationType.WEBHOOK,
+                ],
             },
             {
                 "id": "hubspot",
@@ -249,8 +270,11 @@ class PartnerEcosystemService:
                 "website": "https://hubspot.com",
                 "category": "crm",
                 "revenue_share_percentage": 0.1,
-                "supported_integrations": [IntegrationType.API, IntegrationType.WEBHOOK]
-            }
+                "supported_integrations": [
+                    IntegrationType.API,
+                    IntegrationType.WEBHOOK,
+                ],
+            },
         ]
 
         for partner_data in default_partners:
@@ -271,9 +295,7 @@ class PartnerEcosystemService:
             raise
 
     async def register_partner(
-        self,
-        partner_data: Dict[str, Any],
-        tenant_id: Optional[UUID] = None
+        self, partner_data: Dict[str, Any], tenant_id: Optional[UUID] = None
     ) -> Partner:
         """Register a new partner in the ecosystem."""
         try:
@@ -294,11 +316,13 @@ class PartnerEcosystemService:
                 headquarters=partner_data.get("headquarters"),
                 supported_integrations=partner_data.get("supported_integrations", []),
                 api_endpoints=partner_data.get("api_endpoints", []),
-                revenue_share_percentage=partner_data.get("revenue_share_percentage", 0.0),
+                revenue_share_percentage=partner_data.get(
+                    "revenue_share_percentage", 0.0
+                ),
                 monthly_fee=Decimal(str(partner_data.get("monthly_fee", 0.00))),
                 api_key=api_key,
                 webhook_secret=webhook_secret,
-                metadata=partner_data.get("metadata", {})
+                metadata=partner_data.get("metadata", {}),
             )
 
             self.partners[partner_id] = partner
@@ -320,7 +344,7 @@ class PartnerEcosystemService:
         tenant_id: UUID,
         partner_id: str,
         integration_type: IntegrationType,
-        config: Dict[str, Any]
+        config: Dict[str, Any],
     ) -> Integration:
         """Create a new integration between tenant and partner."""
         try:
@@ -342,7 +366,7 @@ class PartnerEcosystemService:
                 partner_id=partner_id,
                 type=integration_type,
                 config=config,
-                credentials=encrypted_credentials
+                credentials=encrypted_credentials,
             )
 
             self.integrations[integration_id] = integration
@@ -355,10 +379,7 @@ class PartnerEcosystemService:
             raise
 
     async def execute_integration(
-        self,
-        integration_id: str,
-        action: str,
-        data: Dict[str, Any]
+        self, integration_id: str, action: str, data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Execute an integration action."""
         try:
@@ -372,16 +393,26 @@ class PartnerEcosystemService:
 
             # Check monthly quota
             if integration.current_month_usage >= integration.monthly_quota:
-                raise ValueError(f"Monthly quota exceeded for integration {integration_id}")
+                raise ValueError(
+                    f"Monthly quota exceeded for integration {integration_id}"
+                )
 
             # Decrypt credentials
-            credentials = self._decrypt_data(integration.credentials) if integration.credentials else {}
+            credentials = (
+                self._decrypt_data(integration.credentials)
+                if integration.credentials
+                else {}
+            )
 
             # Execute based on integration type
             if integration.type == IntegrationType.API:
-                result = await self._execute_api_integration(integration, action, data, credentials)
+                result = await self._execute_api_integration(
+                    integration, action, data, credentials
+                )
             elif integration.type == IntegrationType.WEBHOOK:
-                result = await self._execute_webhook_integration(integration, action, data, credentials)
+                result = await self._execute_webhook_integration(
+                    integration, action, data, credentials
+                )
             else:
                 raise ValueError(f"Integration type {integration.type} not supported")
 
@@ -416,7 +447,7 @@ class PartnerEcosystemService:
         integration: Integration,
         action: str,
         data: Dict[str, Any],
-        credentials: Dict[str, Any]
+        credentials: Dict[str, Any],
     ) -> Dict[str, Any]:
         """Execute API-based integration."""
         try:
@@ -430,7 +461,9 @@ class PartnerEcosystemService:
                     break
 
             if not endpoint_config:
-                raise ValueError(f"Action {action} not supported by partner {partner.id}")
+                raise ValueError(
+                    f"Action {action} not supported by partner {partner.id}"
+                )
 
             url = endpoint_config["url"]
             method = endpoint_config.get("method", "POST")
@@ -450,29 +483,32 @@ class PartnerEcosystemService:
                 url=url,
                 headers=headers,
                 json=data if method in ["POST", "PUT", "PATCH"] else None,
-                params=data if method == "GET" else None
+                params=data if method == "GET" else None,
             ) as response:
 
                 result = {
                     "success": response.status < 400,
                     "status_code": response.status,
-                    "data": await response.json() if response.headers.get("content-type", "").startswith("application/json") else await response.text()
+                    "data": (
+                        await response.json()
+                        if response.headers.get("content-type", "").startswith(
+                            "application/json"
+                        )
+                        else await response.text()
+                    ),
                 }
 
                 return result
 
         except Exception as e:
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            return {"success": False, "error": str(e)}
 
     async def _execute_webhook_integration(
         self,
         integration: Integration,
         action: str,
         data: Dict[str, Any],
-        credentials: Dict[str, Any]
+        credentials: Dict[str, Any],
     ) -> Dict[str, Any]:
         """Execute webhook-based integration."""
         try:
@@ -482,7 +518,7 @@ class PartnerEcosystemService:
                 id=event_id,
                 integration_id=integration.id,
                 event_type=action,
-                payload=data
+                payload=data,
             )
 
             self.webhook_events[event_id] = event
@@ -499,21 +535,21 @@ class PartnerEcosystemService:
                 "event_type": action,
                 "timestamp": datetime.utcnow().isoformat(),
                 "data": data,
-                "integration_id": integration.id
+                "integration_id": integration.id,
             }
 
             # Add signature if webhook secret is available
             if credentials.get("webhook_secret"):
-                signature = self._generate_webhook_signature(payload, credentials["webhook_secret"])
+                signature = self._generate_webhook_signature(
+                    payload, credentials["webhook_secret"]
+                )
                 headers = {"X-Signature": signature}
             else:
                 headers = {}
 
             # Send webhook (simulated)
             async with self.http_client.post(
-                webhook_url,
-                json=payload,
-                headers=headers
+                webhook_url, json=payload, headers=headers
             ) as response:
 
                 event.status = "delivered" if response.status < 400 else "failed"
@@ -523,19 +559,14 @@ class PartnerEcosystemService:
                 return {
                     "success": response.status < 400,
                     "status_code": response.status,
-                    "event_id": event_id
+                    "event_id": event_id,
                 }
 
         except Exception as e:
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            return {"success": False, "error": str(e)}
 
     async def create_marketplace_listing(
-        self,
-        partner_id: str,
-        listing_data: Dict[str, Any]
+        self, partner_id: str, listing_data: Dict[str, Any]
     ) -> MarketplaceListing:
         """Create a marketplace listing for a partner."""
         try:
@@ -556,7 +587,7 @@ class PartnerEcosystemService:
                 endpoint_url=listing_data["endpoint_url"],
                 documentation_url=listing_data.get("documentation_url"),
                 api_specification=listing_data.get("api_specification", {}),
-                tags=listing_data.get("tags", [])
+                tags=listing_data.get("tags", []),
             )
 
             self.marketplace_listings[listing_id] = listing
@@ -572,7 +603,7 @@ class PartnerEcosystemService:
         self,
         category: Optional[MarketplaceCategory] = None,
         search_query: Optional[str] = None,
-        limit: int = 50
+        limit: int = 50,
     ) -> List[MarketplaceListing]:
         """Get marketplace listings with filtering."""
         try:
@@ -586,10 +617,11 @@ class PartnerEcosystemService:
             if search_query:
                 search_lower = search_query.lower()
                 listings = [
-                    l for l in listings
-                    if search_lower in l.name.lower() or
-                       search_lower in l.description.lower() or
-                       any(search_lower in tag.lower() for tag in l.tags)
+                    l
+                    for l in listings
+                    if search_lower in l.name.lower()
+                    or search_lower in l.description.lower()
+                    or any(search_lower in tag.lower() for tag in l.tags)
                 ]
 
             # Sort by popularity and limit
@@ -601,10 +633,7 @@ class PartnerEcosystemService:
             return []
 
     async def subscribe_to_listing(
-        self,
-        tenant_id: UUID,
-        listing_id: str,
-        tier: str = "basic"
+        self, tenant_id: UUID, listing_id: str, tier: str = "basic"
     ) -> Dict[str, Any]:
         """Subscribe tenant to a marketplace listing."""
         try:
@@ -619,14 +648,14 @@ class PartnerEcosystemService:
                 "tier": tier,
                 "endpoint_url": listing.endpoint_url,
                 "price_per_call": float(listing.price_per_call),
-                "monthly_fee": float(listing.monthly_fee)
+                "monthly_fee": float(listing.monthly_fee),
             }
 
             integration = await self.create_integration(
                 tenant_id=tenant_id,
                 partner_id=listing.partner_id,
                 integration_type=IntegrationType.API,
-                config=integration_config
+                config=integration_config,
             )
 
             # Update listing popularity
@@ -638,9 +667,9 @@ class PartnerEcosystemService:
                 "listing": {
                     "id": listing.id,
                     "name": listing.name,
-                    "category": listing.category.value
+                    "category": listing.category.value,
                 },
-                "status": "subscribed"
+                "status": "subscribed",
             }
 
         except Exception as e:
@@ -648,9 +677,7 @@ class PartnerEcosystemService:
             raise
 
     async def get_integration_analytics(
-        self,
-        integration_id: str,
-        days: int = 30
+        self, integration_id: str, days: int = 30
     ) -> Dict[str, Any]:
         """Get analytics for a specific integration."""
         try:
@@ -668,24 +695,47 @@ class PartnerEcosystemService:
                 "usage": {
                     "total_requests": integration.total_requests,
                     "successful_requests": integration.successful_requests,
-                    "success_rate": (integration.successful_requests / integration.total_requests * 100)
-                                  if integration.total_requests > 0 else 0,
+                    "success_rate": (
+                        (
+                            integration.successful_requests
+                            / integration.total_requests
+                            * 100
+                        )
+                        if integration.total_requests > 0
+                        else 0
+                    ),
                     "current_month_usage": integration.current_month_usage,
                     "monthly_quota": integration.monthly_quota,
-                    "quota_utilization": (integration.current_month_usage / integration.monthly_quota * 100)
-                                       if integration.monthly_quota > 0 else 0
+                    "quota_utilization": (
+                        (
+                            integration.current_month_usage
+                            / integration.monthly_quota
+                            * 100
+                        )
+                        if integration.monthly_quota > 0
+                        else 0
+                    ),
                 },
                 "cost": {
                     "total_cost": float(integration.total_cost),
-                    "avg_cost_per_request": float(integration.total_cost / integration.total_requests)
-                                           if integration.total_requests > 0 else 0
+                    "avg_cost_per_request": (
+                        float(integration.total_cost / integration.total_requests)
+                        if integration.total_requests > 0
+                        else 0
+                    ),
                 },
                 "errors": {
                     "error_count": integration.error_count,
                     "last_error": integration.last_error,
-                    "last_error_at": integration.last_error_at.isoformat() if integration.last_error_at else None
+                    "last_error_at": (
+                        integration.last_error_at.isoformat()
+                        if integration.last_error_at
+                        else None
+                    ),
                 },
-                "last_used": integration.last_used.isoformat() if integration.last_used else None
+                "last_used": (
+                    integration.last_used.isoformat() if integration.last_used else None
+                ),
             }
 
             return analytics
@@ -701,7 +751,7 @@ class PartnerEcosystemService:
         integration_id: str,
         transaction_amount: Decimal,
         period_start: datetime,
-        period_end: datetime
+        period_end: datetime,
     ) -> RevenueShare:
         """Process revenue sharing for a partner."""
         try:
@@ -709,7 +759,9 @@ class PartnerEcosystemService:
                 raise ValueError(f"Partner {partner_id} not found")
 
             partner = self.partners[partner_id]
-            share_amount = transaction_amount * Decimal(str(partner.revenue_share_percentage))
+            share_amount = transaction_amount * Decimal(
+                str(partner.revenue_share_percentage)
+            )
 
             revenue_share = RevenueShare(
                 id=f"rs_{uuid.uuid4().hex}",
@@ -719,12 +771,14 @@ class PartnerEcosystemService:
                 amount=share_amount,
                 share_percentage=partner.revenue_share_percentage,
                 period_start=period_start,
-                period_end=period_end
+                period_end=period_end,
             )
 
             self.revenue_shares[revenue_share.id] = revenue_share
 
-            logger.info(f"Processed revenue share: ${share_amount} for partner {partner_id}")
+            logger.info(
+                f"Processed revenue share: ${share_amount} for partner {partner_id}"
+            )
             return revenue_share
 
         except Exception as e:
@@ -752,9 +806,7 @@ class PartnerEcosystemService:
         return signature
 
     async def _calculate_integration_cost(
-        self,
-        integration: Integration,
-        result: Dict[str, Any]
+        self, integration: Integration, result: Dict[str, Any]
     ) -> Decimal:
         """Calculate cost for integration execution."""
         # This would implement partner-specific pricing logic
@@ -762,15 +814,13 @@ class PartnerEcosystemService:
         base_costs = {
             IntegrationType.API: Decimal("0.01"),
             IntegrationType.WEBHOOK: Decimal("0.005"),
-            IntegrationType.OAUTH: Decimal("0.02")
+            IntegrationType.OAUTH: Decimal("0.02"),
         }
 
         return base_costs.get(integration.type, Decimal("0.01"))
 
     async def get_partner_analytics(
-        self,
-        partner_id: str,
-        days: int = 30
+        self, partner_id: str, days: int = 30
     ) -> Dict[str, Any]:
         """Get analytics for a partner."""
         try:
@@ -781,26 +831,33 @@ class PartnerEcosystemService:
 
             # Get all integrations for this partner
             partner_integrations = [
-                integration for integration in self.integrations.values()
+                integration
+                for integration in self.integrations.values()
                 if integration.partner_id == partner_id
             ]
 
             # Get marketplace listings for this partner
             partner_listings = [
-                listing for listing in self.marketplace_listings.values()
+                listing
+                for listing in self.marketplace_listings.values()
                 if listing.partner_id == partner_id
             ]
 
             # Calculate analytics
             total_integrations = len(partner_integrations)
-            active_integrations = len([i for i in partner_integrations if i.status == IntegrationStatus.ACTIVE])
+            active_integrations = len(
+                [
+                    i
+                    for i in partner_integrations
+                    if i.status == IntegrationStatus.ACTIVE
+                ]
+            )
             total_requests = sum(i.total_requests for i in partner_integrations)
             total_revenue = sum(float(i.total_cost) for i in partner_integrations)
 
             # Revenue sharing analytics
             revenue_shares = [
-                rs for rs in self.revenue_shares.values()
-                if rs.partner_id == partner_id
+                rs for rs in self.revenue_shares.values() if rs.partner_id == partner_id
             ]
             total_shared_revenue = sum(float(rs.amount) for rs in revenue_shares)
 
@@ -811,25 +868,37 @@ class PartnerEcosystemService:
                 "integrations": {
                     "total": total_integrations,
                     "active": active_integrations,
-                    "activation_rate": (active_integrations / total_integrations * 100)
-                                     if total_integrations > 0 else 0
+                    "activation_rate": (
+                        (active_integrations / total_integrations * 100)
+                        if total_integrations > 0
+                        else 0
+                    ),
                 },
                 "usage": {
                     "total_requests": total_requests,
-                    "avg_requests_per_integration": total_requests / total_integrations
-                                                   if total_integrations > 0 else 0
+                    "avg_requests_per_integration": (
+                        total_requests / total_integrations
+                        if total_integrations > 0
+                        else 0
+                    ),
                 },
                 "revenue": {
                     "total_revenue": total_revenue,
                     "shared_revenue": total_shared_revenue,
-                    "revenue_share_percentage": partner.revenue_share_percentage
+                    "revenue_share_percentage": partner.revenue_share_percentage,
                 },
                 "marketplace": {
                     "total_listings": len(partner_listings),
-                    "total_subscribers": sum(l.total_subscribers for l in partner_listings),
-                    "avg_rating": sum(l.average_rating for l in partner_listings) / len(partner_listings)
-                                 if partner_listings else 0
-                }
+                    "total_subscribers": sum(
+                        l.total_subscribers for l in partner_listings
+                    ),
+                    "avg_rating": (
+                        sum(l.average_rating for l in partner_listings)
+                        / len(partner_listings)
+                        if partner_listings
+                        else 0
+                    ),
+                },
             }
 
             return analytics
@@ -844,18 +913,31 @@ class PartnerEcosystemService:
             health_status = {
                 "status": "healthy",
                 "partners_registered": len(self.partners),
-                "active_partners": len([p for p in self.partners.values() if p.status == PartnerStatus.ACTIVE]),
+                "active_partners": len(
+                    [
+                        p
+                        for p in self.partners.values()
+                        if p.status == PartnerStatus.ACTIVE
+                    ]
+                ),
                 "total_integrations": len(self.integrations),
-                "active_integrations": len([i for i in self.integrations.values() if i.status == IntegrationStatus.ACTIVE]),
+                "active_integrations": len(
+                    [
+                        i
+                        for i in self.integrations.values()
+                        if i.status == IntegrationStatus.ACTIVE
+                    ]
+                ),
                 "marketplace_listings": len(self.marketplace_listings),
-                "pending_webhook_events": len([e for e in self.webhook_events.values() if e.status == "pending"]),
-                "http_client_status": "connected" if self.http_client else "disconnected"
+                "pending_webhook_events": len(
+                    [e for e in self.webhook_events.values() if e.status == "pending"]
+                ),
+                "http_client_status": (
+                    "connected" if self.http_client else "disconnected"
+                ),
             }
 
             return health_status
 
         except Exception as e:
-            return {
-                "status": "unhealthy",
-                "error": str(e)
-            }
+            return {"status": "unhealthy", "error": str(e)}

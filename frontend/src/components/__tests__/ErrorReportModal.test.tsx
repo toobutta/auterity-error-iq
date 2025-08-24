@@ -13,7 +13,7 @@ describe('ErrorReportModal', () => {
     isOpen: true,
     onClose: mockFunctions.onClose,
     error: mockAppError,
-    onSubmit: mockFunctions.onSubmit
+    onSubmit: mockFunctions.onSubmit,
   };
 
   it('renders correctly', () => {

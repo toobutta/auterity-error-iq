@@ -42,7 +42,7 @@ class MockWebSocket {
   simulateMessage(data: unknown) {
     if (this.onmessage && this.readyState === MockWebSocket.OPEN) {
       const messageEvent = new MessageEvent('message', {
-        data: JSON.stringify(data)
+        data: JSON.stringify(data),
       });
       this.onmessage(messageEvent);
     }
@@ -73,7 +73,9 @@ afterEach(() => {
 describe('useWebSocketLogs', () => {
   const mockExecutionId = 'test-execution-id';
   const getMockWebSocket = (): MockWebSocket => {
-    const WS = (global as unknown as { WebSocket: typeof MockWebSocket & { lastInstance?: MockWebSocket } }).WebSocket;
+    const WS = (
+      global as unknown as { WebSocket: typeof MockWebSocket & { lastInstance?: MockWebSocket } }
+    ).WebSocket;
     return (WS as unknown as { lastInstance?: MockWebSocket }).lastInstance as MockWebSocket;
   };
 
@@ -96,9 +98,7 @@ describe('useWebSocketLogs', () => {
   });
 
   it('should initialize with correct default state', () => {
-    const { result } = renderHook(() => 
-      useWebSocketLogs(mockExecutionId, { enabled: false })
-    );
+    const { result } = renderHook(() => useWebSocketLogs(mockExecutionId, { enabled: false }));
 
     expect(result.current.logs).toEqual([]);
     expect(result.current.connectionStatus).toBe('disconnected');
@@ -106,15 +106,13 @@ describe('useWebSocketLogs', () => {
   });
 
   it('should connect to WebSocket when enabled', async () => {
-    const { result } = renderHook(() => 
-      useWebSocketLogs(mockExecutionId, { enabled: true })
-    );
+    const { result } = renderHook(() => useWebSocketLogs(mockExecutionId, { enabled: true }));
 
     expect(result.current.connectionStatus).toBe('connecting');
 
     // Wait for connection to open
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await new Promise((resolve) => setTimeout(resolve, 20));
     });
 
     expect(result.current.connectionStatus).toBe('connected');
@@ -122,21 +120,17 @@ describe('useWebSocketLogs', () => {
   });
 
   it('should not connect when disabled', () => {
-    const { result } = renderHook(() => 
-      useWebSocketLogs(mockExecutionId, { enabled: false })
-    );
+    const { result } = renderHook(() => useWebSocketLogs(mockExecutionId, { enabled: false }));
 
     expect(result.current.connectionStatus).toBe('disconnected');
   });
 
   it('should receive and process log messages', async () => {
-    const { result } = renderHook(() => 
-      useWebSocketLogs(mockExecutionId, { enabled: true })
-    );
+    const { result } = renderHook(() => useWebSocketLogs(mockExecutionId, { enabled: true }));
 
     // Wait for connection
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await new Promise((resolve) => setTimeout(resolve, 20));
     });
 
     const mockLogMessage = {
@@ -148,7 +142,7 @@ describe('useWebSocketLogs', () => {
       output_data: { test: 'output' },
       duration_ms: 1000,
       timestamp: '2023-01-01T00:00:00Z',
-      level: 'info'
+      level: 'info',
     };
 
     // Simulate receiving a message
@@ -161,18 +155,16 @@ describe('useWebSocketLogs', () => {
       id: 'log-1',
       execution_id: mockExecutionId,
       step_name: 'Test Step',
-      level: 'info'
+      level: 'info',
     });
   });
 
   it('should handle connection errors', async () => {
-    const { result } = renderHook(() => 
-      useWebSocketLogs(mockExecutionId, { enabled: true })
-    );
+    const { result } = renderHook(() => useWebSocketLogs(mockExecutionId, { enabled: true }));
 
     // Wait for connection
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await new Promise((resolve) => setTimeout(resolve, 20));
     });
 
     // Simulate error
@@ -186,12 +178,12 @@ describe('useWebSocketLogs', () => {
 
   it('should attempt reconnection on unexpected close', async () => {
     jest.useFakeTimers();
-    
-    const { result } = renderHook(() => 
-      useWebSocketLogs(mockExecutionId, { 
-        enabled: true, 
+
+    const { result } = renderHook(() =>
+      useWebSocketLogs(mockExecutionId, {
+        enabled: true,
         reconnectAttempts: 2,
-        reconnectInterval: 1000
+        reconnectInterval: 1000,
       })
     );
 
@@ -220,10 +212,8 @@ describe('useWebSocketLogs', () => {
 
   it('should not reconnect on normal close', async () => {
     jest.useFakeTimers();
-    
-    const { result } = renderHook(() => 
-      useWebSocketLogs(mockExecutionId, { enabled: true })
-    );
+
+    const { result } = renderHook(() => useWebSocketLogs(mockExecutionId, { enabled: true }));
 
     // Wait for connection
     await act(async () => {
@@ -246,14 +236,12 @@ describe('useWebSocketLogs', () => {
   });
 
   it('should clear logs when clearLogs is called', async () => {
-    const { result } = renderHook(() => 
-      useWebSocketLogs(mockExecutionId, { enabled: true })
-    );
+    const { result } = renderHook(() => useWebSocketLogs(mockExecutionId, { enabled: true }));
 
     // Wait for connection and add a log
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 20));
-        getMockWebSocket().simulateMessage({
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      getMockWebSocket().simulateMessage({
         id: 'log-1',
         execution_id: mockExecutionId,
         step_name: 'Test',
@@ -262,7 +250,7 @@ describe('useWebSocketLogs', () => {
         output_data: {},
         duration_ms: 100,
         timestamp: '2023-01-01T00:00:00Z',
-        level: 'info'
+        level: 'info',
       });
     });
 
@@ -277,13 +265,11 @@ describe('useWebSocketLogs', () => {
   });
 
   it('should manually reconnect when reconnect is called', async () => {
-    const { result } = renderHook(() => 
-      useWebSocketLogs(mockExecutionId, { enabled: true })
-    );
+    const { result } = renderHook(() => useWebSocketLogs(mockExecutionId, { enabled: true }));
 
     // Wait for connection
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await new Promise((resolve) => setTimeout(resolve, 20));
     });
 
     // Close connection
@@ -296,7 +282,7 @@ describe('useWebSocketLogs', () => {
     // Manual reconnect
     await act(async () => {
       result.current.reconnect();
-      await new Promise(resolve => setTimeout(resolve, 120)); // Wait for reconnection
+      await new Promise((resolve) => setTimeout(resolve, 120)); // Wait for reconnection
     });
 
     expect(result.current.connectionStatus).toBe('connected');
@@ -304,16 +290,16 @@ describe('useWebSocketLogs', () => {
 
   it('should respect buffer size limit', async () => {
     const bufferSize = 3;
-    const { result } = renderHook(() => 
-      useWebSocketLogs(mockExecutionId, { 
-        enabled: true, 
-        bufferSize 
+    const { result } = renderHook(() =>
+      useWebSocketLogs(mockExecutionId, {
+        enabled: true,
+        bufferSize,
       })
     );
 
     // Wait for connection
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await new Promise((resolve) => setTimeout(resolve, 20));
     });
 
     // Add more logs than buffer size
@@ -328,7 +314,7 @@ describe('useWebSocketLogs', () => {
           output_data: {},
           duration_ms: 100,
           timestamp: `2023-01-01T00:0${i}:00Z`,
-          level: 'info'
+          level: 'info',
         });
       });
     }
@@ -340,20 +326,18 @@ describe('useWebSocketLogs', () => {
   });
 
   it('should handle malformed JSON messages gracefully', async () => {
-    const { result } = renderHook(() => 
-      useWebSocketLogs(mockExecutionId, { enabled: true })
-    );
+    const { result } = renderHook(() => useWebSocketLogs(mockExecutionId, { enabled: true }));
 
     // Wait for connection
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await new Promise((resolve) => setTimeout(resolve, 20));
     });
 
     // Simulate malformed message
     await act(async () => {
       if (getMockWebSocket().onmessage) {
         const malformedEvent = new MessageEvent('message', {
-          data: 'invalid json'
+          data: 'invalid json',
         });
         getMockWebSocket().onmessage!(malformedEvent);
       }
@@ -364,13 +348,13 @@ describe('useWebSocketLogs', () => {
   });
 
   it('should disconnect on unmount', async () => {
-    const { result, unmount } = renderHook(() => 
+    const { result, unmount } = renderHook(() =>
       useWebSocketLogs(mockExecutionId, { enabled: true })
     );
 
     // Wait for connection
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await new Promise((resolve) => setTimeout(resolve, 20));
     });
 
     expect(result.current.connectionStatus).toBe('connected');

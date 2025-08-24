@@ -1,19 +1,19 @@
-import '@testing-library/jest-dom'
-import { vi } from 'vitest'
-import { cleanup } from '@testing-library/react'
+import '@testing-library/jest-dom';
+import { vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
 
 // Global test setup
 beforeEach(() => {
   // Clear all mocks before each test
-  vi.clearAllMocks()
-})
+  vi.clearAllMocks();
+});
 
 afterEach(() => {
   // Clean up DOM after each test
-  cleanup()
+  cleanup();
   // Clear all timers
-  vi.clearAllTimers()
-})
+  vi.clearAllTimers();
+});
 
 // Mock clipboard API globally
 Object.assign(navigator, {
@@ -21,12 +21,12 @@ Object.assign(navigator, {
     writeText: vi.fn(() => Promise.resolve()),
     readText: vi.fn(() => Promise.resolve('')),
   },
-})
+});
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -36,21 +36,21 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-})
+});
 
 // Mock ResizeObserver
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
-}))
+}));
 
 // Mock IntersectionObserver
 global.IntersectionObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
-}))
+}));
 
 // Increase timeout for async operations
-vi.setConfig({ testTimeout: 10000 })
+vi.setConfig({ testTimeout: 10000 });

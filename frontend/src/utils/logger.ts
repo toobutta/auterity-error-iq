@@ -6,7 +6,7 @@ export enum LogLevel {
   DEBUG = 'debug',
   INFO = 'info',
   WARN = 'warn',
-  ERROR = 'error'
+  ERROR = 'error',
 }
 
 export interface LogEntry {
@@ -36,18 +36,18 @@ export interface LoggerConfig {
 class Logger {
   private config: LoggerConfig;
   private logBuffer: LogEntry[] = [];
-  private flushTimer?: NodeJS.Timeout;
+  private flushTimer?: ReturnType<typeof setInterval>;
 
   constructor(config: Partial<LoggerConfig> = {}) {
     this.config = {
-      enableConsoleLogging: process.env.NODE_ENV === 'development',
-      enableRemoteLogging: process.env.NODE_ENV === 'production',
-      minLogLevel: process.env.NODE_ENV === 'development' ? LogLevel.DEBUG : LogLevel.INFO,
+      enableConsoleLogging: import.meta.env.DEV === true,
+      enableRemoteLogging: import.meta.env.PROD === true,
+      minLogLevel: import.meta.env.DEV === true ? LogLevel.DEBUG : LogLevel.INFO,
       maxLogEntries: 1000,
       remoteEndpoint: '/api/logs',
       batchSize: 10,
       flushInterval: 5000,
-      ...config
+      ...config,
     };
 
     // Set up periodic flushing
@@ -87,7 +87,7 @@ class Logger {
       userId: this.getUserId(),
       sessionId: this.getSessionId(),
       url: window.location.href,
-      userAgent: navigator.userAgent
+      userAgent: navigator.userAgent,
     };
   }
 
@@ -128,7 +128,7 @@ class Logger {
       correlationId: entry.correlationId,
       component: entry.component,
       action: entry.action,
-      ...entry.context
+      ...entry.context,
     };
 
     switch (entry.level) {
@@ -183,36 +183,70 @@ class Logger {
     this.info(`User action: ${action}`, {
       component,
       action,
-      ...context
+      ...context,
     });
   }
 
-  public logApiCall(method: string, url: string, status?: number, duration?: number, correlationId?: string): void {
+  public logApiCall(
+    method: string,
+    url: string,
+    status?: number,
+    duration?: number,
+    correlationId?: string
+  ): void {
     const level = status && status >= 400 ? LogLevel.ERROR : LogLevel.INFO;
     const message = `API ${method} ${url} - ${status || 'pending'}`;
 
-    this[level](message, {
-      component: 'ApiClient',
-      action: 'api_call',
-      method,
-      url,
-      status,
-      duration
-    }, correlationId);
+    if (level === LogLevel.ERROR) {
+      this.error(
+        message,
+        {
+          component: 'ApiClient',
+          action: 'api_call',
+          method,
+          url,
+          status,
+          duration,
+        },
+        correlationId
+      );
+    } else {
+      this.info(
+        message,
+        {
+          component: 'ApiClient',
+          action: 'api_call',
+          method,
+          url,
+          status,
+          duration,
+        },
+        correlationId
+      );
+    }
   }
 
-  public logWorkflowEvent(event: string, workflowId: string, executionId?: string, context?: Record<string, unknown>): void {
+  public logWorkflowEvent(
+    event: string,
+    workflowId: string,
+    executionId?: string,
+    context?: Record<string, unknown>
+  ): void {
     this.info(`Workflow ${event}`, {
       component: 'WorkflowEngine',
       action: event,
       workflowId,
       executionId,
-      ...context
+      ...context,
     });
   }
 
   public async flush(): Promise<void> {
-    if (!this.config.enableRemoteLogging || this.logBuffer.length === 0) {
+    if (
+      !this.config.enableRemoteLogging ||
+      this.logBuffer.length === 0 ||
+      !this.config.remoteEndpoint
+    ) {
       return;
     }
 
@@ -221,18 +255,25 @@ class Logger {
 
     try {
       // Send logs to backend
-      await fetch(this.config.remoteEndpoint!, {
+      const response = await fetch(this.config.remoteEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token') || ''}`
+          Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
         },
-        body: JSON.stringify({ logs: logsToSend })
+        body: JSON.stringify({ logs: logsToSend }),
       });
+
+      if (!response.ok) {
+        throw new Error(`Failed to send logs: ${response.status} ${response.statusText}`);
+      }
     } catch (error) {
       // If sending fails, put logs back in buffer (but don't log the error to avoid recursion)
       this.logBuffer.unshift(...logsToSend);
-      console.error('Failed to send logs to server:', error);
+      console.error(
+        'Failed to send logs to server:',
+        error instanceof Error ? error.message : String(error)
+      );
     }
   }
 
@@ -252,7 +293,7 @@ class Logger {
     startTime?: Date;
     endTime?: Date;
   }): LogEntry[] {
-    return this.logBuffer.filter(entry => {
+    return this.logBuffer.filter((entry) => {
       if (filter.level && entry.level !== filter.level) return false;
       if (filter.component && entry.component !== filter.component) return false;
       if (filter.action && entry.action !== filter.action) return false;
@@ -275,23 +316,47 @@ class Logger {
 export const logger = new Logger();
 
 // Export convenience functions
-export const logDebug = (message: string, context?: Record<string, unknown>, correlationId?: string) =>
-  logger.debug(message, context, correlationId);
+export const logDebug = (
+  message: string,
+  context?: Record<string, unknown>,
+  correlationId?: string
+) => logger.debug(message, context, correlationId);
 
-export const logInfo = (message: string, context?: Record<string, unknown>, correlationId?: string) =>
-  logger.info(message, context, correlationId);
+export const logInfo = (
+  message: string,
+  context?: Record<string, unknown>,
+  correlationId?: string
+) => logger.info(message, context, correlationId);
 
-export const logWarn = (message: string, context?: Record<string, unknown>, correlationId?: string) =>
-  logger.warn(message, context, correlationId);
+export const logWarn = (
+  message: string,
+  context?: Record<string, unknown>,
+  correlationId?: string
+) => logger.warn(message, context, correlationId);
 
-export const logError = (message: string, context?: Record<string, unknown>, correlationId?: string) =>
-  logger.error(message, context, correlationId);
+export const logError = (
+  message: string,
+  context?: Record<string, unknown>,
+  correlationId?: string
+) => logger.error(message, context, correlationId);
 
-export const logUserAction = (action: string, component: string, context?: Record<string, unknown>) =>
-  logger.logUserAction(action, component, context);
+export const logUserAction = (
+  action: string,
+  component: string,
+  context?: Record<string, unknown>
+) => logger.logUserAction(action, component, context);
 
-export const logApiCall = (method: string, url: string, status?: number, duration?: number, correlationId?: string) =>
-  logger.logApiCall(method, url, status, duration, correlationId);
+export const logApiCall = (
+  method: string,
+  url: string,
+  status?: number,
+  duration?: number,
+  correlationId?: string
+) => logger.logApiCall(method, url, status, duration, correlationId);
 
-export const logWorkflowEvent = (event: string, workflowId: string, executionId?: string, context?: Record<string, unknown>) =>
-  logger.logWorkflowEvent(event, workflowId, executionId, context);
+export const logWorkflowEvent = (
+  event: string,
+  workflowId: string,
+  executionId?: string,
+  context?: Record<string, unknown>
+) => logger.logWorkflowEvent(event, workflowId, executionId, context);

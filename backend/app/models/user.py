@@ -121,11 +121,11 @@ class User(Base):
     email = Column(String(255), nullable=False, index=True)
     name = Column(String(255), nullable=False)
     hashed_password = Column(String(255), nullable=True)  # Nullable for SSO users
-    
+
     # SSO fields
     sso_provider = Column(String(20), nullable=True)
     sso_subject_id = Column(String(255), nullable=True)
-    
+
     is_active = Column(Boolean, default=True, nullable=False)
     last_login = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(
@@ -173,11 +173,11 @@ class User(Base):
                 if permission.is_active:
                     permissions.add(permission.name)
         return list(permissions)
-    
+
     def is_sso_user(self) -> bool:
         """Check if user is authenticated via SSO."""
         return self.sso_provider is not None
-    
+
     def can_access_tenant(self, tenant_id: str) -> bool:
         """Check if user can access a specific tenant."""
         return str(self.tenant_id) == tenant_id

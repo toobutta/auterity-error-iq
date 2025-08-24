@@ -3,25 +3,20 @@ Orchestration API Routes
 Phase 1: Foundation Infrastructure API endpoints
 """
 
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
-from typing import List, Dict, Any, Optional
-from datetime import datetime
 import logging
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from ..services.kiro_orchestrator import (
-    KiroOrchestrator, 
-    DevelopmentBlock, 
-    AITool, 
-    Priority,
-    BlockStatus
-)
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+
+from ..auth import get_current_user
 from ..services.integration_controller import (
+    Artifact,
+    DeploymentStage,
     IntegrationController,
     IntegrationRequest,
-    Artifact,
-    DeploymentStage
 )
-from ..auth import get_current_user
+from ..services.kiro_orchestrator import AITool, BlockStatus, KiroOrchestrator
 
 logger = logging.getLogger(__name__)
 
@@ -34,8 +29,7 @@ integration_controller = IntegrationController()
 
 @router.post("/blocks/plan")
 async def plan_development_blocks(
-    requirements: Dict[str, Any],
-    current_user = Depends(get_current_user)
+    requirements: Dict[str, Any], current_user=Depends(get_current_user)
 ) -> List[Dict[str, Any]]:
     """Plan development blocks from requirements"""
     try:
@@ -51,7 +45,7 @@ async def plan_development_blocks(
                 "priority": block.priority.value,
                 "status": block.status.value,
                 "quality_gates": block.quality_gates,
-                "created_at": block.created_at.isoformat()
+                "created_at": block.created_at.isoformat(),
             }
             for block in blocks
         ]
@@ -62,9 +56,7 @@ async def plan_development_blocks(
 
 @router.post("/blocks/{block_id}/assign")
 async def assign_block(
-    block_id: str,
-    tool: str,
-    current_user = Depends(get_current_user)
+    block_id: str, tool: str, current_user=Depends(get_current_user)
 ) -> Dict[str, Any]:
     """Assign a development block to a specific tool"""
     try:
@@ -73,15 +65,15 @@ async def assign_block(
             ai_tool = AITool(tool)
         except ValueError:
             raise HTTPException(status_code=400, detail=f"Invalid tool: {tool}")
-        
+
         # Get block
         block = orchestrator.active_blocks.get(block_id)
         if not block:
             raise HTTPException(status_code=404, detail=f"Block {block_id} not found")
-        
+
         assignment = await orchestrator.assign_block(block, ai_tool)
         return assignment
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -91,14 +83,13 @@ async def assign_block(
 
 @router.post("/blocks/{block_id}/complete")
 async def complete_block(
-    block_id: str,
-    current_user = Depends(get_current_user)
+    block_id: str, current_user=Depends(get_current_user)
 ) -> Dict[str, Any]:
     """Mark a development block as completed and run quality gates"""
     try:
         result = await orchestrator.complete_block(block_id)
         return result
-        
+
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
@@ -110,13 +101,13 @@ async def complete_block(
 async def get_blocks(
     status: Optional[str] = None,
     tool: Optional[str] = None,
-    current_user = Depends(get_current_user)
+    current_user=Depends(get_current_user),
 ) -> List[Dict[str, Any]]:
     """Get development blocks with optional filtering"""
     try:
         all_blocks = {**orchestrator.active_blocks, **orchestrator.completed_blocks}
         blocks = list(all_blocks.values())
-        
+
         # Apply filters
         if status:
             try:
@@ -124,14 +115,14 @@ async def get_blocks(
                 blocks = [b for b in blocks if b.status == status_enum]
             except ValueError:
                 raise HTTPException(status_code=400, detail=f"Invalid status: {status}")
-        
+
         if tool:
             try:
                 tool_enum = AITool(tool)
                 blocks = [b for b in blocks if b.assigned_tool == tool_enum]
             except ValueError:
                 raise HTTPException(status_code=400, detail=f"Invalid tool: {tool}")
-        
+
         return [
             {
                 "id": block.id,
@@ -143,12 +134,16 @@ async def get_blocks(
                 "priority": block.priority.value,
                 "status": block.status.value,
                 "created_at": block.created_at.isoformat(),
-                "started_at": block.started_at.isoformat() if block.started_at else None,
-                "completed_at": block.completed_at.isoformat() if block.completed_at else None
+                "started_at": (
+                    block.started_at.isoformat() if block.started_at else None
+                ),
+                "completed_at": (
+                    block.completed_at.isoformat() if block.completed_at else None
+                ),
             }
             for block in blocks
         ]
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -158,15 +153,16 @@ async def get_blocks(
 
 @router.get("/blocks/{block_id}")
 async def get_block(
-    block_id: str,
-    current_user = Depends(get_current_user)
+    block_id: str, current_user=Depends(get_current_user)
 ) -> Dict[str, Any]:
     """Get a specific development block"""
     try:
-        block = orchestrator.active_blocks.get(block_id) or orchestrator.completed_blocks.get(block_id)
+        block = orchestrator.active_blocks.get(
+            block_id
+        ) or orchestrator.completed_blocks.get(block_id)
         if not block:
             raise HTTPException(status_code=404, detail=f"Block {block_id} not found")
-        
+
         return {
             "id": block.id,
             "name": block.name,
@@ -184,9 +180,11 @@ async def get_block(
             "created_at": block.created_at.isoformat(),
             "updated_at": block.updated_at.isoformat(),
             "started_at": block.started_at.isoformat() if block.started_at else None,
-            "completed_at": block.completed_at.isoformat() if block.completed_at else None
+            "completed_at": (
+                block.completed_at.isoformat() if block.completed_at else None
+            ),
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -195,9 +193,7 @@ async def get_block(
 
 
 @router.get("/progress")
-async def get_progress(
-    current_user = Depends(get_current_user)
-) -> Dict[str, Any]:
+async def get_progress(current_user=Depends(get_current_user)) -> Dict[str, Any]:
     """Get current progress report"""
     try:
         report = await orchestrator.monitor_progress()
@@ -209,9 +205,9 @@ async def get_progress(
             "quality_metrics": report.quality_metrics,
             "timeline": report.timeline,
             "risks": report.risks,
-            "recommendations": report.recommendations
+            "recommendations": report.recommendations,
         }
-        
+
     except Exception as e:
         logger.error(f"Failed to get progress: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -219,7 +215,7 @@ async def get_progress(
 
 @router.get("/tools/specialization")
 async def get_tool_specialization(
-    current_user = Depends(get_current_user)
+    current_user=Depends(get_current_user),
 ) -> Dict[str, Any]:
     """Get tool specialization matrix"""
     try:
@@ -231,11 +227,11 @@ async def get_tool_specialization(
                 "restrictions": spec.restrictions,
                 "max_concurrent_blocks": spec.max_concurrent_blocks,
                 "average_velocity": spec.average_velocity,
-                "quality_weight": spec.quality_weight
+                "quality_weight": spec.quality_weight,
             }
             for tool, spec in matrix.items()
         }
-        
+
     except Exception as e:
         logger.error(f"Failed to get tool specialization: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -243,11 +239,12 @@ async def get_tool_specialization(
 
 # Integration Controller Routes
 
+
 @router.post("/integration/request")
 async def submit_integration_request(
     request_data: Dict[str, Any],
     background_tasks: BackgroundTasks,
-    current_user = Depends(get_current_user)
+    current_user=Depends(get_current_user),
 ) -> Dict[str, Any]:
     """Submit an integration request"""
     try:
@@ -257,8 +254,10 @@ async def submit_integration_request(
             try:
                 deployment_stages.append(DeploymentStage(stage_name))
             except ValueError:
-                raise HTTPException(status_code=400, detail=f"Invalid deployment stage: {stage_name}")
-        
+                raise HTTPException(
+                    status_code=400, detail=f"Invalid deployment stage: {stage_name}"
+                )
+
         request = IntegrationRequest(
             id=f"integration_{datetime.now().timestamp()}",
             name=request_data["name"],
@@ -270,17 +269,17 @@ async def submit_integration_request(
             priority=request_data.get("priority", "medium"),
             auto_merge=request_data.get("auto_merge", False),
             quality_gates=request_data.get("quality_gates", []),
-            deployment_stages=deployment_stages
+            deployment_stages=deployment_stages,
         )
-        
+
         request_id = await integration_controller.submit_integration_request(request)
-        
+
         return {
             "request_id": request_id,
             "status": "submitted",
-            "message": "Integration request submitted successfully"
+            "message": "Integration request submitted successfully",
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -290,17 +289,18 @@ async def submit_integration_request(
 
 @router.get("/integration/{request_id}")
 async def get_integration_status(
-    request_id: str,
-    current_user = Depends(get_current_user)
+    request_id: str, current_user=Depends(get_current_user)
 ) -> Dict[str, Any]:
     """Get integration request status"""
     try:
         status = await integration_controller.get_integration_status(request_id)
         if not status:
-            raise HTTPException(status_code=404, detail=f"Integration request {request_id} not found")
-        
+            raise HTTPException(
+                status_code=404, detail=f"Integration request {request_id} not found"
+            )
+
         return status
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -310,8 +310,7 @@ async def get_integration_status(
 
 @router.post("/artifacts")
 async def store_artifact(
-    artifact_data: Dict[str, Any],
-    current_user = Depends(get_current_user)
+    artifact_data: Dict[str, Any], current_user=Depends(get_current_user)
 ) -> Dict[str, Any]:
     """Store a development artifact"""
     try:
@@ -322,22 +321,26 @@ async def store_artifact(
             path=artifact_data["path"],
             content_hash=artifact_data.get("content_hash", ""),
             size=artifact_data.get("size", 0),
-            created_by=artifact_data.get("created_by", current_user.get("username", "unknown")),
+            created_by=artifact_data.get(
+                "created_by", current_user.get("username", "unknown")
+            ),
             created_at=datetime.now(),
             version=artifact_data.get("version", "1.0.0"),
             dependencies=artifact_data.get("dependencies", []),
             metadata=artifact_data.get("metadata", {}),
-            tags=artifact_data.get("tags", [])
+            tags=artifact_data.get("tags", []),
         )
-        
-        artifact_id = await integration_controller.artifact_repo.store_artifact(artifact)
-        
+
+        artifact_id = await integration_controller.artifact_repo.store_artifact(
+            artifact
+        )
+
         return {
             "artifact_id": artifact_id,
             "status": "stored",
-            "message": "Artifact stored successfully"
+            "message": "Artifact stored successfully",
         }
-        
+
     except Exception as e:
         logger.error(f"Failed to store artifact: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -345,15 +348,16 @@ async def store_artifact(
 
 @router.get("/artifacts/{artifact_id}")
 async def get_artifact(
-    artifact_id: str,
-    current_user = Depends(get_current_user)
+    artifact_id: str, current_user=Depends(get_current_user)
 ) -> Dict[str, Any]:
     """Get a development artifact"""
     try:
         artifact = await integration_controller.artifact_repo.get_artifact(artifact_id)
         if not artifact:
-            raise HTTPException(status_code=404, detail=f"Artifact {artifact_id} not found")
-        
+            raise HTTPException(
+                status_code=404, detail=f"Artifact {artifact_id} not found"
+            )
+
         return {
             "id": artifact.id,
             "name": artifact.name,
@@ -366,9 +370,9 @@ async def get_artifact(
             "version": artifact.version,
             "dependencies": artifact.dependencies,
             "metadata": artifact.metadata,
-            "tags": artifact.tags
+            "tags": artifact.tags,
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -377,14 +381,12 @@ async def get_artifact(
 
 
 @router.get("/health")
-async def get_system_health(
-    current_user = Depends(get_current_user)
-) -> Dict[str, Any]:
+async def get_system_health(current_user=Depends(get_current_user)) -> Dict[str, Any]:
     """Get overall system health"""
     try:
         health = await integration_controller.get_system_health()
         return health
-        
+
     except Exception as e:
         logger.error(f"Failed to get system health: {e}")
         raise HTTPException(status_code=500, detail=str(e))

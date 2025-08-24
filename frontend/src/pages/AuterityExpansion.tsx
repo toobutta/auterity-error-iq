@@ -14,25 +14,26 @@ const AuterityExpansion: React.FC = () => {
       name: 'Smart Triage',
       description: 'AI-powered workflow routing and intelligent task triage',
       icon: '🎯',
-      component: SmartTriageDashboard
+      component: SmartTriageDashboard,
     },
     {
       id: 'vector',
       name: 'Vector Similarity',
       description: 'Duplicate detection and similarity analysis using vector embeddings',
       icon: '🧠',
-      component: VectorSimilarityDashboard
+      component: VectorSimilarityDashboard,
     },
     {
       id: 'agents',
       name: 'Autonomous Agents',
       description: 'AI agent management and multi-agent coordination',
       icon: '🤖',
-      component: AutonomousAgentDashboard
-    }
+      component: AutonomousAgentDashboard,
+    },
   ];
 
-  const ActiveComponent = features.find(f => f.id === activeFeature)?.component || SmartTriageDashboard;
+  const ActiveComponent =
+    features.find((f) => f.id === activeFeature)?.component || SmartTriageDashboard;
 
   return (
     <Layout>
@@ -44,8 +45,8 @@ const AuterityExpansion: React.FC = () => {
               Auterity AI Platform Expansion
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Advanced AI-powered workflow automation with intelligent triage, vector similarity detection, 
-              and autonomous agent coordination
+              Advanced AI-powered workflow automation with intelligent triage, vector similarity
+              detection, and autonomous agent coordination
             </p>
           </div>
         </div>
@@ -84,7 +85,8 @@ const AuterityExpansion: React.FC = () => {
               Smart Triage System
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              AI-powered workflow routing with hybrid ML and rule-based logic for intelligent task classification
+              AI-powered workflow routing with hybrid ML and rule-based logic for intelligent task
+              classification
             </p>
             <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 text-left">
               <li>• NLP-based content analysis</li>
@@ -170,7 +172,8 @@ const AuterityExpansion: React.FC = () => {
                 Backend Services
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                FastAPI-based microservices with SQLAlchemy ORM, PostgreSQL, and Redis for caching and queuing
+                FastAPI-based microservices with SQLAlchemy ORM, PostgreSQL, and Redis for caching
+                and queuing
               </p>
             </div>
             <div className="text-center">
@@ -179,7 +182,8 @@ const AuterityExpansion: React.FC = () => {
                 Frontend Components
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                React TypeScript components with Tailwind CSS, glassmorphism design, and responsive layouts
+                React TypeScript components with Tailwind CSS, glassmorphism design, and responsive
+                layouts
               </p>
             </div>
             <div className="text-center">

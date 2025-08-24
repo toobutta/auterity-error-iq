@@ -10,11 +10,11 @@ interface TemplateLibraryProps {
   comparisonTemplates?: Template[];
 }
 
-const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ 
-  onTemplateSelect, 
-  onTemplatePreview, 
+const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
+  onTemplateSelect,
+  onTemplatePreview,
   onAddToComparison,
-  comparisonTemplates = []
+  comparisonTemplates = [],
 }) => {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -24,7 +24,7 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
     page: 1,
     pageSize: 12,
     sortBy: 'name',
-    sortOrder: 'asc'
+    sortOrder: 'asc',
   });
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
@@ -39,15 +39,15 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
     try {
       setLoading(true);
       setError(null);
-      
+
       const params: TemplateSearchParams = {
         ...searchParams,
         search: searchTerm || undefined,
         category: selectedCategory || undefined,
         sortBy,
-        sortOrder
+        sortOrder,
       };
-      
+
       const response = await getTemplates(params);
       setTemplates(response.templates);
       setTotal(response.total);
@@ -79,22 +79,25 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
-    setSearchParams(prev => ({ ...prev, page: 1 }));
+    setSearchParams((prev) => ({ ...prev, page: 1 }));
   };
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
-    setSearchParams(prev => ({ ...prev, page: 1 }));
+    setSearchParams((prev) => ({ ...prev, page: 1 }));
   };
 
-  const handleSortChange = (newSortBy: 'name' | 'created_at' | 'updated_at', newSortOrder: 'asc' | 'desc') => {
+  const handleSortChange = (
+    newSortBy: 'name' | 'created_at' | 'updated_at',
+    newSortOrder: 'asc' | 'desc'
+  ) => {
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);
-    setSearchParams(prev => ({ ...prev, page: 1 }));
+    setSearchParams((prev) => ({ ...prev, page: 1 }));
   };
 
   const handlePageChange = (page: number) => {
-    setSearchParams(prev => ({ ...prev, page }));
+    setSearchParams((prev) => ({ ...prev, page }));
   };
 
   const clearFilters = () => {
@@ -163,7 +166,10 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
               id="sort"
               value={`${sortBy}-${sortOrder}`}
               onChange={(e) => {
-                const [newSortBy, newSortOrder] = e.target.value.split('-') as ['name' | 'created_at' | 'updated_at', 'asc' | 'desc'];
+                const [newSortBy, newSortOrder] = e.target.value.split('-') as [
+                  'name' | 'created_at' | 'updated_at',
+                  'asc' | 'desc',
+                ];
                 handleSortChange(newSortBy, newSortOrder);
               }}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
@@ -222,7 +228,11 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
           <div className="flex">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
             <div className="ml-3">
@@ -242,23 +252,34 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
               onSelect={onTemplateSelect}
               onPreview={onTemplatePreview}
               onAddToComparison={onAddToComparison}
-              isInComparison={comparisonTemplates.some(t => t.id === template.id)}
+              isInComparison={comparisonTemplates.some((t) => t.id === template.id)}
             />
           ))}
         </div>
-      ) : !loading && (
-        <div className="text-center py-12">
-          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No templates found</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            {searchTerm || selectedCategory 
-              ? 'Try adjusting your search criteria or filters.'
-              : 'No templates are available at the moment.'
-            }
-          </p>
-        </div>
+      ) : (
+        !loading && (
+          <div className="text-center py-12">
+            <svg
+              className="mx-auto h-12 w-12 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No templates found</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              {searchTerm || selectedCategory
+                ? 'Try adjusting your search criteria or filters.'
+                : 'No templates are available at the moment.'}
+            </p>
+          </div>
+        )
       )}
 
       {/* Pagination */}
@@ -288,23 +309,35 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
               </p>
             </div>
             <div>
-              <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+              <nav
+                className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                aria-label="Pagination"
+              >
                 <button
                   onClick={() => handlePageChange(searchParams.page! - 1)}
                   disabled={searchParams.page === 1}
                   className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span className="sr-only">Previous</span>
-                  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </button>
-                
+
                 {/* Page Numbers */}
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                   const pageNum = Math.max(1, Math.min(totalPages - 4, searchParams.page! - 2)) + i;
                   if (pageNum > totalPages) return null;
-                  
+
                   return (
                     <button
                       key={pageNum}
@@ -319,15 +352,24 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
                     </button>
                   );
                 })}
-                
+
                 <button
                   onClick={() => handlePageChange(searchParams.page! + 1)}
                   disabled={searchParams.page === totalPages}
                   className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span className="sr-only">Next</span>
-                  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </button>
               </nav>

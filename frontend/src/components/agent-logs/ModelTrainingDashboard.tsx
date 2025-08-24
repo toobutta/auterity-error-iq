@@ -14,7 +14,7 @@ export const ModelTrainingDashboard: React.FC<ModelTrainingDashboardProps> = ({
   onJobSelect,
   selectedJobId,
   enableFiltering = true,
-  enableActions = true
+  enableActions = true,
 }) => {
   const [filterStatus, setFilterStatus] = useState<string>('');
   const [filterModel, setFilterModel] = useState('');
@@ -23,8 +23,8 @@ export const ModelTrainingDashboard: React.FC<ModelTrainingDashboardProps> = ({
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
   // Get unique models for filtering
-  const uniqueModels = useMemo(() => 
-    Array.from(new Set(jobs.map(job => job.modelName))).sort(),
+  const uniqueModels = useMemo(
+    () => Array.from(new Set(jobs.map((job) => job.modelName))).sort(),
     [jobs]
   );
 
@@ -34,12 +34,12 @@ export const ModelTrainingDashboard: React.FC<ModelTrainingDashboardProps> = ({
 
     // Apply status filter
     if (filterStatus) {
-      filtered = filtered.filter(job => job.status === filterStatus);
+      filtered = filtered.filter((job) => job.status === filterStatus);
     }
 
     // Apply model filter
     if (filterModel) {
-      filtered = filtered.filter(job => job.modelName === filterModel);
+      filtered = filtered.filter((job) => job.modelName === filterModel);
     }
 
     // Sort jobs
@@ -64,23 +64,35 @@ export const ModelTrainingDashboard: React.FC<ModelTrainingDashboardProps> = ({
 
   const getStatusColor = (status: ModelTrainingJob['status']) => {
     switch (status) {
-      case 'running': return 'text-blue-600 bg-blue-50 border-blue-200';
-      case 'completed': return 'text-green-600 bg-green-50 border-green-200';
-      case 'failed': return 'text-red-600 bg-red-50 border-red-200';
-      case 'cancelled': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      case 'pending': return 'text-gray-600 bg-gray-50 border-gray-200';
-      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+      case 'running':
+        return 'text-blue-600 bg-blue-50 border-blue-200';
+      case 'completed':
+        return 'text-green-600 bg-green-50 border-green-200';
+      case 'failed':
+        return 'text-red-600 bg-red-50 border-red-200';
+      case 'cancelled':
+        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case 'pending':
+        return 'text-gray-600 bg-gray-50 border-gray-200';
+      default:
+        return 'text-gray-600 bg-gray-50 border-gray-200';
     }
   };
 
   const getStatusIcon = (status: ModelTrainingJob['status']) => {
     switch (status) {
-      case 'running': return '🔄';
-      case 'completed': return '✅';
-      case 'failed': return '❌';
-      case 'cancelled': return '⏹️';
-      case 'pending': return '⏳';
-      default: return '❓';
+      case 'running':
+        return '🔄';
+      case 'completed':
+        return '✅';
+      case 'failed':
+        return '❌';
+      case 'cancelled':
+        return '⏹️';
+      case 'pending':
+        return '⏳';
+      default:
+        return '❓';
     }
   };
 
@@ -105,7 +117,9 @@ export const ModelTrainingDashboard: React.FC<ModelTrainingDashboardProps> = ({
           <h3 className="font-semibold text-gray-900 dark:text-gray-100">{job.modelName}</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">ID: {job.id}</p>
         </div>
-        <div className={`px-2 py-1 rounded text-xs font-medium border ${getStatusColor(job.status)}`}>
+        <div
+          className={`px-2 py-1 rounded text-xs font-medium border ${getStatusColor(job.status)}`}
+        >
           <span className="mr-1">{getStatusIcon(job.status)}</span>
           {job.status}
         </div>
@@ -120,10 +134,13 @@ export const ModelTrainingDashboard: React.FC<ModelTrainingDashboardProps> = ({
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
           <div
             className={`h-2 rounded-full transition-all duration-300 ${
-              job.status === 'completed' ? 'bg-green-500' :
-              job.status === 'failed' ? 'bg-red-500' :
-              job.status === 'running' ? 'bg-blue-500' :
-              'bg-gray-400'
+              job.status === 'completed'
+                ? 'bg-green-500'
+                : job.status === 'failed'
+                  ? 'bg-red-500'
+                  : job.status === 'running'
+                    ? 'bg-blue-500'
+                    : 'bg-gray-400'
             }`}
             style={{ width: `${job.progress}%` }}
           />
@@ -236,8 +253,10 @@ export const ModelTrainingDashboard: React.FC<ModelTrainingDashboardProps> = ({
                   className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 >
                   <option value="">All Models</option>
-                  {uniqueModels.map(model => (
-                    <option key={model} value={model}>{model}</option>
+                  {uniqueModels.map((model) => (
+                    <option key={model} value={model}>
+                      {model}
+                    </option>
                   ))}
                 </select>
 
@@ -326,11 +345,15 @@ export const ModelTrainingDashboard: React.FC<ModelTrainingDashboardProps> = ({
                     onClick={() => onJobSelect?.(job)}
                   >
                     <td className="px-4 py-3">
-                      <div className="font-medium text-gray-900 dark:text-gray-100">{job.modelName}</div>
+                      <div className="font-medium text-gray-900 dark:text-gray-100">
+                        {job.modelName}
+                      </div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">{job.id}</div>
                     </td>
                     <td className="px-4 py-3">
-                      <div className={`inline-flex px-2 py-1 rounded text-xs font-medium border ${getStatusColor(job.status)}`}>
+                      <div
+                        className={`inline-flex px-2 py-1 rounded text-xs font-medium border ${getStatusColor(job.status)}`}
+                      >
                         <span className="mr-1">{getStatusIcon(job.status)}</span>
                         {job.status}
                       </div>
@@ -340,15 +363,20 @@ export const ModelTrainingDashboard: React.FC<ModelTrainingDashboardProps> = ({
                         <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                           <div
                             className={`h-2 rounded-full ${
-                              job.status === 'completed' ? 'bg-green-500' :
-                              job.status === 'failed' ? 'bg-red-500' :
-                              job.status === 'running' ? 'bg-blue-500' :
-                              'bg-gray-400'
+                              job.status === 'completed'
+                                ? 'bg-green-500'
+                                : job.status === 'failed'
+                                  ? 'bg-red-500'
+                                  : job.status === 'running'
+                                    ? 'bg-blue-500'
+                                    : 'bg-gray-400'
                             }`}
                             style={{ width: `${job.progress}%` }}
                           />
                         </div>
-                        <span className="text-sm text-gray-600 dark:text-gray-400">{job.progress}%</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          {job.progress}%
+                        </span>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-sm">
@@ -357,9 +385,7 @@ export const ModelTrainingDashboard: React.FC<ModelTrainingDashboardProps> = ({
                           {job.metrics.accuracy && (
                             <div>Acc: {(job.metrics.accuracy * 100).toFixed(1)}%</div>
                           )}
-                          {job.metrics.loss && (
-                            <div>Loss: {job.metrics.loss.toFixed(3)}</div>
-                          )}
+                          {job.metrics.loss && <div>Loss: {job.metrics.loss.toFixed(3)}</div>}
                         </div>
                       )}
                     </td>

@@ -1,7 +1,10 @@
+from typing import Dict, List, Optional
+
 from sqlalchemy.orm import Session
-from typing import List, Optional, Dict
-from ..models import Template, IndustryProfile
+
 from ..database import get_db
+from ..models import IndustryProfile, Template
+
 
 class TemplateService:
     def __init__(self, db: Session = Depends(get_db)):
@@ -12,14 +15,12 @@ class TemplateService:
         profile = self.db.query(IndustryProfile).get(profile_id)
         if not profile:
             return []
-            
+
         # Extract template categories from profile
         categories = profile.template_categories or []
-        
+
         # Query templates with any of the profile's categories
-        return self.db.query(Template).filter(
-            Template.category.in_(categories)
-        ).all()
+        return self.db.query(Template).filter(Template.category.in_(categories)).all()
 
     def get_template_by_id(self, template_id: str) -> Optional[Template]:
         """Retrieve a specific template by ID"""
@@ -27,9 +28,9 @@ class TemplateService:
 
     def create_template(self, template_data: Dict) -> Template:
         """Create a new template with profile categorization"""
-        if not template_data.get('category'):
+        if not template_data.get("category"):
             raise ValueError("Template must have a category")
-            
+
         template = Template(**template_data)
         self.db.add(template)
         self.db.commit()
@@ -41,13 +42,13 @@ class TemplateService:
         template = self.get_template_by_id(template_id)
         if not template:
             return None
-            
+
         for key, value in updates.items():
             if hasattr(template, key):
                 setattr(template, key, value)
             else:
                 raise ValueError(f"Invalid template field: {key}")
-                
+
         self.db.commit()
         self.db.refresh(template)
         return template
@@ -57,15 +58,17 @@ class TemplateService:
         template = self.get_template_by_id(template_id)
         if not template:
             return False
-            
+
         # Check for dependent workflow executions
-        dependent_executions = self.db.query(WorkflowExecution).filter(
-            WorkflowExecution.template_id == template_id
-        ).count()
-        
+        dependent_executions = (
+            self.db.query(WorkflowExecution)
+            .filter(WorkflowExecution.template_id == template_id)
+            .count()
+        )
+
         if dependent_executions > 0:
             raise ValueError("Template has active dependencies")
-            
+
         self.db.delete(template)
         self.db.commit()
         return True
@@ -76,7 +79,8 @@ class TemplateService:
 
     def filter_templates(self, category: str, is_active: bool = True) -> List[Template]:
         """Filter templates by category and active status"""
-        return self.db.query(Template).filter(
-            Template.category == category,
-            Template.is_active == is_active
-        ).all()
+        return (
+            self.db.query(Template)
+            .filter(Template.category == category, Template.is_active == is_active)
+            .all()
+        )

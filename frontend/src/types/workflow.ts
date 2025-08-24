@@ -24,7 +24,12 @@ export interface WorkflowDefinition {
 }
 
 export interface WorkflowValidationError {
-  type: 'missing_connection' | 'invalid_step' | 'circular_dependency' | 'missing_start' | 'missing_end';
+  type:
+    | 'missing_connection'
+    | 'invalid_step'
+    | 'circular_dependency'
+    | 'missing_start'
+    | 'missing_end';
   message: string;
   stepId?: string;
   connectionId?: string;
@@ -68,5 +73,5 @@ export interface WorkflowExecutionError {
     stepIndex: number;
   };
   timestamp: string;
-    context?: Record<string, unknown>;
+  context?: Record<string, unknown>;
 }

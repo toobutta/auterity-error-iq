@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const token = localStorage.getItem('access_token');
         const userData = localStorage.getItem('user');
-        
+
         if (token && userData) {
           setUser(JSON.parse(userData));
           // Optionally verify token is still valid
@@ -60,11 +60,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (credentials: LoginRequest) => {
     try {
       const response = await AuthApi.login(credentials);
-      
+
       // Store token and user data
       localStorage.setItem('access_token', response.access_token);
       localStorage.setItem('user', JSON.stringify(response.user));
-      
+
       setUser(response.user);
     } catch (error) {
       console.error('Login error:', error);
@@ -75,11 +75,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (userData: RegisterRequest) => {
     try {
       const response = await AuthApi.register(userData);
-      
+
       // Store token and user data
       localStorage.setItem('access_token', response.access_token);
       localStorage.setItem('user', JSON.stringify(response.user));
-      
+
       setUser(response.user);
     } catch (error) {
       console.error('Registration error:', error);
@@ -101,14 +101,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      isAuthenticated, 
-      isLoading, 
-      login, 
-      register, 
-      logout 
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated,
+        isLoading,
+        login,
+        register,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

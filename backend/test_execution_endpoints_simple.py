@@ -4,10 +4,8 @@
 from uuid import uuid4
 
 from app.models.execution import ExecutionStatus
-from app.schemas import ExecutionResultResponse
-from app.schemas import WorkflowExecuteRequest
-from app.services.workflow_engine import ExecutionResult
-from app.services.workflow_engine import WorkflowEngine
+from app.schemas import ExecutionResultResponse, WorkflowExecuteRequest
+from app.services.workflow_engine import ExecutionResult, WorkflowEngine
 
 
 # Test the basic structure and imports

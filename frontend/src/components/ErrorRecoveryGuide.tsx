@@ -25,13 +25,13 @@ const ErrorRecoveryGuide: React.FC<ErrorRecoveryGuideProps> = ({
   errorMessage,
   onRetry,
   onContactSupport,
-  className = ''
+  className = '',
 }) => {
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
   const [isRetrying, setIsRetrying] = useState(false);
 
   const markStepCompleted = (stepId: string) => {
-    setCompletedSteps(prev => new Set([...prev, stepId]));
+    setCompletedSteps((prev) => new Set([...prev, stepId]));
   };
 
   const getRecoverySteps = (): RecoveryStep[] => {
@@ -48,12 +48,13 @@ const ErrorRecoveryGuide: React.FC<ErrorRecoveryGuideProps> = ({
           {
             id: 'clear-cache',
             title: 'Clear Browser Cache',
-            description: 'Clear your browser cache and cookies to remove any stored authentication data.',
+            description:
+              'Clear your browser cache and cookies to remove any stored authentication data.',
             action: () => {
               // This would typically open browser settings or provide instructions
               alert('Please clear your browser cache and cookies, then refresh the page.');
             },
-            actionLabel: 'Clear Cache'
+            actionLabel: 'Clear Cache',
           },
           {
             id: 'login-again',
@@ -63,7 +64,7 @@ const ErrorRecoveryGuide: React.FC<ErrorRecoveryGuideProps> = ({
               localStorage.removeItem('access_token');
               window.location.href = '/login';
             },
-            actionLabel: 'Go to Login'
+            actionLabel: 'Go to Login',
           }
         );
         break;
@@ -78,12 +79,13 @@ const ErrorRecoveryGuide: React.FC<ErrorRecoveryGuideProps> = ({
           {
             id: 'check-format',
             title: 'Verify Data Format',
-            description: 'Ensure data is in the correct format (dates, numbers, email addresses, etc.).',
+            description:
+              'Ensure data is in the correct format (dates, numbers, email addresses, etc.).',
           },
           {
             id: 'check-limits',
             title: 'Check Field Limits',
-            description: 'Verify that text fields don\'t exceed maximum length limits.',
+            description: "Verify that text fields don't exceed maximum length limits.",
           }
         );
         break;
@@ -100,7 +102,7 @@ const ErrorRecoveryGuide: React.FC<ErrorRecoveryGuideProps> = ({
             title: 'Refresh the Page',
             description: 'Try refreshing the page to re-establish the connection.',
             action: () => window.location.reload(),
-            actionLabel: 'Refresh Page'
+            actionLabel: 'Refresh Page',
           },
           {
             id: 'wait-retry',
@@ -120,12 +122,13 @@ const ErrorRecoveryGuide: React.FC<ErrorRecoveryGuideProps> = ({
           {
             id: 'check-content',
             title: 'Review Content Guidelines',
-            description: 'Ensure your content doesn\'t violate AI service usage policies.',
+            description: "Ensure your content doesn't violate AI service usage policies.",
           },
           {
             id: 'wait-service',
             title: 'Wait for Service Recovery',
-            description: 'AI services may be temporarily unavailable. Wait a few minutes before retrying.',
+            description:
+              'AI services may be temporarily unavailable. Wait a few minutes before retrying.',
           }
         );
         break;
@@ -145,7 +148,8 @@ const ErrorRecoveryGuide: React.FC<ErrorRecoveryGuideProps> = ({
           {
             id: 'test-steps',
             title: 'Test Individual Steps',
-            description: 'Try testing individual workflow steps to identify the problematic component.',
+            description:
+              'Try testing individual workflow steps to identify the problematic component.',
           }
         );
         break;
@@ -155,12 +159,13 @@ const ErrorRecoveryGuide: React.FC<ErrorRecoveryGuideProps> = ({
           {
             id: 'wait-database',
             title: 'Wait for Database Recovery',
-            description: 'Database issues are usually temporary. Wait a few minutes before retrying.',
+            description:
+              'Database issues are usually temporary. Wait a few minutes before retrying.',
           },
           {
             id: 'check-data',
             title: 'Verify Data Integrity',
-            description: 'Ensure the data you\'re trying to save or access is valid and complete.',
+            description: "Ensure the data you're trying to save or access is valid and complete.",
           }
         );
         break;
@@ -172,12 +177,13 @@ const ErrorRecoveryGuide: React.FC<ErrorRecoveryGuideProps> = ({
             title: 'Refresh and Try Again',
             description: 'Try refreshing the page and repeating your action.',
             action: () => window.location.reload(),
-            actionLabel: 'Refresh Page'
+            actionLabel: 'Refresh Page',
           },
           {
             id: 'check-browser',
             title: 'Try a Different Browser',
-            description: 'Sometimes browser-specific issues can cause problems. Try using a different browser.',
+            description:
+              'Sometimes browser-specific issues can cause problems. Try using a different browser.',
           }
         );
         break;
@@ -197,18 +203,21 @@ const ErrorRecoveryGuide: React.FC<ErrorRecoveryGuideProps> = ({
             setIsRetrying(false);
           }
         },
-        actionLabel: isRetrying ? 'Retrying...' : 'Retry Now'
+        actionLabel: isRetrying ? 'Retrying...' : 'Retry Now',
       });
     }
 
     // Add contact support step for high/critical severity
-    if ((severity === ErrorSeverity.HIGH || severity === ErrorSeverity.CRITICAL) && onContactSupport) {
+    if (
+      (severity === ErrorSeverity.HIGH || severity === ErrorSeverity.CRITICAL) &&
+      onContactSupport
+    ) {
       steps.push({
         id: 'contact-support',
         title: 'Contact Support',
         description: 'If the issue persists, contact our support team for assistance.',
         action: onContactSupport,
-        actionLabel: 'Contact Support'
+        actionLabel: 'Contact Support',
       });
     }
 
@@ -233,31 +242,56 @@ const ErrorRecoveryGuide: React.FC<ErrorRecoveryGuideProps> = ({
       case ErrorCategory.AUTHENTICATION:
         return (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
           </svg>
         );
       case ErrorCategory.NETWORK:
         return (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"
+            />
           </svg>
         );
       case ErrorCategory.AI_SERVICE:
         return (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+            />
           </svg>
         );
       case ErrorCategory.WORKFLOW:
         return (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 10V3L4 14h7v7l9-11h-7z"
+            />
           </svg>
         );
       default:
         return (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         );
     }
@@ -296,13 +330,13 @@ const ErrorRecoveryGuide: React.FC<ErrorRecoveryGuideProps> = ({
         <div className="space-y-4">
           {recoverySteps.map((step, index) => {
             const isCompleted = completedSteps.has(step.id);
-            
+
             return (
               <div
                 key={step.id}
                 className={`border rounded-lg p-4 transition-colors ${
-                  isCompleted 
-                    ? 'border-green-200 bg-green-50' 
+                  isCompleted
+                    ? 'border-green-200 bg-green-50'
                     : 'border-gray-200 bg-white hover:bg-gray-50'
                 }`}
               >
@@ -310,8 +344,18 @@ const ErrorRecoveryGuide: React.FC<ErrorRecoveryGuideProps> = ({
                   <div className="flex-shrink-0 mr-3">
                     {isCompleted ? (
                       <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <svg
+                          className="w-4 h-4 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
                         </svg>
                       </div>
                     ) : (
@@ -322,10 +366,14 @@ const ErrorRecoveryGuide: React.FC<ErrorRecoveryGuideProps> = ({
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h4 className={`font-medium ${isCompleted ? 'text-green-800' : 'text-gray-900'}`}>
+                    <h4
+                      className={`font-medium ${isCompleted ? 'text-green-800' : 'text-gray-900'}`}
+                    >
                       {step.title}
                     </h4>
-                    <p className={`text-sm mt-1 ${isCompleted ? 'text-green-700' : 'text-gray-600'}`}>
+                    <p
+                      className={`text-sm mt-1 ${isCompleted ? 'text-green-700' : 'text-gray-600'}`}
+                    >
                       {step.description}
                     </p>
 
@@ -387,13 +435,24 @@ const ErrorRecoveryGuide: React.FC<ErrorRecoveryGuideProps> = ({
         {completedSteps.size === recoverySteps.length && (
           <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex items-center">
-              <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5 text-green-600 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               <span className="text-green-800 font-medium">All recovery steps completed!</span>
             </div>
             <p className="text-green-700 text-sm mt-1">
-              You should now be able to proceed with your original action. If the issue persists, please contact support.
+              You should now be able to proceed with your original action. If the issue persists,
+              please contact support.
             </p>
           </div>
         )}

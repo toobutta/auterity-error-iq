@@ -1,5 +1,64 @@
 """Pydantic schemas package."""
 
+from .auterity_expansion import (  # Triage schemas; Vector and similarity schemas; Integration schemas; Channel trigger schemas; Custom model schemas; Agent and execution schemas
+    AgentDeployRequest,
+    AgentDeployResponse,
+    AgentMemoryCreate,
+    AgentMemoryResponse,
+    ChannelTriggerCreate,
+    ChannelTriggerRequest,
+    ChannelTriggerResponse,
+    ChannelTriggerUpdate,
+    CustomModelCreate,
+    CustomModelHealthCheck,
+    CustomModelResponse,
+    CustomModelUpdate,
+    ExecutionMetricCreate,
+    ExecutionMetricResponse,
+    IntegrationCreate,
+    IntegrationResponse,
+    IntegrationSyncRequest,
+    IntegrationSyncResponse,
+    IntegrationUpdate,
+    IntegrationWebhookCreate,
+    IntegrationWebhookResponse,
+    LiveInsightsRequest,
+    LiveInsightsResponse,
+    SimilarityResult,
+    SimilaritySearchRequest,
+    SimilaritySearchResponse,
+    TriageRequest,
+    TriageResponse,
+    TriageResultCreate,
+    TriageResultResponse,
+    TriageRuleCreate,
+    TriageRuleResponse,
+    TriageRuleUpdate,
+    VectorEmbeddingCreate,
+    VectorEmbeddingResponse,
+)
+from .auth import (
+    CrossSystemTokenRequest,
+    CrossSystemTokenResponse,
+    PermissionResponse,
+    RoleCreate,
+    RoleResponse,
+    SSOConfigurationResponse,
+    SSOInitiateResponse,
+    SSOLoginResponse,
+    Token,
+    UserLogin,
+    UserRegister,
+    UserResponse,
+    UserRoleAssignment,
+)
+from .template import (
+    TemplateCreate,
+    TemplateInstantiateRequest,
+    TemplateListResponse,
+    TemplateResponse,
+    TemplateUpdate,
+)
 from .workflow import (
     ExecutionLogResponse,
     ExecutionResultResponse,
@@ -9,61 +68,6 @@ from .workflow import (
     WorkflowListResponse,
     WorkflowResponse,
     WorkflowUpdate,
-)
-
-from .auth import (
-    CrossSystemTokenRequest,
-    CrossSystemTokenResponse,
-    PermissionResponse,
-    RoleCreate,
-    RoleResponse,
-    Token,
-    UserLogin,
-    UserRegister,
-    UserResponse,
-    UserRoleAssignment,
-    SSOInitiateResponse,
-    SSOLoginResponse,
-    SSOConfigurationResponse,
-)
-
-
-
-
-
-from .template import (
-    TemplateCreate,
-    TemplateUpdate,
-    TemplateResponse,
-    TemplateListResponse,
-    TemplateInstantiateRequest,
-)
-
-from .auterity_expansion import (
-    # Triage schemas
-    TriageRuleCreate, TriageRuleUpdate, TriageRuleResponse,
-    TriageRequest, TriageResponse, TriageResultCreate, TriageResultResponse,
-    
-    # Vector and similarity schemas
-    VectorEmbeddingCreate, VectorEmbeddingResponse, SimilarityResult,
-    SimilaritySearchRequest, SimilaritySearchResponse,
-    
-    # Integration schemas
-    IntegrationCreate, IntegrationUpdate, IntegrationResponse,
-    IntegrationWebhookCreate, IntegrationWebhookResponse,
-    IntegrationSyncRequest, IntegrationSyncResponse,
-    
-    # Channel trigger schemas
-    ChannelTriggerCreate, ChannelTriggerUpdate, ChannelTriggerResponse,
-    ChannelTriggerRequest, ChannelTriggerResponse,
-    
-    # Custom model schemas
-    CustomModelCreate, CustomModelUpdate, CustomModelResponse,
-    CustomModelHealthCheck,
-    
-    # Agent and execution schemas
-    AgentMemoryCreate, AgentMemoryResponse, ExecutionMetricCreate, ExecutionMetricResponse,
-    AgentDeployRequest, AgentDeployResponse, LiveInsightsRequest, LiveInsightsResponse
 )
 
 __all__ = [
@@ -89,25 +93,46 @@ __all__ = [
     "SSOLoginResponse",
     "SSOConfigurationResponse",
     "AuditLogResponse",
-
-
     "TemplateCreate",
     "TemplateUpdate",
     "TemplateResponse",
     "TemplateListResponse",
     "TemplateInstantiateRequest",
     # Auterity Expansion Schemas
-    "TriageRuleCreate", "TriageRuleUpdate", "TriageRuleResponse",
-    "TriageRequest", "TriageResponse", "TriageResultCreate", "TriageResultResponse",
-    "VectorEmbeddingCreate", "VectorEmbeddingResponse", "SimilarityResult",
-    "SimilaritySearchRequest", "SimilaritySearchResponse",
-    "IntegrationCreate", "IntegrationUpdate", "IntegrationResponse",
-    "IntegrationWebhookCreate", "IntegrationWebhookResponse",
-    "IntegrationSyncRequest", "IntegrationSyncResponse",
-    "ChannelTriggerCreate", "ChannelTriggerUpdate", "ChannelTriggerResponse",
-    "ChannelTriggerRequest", "ChannelTriggerResponse",
-    "CustomModelCreate", "CustomModelUpdate", "CustomModelResponse",
+    "TriageRuleCreate",
+    "TriageRuleUpdate",
+    "TriageRuleResponse",
+    "TriageRequest",
+    "TriageResponse",
+    "TriageResultCreate",
+    "TriageResultResponse",
+    "VectorEmbeddingCreate",
+    "VectorEmbeddingResponse",
+    "SimilarityResult",
+    "SimilaritySearchRequest",
+    "SimilaritySearchResponse",
+    "IntegrationCreate",
+    "IntegrationUpdate",
+    "IntegrationResponse",
+    "IntegrationWebhookCreate",
+    "IntegrationWebhookResponse",
+    "IntegrationSyncRequest",
+    "IntegrationSyncResponse",
+    "ChannelTriggerCreate",
+    "ChannelTriggerUpdate",
+    "ChannelTriggerResponse",
+    "ChannelTriggerRequest",
+    "ChannelTriggerResponse",
+    "CustomModelCreate",
+    "CustomModelUpdate",
+    "CustomModelResponse",
     "CustomModelHealthCheck",
-    "AgentMemoryCreate", "AgentMemoryResponse", "ExecutionMetricCreate", "ExecutionMetricResponse",
-    "AgentDeployRequest", "AgentDeployResponse", "LiveInsightsRequest", "LiveInsightsResponse"
+    "AgentMemoryCreate",
+    "AgentMemoryResponse",
+    "ExecutionMetricCreate",
+    "ExecutionMetricResponse",
+    "AgentDeployRequest",
+    "AgentDeployResponse",
+    "LiveInsightsRequest",
+    "LiveInsightsResponse",
 ]

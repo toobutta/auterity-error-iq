@@ -16,13 +16,11 @@ const DefaultFallback: React.FC = () => (
 export const LazyWrapper: React.FC<LazyWrapperProps> = ({
   children,
   fallback = <DefaultFallback />,
-  className = ''
+  className = '',
 }) => {
   return (
     <div className={className}>
-      <Suspense fallback={fallback}>
-        {children}
-      </Suspense>
+      <Suspense fallback={fallback}>{children}</Suspense>
     </div>
   );
 };

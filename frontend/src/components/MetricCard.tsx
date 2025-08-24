@@ -23,18 +23,18 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   gradient = 'bg-automotive-primary',
   trend,
   loading = false,
-  onClick
+  onClick,
 }) => {
   const changeColors = {
     positive: 'text-green-600 dark:text-green-400',
     negative: 'text-red-600 dark:text-red-400',
-    neutral: 'text-gray-600 dark:text-gray-400'
+    neutral: 'text-gray-600 dark:text-gray-400',
   };
 
   const trendIcons = {
     up: '↗️',
     down: '↘️',
-    stable: '→'
+    stable: '→',
   };
 
   const isClickable = !!onClick;
@@ -57,7 +57,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   }
 
   return (
-    <div 
+    <div
       className={`
         metric-card group relative cursor-pointer
         ${isClickable ? 'hover:scale-105 active:scale-95' : ''}
@@ -66,54 +66,57 @@ export const MetricCard: React.FC<MetricCardProps> = ({
     >
       {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent dark:from-slate-800/50 rounded-lg"></div>
-      
+
       <div className="relative flex items-start justify-between">
         <div className="flex-1">
           {/* Title */}
           <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1 group-hover:text-automotive-primary transition-colors">
             {title}
           </p>
-          
+
           {/* Subtitle */}
-          {subtitle && (
-            <p className="text-xs text-gray-500 dark:text-gray-500 mb-1">
-              {subtitle}
-            </p>
-          )}
-          
+          {subtitle && <p className="text-xs text-gray-500 dark:text-gray-500 mb-1">{subtitle}</p>}
+
           {/* Value */}
           <p className="text-3xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-automotive-primary transition-colors">
             {typeof value === 'number' ? value.toLocaleString() : value}
           </p>
-          
+
           {/* Change indicator */}
           {change && (
-            <div className={`text-sm font-medium flex items-center space-x-1 ${changeColors[changeType]}`}>
+            <div
+              className={`text-sm font-medium flex items-center space-x-1 ${changeColors[changeType]}`}
+            >
               <span>
-                {trend ? trendIcons[trend] : (
-                  changeType === 'positive' ? '↗️' : 
-                  changeType === 'negative' ? '↘️' : '→'
-                )}
+                {trend
+                  ? trendIcons[trend]
+                  : changeType === 'positive'
+                    ? '↗️'
+                    : changeType === 'negative'
+                      ? '↘️'
+                      : '→'}
               </span>
               <span>{change}</span>
               <span className="text-xs text-gray-500 dark:text-gray-400">vs last month</span>
             </div>
           )}
         </div>
-        
+
         {/* Icon */}
-        <div className={`
+        <div
+          className={`
           p-3 rounded-xl text-white text-2xl shadow-lg transition-all duration-200
           ${gradient}
           group-hover:scale-110 group-hover:shadow-xl
-        `}>
+        `}
+        >
           {icon}
         </div>
       </div>
-      
+
       {/* Bottom accent line */}
       <div className="absolute bottom-0 left-0 w-0 h-1 bg-automotive-primary transition-all duration-300 group-hover:w-full rounded-full"></div>
-      
+
       {/* Hover effect overlay */}
       <div className="absolute inset-0 bg-automotive-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg"></div>
     </div>
@@ -122,44 +125,24 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 
 // Specialized metric cards for different contexts
 export const RevenueMetricCard: React.FC<Omit<MetricCardProps, 'icon' | 'gradient'>> = (props) => (
-  <MetricCard
-    {...props}
-    icon="💰"
-    gradient="bg-gradient-to-r from-green-500 to-emerald-600"
-  />
+  <MetricCard {...props} icon="💰" gradient="bg-gradient-to-r from-green-500 to-emerald-600" />
 );
 
 export const CustomerMetricCard: React.FC<Omit<MetricCardProps, 'icon' | 'gradient'>> = (props) => (
-  <MetricCard
-    {...props}
-    icon="👥"
-    gradient="bg-automotive-accent"
-  />
+  <MetricCard {...props} icon="👥" gradient="bg-automotive-accent" />
 );
 
 export const WorkflowMetricCard: React.FC<Omit<MetricCardProps, 'icon' | 'gradient'>> = (props) => (
-  <MetricCard
-    {...props}
-    icon="🔄"
-    gradient="bg-automotive-primary"
-  />
+  <MetricCard {...props} icon="🔄" gradient="bg-automotive-primary" />
 );
 
 export const ServiceMetricCard: React.FC<Omit<MetricCardProps, 'icon' | 'gradient'>> = (props) => (
-  <MetricCard
-    {...props}
-    icon="🔧"
-    gradient="bg-gradient-to-r from-purple-500 to-indigo-600"
-  />
+  <MetricCard {...props} icon="🔧" gradient="bg-gradient-to-r from-purple-500 to-indigo-600" />
 );
 
-export const InventoryMetricCard: React.FC<Omit<MetricCardProps, 'icon' | 'gradient'>> = (props) => (
-  <MetricCard
-    {...props}
-    icon="📦"
-    gradient="bg-automotive-success"
-  />
-);
+export const InventoryMetricCard: React.FC<Omit<MetricCardProps, 'icon' | 'gradient'>> = (
+  props
+) => <MetricCard {...props} icon="📦" gradient="bg-automotive-success" />;
 
 // Grid container for metric cards
 interface MetricGridProps {
@@ -168,11 +151,7 @@ interface MetricGridProps {
   gap?: 'sm' | 'md' | 'lg';
 }
 
-export const MetricGrid: React.FC<MetricGridProps> = ({ 
-  children, 
-  columns = 4,
-  gap = 'lg'
-}) => {
+export const MetricGrid: React.FC<MetricGridProps> = ({ children, columns = 4, gap = 'lg' }) => {
   const gridCols = {
     1: 'grid-cols-1',
     2: 'grid-cols-1 md:grid-cols-2',
@@ -188,11 +167,7 @@ export const MetricGrid: React.FC<MetricGridProps> = ({
     lg: 'gap-8',
   };
 
-  return (
-    <div className={`grid ${gridCols[columns]} ${gaps[gap]}`}>
-      {children}
-    </div>
-  );
+  return <div className={`grid ${gridCols[columns]} ${gaps[gap]}`}>{children}</div>;
 };
 
 export default MetricCard;

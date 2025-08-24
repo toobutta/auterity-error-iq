@@ -4,10 +4,12 @@
 import os
 import sys
 
-from app.auth import create_access_token
-from app.auth import get_password_hash
-from app.auth import verify_password
-from app.auth import verify_token
+from app.auth import (
+    create_access_token,
+    get_password_hash,
+    verify_password,
+    verify_token,
+)
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 

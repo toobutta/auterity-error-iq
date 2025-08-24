@@ -12,16 +12,20 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db_session
 from app.exceptions import WorkflowExecutionError
-from app.models.execution import ExecutionLog, ExecutionStatus, WorkflowExecution
-from app.models.workflow import Workflow
-from app.types.workflow import WorkflowNode, WorkflowEdge, StepExecutionResult, RetryConfig
-from app.interfaces.step_executor import StepExecutorFactory
 from app.executors.step_executors import (
-    InputStepExecutor, ProcessStepExecutor, OutputStepExecutor,
-    AIStepExecutor, DataValidationStepExecutor, DefaultStepExecutor
+    AIStepExecutor,
+    DataValidationStepExecutor,
+    DefaultStepExecutor,
+    InputStepExecutor,
+    OutputStepExecutor,
+    ProcessStepExecutor,
 )
 from app.handlers.error_handler import ErrorHandler
+from app.interfaces.step_executor import StepExecutorFactory
+from app.models.execution import ExecutionLog, ExecutionStatus, WorkflowExecution
+from app.models.workflow import Workflow
 from app.monitoring.performance import PerformanceMonitor
+from app.types.workflow import RetryConfig, WorkflowEdge, WorkflowNode
 
 logger = logging.getLogger(__name__)
 
@@ -53,13 +57,13 @@ class WorkflowEngine:
         self,
         step_factory: Optional[StepExecutorFactory] = None,
         retry_config: Optional[RetryConfig] = None,
-        performance_monitor: Optional[PerformanceMonitor] = None
+        performance_monitor: Optional[PerformanceMonitor] = None,
     ):
         self.logger = logging.getLogger(__name__)
         self.step_factory = step_factory or self._create_default_factory()
         self.error_handler = ErrorHandler(retry_config or RetryConfig())
         self.performance_monitor = performance_monitor or PerformanceMonitor()
-    
+
     def _create_default_factory(self) -> StepExecutorFactory:
         """Create default step executor factory."""
         factory = StepExecutorFactory()
@@ -323,8 +327,14 @@ class WorkflowEngine:
             raise WorkflowExecutionError("Workflow has no nodes to execute")
 
         # Convert to typed objects
-        nodes = [WorkflowNode(id=n["id"], type=n["type"], data=n.get("data", {})) for n in raw_nodes]
-        edges = [WorkflowEdge(id=e["id"], source=e["source"], target=e["target"]) for e in raw_edges]
+        nodes = [
+            WorkflowNode(id=n["id"], type=n["type"], data=n.get("data", {}))
+            for n in raw_nodes
+        ]
+        edges = [
+            WorkflowEdge(id=e["id"], source=e["source"], target=e["target"])
+            for e in raw_edges
+        ]
 
         # Build execution order based on edges
         execution_order = self._build_execution_order(nodes, edges)
@@ -340,47 +350,53 @@ class WorkflowEngine:
                 )
 
             # Execute the step with retry logic
-            step_output = await self._execute_step_with_retry(db, execution, node, current_data)
+            step_output = await self._execute_step_with_retry(
+                db, execution, node, current_data
+            )
 
             # Update current data with step output
             current_data.update(step_output)
 
         return current_data
 
-    def _build_execution_order(self, nodes: List[WorkflowNode], edges: List[WorkflowEdge]) -> List[str]:
+    def _build_execution_order(
+        self, nodes: List[WorkflowNode], edges: List[WorkflowEdge]
+    ) -> List[str]:
         """Build execution order using topological sort."""
         # Build adjacency list and in-degree count
         graph = defaultdict(list)
         in_degree = defaultdict(int)
-        
+
         # Initialize all nodes with 0 in-degree
         for node in nodes:
             in_degree[node.id] = 0
-        
+
         # Build graph and calculate in-degrees
         for edge in edges:
             source, target = edge.source, edge.target
             graph[source].append(target)
             in_degree[target] += 1
-        
+
         # Find nodes with no incoming edges (start nodes)
         queue = deque([node_id for node_id, degree in in_degree.items() if degree == 0])
         execution_order = []
-        
+
         while queue:
             current = queue.popleft()
             execution_order.append(current)
-            
+
             # Reduce in-degree for all neighbors
             for neighbor in graph[current]:
                 in_degree[neighbor] -= 1
                 if in_degree[neighbor] == 0:
                     queue.append(neighbor)
-        
+
         # Check for cycles
         if len(execution_order) != len(nodes):
-            raise WorkflowExecutionError("Workflow contains cycles and cannot be executed")
-        
+            raise WorkflowExecutionError(
+                "Workflow contains cycles and cannot be executed"
+            )
+
         return execution_order
 
     async def _execute_step_with_retry(
@@ -392,19 +408,23 @@ class WorkflowEngine:
     ) -> Dict[str, Any]:
         """Execute step with retry logic."""
         last_error = None
-        
+
         for attempt in range(1, self.error_handler.retry_config.max_attempts + 1):
             try:
                 return await self._execute_step(db, execution, node, input_data)
             except Exception as e:
                 last_error = e
                 self.logger.warning(f"Step {node.id} failed on attempt {attempt}: {e}")
-                
-                should_retry = await self.error_handler.handle_step_error(e, node, attempt)
+
+                should_retry = await self.error_handler.handle_step_error(
+                    e, node, attempt
+                )
                 if not should_retry:
                     break
-        
-        raise WorkflowStepError(f"Step {node.id} failed after {attempt} attempts: {last_error}")
+
+        raise WorkflowStepError(
+            f"Step {node.id} failed after {attempt} attempts: {last_error}"
+        )
 
     async def _execute_step(
         self,
@@ -434,7 +454,9 @@ class WorkflowEngine:
             self.logger.info(f"Executing step '{step_name}' of type '{step_type}'")
 
             # Execute step using factory pattern with performance monitoring
-            async with self.performance_monitor.measure_step_execution(step_type, step_name):
+            async with self.performance_monitor.measure_step_execution(
+                step_type, step_name
+            ):
                 executor = self.step_factory.get_executor(step_type)
                 result = await executor.execute_step(node, input_data)
 
@@ -481,5 +503,3 @@ class WorkflowEngine:
             db.commit()
 
             raise WorkflowStepError(f"Step '{step_name}' failed: {error_message}")
-
-

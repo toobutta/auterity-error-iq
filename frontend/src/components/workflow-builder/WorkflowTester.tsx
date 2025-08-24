@@ -18,7 +18,7 @@ interface TestInputField {
 const WorkflowTester: React.FC<WorkflowTesterProps> = ({
   workflow,
   onExecute,
-  isExecuting = false
+  isExecuting = false,
 }) => {
   const [testInputs, setTestInputs] = useState<Record<string, unknown>>({});
   const [executionId, setExecutionId] = useState<string | null>(null);
@@ -30,7 +30,7 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
   // Define test input fields based on workflow triggers
   const getTestInputFields = useCallback((): TestInputField[] => {
     const fields: TestInputField[] = [];
-    
+
     // Add common automotive workflow inputs
     fields.push(
       {
@@ -39,7 +39,7 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
         label: 'Customer Name',
         description: 'Full name of the customer',
         required: true,
-        defaultValue: 'John Smith'
+        defaultValue: 'John Smith',
       },
       {
         name: 'customer_email',
@@ -47,7 +47,7 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
         label: 'Customer Email',
         description: 'Customer email address',
         required: true,
-        defaultValue: 'john.smith@email.com'
+        defaultValue: 'john.smith@email.com',
       },
       {
         name: 'customer_phone',
@@ -55,7 +55,7 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
         label: 'Customer Phone',
         description: 'Customer phone number',
         required: false,
-        defaultValue: '(555) 123-4567'
+        defaultValue: '(555) 123-4567',
       },
       {
         name: 'inquiry_type',
@@ -63,7 +63,7 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
         label: 'Inquiry Type',
         description: 'Type of customer inquiry',
         required: false,
-        defaultValue: 'sales'
+        defaultValue: 'sales',
       },
       {
         name: 'budget_max',
@@ -71,7 +71,7 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
         label: 'Maximum Budget',
         description: 'Customer maximum budget',
         required: false,
-        defaultValue: 35000
+        defaultValue: 35000,
       },
       {
         name: 'vehicle_preference',
@@ -82,13 +82,13 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
         defaultValue: {
           make: 'Toyota',
           type: 'sedan',
-          features: ['automatic', 'bluetooth']
-        }
+          features: ['automatic', 'bluetooth'],
+        },
       }
     );
 
     // Add specific fields based on workflow triggers
-    workflow.steps.forEach(step => {
+    workflow.steps.forEach((step) => {
       const stepType = step.type as string;
       if (stepType === 'customer_inquiry') {
         // Already covered by common fields
@@ -105,8 +105,8 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
             model: 'Civic',
             year: 2023,
             price: 28500,
-            status: 'available'
-          }
+            status: 'available',
+          },
         });
       } else if (stepType === 'service_appointment') {
         fields.push({
@@ -118,8 +118,8 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
           defaultValue: {
             service_type: 'maintenance',
             scheduled_date: new Date().toISOString().split('T')[0],
-            vehicle_vin: '1HGBH41JXMN109186'
-          }
+            vehicle_vin: '1HGBH41JXMN109186',
+          },
         });
       }
     });
@@ -132,7 +132,7 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
   // Initialize test inputs with default values
   useEffect(() => {
     const defaultInputs: Record<string, unknown> = {};
-    inputFields.forEach(field => {
+    inputFields.forEach((field) => {
       if (field.defaultValue !== undefined) {
         defaultInputs[field.name] = field.defaultValue;
       }
@@ -146,10 +146,10 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
       const connectAndSubscribe = async () => {
         try {
           await connectToExecutionStatus(executionId);
-          
+
           const unsubscribe = subscribeToStatusUpdates((statusUpdate) => {
-            setExecution(prev => prev ? { ...prev, ...statusUpdate } : statusUpdate);
-            
+            setExecution((prev) => (prev ? { ...prev, ...statusUpdate } : statusUpdate));
+
             if (statusUpdate.status === 'completed' || statusUpdate.status === 'failed') {
               setIsRunning(false);
             }
@@ -171,9 +171,9 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
   }, [executionId]);
 
   const handleInputChange = (fieldName: string, value: unknown) => {
-    setTestInputs(prev => ({
+    setTestInputs((prev) => ({
       ...prev,
-      [fieldName]: value
+      [fieldName]: value,
     }));
   };
 
@@ -185,8 +185,8 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
     try {
       // Validate required fields
       const missingFields = inputFields
-        .filter(field => field.required && !testInputs[field.name])
-        .map(field => field.label);
+        .filter((field) => field.required && !testInputs[field.name])
+        .map((field) => field.label);
 
       if (missingFields.length > 0) {
         throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
@@ -195,10 +195,9 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
       // Execute workflow
       const newExecutionId = await onExecute(testInputs);
       setExecutionId(newExecutionId);
-      
+
       // Add initial log
-      setLogs(prev => [...prev, `🚀 Workflow execution started (ID: ${newExecutionId})`]);
-      
+      setLogs((prev) => [...prev, `🚀 Workflow execution started (ID: ${newExecutionId})`]);
     } catch (error) {
       console.error('Workflow execution failed:', error);
       setError(error instanceof Error ? error.message : 'Execution failed');
@@ -209,7 +208,7 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
   const handleStop = () => {
     // TODO: Implement workflow cancellation
     setIsRunning(false);
-    setLogs(prev => [...prev, '⏹️ Workflow execution stopped by user']);
+    setLogs((prev) => [...prev, '⏹️ Workflow execution stopped by user']);
   };
 
   const renderInputField = (field: TestInputField) => {
@@ -288,8 +287,18 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
           <div className="flex items-center space-x-2">
             {isRunning && (
               <div className="flex items-center space-x-2 text-blue-600">
-                <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <svg
+                  className="w-4 h-4 animate-spin"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
                 </svg>
                 <span className="text-sm">Running...</span>
               </div>
@@ -302,7 +311,7 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
         {/* Test Inputs Panel */}
         <div className="w-1/3 p-4 border-r border-gray-200">
           <h4 className="font-medium text-gray-900 mb-4">Test Inputs</h4>
-          
+
           <div className="space-y-4 mb-6">
             {inputFields.map((field) => (
               <div key={field.name}>
@@ -327,15 +336,30 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
             >
               {isRunning ? (
                 <>
-                  <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  <svg
+                    className="w-4 h-4 animate-spin"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
                   </svg>
                   <span>Executing...</span>
                 </>
               ) : (
                 <>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   <span>Execute Workflow</span>
                 </>
@@ -348,8 +372,18 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
                 className="w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center justify-center space-x-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10h6v4H9z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 10h6v4H9z"
+                  />
                 </svg>
                 <span>Stop Execution</span>
               </button>
@@ -360,8 +394,18 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
           {error && (
             <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
               <div className="flex items-start">
-                <svg className="w-5 h-5 text-red-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-5 h-5 text-red-600 mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 <div>
                   <p className="text-red-800 font-medium">Execution Error</p>
@@ -397,11 +441,23 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
           ) : (
             <div className="flex items-center justify-center h-64 text-gray-500">
               <div className="text-center">
-                <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <svg
+                  className="w-16 h-16 mx-auto mb-4 text-gray-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
                 </svg>
                 <p className="text-lg font-medium">Ready to Test</p>
-                <p className="text-sm">Configure test inputs and click &quot;Execute Workflow&quot; to see results</p>
+                <p className="text-sm">
+                  Configure test inputs and click &quot;Execute Workflow&quot; to see results
+                </p>
               </div>
             </div>
           )}

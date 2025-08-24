@@ -8,6 +8,7 @@ from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_active_user
+from app.config.workflow_config import create_workflow_engine
 from app.database import get_db
 from app.models.execution import ExecutionLog, WorkflowExecution
 from app.models.user import User
@@ -23,7 +24,6 @@ from app.schemas import (
     WorkflowUpdate,
 )
 from app.services.workflow_engine import WorkflowExecutionError
-from app.config.workflow_config import create_workflow_engine
 
 router = APIRouter(prefix="/workflows", tags=["workflows"])
 

@@ -9,7 +9,7 @@ const RegisterForm: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -33,9 +33,10 @@ const RegisterForm: React.FC = () => {
       await register({ name, email, password });
       navigate('/dashboard');
     } catch (err: unknown) {
-      const errorMessage = err && typeof err === 'object' && 'response' in err 
-        ? (err as { response?: { data?: { detail?: string } } }).response?.data?.detail 
-        : 'Registration failed. Please try again.';
+      const errorMessage =
+        err && typeof err === 'object' && 'response' in err
+          ? (err as { response?: { data?: { detail?: string } } }).response?.data?.detail
+          : 'Registration failed. Please try again.';
       setError(errorMessage || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
@@ -49,9 +50,7 @@ const RegisterForm: React.FC = () => {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Create your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Join AutoMatrix AI Hub
-          </p>
+          <p className="mt-2 text-center text-sm text-gray-600">Join AutoMatrix AI Hub</p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
@@ -59,7 +58,7 @@ const RegisterForm: React.FC = () => {
               {error}
             </div>
           )}
-          
+
           <div className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -76,7 +75,7 @@ const RegisterForm: React.FC = () => {
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
-            
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email Address
@@ -93,7 +92,7 @@ const RegisterForm: React.FC = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
@@ -109,7 +108,7 @@ const RegisterForm: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            
+
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
                 Confirm Password

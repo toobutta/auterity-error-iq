@@ -17,8 +17,13 @@ export const NotificationCenter: React.FC = () => {
       try {
         const data = JSON.parse(event.data);
         setNotifications((prev) => [
-          { id: data.id || Date.now().toString(), type: data.type, message: data.message, timestamp: new Date() },
-          ...prev.slice(0, 4)
+          {
+            id: data.id || Date.now().toString(),
+            type: data.type,
+            message: data.message,
+            timestamp: new Date(),
+          },
+          ...prev.slice(0, 4),
         ]);
       } catch (error) {
         console.warn('Failed to parse notification:', error);
@@ -33,9 +38,13 @@ export const NotificationCenter: React.FC = () => {
         <div
           key={n.id}
           className={`px-4 py-3 rounded shadow-lg text-white transition-all ${
-            n.type === 'success' ? 'bg-green-600' :
-            n.type === 'error' ? 'bg-red-600' :
-            n.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-600'
+            n.type === 'success'
+              ? 'bg-green-600'
+              : n.type === 'error'
+                ? 'bg-red-600'
+                : n.type === 'warning'
+                  ? 'bg-yellow-500'
+                  : 'bg-blue-600'
           }`}
         >
           <div className="font-semibold">{n.message}</div>

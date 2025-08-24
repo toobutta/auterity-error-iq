@@ -37,8 +37,8 @@ export default function AgentDashboard() {
     llmConfig: {
       provider: 'openai',
       model: 'gpt-4',
-      temperature: 0.7
-    }
+      temperature: 0.7,
+    },
   });
 
   // Workflow execution state
@@ -46,7 +46,7 @@ export default function AgentDashboard() {
     workflowId: '',
     inputData: '{}',
     coordinationStrategy: 'sequential',
-    agentIds: [] as string[]
+    agentIds: [] as string[],
   });
 
   // RAG query state
@@ -54,7 +54,7 @@ export default function AgentDashboard() {
     query: '',
     domain: '',
     topK: 5,
-    useQA: true
+    useQA: true,
   });
 
   const [ragResults, setRAGResults] = useState<{
@@ -77,29 +77,32 @@ export default function AgentDashboard() {
       setLoading(true);
       const response = await fetch('/api/agents/status', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        },
       });
-      
+
       if (!response.ok) throw new Error('Failed to load agent status');
-      
+
       const data = await response.json();
-      
+
       // Transform the service status into agent list
       const agentList: Agent[] = [];
       if (data.services?.agent_orchestrator) {
         data.services.agent_orchestrator.agent_ids?.forEach((id: string) => {
           agentList.push({
             id,
-            type: id.includes('autmatrix') ? 'autmatrix' : 
-                  id.includes('relaycore') ? 'relaycore' : 'neuroweaver',
+            type: id.includes('autmatrix')
+              ? 'autmatrix'
+              : id.includes('relaycore')
+                ? 'relaycore'
+                : 'neuroweaver',
             status: 'active',
             lastActivity: new Date().toISOString(),
-            capabilities: ['workflow', 'automation']
+            capabilities: ['workflow', 'automation'],
           });
         });
       }
-      
+
       setAgents(agentList);
       setError(null);
     } catch (err) {
@@ -116,15 +119,19 @@ export default function AgentDashboard() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
         },
-        body: JSON.stringify(newAgent)
+        body: JSON.stringify(newAgent),
       });
 
       if (!response.ok) throw new Error('Failed to register agent');
 
       await loadAgentStatus();
-      setNewAgent({ id: '', type: 'autmatrix', llmConfig: { provider: 'openai', model: 'gpt-4', temperature: 0.7 } });
+      setNewAgent({
+        id: '',
+        type: 'autmatrix',
+        llmConfig: { provider: 'openai', model: 'gpt-4', temperature: 0.7 },
+      });
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -137,32 +144,32 @@ export default function AgentDashboard() {
     try {
       setLoading(true);
       const inputData = JSON.parse(workflowRequest.inputData);
-      
+
       const response = await fetch('/api/agents/execute', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
         },
         body: JSON.stringify({
           ...workflowRequest,
-          inputData
-        })
+          inputData,
+        }),
       });
 
       if (!response.ok) throw new Error('Failed to execute workflow');
 
       const result = await response.json();
-      
+
       const newExecution: WorkflowExecution = {
         id: Date.now().toString(),
         workflowId: workflowRequest.workflowId,
         status: 'completed',
         startTime: new Date().toISOString(),
-        result
+        result,
       };
 
-      setWorkflowExecutions(prev => [newExecution, ...prev.slice(0, 9)]);
+      setWorkflowExecutions((prev) => [newExecution, ...prev.slice(0, 9)]);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -178,9 +185,9 @@ export default function AgentDashboard() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
         },
-        body: JSON.stringify(ragQuery)
+        body: JSON.stringify(ragQuery),
       });
 
       if (!response.ok) throw new Error('Failed to query RAG');
@@ -197,19 +204,27 @@ export default function AgentDashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-500';
-      case 'inactive': return 'bg-yellow-500';
-      case 'error': return 'bg-red-500';
-      default: return 'bg-gray-500';
+      case 'active':
+        return 'bg-green-500';
+      case 'inactive':
+        return 'bg-yellow-500';
+      case 'error':
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-500';
     }
   };
 
   const getAgentIcon = (type: string) => {
     switch (type) {
-      case 'autmatrix': return '🤖';
-      case 'relaycore': return '📡';
-      case 'neuroweaver': return '🧠';
-      default: return '⚙️';
+      case 'autmatrix':
+        return '🤖';
+      case 'relaycore':
+        return '📡';
+      case 'neuroweaver':
+        return '🧠';
+      default:
+        return '⚙️';
     }
   };
 
@@ -217,8 +232,8 @@ export default function AgentDashboard() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Agent Management Dashboard</h1>
-        <button 
-          onClick={loadAgentStatus} 
+        <button
+          onClick={loadAgentStatus}
           disabled={loading}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
         >
@@ -227,9 +242,7 @@ export default function AgentDashboard() {
       </div>
 
       {error && (
-        <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-          ⚠️ {error}
-        </div>
+        <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">⚠️ {error}</div>
       )}
 
       <div className="border-b border-gray-200">
@@ -257,7 +270,9 @@ export default function AgentDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Active Agents</p>
-                  <p className="text-2xl font-bold">{agents.filter(a => a.status === 'active').length}</p>
+                  <p className="text-2xl font-bold">
+                    {agents.filter((a) => a.status === 'active').length}
+                  </p>
                   <p className="text-xs text-gray-500">{agents.length} total registered</p>
                 </div>
                 <div className="text-2xl">🤖</div>
@@ -302,11 +317,18 @@ export default function AgentDashboard() {
             <h3 className="text-lg font-medium mb-4">Recent Activity</h3>
             <div className="space-y-2">
               {workflowExecutions.slice(0, 5).map((execution) => (
-                <div key={execution.id} className="flex items-center justify-between p-2 border rounded">
+                <div
+                  key={execution.id}
+                  className="flex items-center justify-between p-2 border rounded"
+                >
                   <div className="flex items-center space-x-2">
-                    <span className={`px-2 py-1 text-xs rounded ${
-                      execution.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
+                    <span
+                      className={`px-2 py-1 text-xs rounded ${
+                        execution.status === 'completed'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}
+                    >
                       {execution.status}
                     </span>
                     <span className="text-sm">Workflow: {execution.workflowId}</span>
@@ -334,20 +356,20 @@ export default function AgentDashboard() {
                   type="text"
                   placeholder="Agent ID"
                   value={newAgent.id}
-                  onChange={(e) => setNewAgent(prev => ({ ...prev, id: e.target.value }))}
+                  onChange={(e) => setNewAgent((prev) => ({ ...prev, id: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 />
-                <select 
-                  value={newAgent.type} 
-                  onChange={(e) => setNewAgent(prev => ({ ...prev, type: e.target.value }))}
+                <select
+                  value={newAgent.type}
+                  onChange={(e) => setNewAgent((prev) => ({ ...prev, type: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 >
                   <option value="autmatrix">AutoMatrix</option>
                   <option value="relaycore">RelayCore</option>
                   <option value="neuroweaver">NeuroWeaver</option>
                 </select>
-                <button 
-                  onClick={registerAgent} 
+                <button
+                  onClick={registerAgent}
                   disabled={loading || !newAgent.id}
                   className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
                 >
@@ -360,11 +382,16 @@ export default function AgentDashboard() {
               <h3 className="text-lg font-medium mb-4">Registered Agents</h3>
               <div className="space-y-2">
                 {agents.map((agent) => (
-                  <div key={agent.id} className="flex items-center justify-between p-2 border rounded">
+                  <div
+                    key={agent.id}
+                    className="flex items-center justify-between p-2 border rounded"
+                  >
                     <div className="flex items-center space-x-2">
                       <span className="text-lg">{getAgentIcon(agent.type)}</span>
                       <span className="font-medium">{agent.id}</span>
-                      <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded">{agent.type}</span>
+                      <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded">
+                        {agent.type}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className={`w-2 h-2 rounded-full ${getStatusColor(agent.status)}`} />
@@ -391,12 +418,19 @@ export default function AgentDashboard() {
                   type="text"
                   placeholder="Workflow ID"
                   value={workflowRequest.workflowId}
-                  onChange={(e) => setWorkflowRequest(prev => ({ ...prev, workflowId: e.target.value }))}
+                  onChange={(e) =>
+                    setWorkflowRequest((prev) => ({ ...prev, workflowId: e.target.value }))
+                  }
                   className="px-3 py-2 border border-gray-300 rounded-md"
                 />
-                <select 
-                  value={workflowRequest.coordinationStrategy} 
-                  onChange={(e) => setWorkflowRequest(prev => ({ ...prev, coordinationStrategy: e.target.value }))}
+                <select
+                  value={workflowRequest.coordinationStrategy}
+                  onChange={(e) =>
+                    setWorkflowRequest((prev) => ({
+                      ...prev,
+                      coordinationStrategy: e.target.value,
+                    }))
+                  }
                   className="px-3 py-2 border border-gray-300 rounded-md"
                 >
                   <option value="sequential">Sequential</option>
@@ -407,11 +441,13 @@ export default function AgentDashboard() {
               <textarea
                 placeholder="Input data (JSON)"
                 value={workflowRequest.inputData}
-                onChange={(e) => setWorkflowRequest(prev => ({ ...prev, inputData: e.target.value }))}
+                onChange={(e) =>
+                  setWorkflowRequest((prev) => ({ ...prev, inputData: e.target.value }))
+                }
                 className="w-full h-32 px-3 py-2 border border-gray-300 rounded-md resize-none"
               />
-              <button 
-                onClick={executeWorkflow} 
+              <button
+                onClick={executeWorkflow}
                 disabled={loading || !workflowRequest.workflowId}
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
               >
@@ -427,9 +463,13 @@ export default function AgentDashboard() {
                 <div key={execution.id} className="p-3 border rounded space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 text-xs rounded ${
-                        execution.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}>
+                      <span
+                        className={`px-2 py-1 text-xs rounded ${
+                          execution.status === 'completed'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
                         {execution.status}
                       </span>
                       <span className="font-medium">{execution.workflowId}</span>
@@ -462,7 +502,7 @@ export default function AgentDashboard() {
                 type="text"
                 placeholder="Enter your query..."
                 value={ragQuery.query}
-                onChange={(e) => setRAGQuery(prev => ({ ...prev, query: e.target.value }))}
+                onChange={(e) => setRAGQuery((prev) => ({ ...prev, query: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
               />
               <div className="grid gap-4 md:grid-cols-3">
@@ -470,14 +510,16 @@ export default function AgentDashboard() {
                   type="text"
                   placeholder="Domain (optional)"
                   value={ragQuery.domain}
-                  onChange={(e) => setRAGQuery(prev => ({ ...prev, domain: e.target.value }))}
+                  onChange={(e) => setRAGQuery((prev) => ({ ...prev, domain: e.target.value }))}
                   className="px-3 py-2 border border-gray-300 rounded-md"
                 />
                 <input
                   type="number"
                   placeholder="Top K results"
                   value={ragQuery.topK}
-                  onChange={(e) => setRAGQuery(prev => ({ ...prev, topK: parseInt(e.target.value) || 5 }))}
+                  onChange={(e) =>
+                    setRAGQuery((prev) => ({ ...prev, topK: parseInt(e.target.value) || 5 }))
+                  }
                   className="px-3 py-2 border border-gray-300 rounded-md"
                 />
                 <div className="flex items-center space-x-2 px-3 py-2">
@@ -485,13 +527,15 @@ export default function AgentDashboard() {
                     type="checkbox"
                     id="useQA"
                     checked={ragQuery.useQA}
-                    onChange={(e) => setRAGQuery(prev => ({ ...prev, useQA: e.target.checked }))}
+                    onChange={(e) => setRAGQuery((prev) => ({ ...prev, useQA: e.target.checked }))}
                   />
-                  <label htmlFor="useQA" className="text-sm">Use Q&A</label>
+                  <label htmlFor="useQA" className="text-sm">
+                    Use Q&A
+                  </label>
                 </div>
               </div>
-              <button 
-                onClick={queryRAG} 
+              <button
+                onClick={queryRAG}
                 disabled={loading || !ragQuery.query}
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
               >
@@ -515,7 +559,7 @@ export default function AgentDashboard() {
                     )}
                   </div>
                 )}
-                
+
                 {ragResults.documents && ragResults.documents.length > 0 && (
                   <div>
                     <h4 className="font-medium mb-2">Source Documents:</h4>

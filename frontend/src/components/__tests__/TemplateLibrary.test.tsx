@@ -17,7 +17,7 @@ const mockTemplates: Template[] = [
     isActive: true,
     createdAt: '2023-01-01T00:00:00Z',
     updatedAt: '2023-01-01T00:00:00Z',
-    parameters: []
+    parameters: [],
   },
   {
     id: 'template-2',
@@ -28,8 +28,8 @@ const mockTemplates: Template[] = [
     isActive: true,
     createdAt: '2023-01-02T00:00:00Z',
     updatedAt: '2023-01-02T00:00:00Z',
-    parameters: []
-  }
+    parameters: [],
+  },
 ];
 
 describe('TemplateLibrary', () => {
@@ -38,17 +38,17 @@ describe('TemplateLibrary', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Mock API responses
     vi.mocked(templatesApi.getTemplates).mockResolvedValue({
       templates: mockTemplates,
       total: 2,
       page: 1,
-      pageSize: 12
+      pageSize: 12,
     });
-    
+
     vi.mocked(templatesApi.getTemplateCategories).mockResolvedValue({
-      categories: ['sales', 'service', 'parts', 'general']
+      categories: ['sales', 'service', 'parts', 'general'],
     });
   });
 
@@ -90,7 +90,7 @@ describe('TemplateLibrary', () => {
     await waitFor(() => {
       expect(templatesApi.getTemplates).toHaveBeenCalledWith(
         expect.objectContaining({
-          search: 'customer'
+          search: 'customer',
         })
       );
     });
@@ -117,7 +117,7 @@ describe('TemplateLibrary', () => {
     await waitFor(() => {
       expect(templatesApi.getTemplates).toHaveBeenCalledWith(
         expect.objectContaining({
-          category: 'sales'
+          category: 'sales',
         })
       );
     });
@@ -145,7 +145,7 @@ describe('TemplateLibrary', () => {
       expect(templatesApi.getTemplates).toHaveBeenCalledWith(
         expect.objectContaining({
           sortBy: 'created_at',
-          sortOrder: 'desc'
+          sortOrder: 'desc',
         })
       );
     });
@@ -187,12 +187,19 @@ describe('TemplateLibrary', () => {
   it('displays loading state', () => {
     // Mock a delayed response
     vi.mocked(templatesApi.getTemplates).mockImplementation(
-      () => new Promise(resolve => setTimeout(() => resolve({
-        templates: mockTemplates,
-        total: 2,
-        page: 1,
-        pageSize: 12
-      }), 1000))
+      () =>
+        new Promise((resolve) =>
+          setTimeout(
+            () =>
+              resolve({
+                templates: mockTemplates,
+                total: 2,
+                page: 1,
+                pageSize: 12,
+              }),
+            1000
+          )
+        )
     );
 
     render(
@@ -227,7 +234,7 @@ describe('TemplateLibrary', () => {
       templates: [],
       total: 0,
       page: 1,
-      pageSize: 12
+      pageSize: 12,
     });
 
     render(

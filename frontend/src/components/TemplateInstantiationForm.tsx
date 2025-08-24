@@ -22,7 +22,7 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
   templateId,
   onSuccess,
   onCancel,
-  className = ''
+  className = '',
 }) => {
   const [template, setTemplate] = useState<Template | null>(null);
   const [formData, setFormData] = useState<FormData>({});
@@ -41,7 +41,7 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
       setGeneralError(null);
       const templateData = await getTemplate(templateId);
       setTemplate(templateData);
-      
+
       // Initialize form data with default values
       const initialFormData: FormData = {};
       templateData.parameters.forEach((param) => {
@@ -71,7 +71,7 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
         }
       });
       setFormData(initialFormData);
-      
+
       // Set default workflow name based on template
       setWorkflowName(`${templateData.name} - ${new Date().toLocaleDateString()}`);
     } catch (error) {
@@ -87,7 +87,11 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
   }, [loadTemplate]);
 
   // Validation functions
-  const validateField = (name: string, value: unknown, parameter: TemplateParameter): string | null => {
+  const validateField = (
+    name: string,
+    value: unknown,
+    parameter: TemplateParameter
+  ): string | null => {
     // Required validation
     if (parameter.isRequired && (value === '' || value === null || value === undefined)) {
       return `${parameter.name} is required`;
@@ -120,23 +124,23 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
     // Custom validation rules - check for number values specifically
     if (parameter.validationRules && value !== '' && value !== null && value !== undefined) {
       const rules = parameter.validationRules;
-      
+
       if (rules.min !== undefined && Number(value) < Number(rules.min)) {
         return `${parameter.name} must be at least ${rules.min}`;
       }
-      
+
       if (rules.max !== undefined && Number(value) > Number(rules.max)) {
         return `${parameter.name} must be no more than ${rules.max}`;
       }
-      
+
       if (rules.minLength !== undefined && String(value).length < Number(rules.minLength)) {
         return `${parameter.name} must be at least ${rules.minLength} characters`;
       }
-      
+
       if (rules.maxLength !== undefined && String(value).length > Number(rules.maxLength)) {
         return `${parameter.name} must be no more than ${rules.maxLength} characters`;
       }
-      
+
       if (rules.pattern && !new RegExp(String(rules.pattern)).test(String(value))) {
         return `${parameter.name} format is invalid`;
       }
@@ -169,11 +173,11 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
 
   // Form field handlers
   const handleFieldChange = (name: string, value: unknown) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     // Clear field error when user starts typing
     if (errors[name]) {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[name];
         return newErrors;
@@ -184,7 +188,7 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
   const handleWorkflowNameChange = (value: string) => {
     setWorkflowName(value);
     if (errors.workflowName) {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors.workflowName;
         return newErrors;
@@ -195,7 +199,7 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
   // Form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -207,11 +211,14 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
       const instantiateRequest: TemplateInstantiateRequest = {
         name: workflowName.trim(),
         description: workflowDescription.trim() || undefined,
-        parameterValues: formData
+        parameterValues: formData,
       };
 
-      const workflow: WorkflowDefinition = await instantiateTemplate(templateId, instantiateRequest);
-      
+      const workflow: WorkflowDefinition = await instantiateTemplate(
+        templateId,
+        instantiateRequest
+      );
+
       if (workflow.id) {
         onSuccess(workflow.id);
       } else {
@@ -232,7 +239,9 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
     const fieldId = `field-${parameter.name}`;
 
     const baseInputClasses = `w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-      error ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-indigo-500'
+      error
+        ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+        : 'border-gray-300 focus:border-indigo-500'
     }`;
 
     switch (parameter.parameterType) {
@@ -268,7 +277,9 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
             type="number"
             id={fieldId}
             value={value === 0 ? '0' : String(value || '')}
-            onChange={(e) => handleFieldChange(parameter.name, e.target.value ? Number(e.target.value) : '')}
+            onChange={(e) =>
+              handleFieldChange(parameter.name, e.target.value ? Number(e.target.value) : '')
+            }
             placeholder={parameter.description}
             min={parameter.validationRules?.min as number}
             max={parameter.validationRules?.max as number}
@@ -326,7 +337,11 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
         <div className="flex">
           <div className="flex-shrink-0">
             <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clipRule="evenodd"
+              />
             </svg>
           </div>
           <div className="ml-3">
@@ -363,7 +378,11 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <div className="ml-3">
@@ -376,7 +395,7 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
         {/* Workflow Details */}
         <div className="space-y-4">
           <h3 className="text-md font-medium text-gray-900">Workflow Details</h3>
-          
+
           <div>
             <label htmlFor="workflow-name" className="block text-sm font-medium text-gray-700 mb-1">
               Workflow Name <span className="text-red-500">*</span>
@@ -387,7 +406,9 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
               value={workflowName}
               onChange={(e) => handleWorkflowNameChange(e.target.value)}
               className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-                errors.workflowName ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-indigo-500'
+                errors.workflowName
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                  : 'border-gray-300 focus:border-indigo-500'
               }`}
               aria-describedby={errors.workflowName ? 'workflow-name-error' : undefined}
             />
@@ -399,7 +420,10 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
           </div>
 
           <div>
-            <label htmlFor="workflow-description" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="workflow-description"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Description (Optional)
             </label>
             <textarea
@@ -417,20 +441,23 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
         {template.parameters.length > 0 && (
           <div className="space-y-4">
             <h3 className="text-md font-medium text-gray-900">Template Parameters</h3>
-            
+
             {template.parameters.map((parameter) => (
               <div key={parameter.id}>
-                <label htmlFor={`field-${parameter.name}`} className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor={`field-${parameter.name}`}
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   {parameter.name}
                   {parameter.isRequired && <span className="text-red-500 ml-1">*</span>}
                 </label>
-                
+
                 {parameter.description && (
                   <p className="text-xs text-gray-500 mb-2">{parameter.description}</p>
                 )}
-                
+
                 {renderFormField(parameter)}
-                
+
                 {errors[parameter.name] && (
                   <p id={`field-${parameter.name}-error`} className="mt-1 text-sm text-red-600">
                     {errors[parameter.name]}

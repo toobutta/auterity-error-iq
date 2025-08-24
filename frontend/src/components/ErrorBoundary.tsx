@@ -21,9 +21,9 @@ interface State {
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { 
+    this.state = {
       hasError: false,
-      showDetails: false
+      showDetails: false,
     };
   }
 
@@ -36,21 +36,21 @@ export class ErrorBoundary extends Component<Props, State> {
       error.stack
     );
 
-    return { 
-      hasError: true, 
-      error: appError 
+    return {
+      hasError: true,
+      error: appError,
     };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+
     const appError = createAppError(
       'REACT_ERROR_BOUNDARY',
       error.message,
-      { 
+      {
         component: this.props.component || 'Unknown',
-        action: 'render'
+        action: 'render',
       },
       `${error.stack}\n\nComponent Stack:\n${errorInfo.componentStack}`,
       error.stack
@@ -66,13 +66,13 @@ export class ErrorBoundary extends Component<Props, State> {
 
   handleReportError = () => {
     if (!this.props.enableReporting || !this.state.error) return;
-    
+
     // TODO: Implement error reporting
     console.log('Reporting error:', this.state.error);
   };
 
   toggleDetails = () => {
-    this.setState(prev => ({ showDetails: !prev.showDetails }));
+    this.setState((prev) => ({ showDetails: !prev.showDetails }));
   };
 
   render() {
@@ -88,21 +88,45 @@ export class ErrorBoundary extends Component<Props, State> {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
           <div className="max-w-2xl w-full bg-white shadow-lg rounded-lg overflow-hidden">
             {/* Header */}
-            <div className={`px-6 py-4 ${isCritical ? 'bg-red-50 border-b border-red-200' : 'bg-yellow-50 border-b border-yellow-200'}`}>
+            <div
+              className={`px-6 py-4 ${isCritical ? 'bg-red-50 border-b border-red-200' : 'bg-yellow-50 border-b border-yellow-200'}`}
+            >
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   {isCritical ? (
-                    <svg className="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z" />
+                    <svg
+                      className="h-8 w-8 text-red-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"
+                      />
                     </svg>
                   ) : (
-                    <svg className="h-8 w-8 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="h-8 w-8 text-yellow-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   )}
                 </div>
                 <div className="ml-3">
-                  <h3 className={`text-lg font-medium ${isCritical ? 'text-red-800' : 'text-yellow-800'}`}>
+                  <h3
+                    className={`text-lg font-medium ${isCritical ? 'text-red-800' : 'text-yellow-800'}`}
+                  >
                     {isCritical ? 'Critical Error' : 'Application Error'}
                   </h3>
                   <p className={`text-sm ${isCritical ? 'text-red-600' : 'text-yellow-600'}`}>
@@ -121,27 +145,42 @@ export class ErrorBoundary extends Component<Props, State> {
                     onClick={this.toggleDetails}
                     className="text-sm text-gray-500 hover:text-gray-700 flex items-center"
                   >
-                    <svg 
-                      className={`h-4 w-4 mr-1 transform transition-transform ${this.state.showDetails ? 'rotate-90' : ''}`} 
-                      fill="none" 
-                      viewBox="0 0 24 24" 
+                    <svg
+                      className={`h-4 w-4 mr-1 transform transition-transform ${this.state.showDetails ? 'rotate-90' : ''}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                     {this.state.showDetails ? 'Hide' : 'Show'} Technical Details
                   </button>
-                  
+
                   {this.state.showDetails && (
                     <div className="mt-2 p-3 bg-gray-50 rounded-md">
                       <div className="text-xs text-gray-600 space-y-2">
-                        <div><strong>Error Code:</strong> {error.code}</div>
-                        <div><strong>Category:</strong> {error.category}</div>
-                        <div><strong>Severity:</strong> {error.severity}</div>
+                        <div>
+                          <strong>Error Code:</strong> {error.code}
+                        </div>
+                        <div>
+                          <strong>Category:</strong> {error.category}
+                        </div>
+                        <div>
+                          <strong>Severity:</strong> {error.severity}
+                        </div>
                         {error.correlationId && (
-                          <div><strong>Correlation ID:</strong> {error.correlationId}</div>
+                          <div>
+                            <strong>Correlation ID:</strong> {error.correlationId}
+                          </div>
                         )}
-                        <div><strong>Timestamp:</strong> {error.context.timestamp.toISOString()}</div>
+                        <div>
+                          <strong>Timestamp:</strong> {error.context.timestamp.toISOString()}
+                        </div>
                         {error.details && (
                           <div>
                             <strong>Details:</strong>
@@ -180,7 +219,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 >
                   Try Again
                 </button>
-                
+
                 <button
                   type="button"
                   className="bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"

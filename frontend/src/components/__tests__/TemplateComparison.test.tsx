@@ -7,7 +7,9 @@ import { Template } from '../../types/template';
 // Mock ReactFlow
 vi.mock('reactflow', () => ({
   __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => <div data-testid="react-flow">{children}</div>,
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="react-flow">{children}</div>
+  ),
   Background: () => <div data-testid="background" />,
   Controls: () => <div data-testid="controls" />,
 }));
@@ -26,10 +28,10 @@ const mockTemplates: Template[] = [
           type: 'start',
           position: { x: 0, y: 0 },
           description: 'Starting step',
-          config: {}
-        }
+          config: {},
+        },
       ],
-      connections: []
+      connections: [],
     },
     isActive: true,
     createdAt: '2024-01-01T00:00:00Z',
@@ -42,9 +44,9 @@ const mockTemplates: Template[] = [
         description: 'Customer name',
         parameterType: 'string',
         isRequired: true,
-        defaultValue: ''
-      }
-    ]
+        defaultValue: '',
+      },
+    ],
   },
   {
     id: 'template-2',
@@ -59,7 +61,7 @@ const mockTemplates: Template[] = [
           type: 'start',
           position: { x: 0, y: 0 },
           description: 'Starting step',
-          config: {}
+          config: {},
         },
         {
           id: 'step-2',
@@ -67,17 +69,17 @@ const mockTemplates: Template[] = [
           type: 'ai_process',
           position: { x: 200, y: 0 },
           description: 'Processing step',
-          config: {}
-        }
+          config: {},
+        },
       ],
       connections: [
         {
           id: 'conn-1',
           source: 'step-1',
           target: 'step-2',
-          label: 'Next'
-        }
-      ]
+          label: 'Next',
+        },
+      ],
     },
     isActive: false,
     createdAt: '2024-01-02T00:00:00Z',
@@ -90,7 +92,7 @@ const mockTemplates: Template[] = [
         description: 'Type of service',
         parameterType: 'string',
         isRequired: true,
-        defaultValue: ''
+        defaultValue: '',
       },
       {
         id: 'param-3',
@@ -99,10 +101,10 @@ const mockTemplates: Template[] = [
         description: 'Priority level',
         parameterType: 'number',
         isRequired: false,
-        defaultValue: 1
-      }
-    ]
-  }
+        defaultValue: 1,
+      },
+    ],
+  },
 ];
 
 describe('TemplateComparison', () => {
@@ -254,8 +256,8 @@ describe('TemplateComparison', () => {
     const templatesWithoutSteps = [
       {
         ...mockTemplates[0],
-        definition: { steps: [], connections: [] }
-      }
+        definition: { steps: [], connections: [] },
+      },
     ];
 
     render(
@@ -317,7 +319,7 @@ describe('TemplateComparison', () => {
     );
 
     const inactiveButtons = screen.getAllByRole('button');
-    const inactiveButton = inactiveButtons.find(button => 
+    const inactiveButton = inactiveButtons.find((button) =>
       button.textContent?.includes('Template Inactive')
     );
     expect(inactiveButton).toBeDisabled();

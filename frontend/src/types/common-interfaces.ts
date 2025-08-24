@@ -1,6 +1,6 @@
 /**
  * Common TypeScript interfaces for the Auterity Unified project
- * 
+ *
  * This file contains shared interfaces that can be used across the application
  * to replace 'any' types with proper type definitions.
  */

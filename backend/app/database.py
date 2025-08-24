@@ -6,8 +6,6 @@ from typing import Generator
 
 from sqlalchemy.orm import Session
 
-from app.models import Base, SessionLocal, engine
-
 logger = logging.getLogger(__name__)
 
 

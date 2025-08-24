@@ -11,7 +11,10 @@ interface RealtimeStatusContextProps {
   lastUpdate: Date | null;
 }
 
-const RealtimeStatusContext = createContext<RealtimeStatusContextProps>({ status: null, lastUpdate: null });
+const RealtimeStatusContext = createContext<RealtimeStatusContextProps>({
+  status: null,
+  lastUpdate: null,
+});
 
 export const useRealtimeStatus = () => useContext(RealtimeStatusContext);
 
@@ -39,7 +42,7 @@ export const RealtimeStatusProvider: React.FC<{ children: ReactNode }> = ({ chil
       };
     };
     connect();
-    
+
     // Fallback polling every 30s
     const interval = setInterval(async () => {
       try {
@@ -51,7 +54,7 @@ export const RealtimeStatusProvider: React.FC<{ children: ReactNode }> = ({ chil
         console.warn('Health check failed:', error);
       }
     }, 30000);
-    
+
     return () => {
       ws?.close();
       clearInterval(interval);

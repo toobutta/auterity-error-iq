@@ -1,13 +1,13 @@
 import React from 'react';
-import { 
-  BarChart as RechartsBar, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer 
+import {
+  BarChart as RechartsBar,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
 } from 'recharts';
 import { PerformanceMetrics } from '../../types/performance';
 
@@ -18,11 +18,11 @@ interface BarChartProps {
   className?: string;
 }
 
-export const BarChart: React.FC<BarChartProps> = ({ 
-  data, 
-  type, 
+export const BarChart: React.FC<BarChartProps> = ({
+  data,
+  type,
   'aria-label': ariaLabel,
-  className = ''
+  className = '',
 }) => {
   const getBarColor = () => {
     switch (type) {
@@ -78,18 +78,18 @@ export const BarChart: React.FC<BarChartProps> = ({
 
   const formatXAxisValue = (value: string | Date) => {
     const date = new Date(value);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
-  const chartData = data.map(item => ({
+  const chartData = data.map((item) => ({
     ...item,
     timestamp: item.timestamp instanceof Date ? item.timestamp.toISOString() : item.timestamp,
-    successRate: item.successRate ? item.successRate * 100 : 0 // Convert to percentage for display
+    successRate: item.successRate ? item.successRate * 100 : 0, // Convert to percentage for display
   }));
 
   return (
@@ -105,22 +105,22 @@ export const BarChart: React.FC<BarChartProps> = ({
           }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-          <XAxis 
+          <XAxis
             dataKey="timestamp"
             stroke="#6B7280"
             fontSize={12}
             tickFormatter={formatXAxisValue}
           />
-          <YAxis 
+          <YAxis
             stroke="#6B7280"
             fontSize={12}
-            label={{ 
-              value: getYAxisLabel(), 
-              angle: -90, 
-              position: 'insideLeft' 
+            label={{
+              value: getYAxisLabel(),
+              angle: -90,
+              position: 'insideLeft',
             }}
           />
-          <Tooltip 
+          <Tooltip
             contentStyle={{
               backgroundColor: '#F9FAFB',
               border: '1px solid #E5E7EB',
@@ -130,11 +130,7 @@ export const BarChart: React.FC<BarChartProps> = ({
             labelFormatter={(label: string) => `Time: ${formatXAxisValue(label)}`}
           />
           <Legend />
-          <Bar 
-            dataKey={getDataKey()}
-            fill={getBarColor()}
-            radius={[2, 2, 0, 0]}
-          />
+          <Bar dataKey={getDataKey()} fill={getBarColor()} radius={[2, 2, 0, 0]} />
         </RechartsBar>
       </ResponsiveContainer>
     </div>

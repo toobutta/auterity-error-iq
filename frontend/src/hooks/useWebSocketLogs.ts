@@ -52,11 +52,12 @@ export const useWebSocketLogs = (
   options: UseWebSocketLogsOptions = {}
 ): UseWebSocketLogsReturn => {
   const opts = { ...DEFAULT_OPTIONS, ...options };
-  
+
   const [logs, setLogs] = useState<ExecutionLog[]>([]);
-  const [connectionStatus, setConnectionStatus] = useState<WebSocketConnectionStatus>('disconnected');
+  const [connectionStatus, setConnectionStatus] =
+    useState<WebSocketConnectionStatus>('disconnected');
   const [error, setError] = useState<string | null>(null);
-  
+
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttemptsRef = useRef(0);
@@ -86,18 +87,21 @@ export const useWebSocketLogs = (
   }, []);
 
   // Add new log with buffer management
-  const addLog = useCallback((newLog: ExecutionLog) => {
-    if (!mountedRef.current) return;
-    
-    setLogs(prevLogs => {
-      const updatedLogs = [...prevLogs, newLog];
-      // Keep only the most recent logs within buffer size
-      if (updatedLogs.length > opts.bufferSize) {
-        return updatedLogs.slice(-opts.bufferSize);
-      }
-      return updatedLogs;
-    });
-  }, [opts.bufferSize]);
+  const addLog = useCallback(
+    (newLog: ExecutionLog) => {
+      if (!mountedRef.current) return;
+
+      setLogs((prevLogs) => {
+        const updatedLogs = [...prevLogs, newLog];
+        // Keep only the most recent logs within buffer size
+        if (updatedLogs.length > opts.bufferSize) {
+          return updatedLogs.slice(-opts.bufferSize);
+        }
+        return updatedLogs;
+      });
+    },
+    [opts.bufferSize]
+  );
 
   // Clear all logs
   const clearLogs = useCallback(() => {
@@ -126,7 +130,7 @@ export const useWebSocketLogs = (
 
       ws.onmessage = (event) => {
         if (!mountedRef.current) return;
-        
+
         try {
           const message: WebSocketLogMessage = JSON.parse(event.data);
           const transformedLog = transformLogMessage(message);
@@ -139,7 +143,7 @@ export const useWebSocketLogs = (
 
       ws.onclose = (event) => {
         if (!mountedRef.current) return;
-        
+
         console.log(`WebSocket closed for execution ${executionId}:`, event.code, event.reason);
         setConnectionStatus('disconnected');
         wsRef.current = null;
@@ -151,8 +155,10 @@ export const useWebSocketLogs = (
           reconnectAttemptsRef.current < opts.reconnectAttempts
         ) {
           reconnectAttemptsRef.current++;
-          console.log(`Attempting reconnection ${reconnectAttemptsRef.current}/${opts.reconnectAttempts}`);
-          
+          console.log(
+            `Attempting reconnection ${reconnectAttemptsRef.current}/${opts.reconnectAttempts}`
+          );
+
           reconnectTimeoutRef.current = setTimeout(() => {
             if (mountedRef.current) {
               connect();
@@ -163,18 +169,25 @@ export const useWebSocketLogs = (
 
       ws.onerror = (event) => {
         if (!mountedRef.current) return;
-        
+
         console.error('WebSocket error:', event);
         setConnectionStatus('error');
         setError('WebSocket connection error');
       };
-
     } catch (connectionError) {
       console.error('Failed to create WebSocket connection:', connectionError);
       setConnectionStatus('error');
       setError('Failed to establish WebSocket connection');
     }
-  }, [executionId, opts.enabled, opts.reconnectAttempts, opts.reconnectInterval, getWebSocketUrl, transformLogMessage, addLog]);
+  }, [
+    executionId,
+    opts.enabled,
+    opts.reconnectAttempts,
+    opts.reconnectInterval,
+    getWebSocketUrl,
+    transformLogMessage,
+    addLog,
+  ]);
 
   // Disconnect WebSocket
   const disconnect = useCallback(() => {

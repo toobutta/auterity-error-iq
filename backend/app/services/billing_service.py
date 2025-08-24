@@ -3,16 +3,14 @@
 import logging
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Optional, Tuple
 from uuid import UUID
 
 import stripe
 from sqlalchemy.orm import Session
 
-from app.models.tenant import Tenant, BillingRecord, UsageLog, SubscriptionPlan
-from app.models.user import User
-from app.models.workflow import Workflow
 from app.core.config import settings
+from app.models.tenant import BillingRecord, SubscriptionPlan, Tenant, UsageLog
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +31,7 @@ class BillingService:
         tenant_id: UUID,
         plan: SubscriptionPlan,
         payment_method_id: str,
-        trial_days: int = 14
+        trial_days: int = 14,
     ) -> Tuple[Tenant, str]:
         """Create a new subscription for a tenant."""
         try:
@@ -45,7 +43,7 @@ class BillingService:
             if not tenant.stripe_customer_id:
                 customer = self.stripe.Customer.create(
                     email=tenant.users[0].email if tenant.users else None,
-                    metadata={"tenant_id": str(tenant_id)}
+                    metadata={"tenant_id": str(tenant_id)},
                 )
                 tenant.stripe_customer_id = customer.id
 
@@ -67,8 +65,12 @@ class BillingService:
             tenant.subscription_plan = plan
             tenant.stripe_subscription_id = subscription.id
             tenant.status = "trial" if trial_days > 0 else "active"
-            tenant.current_period_start = datetime.fromtimestamp(subscription.current_period_start)
-            tenant.current_period_end = datetime.fromtimestamp(subscription.current_period_end)
+            tenant.current_period_start = datetime.fromtimestamp(
+                subscription.current_period_start
+            )
+            tenant.current_period_end = datetime.fromtimestamp(
+                subscription.current_period_end
+            )
             if trial_days > 0:
                 tenant.trial_end = datetime.fromtimestamp(subscription.trial_end)
 
@@ -85,9 +87,7 @@ class BillingService:
             raise
 
     async def update_subscription(
-        self,
-        tenant_id: UUID,
-        new_plan: SubscriptionPlan
+        self, tenant_id: UUID, new_plan: SubscriptionPlan
     ) -> Tenant:
         """Update tenant subscription plan."""
         try:
@@ -96,11 +96,18 @@ class BillingService:
                 raise ValueError(f"Tenant {tenant_id} has no active subscription")
 
             # Update Stripe subscription
-            subscription = self.stripe.Subscription.retrieve(tenant.stripe_subscription_id)
+            subscription = self.stripe.Subscription.retrieve(
+                tenant.stripe_subscription_id
+            )
             self.stripe.Subscription.modify(
                 tenant.stripe_subscription_id,
-                items=[{"id": subscription["items"]["data"][0].id, "price": self._get_stripe_price_id(new_plan)}],
-                proration_behavior="create_prorations"
+                items=[
+                    {
+                        "id": subscription["items"]["data"][0].id,
+                        "price": self._get_stripe_price_id(new_plan),
+                    }
+                ],
+                proration_behavior="create_prorations",
             )
 
             # Update tenant
@@ -125,8 +132,7 @@ class BillingService:
 
             # Cancel Stripe subscription
             self.stripe.Subscription.modify(
-                tenant.stripe_subscription_id,
-                cancel_at_period_end=True
+                tenant.stripe_subscription_id, cancel_at_period_end=True
             )
 
             # Update tenant status
@@ -150,7 +156,7 @@ class BillingService:
         cost: Decimal = Decimal("0.00"),
         user_id: Optional[UUID] = None,
         workflow_id: Optional[UUID] = None,
-        metadata: Optional[Dict] = None
+        metadata: Optional[Dict] = None,
     ) -> UsageLog:
         """Track resource usage for billing purposes."""
         try:
@@ -162,7 +168,7 @@ class BillingService:
                 cost=cost,
                 user_id=user_id,
                 workflow_id=workflow_id,
-                metadata=metadata or {}
+                metadata=metadata or {},
             )
             self.db.add(usage_log)
 
@@ -183,7 +189,7 @@ class BillingService:
         self,
         tenant_id: UUID,
         start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None
+        end_date: Optional[datetime] = None,
     ) -> Dict:
         """Get usage summary for a tenant."""
         try:
@@ -198,9 +204,17 @@ class BillingService:
 
             summary = {
                 "total_cost": sum(log.cost for log in usage_logs),
-                "total_ai_requests": sum(log.quantity for log in usage_logs if log.resource_type == "ai_request"),
-                "total_workflow_executions": sum(log.quantity for log in usage_logs if log.resource_type == "workflow_execution"),
-                "resource_breakdown": {}
+                "total_ai_requests": sum(
+                    log.quantity
+                    for log in usage_logs
+                    if log.resource_type == "ai_request"
+                ),
+                "total_workflow_executions": sum(
+                    log.quantity
+                    for log in usage_logs
+                    if log.resource_type == "workflow_execution"
+                ),
+                "resource_breakdown": {},
             }
 
             # Group by resource type
@@ -208,9 +222,11 @@ class BillingService:
                 if log.resource_type not in summary["resource_breakdown"]:
                     summary["resource_breakdown"][log.resource_type] = {
                         "count": 0,
-                        "cost": Decimal("0.00")
+                        "cost": Decimal("0.00"),
                     }
-                summary["resource_breakdown"][log.resource_type]["count"] += log.quantity
+                summary["resource_breakdown"][log.resource_type][
+                    "count"
+                ] += log.quantity
                 summary["resource_breakdown"][log.resource_type]["cost"] += log.cost
 
             return summary
@@ -229,7 +245,7 @@ class BillingService:
         stripe_payment_intent_id: Optional[str] = None,
         billing_period_start: Optional[datetime] = None,
         billing_period_end: Optional[datetime] = None,
-        metadata: Optional[Dict] = None
+        metadata: Optional[Dict] = None,
     ) -> BillingRecord:
         """Create a billing record for a tenant."""
         try:
@@ -241,9 +257,10 @@ class BillingService:
                 stripe_invoice_id=stripe_invoice_id,
                 stripe_payment_intent_id=stripe_payment_intent_id,
                 billing_period_start=billing_period_start or datetime.utcnow(),
-                billing_period_end=billing_period_end or (datetime.utcnow() + timedelta(days=30)),
+                billing_period_end=billing_period_end
+                or (datetime.utcnow() + timedelta(days=30)),
                 status="pending",
-                metadata=metadata or {}
+                metadata=metadata or {},
             )
             self.db.add(billing_record)
             self.db.commit()
@@ -255,13 +272,15 @@ class BillingService:
             raise
 
     async def mark_billing_record_paid(
-        self,
-        billing_record_id: UUID,
-        stripe_payment_intent_id: Optional[str] = None
+        self, billing_record_id: UUID, stripe_payment_intent_id: Optional[str] = None
     ) -> BillingRecord:
         """Mark a billing record as paid."""
         try:
-            billing_record = self.db.query(BillingRecord).filter(BillingRecord.id == billing_record_id).first()
+            billing_record = (
+                self.db.query(BillingRecord)
+                .filter(BillingRecord.id == billing_record_id)
+                .first()
+            )
             if not billing_record:
                 raise ValueError(f"Billing record {billing_record_id} not found")
 
@@ -295,7 +314,9 @@ class BillingService:
         plan_features = tenant.get_plan_features()
         tenant.max_users = plan_features.get("max_users", 5)
         tenant.max_workflows = plan_features.get("max_workflows", 100)
-        tenant.max_ai_requests_per_month = plan_features.get("max_ai_requests_per_month", 10000)
+        tenant.max_ai_requests_per_month = plan_features.get(
+            "max_ai_requests_per_month", 10000
+        )
 
         # Update monthly budget based on plan
         plan_pricing = {
@@ -312,7 +333,7 @@ class BillingService:
         """Handle Stripe webhook events."""
         try:
             event_type = event_data.get("type")
-            
+
             if event_type == "invoice.payment_succeeded":
                 await self._handle_payment_succeeded(event_data)
             elif event_type == "invoice.payment_failed":
@@ -332,8 +353,12 @@ class BillingService:
         """Handle successful payment webhook."""
         invoice = event_data.get("data", {}).get("object", {})
         customer_id = invoice.get("customer")
-        
-        tenant = self.db.query(Tenant).filter(Tenant.stripe_customer_id == customer_id).first()
+
+        tenant = (
+            self.db.query(Tenant)
+            .filter(Tenant.stripe_customer_id == customer_id)
+            .first()
+        )
         if not tenant:
             return
 
@@ -344,11 +369,13 @@ class BillingService:
         # Create billing record
         await self.create_billing_record(
             tenant_id=tenant.id,
-            amount=Decimal(str(invoice.get("amount_paid", 0)) / 100),  # Convert from cents
+            amount=Decimal(
+                str(invoice.get("amount_paid", 0)) / 100
+            ),  # Convert from cents
             description=f"Subscription payment for {tenant.subscription_plan} plan",
             stripe_invoice_id=invoice.get("id"),
             billing_period_start=datetime.fromtimestamp(invoice.get("period_start", 0)),
-            billing_period_end=datetime.fromtimestamp(invoice.get("period_end", 0))
+            billing_period_end=datetime.fromtimestamp(invoice.get("period_end", 0)),
         )
 
         self.db.commit()
@@ -357,8 +384,12 @@ class BillingService:
         """Handle failed payment webhook."""
         invoice = event_data.get("data", {}).get("object", {})
         customer_id = invoice.get("customer")
-        
-        tenant = self.db.query(Tenant).filter(Tenant.stripe_customer_id == customer_id).first()
+
+        tenant = (
+            self.db.query(Tenant)
+            .filter(Tenant.stripe_customer_id == customer_id)
+            .first()
+        )
         if not tenant:
             return
 
@@ -370,14 +401,22 @@ class BillingService:
         """Handle subscription update webhook."""
         subscription = event_data.get("data", {}).get("object", {})
         customer_id = subscription.get("customer")
-        
-        tenant = self.db.query(Tenant).filter(Tenant.stripe_customer_id == customer_id).first()
+
+        tenant = (
+            self.db.query(Tenant)
+            .filter(Tenant.stripe_customer_id == customer_id)
+            .first()
+        )
         if not tenant:
             return
 
         # Update subscription period
-        tenant.current_period_start = datetime.fromtimestamp(subscription.get("current_period_start", 0))
-        tenant.current_period_end = datetime.fromtimestamp(subscription.get("current_period_end", 0))
+        tenant.current_period_start = datetime.fromtimestamp(
+            subscription.get("current_period_start", 0)
+        )
+        tenant.current_period_end = datetime.fromtimestamp(
+            subscription.get("current_period_end", 0)
+        )
         tenant.updated_at = datetime.utcnow()
 
         self.db.commit()
@@ -386,8 +425,12 @@ class BillingService:
         """Handle subscription deletion webhook."""
         subscription = event_data.get("data", {}).get("object", {})
         customer_id = subscription.get("customer")
-        
-        tenant = self.db.query(Tenant).filter(Tenant.stripe_customer_id == customer_id).first()
+
+        tenant = (
+            self.db.query(Tenant)
+            .filter(Tenant.stripe_customer_id == customer_id)
+            .first()
+        )
         if not tenant:
             return
 
@@ -404,13 +447,19 @@ class BillingService:
                 raise ValueError(f"Tenant {tenant_id} not found")
 
             # Get current month usage
-            start_of_month = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            start_of_month = datetime.utcnow().replace(
+                day=1, hour=0, minute=0, second=0, microsecond=0
+            )
             usage_summary = await self.get_usage_summary(tenant_id, start_of_month)
 
             # Get recent billing records
-            recent_billing = self.db.query(BillingRecord).filter(
-                BillingRecord.tenant_id == tenant_id
-            ).order_by(BillingRecord.created_at.desc()).limit(5).all()
+            recent_billing = (
+                self.db.query(BillingRecord)
+                .filter(BillingRecord.tenant_id == tenant_id)
+                .order_by(BillingRecord.created_at.desc())
+                .limit(5)
+                .all()
+            )
 
             return {
                 "tenant": {
@@ -421,7 +470,7 @@ class BillingService:
                     "current_period_start": tenant.current_period_start,
                     "current_period_end": tenant.current_period_end,
                     "trial_end": tenant.trial_end,
-                    "plan_features": tenant.get_plan_features()
+                    "plan_features": tenant.get_plan_features(),
                 },
                 "usage": {
                     "current_month": usage_summary,
@@ -429,8 +478,8 @@ class BillingService:
                         "max_users": tenant.max_users,
                         "max_workflows": tenant.max_workflows,
                         "max_ai_requests_per_month": tenant.max_ai_requests_per_month,
-                        "current_month_ai_requests": tenant.current_month_ai_requests
-                    }
+                        "current_month_ai_requests": tenant.current_month_ai_requests,
+                    },
                 },
                 "billing": {
                     "monthly_budget": tenant.monthly_budget,
@@ -440,11 +489,11 @@ class BillingService:
                             "amount": record.amount,
                             "status": record.status,
                             "description": record.description,
-                            "created_at": record.created_at
+                            "created_at": record.created_at,
                         }
                         for record in recent_billing
-                    ]
-                }
+                    ],
+                },
             }
 
         except Exception as e:

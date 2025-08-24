@@ -2,13 +2,15 @@
 Tool Registry for managing and discovering available tools across MCP servers.
 Implements tool registration, discovery, capability validation, and execution tracking.
 """
+
 import logging
-from typing import Dict, List, Optional, Any
-from uuid import UUID, uuid4
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
+from uuid import UUID, uuid4
 
 logger = logging.getLogger(__name__)
+
 
 class ToolType(str, Enum):
     FUNCTION = "function"
@@ -16,11 +18,13 @@ class ToolType(str, Enum):
     PROMPT = "prompt"
     COMMAND = "command"
 
+
 class ToolStatus(str, Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
     DEPRECATED = "deprecated"
     ERROR = "error"
+
 
 class Tool:
     def __init__(
@@ -31,7 +35,7 @@ class Tool:
         server_id: UUID,
         schema: Dict[str, Any],
         capabilities: List[str],
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ):
         self.id = uuid4()
         self.name = name
@@ -61,8 +65,11 @@ class Tool:
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
             "execution_count": self.execution_count,
-            "last_execution": self.last_execution.isoformat() if self.last_execution else None
+            "last_execution": (
+                self.last_execution.isoformat() if self.last_execution else None
+            ),
         }
+
 
 class ToolRegistry:
     def __init__(self):
@@ -79,7 +86,9 @@ class ToolRegistry:
                 existing_tool_id = self.name_index[tool.name]
                 existing_tool = self.tools[existing_tool_id]
                 if existing_tool.server_id != tool.server_id:
-                    logger.warning(f"Tool name conflict: {tool.name} already exists from different server")
+                    logger.warning(
+                        f"Tool name conflict: {tool.name} already exists from different server"
+                    )
                     return False
 
             # Register the tool
@@ -97,7 +106,9 @@ class ToolRegistry:
                     self.capability_index[capability] = []
                 self.capability_index[capability].append(tool.id)
 
-            logger.info(f"Registered tool: {tool.name} (ID: {tool.id}) from server {tool.server_id}")
+            logger.info(
+                f"Registered tool: {tool.name} (ID: {tool.id}) from server {tool.server_id}"
+            )
             return True
 
         except Exception as e:
@@ -152,7 +163,7 @@ class ToolRegistry:
         server_id: Optional[UUID] = None,
         tool_type: Optional[ToolType] = None,
         capabilities: Optional[List[str]] = None,
-        status: Optional[ToolStatus] = None
+        status: Optional[ToolStatus] = None,
     ) -> List[Tool]:
         """List tools with optional filtering."""
         tools = list(self.tools.values())
@@ -164,7 +175,9 @@ class ToolRegistry:
             tools = [t for t in tools if t.tool_type == tool_type]
 
         if capabilities:
-            tools = [t for t in tools if any(cap in t.capabilities for cap in capabilities)]
+            tools = [
+                t for t in tools if any(cap in t.capabilities for cap in capabilities)
+            ]
 
         if status:
             tools = [t for t in tools if t.status == status]
@@ -210,7 +223,9 @@ class ToolRegistry:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to update execution stats for tool {tool_id}: {str(e)}")
+            logger.error(
+                f"Failed to update execution stats for tool {tool_id}: {str(e)}"
+            )
             return False
 
     def update_tool_status(self, tool_id: UUID, status: ToolStatus) -> bool:
@@ -249,7 +264,9 @@ class ToolRegistry:
     def get_registry_stats(self) -> Dict[str, Any]:
         """Get registry statistics."""
         total_tools = len(self.tools)
-        active_tools = len([t for t in self.tools.values() if t.status == ToolStatus.ACTIVE])
+        active_tools = len(
+            [t for t in self.tools.values() if t.status == ToolStatus.ACTIVE]
+        )
         server_count = len(self.server_tools)
         capability_count = len(self.capability_index)
 
@@ -260,7 +277,9 @@ class ToolRegistry:
             "servers_with_tools": server_count,
             "unique_capabilities": capability_count,
             "tools_by_type": {
-                tool_type.value: len([t for t in self.tools.values() if t.tool_type == tool_type])
+                tool_type.value: len(
+                    [t for t in self.tools.values() if t.tool_type == tool_type]
+                )
                 for tool_type in ToolType
-            }
+            },
         }

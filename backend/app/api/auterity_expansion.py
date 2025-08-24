@@ -2,43 +2,56 @@
 
 import logging
 import time
-from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.tenant import Tenant
+from app.schemas.auterity_expansion import (
+    AgentDeployRequest,
+    AgentDeployResponse,
+    AgentMemoryCreate,
+    AgentMemoryResponse,
+    ChannelTriggerCreate,
+    ChannelTriggerRequest,
+)
+from app.schemas.auterity_expansion import (
+    ChannelTriggerResponse,  # Triage schemas; Vector and similarity schemas; Integration schemas; Channel trigger schemas; Custom model schemas; Agent and execution schemas
+)
+from app.schemas.auterity_expansion import ChannelTriggerResponse as ChannelTriggerResp
+from app.schemas.auterity_expansion import (
+    ChannelTriggerUpdate,
+    CustomModelCreate,
+    CustomModelHealthCheck,
+    CustomModelResponse,
+    CustomModelUpdate,
+    ExecutionMetricCreate,
+    ExecutionMetricResponse,
+    IntegrationCreate,
+    IntegrationResponse,
+    IntegrationSyncRequest,
+    IntegrationSyncResponse,
+    IntegrationUpdate,
+    IntegrationWebhookCreate,
+    IntegrationWebhookResponse,
+    LiveInsightsRequest,
+    LiveInsightsResponse,
+    SimilarityResult,
+    SimilaritySearchRequest,
+    SimilaritySearchResponse,
+    TriageRequest,
+    TriageResponse,
+    TriageResultCreate,
+    TriageResultResponse,
+    TriageRuleCreate,
+    TriageRuleResponse,
+    TriageRuleUpdate,
+    VectorEmbeddingCreate,
+    VectorEmbeddingResponse,
+)
 from app.services.smart_triage_service import SmartTriageService
 from app.services.vector_duplicate_service import VectorDuplicateService
-from app.services.autonomous_agent_service import AutonomousAgentService, AgentConfig
-from app.schemas.auterity_expansion import (
-    # Triage schemas
-    TriageRuleCreate, TriageRuleUpdate, TriageRuleResponse,
-    TriageRequest, TriageResponse, TriageResultCreate, TriageResultResponse,
-    
-    # Vector and similarity schemas
-    VectorEmbeddingCreate, VectorEmbeddingResponse, SimilarityResult,
-    SimilaritySearchRequest, SimilaritySearchResponse,
-    
-    # Integration schemas
-    IntegrationCreate, IntegrationUpdate, IntegrationResponse,
-    IntegrationWebhookCreate, IntegrationWebhookResponse,
-    IntegrationSyncRequest, IntegrationSyncResponse,
-    
-    # Channel trigger schemas
-    ChannelTriggerCreate, ChannelTriggerUpdate, ChannelTriggerResponse,
-    ChannelTriggerRequest, ChannelTriggerResponse as ChannelTriggerResp,
-    
-    # Custom model schemas
-    CustomModelCreate, CustomModelUpdate, CustomModelResponse,
-    CustomModelHealthCheck,
-    
-    # Agent and execution schemas
-    AgentMemoryCreate, AgentMemoryResponse, ExecutionMetricCreate, ExecutionMetricResponse,
-    AgentDeployRequest, AgentDeployResponse, LiveInsightsRequest, LiveInsightsResponse
-)
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +66,7 @@ async def get_current_tenant(db: Session = Depends(get_db)) -> Tenant:
     tenant = db.query(Tenant).first()
     if not tenant:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No tenant found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="No tenant found"
         )
     return tenant
 
@@ -64,31 +76,29 @@ async def get_current_tenant(db: Session = Depends(get_db)) -> Tenant:
 async def triage_input(
     request: TriageRequest,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Triage input content using AI-powered routing."""
     try:
         service = SmartTriageService(db)
         decision = await service.triage_input(
-            content=request.content,
-            context=request.context,
-            tenant_id=tenant.id
+            content=request.content, context=request.context, tenant_id=tenant.id
         )
-        
+
         return TriageResponse(
             routing_decision=decision.routing_decision,
             confidence_score=decision.confidence_score,
             rule_applied=decision.rule_applied,
             reasoning=decision.reasoning,
             suggested_actions=decision.suggested_actions,
-            processing_time_ms=decision.processing_time_ms
+            processing_time_ms=decision.processing_time_ms,
         )
-        
+
     except Exception as e:
         logger.error(f"Triage failed: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Triage failed: {str(e)}"
+            detail=f"Triage failed: {str(e)}",
         )
 
 
@@ -96,16 +106,15 @@ async def triage_input(
 async def create_triage_rule(
     rule_data: TriageRuleCreate,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Create a new triage rule."""
     try:
         service = SmartTriageService(db)
         rule = await service.create_triage_rule(
-            tenant_id=tenant.id,
-            rule_data=rule_data.dict()
+            tenant_id=tenant.id, rule_data=rule_data.dict()
         )
-        
+
         return TriageRuleResponse(
             id=rule.id,
             tenant_id=rule.tenant_id,
@@ -117,14 +126,14 @@ async def create_triage_rule(
             priority=rule.priority,
             is_active=rule.is_active,
             created_at=rule.created_at,
-            updated_at=rule.updated_at
+            updated_at=rule.updated_at,
         )
-        
+
     except Exception as e:
         logger.error(f"Failed to create triage rule: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create triage rule: {str(e)}"
+            detail=f"Failed to create triage rule: {str(e)}",
         )
 
 
@@ -132,20 +141,19 @@ async def create_triage_rule(
 async def get_triage_rules(
     db: Session = Depends(get_db),
     tenant: Tenant = Depends(get_current_tenant),
-    active_only: bool = Query(True, description="Return only active rules")
+    active_only: bool = Query(True, description="Return only active rules"),
 ):
     """Get triage rules for the current tenant."""
     try:
         service = SmartTriageService(db)
         rules = await service._get_active_triage_rules(tenant.id)
-        
+
         if not active_only:
             # Get all rules if not filtering by active
             from app.models.auterity_expansion import TriageRule
-            rules = db.query(TriageRule).filter(
-                TriageRule.tenant_id == tenant.id
-            ).all()
-        
+
+            rules = db.query(TriageRule).filter(TriageRule.tenant_id == tenant.id).all()
+
         return [
             TriageRuleResponse(
                 id=rule.id,
@@ -158,16 +166,16 @@ async def get_triage_rules(
                 priority=rule.priority,
                 is_active=rule.is_active,
                 created_at=rule.created_at,
-                updated_at=rule.updated_at
+                updated_at=rule.updated_at,
             )
             for rule in rules
         ]
-        
+
     except Exception as e:
         logger.error(f"Failed to get triage rules: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get triage rules: {str(e)}"
+            detail=f"Failed to get triage rules: {str(e)}",
         )
 
 
@@ -175,19 +183,19 @@ async def get_triage_rules(
 async def get_triage_accuracy(
     days: int = Query(30, ge=1, le=365, description="Number of days to analyze"),
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Get triage accuracy metrics."""
     try:
         service = SmartTriageService(db)
         accuracy = await service.get_triage_accuracy(tenant.id, days)
         return accuracy
-        
+
     except Exception as e:
         logger.error(f"Failed to get triage accuracy: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get triage accuracy: {str(e)}"
+            detail=f"Failed to get triage accuracy: {str(e)}",
         )
 
 
@@ -196,23 +204,23 @@ async def get_triage_accuracy(
 async def search_similar_items(
     request: SimilaritySearchRequest,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Search for similar items using vector similarity."""
     try:
         service = VectorDuplicateService(db)
         start_time = time.time()
-        
+
         results = await service.find_similar_items(
             content=request.content,
             item_type=request.item_type,
             tenant_id=tenant.id,
             threshold=request.threshold,
-            limit=request.limit
+            limit=request.limit,
         )
-        
+
         search_time_ms = int((time.time() - start_time) * 1000)
-        
+
         return SimilaritySearchResponse(
             query_content=request.content,
             results=[
@@ -221,19 +229,19 @@ async def search_similar_items(
                     item_type=result.item_type,
                     similarity_score=result.similarity_score,
                     content_preview=result.content_preview,
-                    metadata=result.metadata
+                    metadata=result.metadata,
                 )
                 for result in results
             ],
             total_found=len(results),
-            search_time_ms=search_time_ms
+            search_time_ms=search_time_ms,
         )
-        
+
     except Exception as e:
         logger.error(f"Similarity search failed: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Similarity search failed: {str(e)}"
+            detail=f"Similarity search failed: {str(e)}",
         )
 
 
@@ -241,7 +249,7 @@ async def search_similar_items(
 async def create_embedding(
     embedding_data: VectorEmbeddingCreate,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Create a new vector embedding."""
     try:
@@ -251,15 +259,15 @@ async def create_embedding(
             item_type=embedding_data.item_type,
             item_id=embedding_data.item_id,
             content="",  # TODO: Get content from item
-            metadata=embedding_data.metadata
+            metadata=embedding_data.metadata,
         )
-        
+
         if not embedding:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to create embedding"
+                detail="Failed to create embedding",
             )
-        
+
         return VectorEmbeddingResponse(
             id=embedding.id,
             tenant_id=embedding.tenant_id,
@@ -268,24 +276,26 @@ async def create_embedding(
             content_hash=embedding.content_hash,
             embedding_vector=embedding.embedding_vector,
             metadata=embedding.metadata,
-            created_at=embedding.created_at
+            created_at=embedding.created_at,
         )
-        
+
     except Exception as e:
         logger.error(f"Failed to create embedding: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create embedding: {str(e)}"
+            detail=f"Failed to create embedding: {str(e)}",
         )
 
 
 @router.get("/embeddings/clusters")
 async def get_similarity_clusters(
     item_type: str = Query(..., description="Type of items to cluster"),
-    min_similarity: float = Query(0.7, ge=0.0, le=1.0, description="Minimum similarity threshold"),
+    min_similarity: float = Query(
+        0.7, ge=0.0, le=1.0, description="Minimum similarity threshold"
+    ),
     min_cluster_size: int = Query(2, ge=2, le=100, description="Minimum cluster size"),
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Get clusters of similar items."""
     try:
@@ -294,15 +304,15 @@ async def get_similarity_clusters(
             tenant_id=tenant.id,
             item_type=item_type,
             min_similarity=min_similarity,
-            min_cluster_size=min_cluster_size
+            min_cluster_size=min_cluster_size,
         )
         return clusters
-        
+
     except Exception as e:
         logger.error(f"Failed to get similarity clusters: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get similarity clusters: {str(e)}"
+            detail=f"Failed to get similarity clusters: {str(e)}",
         )
 
 
@@ -311,23 +321,21 @@ async def get_duplicate_analysis(
     item_type: str = Query(..., description="Type of items to analyze"),
     days: int = Query(30, ge=1, le=365, description="Number of days to analyze"),
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Get duplicate analysis metrics."""
     try:
         service = VectorDuplicateService(db)
         analysis = await service.get_duplicate_analysis(
-            tenant_id=tenant.id,
-            item_type=item_type,
-            days=days
+            tenant_id=tenant.id, item_type=item_type, days=days
         )
         return analysis
-        
+
     except Exception as e:
         logger.error(f"Failed to get duplicate analysis: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get duplicate analysis: {str(e)}"
+            detail=f"Failed to get duplicate analysis: {str(e)}",
         )
 
 
@@ -336,12 +344,12 @@ async def get_duplicate_analysis(
 async def deploy_agent(
     request: AgentDeployRequest,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Deploy a new autonomous agent."""
     try:
         service = AutonomousAgentService(db)
-        
+
         # Convert request to AgentConfig
         agent_config = AgentConfig(
             name=request.agent_config.get("name", "Autonomous Agent"),
@@ -349,24 +357,24 @@ async def deploy_agent(
             capabilities=request.agent_config.get("capabilities", []),
             memory_config=request.memory_config,
             coordination_rules=request.coordination_rules,
-            escalation_policy=request.escalation_policy
+            escalation_policy=request.escalation_policy,
         )
-        
+
         agent_instance = await service.deploy_agent(agent_config, tenant.id)
-        
+
         return AgentDeployResponse(
             agent_id=agent_instance.agent_id,
             status=agent_instance.status,
             deployment_time_ms=agent_instance.deployment_time_ms,
             memory_configured=agent_instance.memory_enabled,
-            coordination_enabled=agent_instance.coordination_enabled
+            coordination_enabled=agent_instance.coordination_enabled,
         )
-        
+
     except Exception as e:
         logger.error(f"Agent deployment failed: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Agent deployment failed: {str(e)}"
+            detail=f"Agent deployment failed: {str(e)}",
         )
 
 
@@ -375,31 +383,30 @@ async def assign_task(
     agent_id: UUID,
     task_data: dict,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Assign a task to an autonomous agent."""
     try:
         service = AutonomousAgentService(db)
         task = await service.assign_task(agent_id, task_data, tenant.id)
-        
+
         if not task:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Failed to assign task"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to assign task"
             )
-        
+
         return {
             "task_id": task.task_id,
             "status": task.status,
             "assigned_agent": str(task.assigned_agent),
-            "created_at": task.created_at.isoformat()
+            "created_at": task.created_at.isoformat(),
         }
-        
+
     except Exception as e:
         logger.error(f"Task assignment failed: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Task assignment failed: {str(e)}"
+            detail=f"Task assignment failed: {str(e)}",
         )
 
 
@@ -407,25 +414,25 @@ async def assign_task(
 async def get_agent_memory(
     agent_id: UUID,
     context_key: Optional[str] = Query(None, description="Context key to filter by"),
-    limit: int = Query(50, ge=1, le=100, description="Maximum number of memories to return"),
+    limit: int = Query(
+        50, ge=1, le=100, description="Maximum number of memories to return"
+    ),
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Get agent memory for context awareness."""
     try:
         service = AutonomousAgentService(db)
         memories = await service.get_agent_memory(
-            agent_id=agent_id,
-            context_key=context_key,
-            limit=limit
+            agent_id=agent_id, context_key=context_key, limit=limit
         )
         return memories
-        
+
     except Exception as e:
         logger.error(f"Failed to get agent memory: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get agent memory: {str(e)}"
+            detail=f"Failed to get agent memory: {str(e)}",
         )
 
 
@@ -434,7 +441,7 @@ async def store_agent_memory(
     agent_id: UUID,
     memory_data: AgentMemoryCreate,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Store new memory for an agent."""
     try:
@@ -443,27 +450,27 @@ async def store_agent_memory(
             agent_id=agent_id,
             context_key=memory_data.context_hash,
             memory_data=memory_data.memory_data,
-            importance_score=float(memory_data.importance_score)
+            importance_score=float(memory_data.importance_score),
         )
-        
+
         if not memory:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to store memory"
+                detail="Failed to store memory",
             )
-        
+
         return {
             "id": str(memory.id),
             "context_hash": memory.context_hash,
             "importance_score": float(memory.importance_score),
-            "created_at": memory.created_at.isoformat()
+            "created_at": memory.created_at.isoformat(),
         }
-        
+
     except Exception as e:
         logger.error(f"Failed to store agent memory: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to store agent memory: {str(e)}"
+            detail=f"Failed to store agent memory: {str(e)}",
         )
 
 
@@ -472,7 +479,7 @@ async def coordinate_agents(
     agent_id: UUID,
     coordination_task: dict,
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Coordinate multiple agents for complex tasks."""
     try:
@@ -480,15 +487,15 @@ async def coordinate_agents(
         result = await service.coordinate_agents(
             primary_agent_id=agent_id,
             coordination_task=coordination_task,
-            tenant_id=tenant.id
+            tenant_id=tenant.id,
         )
         return result
-        
+
     except Exception as e:
         logger.error(f"Agent coordination failed: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Agent coordination failed: {str(e)}"
+            detail=f"Agent coordination failed: {str(e)}",
         )
 
 
@@ -497,19 +504,19 @@ async def get_agent_performance(
     agent_id: UUID,
     days: int = Query(30, ge=1, le=365, description="Number of days to analyze"),
     db: Session = Depends(get_db),
-    tenant: Tenant = Depends(get_current_tenant)
+    tenant: Tenant = Depends(get_current_tenant),
 ):
     """Get performance metrics for an agent."""
     try:
         service = AutonomousAgentService(db)
         performance = await service.get_agent_performance(agent_id, days)
         return performance
-        
+
     except Exception as e:
         logger.error(f"Failed to get agent performance: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get agent performance: {str(e)}"
+            detail=f"Failed to get agent performance: {str(e)}",
         )
 
 
@@ -522,7 +529,7 @@ async def health_check():
         "services": {
             "smart_triage": "operational",
             "vector_duplicate": "operational",
-            "autonomous_agents": "operational"
+            "autonomous_agents": "operational",
         },
-        "timestamp": "2025-08-23T10:00:00Z"
+        "timestamp": "2025-08-23T10:00:00Z",
     }

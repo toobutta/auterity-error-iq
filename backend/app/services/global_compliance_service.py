@@ -1,27 +1,24 @@
 """Global Compliance & Localization Service - Multi-language support and regional compliance."""
 
 import logging
-import asyncio
-import json
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Tuple, Union
-from uuid import UUID
 from dataclasses import dataclass, field
-from enum import Enum
-import babel
-from babel import Locale
-import pytz
+from datetime import datetime, timedelta
 from decimal import Decimal
-import re
+from enum import Enum
+from typing import Any, Dict, List, Optional
+from uuid import UUID
 
-from app.models.tenant import Tenant
+import pytz
+
 from app.core.saas_config import SaaSConfig
+from app.models.tenant import Tenant
 
 logger = logging.getLogger(__name__)
 
 
 class Language(str, Enum):
     """Supported languages."""
+
     ENGLISH = "en"
     SPANISH = "es"
     FRENCH = "fr"
@@ -38,6 +35,7 @@ class Language(str, Enum):
 
 class Region(str, Enum):
     """Supported regions."""
+
     NORTH_AMERICA = "na"
     SOUTH_AMERICA = "sa"
     EUROPE = "eu"
@@ -48,6 +46,7 @@ class Region(str, Enum):
 
 class ComplianceFramework(str, Enum):
     """Global compliance frameworks."""
+
     GDPR = "gdpr"
     CCPA = "ccpa"
     HIPAA = "hipaa"
@@ -62,6 +61,7 @@ class ComplianceFramework(str, Enum):
 
 class LocalizationType(str, Enum):
     """Types of localization."""
+
     UI_TEXT = "ui_text"
     EMAIL = "email"
     DOCUMENT = "document"
@@ -73,6 +73,7 @@ class LocalizationType(str, Enum):
 @dataclass
 class ComplianceRequirement:
     """Compliance requirement for a specific framework."""
+
     id: str
     framework: ComplianceFramework
     region: Region
@@ -89,6 +90,7 @@ class ComplianceRequirement:
 @dataclass
 class LocalizationEntry:
     """Localized text entry."""
+
     key: str
     language: Language
     region: Optional[Region]
@@ -102,6 +104,7 @@ class LocalizationEntry:
 @dataclass
 class RegionalConfiguration:
     """Regional configuration settings."""
+
     region: Region
     timezone: str
     currency: str
@@ -116,6 +119,7 @@ class RegionalConfiguration:
 @dataclass
 class ComplianceAssessment:
     """Compliance assessment result."""
+
     tenant_id: UUID
     framework: ComplianceFramework
     region: Region
@@ -130,6 +134,7 @@ class ComplianceAssessment:
 @dataclass
 class TranslationJob:
     """Translation job for localization."""
+
     id: str
     source_language: Language
     target_language: Language
@@ -178,7 +183,7 @@ class GlobalComplianceService:
                 "description": "Implement rights for data access, rectification, erasure, and portability",
                 "severity": "high",
                 "controls": ["Access control", "Data export", "Right to be forgotten"],
-                "implementation_guide": "Implement API endpoints for data subject requests with proper authentication"
+                "implementation_guide": "Implement API endpoints for data subject requests with proper authentication",
             },
             {
                 "id": "gdpr_data_breach_notification",
@@ -188,8 +193,15 @@ class GlobalComplianceService:
                 "requirement": "Data Breach Notification",
                 "description": "Notify supervisory authority within 72 hours of breach",
                 "severity": "critical",
-                "controls": ["Breach detection", "Incident response plan", "Notification procedures"],
-                "audit_procedures": ["Review breach logs", "Test notification procedures"]
+                "controls": [
+                    "Breach detection",
+                    "Incident response plan",
+                    "Notification procedures",
+                ],
+                "audit_procedures": [
+                    "Review breach logs",
+                    "Test notification procedures",
+                ],
             },
             # CCPA Requirements
             {
@@ -200,7 +212,11 @@ class GlobalComplianceService:
                 "requirement": "Privacy Notice",
                 "description": "Provide clear privacy notice to California residents",
                 "severity": "high",
-                "controls": ["Privacy policy", "Cookie consent", "Data collection disclosure"]
+                "controls": [
+                    "Privacy policy",
+                    "Cookie consent",
+                    "Data collection disclosure",
+                ],
             },
             # HIPAA Requirements
             {
@@ -211,8 +227,8 @@ class GlobalComplianceService:
                 "requirement": "Access Controls",
                 "description": "Implement role-based access controls for PHI",
                 "severity": "high",
-                "controls": ["RBAC", "Audit logging", "Access reviews"]
-            }
+                "controls": ["RBAC", "Audit logging", "Access reviews"],
+            },
         ]
 
         for req_data in requirements:
@@ -228,14 +244,17 @@ class GlobalComplianceService:
                 currency="EUR",
                 date_format="DD/MM/YYYY",
                 number_format="1.234,56",
-                compliance_frameworks=[ComplianceFramework.GDPR, ComplianceFramework.ISO27001],
+                compliance_frameworks=[
+                    ComplianceFramework.GDPR,
+                    ComplianceFramework.ISO27001,
+                ],
                 business_hours={
                     "monday": [9, 17],
                     "tuesday": [9, 17],
                     "wednesday": [9, 17],
                     "thursday": [9, 17],
-                    "friday": [9, 17]
-                }
+                    "friday": [9, 17],
+                },
             ),
             Region.NORTH_AMERICA: RegionalConfiguration(
                 region=Region.NORTH_AMERICA,
@@ -243,14 +262,18 @@ class GlobalComplianceService:
                 currency="USD",
                 date_format="MM/DD/YYYY",
                 number_format="1,234.56",
-                compliance_frameworks=[ComplianceFramework.CCPA, ComplianceFramework.HIPAA, ComplianceFramework.SOC2],
+                compliance_frameworks=[
+                    ComplianceFramework.CCPA,
+                    ComplianceFramework.HIPAA,
+                    ComplianceFramework.SOC2,
+                ],
                 business_hours={
                     "monday": [9, 17],
                     "tuesday": [9, 17],
                     "wednesday": [9, 17],
                     "thursday": [9, 17],
-                    "friday": [9, 17]
-                }
+                    "friday": [9, 17],
+                },
             ),
             Region.ASIA_PACIFIC: RegionalConfiguration(
                 region=Region.ASIA_PACIFIC,
@@ -258,15 +281,18 @@ class GlobalComplianceService:
                 currency="JPY",
                 date_format="YYYY/MM/DD",
                 number_format="1,234.56",
-                compliance_frameworks=[ComplianceFramework.ISO27001, ComplianceFramework.PDPA],
+                compliance_frameworks=[
+                    ComplianceFramework.ISO27001,
+                    ComplianceFramework.PDPA,
+                ],
                 business_hours={
                     "monday": [9, 18],
                     "tuesday": [9, 18],
                     "wednesday": [9, 18],
                     "thursday": [9, 18],
-                    "friday": [9, 18]
-                }
-            )
+                    "friday": [9, 18],
+                },
+            ),
         }
 
         self.regional_configs.update(configs)
@@ -285,15 +311,12 @@ class GlobalComplianceService:
             "delete": "Delete",
             "edit": "Edit",
             "view": "View",
-            "create": "Create"
+            "create": "Create",
         }
 
         for key, text in default_texts.items():
             entry = LocalizationEntry(
-                key=key,
-                language=Language.ENGLISH,
-                text=text,
-                context="ui"
+                key=key, language=Language.ENGLISH, text=text, context="ui"
             )
             self.translations[f"{key}_en"] = entry
 
@@ -303,7 +326,7 @@ class GlobalComplianceService:
         language: Language,
         region: Optional[Region] = None,
         context: Optional[str] = None,
-        variables: Optional[Dict[str, Any]] = None
+        variables: Optional[Dict[str, Any]] = None,
     ) -> str:
         """Get localized text for the specified language and region."""
         try:
@@ -340,7 +363,7 @@ class GlobalComplianceService:
         text: str,
         region: Optional[Region] = None,
         context: str = "",
-        translator: Optional[str] = None
+        translator: Optional[str] = None,
     ) -> LocalizationEntry:
         """Add a new translation."""
         try:
@@ -355,7 +378,7 @@ class GlobalComplianceService:
                 text=text,
                 context=context,
                 translator=translator,
-                last_updated=datetime.utcnow()
+                last_updated=datetime.utcnow(),
             )
 
             self.translations[entry_key] = entry
@@ -377,9 +400,13 @@ class GlobalComplianceService:
                 if lang not in language_stats:
                     language_stats[lang] = {
                         "code": lang,
-                        "name": entry.language.name if hasattr(entry.language, 'name') else lang.upper(),
+                        "name": (
+                            entry.language.name
+                            if hasattr(entry.language, "name")
+                            else lang.upper()
+                        ),
                         "translations": 0,
-                        "regions": set()
+                        "regions": set(),
                     }
 
                 language_stats[lang]["translations"] += 1
@@ -400,7 +427,7 @@ class GlobalComplianceService:
         self,
         framework: Optional[ComplianceFramework] = None,
         region: Optional[Region] = None,
-        category: Optional[str] = None
+        category: Optional[str] = None,
     ) -> List[ComplianceRequirement]:
         """Get compliance requirements with optional filtering."""
         try:
@@ -422,10 +449,7 @@ class GlobalComplianceService:
             return []
 
     async def assess_compliance(
-        self,
-        tenant_id: UUID,
-        framework: ComplianceFramework,
-        region: Region
+        self, tenant_id: UUID, framework: ComplianceFramework, region: Region
     ) -> ComplianceAssessment:
         """Perform compliance assessment for a tenant."""
         try:
@@ -435,8 +459,7 @@ class GlobalComplianceService:
 
             # Get relevant requirements
             requirements = await self.get_compliance_requirements(
-                framework=framework,
-                region=region
+                framework=framework, region=region
             )
 
             assessment_results = {}
@@ -452,8 +475,10 @@ class GlobalComplianceService:
                     "requirement": req.requirement,
                     "description": req.description,
                     "score": compliance_score,
-                    "status": "compliant" if compliance_score >= 80 else "non_compliant",
-                    "controls": req.controls
+                    "status": (
+                        "compliant" if compliance_score >= 80 else "non_compliant"
+                    ),
+                    "controls": req.controls,
                 }
 
                 total_score += compliance_score
@@ -476,7 +501,7 @@ class GlobalComplianceService:
                 requirements=assessment_results,
                 gaps=gaps,
                 recommendations=list(set(recommendations)),  # Remove duplicates
-                next_audit_date=next_audit_date
+                next_audit_date=next_audit_date,
             )
 
             # Store assessment
@@ -490,9 +515,7 @@ class GlobalComplianceService:
             raise
 
     async def _check_compliance_requirement(
-        self,
-        tenant: Tenant,
-        requirement: ComplianceRequirement
+        self, tenant: Tenant, requirement: ComplianceRequirement
     ) -> float:
         """Check compliance for a specific requirement."""
         # This is a simplified implementation
@@ -502,7 +525,7 @@ class GlobalComplianceService:
             "data_protection": await self._check_data_protection_compliance(tenant),
             "privacy": await self._check_privacy_compliance(tenant),
             "security": await self._check_security_compliance(tenant),
-            "incident_response": await self._check_incident_response_compliance(tenant)
+            "incident_response": await self._check_incident_response_compliance(tenant),
         }
 
         return checks.get(requirement.category, 50.0)  # Default score
@@ -558,15 +581,14 @@ class GlobalComplianceService:
         # Simplified check - in practice would check for incident response plans
         return 70.0  # Assume basic compliance
 
-    async def get_regional_config(self, region: Region) -> Optional[RegionalConfiguration]:
+    async def get_regional_config(
+        self, region: Region
+    ) -> Optional[RegionalConfiguration]:
         """Get regional configuration."""
         return self.regional_configs.get(region)
 
     async def format_datetime(
-        self,
-        dt: datetime,
-        region: Region,
-        language: Language = Language.ENGLISH
+        self, dt: datetime, region: Region, language: Language = Language.ENGLISH
     ) -> str:
         """Format datetime according to regional settings."""
         try:
@@ -593,10 +615,7 @@ class GlobalComplianceService:
             return dt.isoformat()
 
     async def format_currency(
-        self,
-        amount: Decimal,
-        region: Region,
-        language: Language = Language.ENGLISH
+        self, amount: Decimal, region: Region, language: Language = Language.ENGLISH
     ) -> str:
         """Format currency according to regional settings."""
         try:
@@ -604,12 +623,9 @@ class GlobalComplianceService:
             if not config:
                 return f"${amount}"
 
-            currency_symbol = {
-                "USD": "$",
-                "EUR": "€",
-                "JPY": "¥",
-                "GBP": "£"
-            }.get(config.currency, "$")
+            currency_symbol = {"USD": "$", "EUR": "€", "JPY": "¥", "GBP": "£"}.get(
+                config.currency, "$"
+            )
 
             # Format number according to regional settings
             if config.number_format == "1.234,56":
@@ -626,10 +642,7 @@ class GlobalComplianceService:
             return f"${amount}"
 
     async def validate_data_residency(
-        self,
-        tenant_id: UUID,
-        region: Region,
-        data_types: List[str]
+        self, tenant_id: UUID, region: Region, data_types: List[str]
     ) -> Dict[str, Any]:
         """Validate data residency compliance for a tenant."""
         try:
@@ -645,7 +658,7 @@ class GlobalComplianceService:
                 "compliant": True,
                 "issues": [],
                 "recommendations": [],
-                "data_types": {}
+                "data_types": {},
             }
 
             for data_type in data_types:
@@ -662,24 +675,46 @@ class GlobalComplianceService:
             logger.error(f"Data residency validation failed: {str(e)}")
             return {"compliant": False, "issues": [str(e)]}
 
-    async def _check_data_type_compliance(self, data_type: str, region: Region) -> Dict[str, Any]:
+    async def _check_data_type_compliance(
+        self, data_type: str, region: Region
+    ) -> Dict[str, Any]:
         """Check compliance for a specific data type in a region."""
         # Simplified implementation
         compliance_rules = {
             Region.EUROPE: {
-                "personal_data": {"compliant": True, "requirements": ["GDPR compliance"]},
-                "health_data": {"compliant": False, "issues": ["May require local hosting"]},
-                "financial_data": {"compliant": True, "requirements": ["Encryption required"]}
+                "personal_data": {
+                    "compliant": True,
+                    "requirements": ["GDPR compliance"],
+                },
+                "health_data": {
+                    "compliant": False,
+                    "issues": ["May require local hosting"],
+                },
+                "financial_data": {
+                    "compliant": True,
+                    "requirements": ["Encryption required"],
+                },
             },
             Region.NORTH_AMERICA: {
-                "personal_data": {"compliant": True, "requirements": ["CCPA compliance"]},
-                "health_data": {"compliant": True, "requirements": ["HIPAA compliance"]},
-                "financial_data": {"compliant": True, "requirements": ["PCI DSS compliance"]}
-            }
+                "personal_data": {
+                    "compliant": True,
+                    "requirements": ["CCPA compliance"],
+                },
+                "health_data": {
+                    "compliant": True,
+                    "requirements": ["HIPAA compliance"],
+                },
+                "financial_data": {
+                    "compliant": True,
+                    "requirements": ["PCI DSS compliance"],
+                },
+            },
         }
 
         region_rules = compliance_rules.get(region, {})
-        return region_rules.get(data_type, {"compliant": False, "issues": ["Unknown data type"]})
+        return region_rules.get(
+            data_type, {"compliant": False, "issues": ["Unknown data type"]}
+        )
 
     async def create_translation_job(
         self,
@@ -687,7 +722,7 @@ class GlobalComplianceService:
         target_language: Language,
         content_type: LocalizationType,
         content_keys: List[str],
-        priority: int = 5
+        priority: int = 5,
     ) -> TranslationJob:
         """Create a translation job."""
         try:
@@ -699,7 +734,7 @@ class GlobalComplianceService:
                 target_language=target_language,
                 content_type=content_type,
                 content_keys=content_keys,
-                priority=priority
+                priority=priority,
             )
 
             self.translation_jobs[job_id] = job
@@ -722,10 +757,7 @@ class GlobalComplianceService:
             logger.error(f"Variable interpolation failed: {str(e)}")
             return text
 
-    async def get_compliance_dashboard(
-        self,
-        tenant_id: UUID
-    ) -> Dict[str, Any]:
+    async def get_compliance_dashboard(self, tenant_id: UUID) -> Dict[str, Any]:
         """Get compliance dashboard data for a tenant."""
         try:
             tenant = self.db.query(Tenant).filter(Tenant.id == tenant_id).first()
@@ -739,11 +771,13 @@ class GlobalComplianceService:
             dashboard = {
                 "tenant_id": str(tenant_id),
                 "region": region.value,
-                "compliance_frameworks": [f.value for f in config.compliance_frameworks] if config else [],
+                "compliance_frameworks": (
+                    [f.value for f in config.compliance_frameworks] if config else []
+                ),
                 "assessments": {},
                 "overall_compliance_score": 0.0,
                 "critical_issues": [],
-                "upcoming_audits": []
+                "upcoming_audits": [],
             }
 
             if config:
@@ -755,28 +789,48 @@ class GlobalComplianceService:
                     if assessment:
                         dashboard["assessments"][framework.value] = {
                             "score": assessment.overall_score,
-                            "status": "compliant" if assessment.overall_score >= 80 else "needs_attention",
+                            "status": (
+                                "compliant"
+                                if assessment.overall_score >= 80
+                                else "needs_attention"
+                            ),
                             "gaps": len(assessment.gaps),
-                            "next_audit": assessment.next_audit_date.isoformat() if assessment.next_audit_date else None
+                            "next_audit": (
+                                assessment.next_audit_date.isoformat()
+                                if assessment.next_audit_date
+                                else None
+                            ),
                         }
 
                         if assessment.next_audit_date:
-                            dashboard["upcoming_audits"].append({
-                                "framework": framework.value,
-                                "date": assessment.next_audit_date.isoformat(),
-                                "days_until": (assessment.next_audit_date - datetime.utcnow()).days
-                            })
+                            dashboard["upcoming_audits"].append(
+                                {
+                                    "framework": framework.value,
+                                    "date": assessment.next_audit_date.isoformat(),
+                                    "days_until": (
+                                        assessment.next_audit_date - datetime.utcnow()
+                                    ).days,
+                                }
+                            )
 
                         # Add critical issues
                         if assessment.overall_score < 70:
-                            dashboard["critical_issues"].extend([
-                                f"{framework.value}: {gap}" for gap in assessment.gaps[:3]
-                            ])
+                            dashboard["critical_issues"].extend(
+                                [
+                                    f"{framework.value}: {gap}"
+                                    for gap in assessment.gaps[:3]
+                                ]
+                            )
 
                 # Calculate overall score
                 if dashboard["assessments"]:
-                    total_score = sum(assessment["score"] for assessment in dashboard["assessments"].values())
-                    dashboard["overall_compliance_score"] = total_score / len(dashboard["assessments"])
+                    total_score = sum(
+                        assessment["score"]
+                        for assessment in dashboard["assessments"].values()
+                    )
+                    dashboard["overall_compliance_score"] = total_score / len(
+                        dashboard["assessments"]
+                    )
 
             return dashboard
 
@@ -796,13 +850,10 @@ class GlobalComplianceService:
                 "translation_jobs_count": len(self.translation_jobs),
                 "supported_languages": len(Language),
                 "supported_regions": len(Region),
-                "compliance_frameworks": len(ComplianceFramework)
+                "compliance_frameworks": len(ComplianceFramework),
             }
 
             return health_status
 
         except Exception as e:
-            return {
-                "status": "unhealthy",
-                "error": str(e)
-            }
+            return {"status": "unhealthy", "error": str(e)}

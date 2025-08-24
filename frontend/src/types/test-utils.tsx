@@ -46,7 +46,7 @@ export const createMockWorkflowExecution = (overrides: Record<string, unknown> =
   startedAt: '2024-01-01T00:00:00Z',
   completedAt: '2024-01-01T00:01:00Z',
   duration: 60000,
-  ...overrides
+  ...overrides,
 });
 
 export const createMockExecutionLog = (overrides: Record<string, unknown> = {}) => ({
@@ -58,5 +58,5 @@ export const createMockExecutionLog = (overrides: Record<string, unknown> = {}) 
   stepId: 'step-1',
   stepName: 'Test Step',
   data: {},
-  ...overrides
+  ...overrides,
 });

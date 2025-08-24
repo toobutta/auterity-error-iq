@@ -29,8 +29,11 @@ const ModernLandingPage: React.FC = () => {
                 Error-IQ
               </h1>
               <p className="text-xl md:text-2xl text-neutral-600 dark:text-neutral-300 max-w-3xl mx-auto leading-relaxed">
-                Intelligent error monitoring and resolution platform with 
-                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold"> real-time insights</span>
+                Intelligent error monitoring and resolution platform with
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold">
+                  {' '}
+                  real-time insights
+                </span>
               </p>
             </div>
 
@@ -81,7 +84,8 @@ const ModernLandingPage: React.FC = () => {
               <div className="text-4xl mb-4">🔍</div>
               <h3 className="text-xl font-bold text-white mb-4">Smart Detection</h3>
               <p className="text-white/80 leading-relaxed">
-                AI-powered error detection that learns from your patterns and prevents issues before they impact users.
+                AI-powered error detection that learns from your patterns and prevents issues before
+                they impact users.
               </p>
             </div>
 
@@ -90,7 +94,8 @@ const ModernLandingPage: React.FC = () => {
               <div className="text-4xl mb-4">⚡</div>
               <h3 className="text-xl font-bold text-white mb-4">Real-time Alerts</h3>
               <p className="text-white/80 leading-relaxed">
-                Instant notifications across multiple channels with intelligent routing and escalation policies.
+                Instant notifications across multiple channels with intelligent routing and
+                escalation policies.
               </p>
             </div>
 
@@ -99,7 +104,8 @@ const ModernLandingPage: React.FC = () => {
               <div className="text-4xl mb-4">📊</div>
               <h3 className="text-xl font-bold text-white mb-4">Advanced Analytics</h3>
               <p className="text-white/80 leading-relaxed">
-                Comprehensive dashboards with trends, patterns, and actionable insights for continuous improvement.
+                Comprehensive dashboards with trends, patterns, and actionable insights for
+                continuous improvement.
               </p>
             </div>
           </div>
@@ -128,7 +134,7 @@ const ModernLandingPage: React.FC = () => {
                   <span className="text-sm text-white/80">Live</span>
                 </div>
               </div>
-              
+
               {/* Mock Metrics */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="bg-white/10 rounded-xl p-4">
@@ -160,7 +166,9 @@ const ModernLandingPage: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="flex items-center space-x-2 mb-1">
-                      <span className="bg-red-500/20 text-red-300 px-2 py-1 rounded text-xs">critical</span>
+                      <span className="bg-red-500/20 text-red-300 px-2 py-1 rounded text-xs">
+                        critical
+                      </span>
                       <span className="text-white/60 text-sm">ERR-001</span>
                     </div>
                     <div className="text-white">Database connection timeout in checkout flow</div>
@@ -173,7 +181,9 @@ const ModernLandingPage: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="flex items-center space-x-2 mb-1">
-                      <span className="bg-orange-500/20 text-orange-300 px-2 py-1 rounded text-xs">high</span>
+                      <span className="bg-orange-500/20 text-orange-300 px-2 py-1 rounded text-xs">
+                        high
+                      </span>
                       <span className="text-white/60 text-sm">ERR-002</span>
                     </div>
                     <div className="text-white">Memory leak detected in user session handler</div>

@@ -1,20 +1,15 @@
 """AI Model Orchestration & Routing Service - Dynamic model selection and A/B testing."""
 
-import logging
-import asyncio
-import random
 import hashlib
-from datetime import datetime, timedelta
-from decimal import Decimal, ROUND_HALF_UP
-from typing import Dict, List, Optional, Any, Tuple, Union
-from uuid import UUID
+import logging
+import random
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from decimal import ROUND_HALF_UP, Decimal
 from enum import Enum
-import numpy as np
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import StandardScaler
+from typing import Any, Dict, List, Optional
+from uuid import UUID
 
-from app.models.tenant import Tenant, UsageLog
 from app.core.saas_config import SaaSConfig
 from app.services.ai_cost_optimization_service import AICostOptimizationService
 
@@ -23,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class RoutingStrategy(str, Enum):
     """AI model routing strategies."""
+
     PERFORMANCE_OPTIMIZED = "performance_optimized"
     COST_OPTIMIZED = "cost_optimized"
     BALANCED = "balanced"
@@ -32,6 +28,7 @@ class RoutingStrategy(str, Enum):
 
 class ExperimentType(str, Enum):
     """A/B testing experiment types."""
+
     MODEL_COMPARISON = "model_comparison"
     PARAMETER_TUNING = "parameter_tuning"
     PROMPT_OPTIMIZATION = "prompt_optimization"
@@ -40,6 +37,7 @@ class ExperimentType(str, Enum):
 
 class ModelStatus(str, Enum):
     """AI model operational status."""
+
     ACTIVE = "active"
     DEPRECATED = "deprecated"
     MAINTENANCE = "maintenance"
@@ -49,6 +47,7 @@ class ModelStatus(str, Enum):
 @dataclass
 class ModelProfile:
     """AI model profile with capabilities and performance metrics."""
+
     model_id: str
     provider: str
     version: str
@@ -73,6 +72,7 @@ class ModelProfile:
 @dataclass
 class RoutingDecision:
     """AI model routing decision."""
+
     model_id: str
     provider: str
     confidence: float
@@ -86,6 +86,7 @@ class RoutingDecision:
 @dataclass
 class Experiment:
     """A/B testing experiment configuration."""
+
     id: str
     name: str
     type: ExperimentType
@@ -105,6 +106,7 @@ class Experiment:
 @dataclass
 class OrchestrationMetrics:
     """Orchestration performance metrics."""
+
     total_requests: int = 0
     successful_requests: int = 0
     avg_response_time: float = 0.0
@@ -153,18 +155,22 @@ class AIModelOrchestrationService:
                 cost_per_1k_tokens=Decimal("0.002"),
                 max_tokens=4096,
                 avg_latency_ms=300,
-                success_rate=0.99
+                success_rate=0.99,
             ),
             "gpt-4": ModelProfile(
                 model_id="gpt-4",
                 provider="openai",
                 version="0613",
                 capabilities=["text", "chat", "complex_reasoning", "analysis", "code"],
-                supported_tasks=["complex_analysis", "detailed_responses", "code_generation"],
+                supported_tasks=[
+                    "complex_analysis",
+                    "detailed_responses",
+                    "code_generation",
+                ],
                 cost_per_1k_tokens=Decimal("0.03"),
                 max_tokens=8192,
                 avg_latency_ms=800,
-                success_rate=0.98
+                success_rate=0.98,
             ),
             "claude-3-haiku": ModelProfile(
                 model_id="claude-3-haiku",
@@ -175,18 +181,22 @@ class AIModelOrchestrationService:
                 cost_per_1k_tokens=Decimal("0.0015"),
                 max_tokens=4096,
                 avg_latency_ms=250,
-                success_rate=0.99
+                success_rate=0.99,
             ),
             "claude-3-sonnet": ModelProfile(
                 model_id="claude-3-sonnet",
                 provider="anthropic",
                 version="20240229",
                 capabilities=["text", "chat", "complex_reasoning", "analysis"],
-                supported_tasks=["complex_analysis", "creative_writing", "detailed_responses"],
+                supported_tasks=[
+                    "complex_analysis",
+                    "creative_writing",
+                    "detailed_responses",
+                ],
                 cost_per_1k_tokens=Decimal("0.015"),
                 max_tokens=4096,
                 avg_latency_ms=400,
-                success_rate=0.98
+                success_rate=0.98,
             ),
             "llama2": ModelProfile(
                 model_id="llama2",
@@ -197,15 +207,15 @@ class AIModelOrchestrationService:
                 cost_per_1k_tokens=Decimal("0.0"),
                 max_tokens=4096,
                 avg_latency_ms=400,
-                success_rate=0.95
-            )
+                success_rate=0.95,
+            ),
         }
 
     async def route_request(
         self,
         tenant_id: UUID,
         request_data: Dict[str, Any],
-        context: Dict[str, Any] = None
+        context: Dict[str, Any] = None,
     ) -> RoutingDecision:
         """Route AI request to the most appropriate model."""
         try:
@@ -220,14 +230,18 @@ class AIModelOrchestrationService:
                 experiment = await self._get_active_experiment_for_request(request_data)
                 if experiment:
                     experiment_id = experiment.id
-                    return await self._route_to_experiment(experiment, request_data, context)
+                    return await self._route_to_experiment(
+                        experiment, request_data, context
+                    )
 
             # Use AI cost optimization for intelligent routing
             optimization_result = await self.cost_optimizer.optimize_model_selection(
                 tenant_id=tenant_id,
                 input_tokens=input_tokens,
                 context=context,
-                strategy=self._map_routing_to_optimization_strategy(context.get("routing_strategy"))
+                strategy=self._map_routing_to_optimization_strategy(
+                    context.get("routing_strategy")
+                ),
             )
 
             recommended_model = optimization_result.recommended_model
@@ -240,11 +254,15 @@ class AIModelOrchestrationService:
                 model_profile = self.model_registry[recommended_model]
 
             # Calculate estimated cost and latency
-            estimated_cost = await self._calculate_request_cost(recommended_model, input_tokens, context)
+            estimated_cost = await self._calculate_request_cost(
+                recommended_model, input_tokens, context
+            )
             estimated_latency = model_profile.avg_latency_ms
 
             # Determine fallback models
-            fallback_models = await self._get_fallback_models(recommended_model, context)
+            fallback_models = await self._get_fallback_models(
+                recommended_model, context
+            )
 
             # Generate reasoning
             reasoning = self._generate_routing_reasoning(
@@ -259,7 +277,7 @@ class AIModelOrchestrationService:
                 estimated_cost=estimated_cost,
                 estimated_latency=estimated_latency,
                 fallback_models=fallback_models,
-                experiment_id=experiment_id
+                experiment_id=experiment_id,
             )
 
             # Record routing decision for analytics
@@ -277,16 +295,18 @@ class AIModelOrchestrationService:
                 reasoning="Fallback due to routing error",
                 estimated_cost=Decimal("0.002"),
                 estimated_latency=300,
-                fallback_models=["claude-3-haiku"]
+                fallback_models=["claude-3-haiku"],
             )
 
-    def _map_routing_to_optimization_strategy(self, routing_strategy: Optional[str]) -> str:
+    def _map_routing_to_optimization_strategy(
+        self, routing_strategy: Optional[str]
+    ) -> str:
         """Map routing strategy to cost optimization strategy."""
         strategy_mapping = {
             RoutingStrategy.COST_OPTIMIZED: "cost_optimized",
             RoutingStrategy.PERFORMANCE_OPTIMIZED: "performance_optimized",
             RoutingStrategy.RELIABILITY_FOCUSED: "reliability_focused",
-            RoutingStrategy.BALANCED: "balanced"
+            RoutingStrategy.BALANCED: "balanced",
         }
         return strategy_mapping.get(routing_strategy, "balanced")
 
@@ -301,7 +321,9 @@ class AIModelOrchestrationService:
 
         return traffic_percentage < (self.experiment_traffic_percentage / 100.0)
 
-    async def _get_active_experiment_for_request(self, request_data: Dict[str, Any]) -> Optional[Experiment]:
+    async def _get_active_experiment_for_request(
+        self, request_data: Dict[str, Any]
+    ) -> Optional[Experiment]:
         """Find active experiment that matches the request."""
         task_type = request_data.get("task_type", "general")
         complexity = request_data.get("complexity", "medium")
@@ -324,7 +346,7 @@ class AIModelOrchestrationService:
         self,
         experiment: Experiment,
         request_data: Dict[str, Any],
-        context: Dict[str, Any]
+        context: Dict[str, Any],
     ) -> RoutingDecision:
         """Route request to experiment variant."""
         # Determine which variant to use
@@ -333,7 +355,7 @@ class AIModelOrchestrationService:
 
         variant_config = next(
             (v for v in experiment.variants if v["id"] == variant),
-            experiment.variants[0]  # Fallback to first variant
+            experiment.variants[0],  # Fallback to first variant
         )
 
         model_id = variant_config.get("model_id", "gpt-3.5-turbo")
@@ -351,7 +373,7 @@ class AIModelOrchestrationService:
             estimated_cost=model_profile.cost_per_1k_tokens,
             estimated_latency=model_profile.avg_latency_ms,
             fallback_models=self.fallback_chain,
-            experiment_id=experiment.id
+            experiment_id=experiment.id,
         )
 
     def _select_experiment_variant(self, experiment: Experiment, user_id: str) -> str:
@@ -366,11 +388,13 @@ class AIModelOrchestrationService:
         experiment_type: ExperimentType,
         variants: List[Dict[str, Any]],
         target_metric: str = "success_rate",
-        duration_days: int = 7
+        duration_days: int = 7,
     ) -> Experiment:
         """Create a new A/B testing experiment."""
         try:
-            experiment_id = f"exp_{datetime.utcnow().timestamp()}_{random.randint(1000, 9999)}"
+            experiment_id = (
+                f"exp_{datetime.utcnow().timestamp()}_{random.randint(1000, 9999)}"
+            )
 
             # Equal traffic allocation by default
             traffic_allocation = {}
@@ -386,7 +410,7 @@ class AIModelOrchestrationService:
                 target_metric=target_metric,
                 start_date=datetime.utcnow(),
                 end_date=datetime.utcnow() + timedelta(days=duration_days),
-                traffic_allocation=traffic_allocation
+                traffic_allocation=traffic_allocation,
             )
 
             self.active_experiments[experiment_id] = experiment
@@ -403,7 +427,7 @@ class AIModelOrchestrationService:
         experiment_id: str,
         variant_id: str,
         metrics: Dict[str, Any],
-        success: bool
+        success: bool,
     ) -> None:
         """Record experiment result for analysis."""
         try:
@@ -419,7 +443,7 @@ class AIModelOrchestrationService:
                     "successes": 0,
                     "total_cost": Decimal("0"),
                     "total_response_time": 0.0,
-                    "metrics": {}
+                    "metrics": {},
                 }
 
             # Update variant performance
@@ -453,8 +477,10 @@ class AIModelOrchestrationService:
                 "status": experiment.status,
                 "total_requests": experiment.total_requests,
                 "start_date": experiment.start_date.isoformat(),
-                "end_date": experiment.end_date.isoformat() if experiment.end_date else None,
-                "variants": []
+                "end_date": (
+                    experiment.end_date.isoformat() if experiment.end_date else None
+                ),
+                "variants": [],
             }
 
             # Analyze each variant
@@ -463,9 +489,21 @@ class AIModelOrchestrationService:
                 if variant_id in experiment.variant_performance:
                     stats = experiment.variant_performance[variant_id]
 
-                    success_rate = stats["successes"] / stats["requests"] if stats["requests"] > 0 else 0
-                    avg_cost = float(stats["total_cost"] / stats["requests"]) if stats["requests"] > 0 else 0
-                    avg_response_time = stats["total_response_time"] / stats["requests"] if stats["requests"] > 0 else 0
+                    success_rate = (
+                        stats["successes"] / stats["requests"]
+                        if stats["requests"] > 0
+                        else 0
+                    )
+                    avg_cost = (
+                        float(stats["total_cost"] / stats["requests"])
+                        if stats["requests"] > 0
+                        else 0
+                    )
+                    avg_response_time = (
+                        stats["total_response_time"] / stats["requests"]
+                        if stats["requests"] > 0
+                        else 0
+                    )
 
                     variant_result = {
                         "variant_id": variant_id,
@@ -473,14 +511,16 @@ class AIModelOrchestrationService:
                         "requests": stats["requests"],
                         "success_rate": success_rate,
                         "avg_cost": avg_cost,
-                        "avg_response_time": avg_response_time
+                        "avg_response_time": avg_response_time,
                     }
 
                     results["variants"].append(variant_result)
 
             # Statistical analysis
             if len(results["variants"]) >= 2:
-                results["statistical_analysis"] = self._perform_statistical_analysis(results["variants"])
+                results["statistical_analysis"] = self._perform_statistical_analysis(
+                    results["variants"]
+                )
 
             return results
 
@@ -488,14 +528,16 @@ class AIModelOrchestrationService:
             logger.error(f"Experiment results retrieval failed: {str(e)}")
             return {"error": str(e)}
 
-    def _perform_statistical_analysis(self, variants: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _perform_statistical_analysis(
+        self, variants: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """Perform statistical analysis on experiment variants."""
         try:
             # Simple statistical comparison
             analysis = {
                 "significant_difference": False,
                 "best_performing_variant": None,
-                "confidence_level": 0.0
+                "confidence_level": 0.0,
             }
 
             if len(variants) >= 2:
@@ -530,19 +572,30 @@ class AIModelOrchestrationService:
                 "performance": {
                     "total_requests": model_profile.total_requests,
                     "successful_requests": model_profile.successful_requests,
-                    "success_rate": (model_profile.successful_requests / model_profile.total_requests * 100)
-                                 if model_profile.total_requests > 0 else 0,
+                    "success_rate": (
+                        (
+                            model_profile.successful_requests
+                            / model_profile.total_requests
+                            * 100
+                        )
+                        if model_profile.total_requests > 0
+                        else 0
+                    ),
                     "avg_response_time": model_profile.avg_response_time,
                     "total_tokens": model_profile.total_tokens,
-                    "total_cost": float(model_profile.total_cost)
+                    "total_cost": float(model_profile.total_cost),
                 },
                 "capabilities": model_profile.capabilities,
                 "supported_tasks": model_profile.supported_tasks,
                 "pricing": {
                     "cost_per_1k_tokens": float(model_profile.cost_per_1k_tokens),
-                    "max_tokens": model_profile.max_tokens
+                    "max_tokens": model_profile.max_tokens,
                 },
-                "last_used": model_profile.last_used.isoformat() if model_profile.last_used else None
+                "last_used": (
+                    model_profile.last_used.isoformat()
+                    if model_profile.last_used
+                    else None
+                ),
             }
 
             return metrics
@@ -557,7 +610,7 @@ class AIModelOrchestrationService:
         success: bool,
         response_time: float,
         tokens_used: int,
-        cost: Decimal
+        cost: Decimal,
     ) -> None:
         """Update model performance metrics."""
         try:
@@ -578,8 +631,11 @@ class AIModelOrchestrationService:
             else:
                 # Running average
                 model_profile.avg_response_time = (
-                    (model_profile.avg_response_time * (model_profile.total_requests - 1)) +
-                    response_time
+                    (
+                        model_profile.avg_response_time
+                        * (model_profile.total_requests - 1)
+                    )
+                    + response_time
                 ) / model_profile.total_requests
 
             # Update success rate
@@ -591,9 +647,7 @@ class AIModelOrchestrationService:
             logger.error(f"Model performance update failed: {str(e)}")
 
     async def get_routing_analytics(
-        self,
-        tenant_id: Optional[UUID] = None,
-        days: int = 30
+        self, tenant_id: Optional[UUID] = None, days: int = 30
     ) -> Dict[str, Any]:
         """Get comprehensive routing analytics."""
         try:
@@ -602,23 +656,32 @@ class AIModelOrchestrationService:
                 "overall_metrics": {
                     "total_requests": self.metrics.total_requests,
                     "successful_requests": self.metrics.successful_requests,
-                    "success_rate": (self.metrics.successful_requests / self.metrics.total_requests * 100)
-                                  if self.metrics.total_requests > 0 else 0,
+                    "success_rate": (
+                        (
+                            self.metrics.successful_requests
+                            / self.metrics.total_requests
+                            * 100
+                        )
+                        if self.metrics.total_requests > 0
+                        else 0
+                    ),
                     "avg_response_time": self.metrics.avg_response_time,
                     "total_cost": float(self.metrics.total_cost),
                     "cache_hit_rate": self.metrics.cache_hit_rate,
-                    "experiment_participation_rate": self.metrics.experiment_participation_rate
+                    "experiment_participation_rate": self.metrics.experiment_participation_rate,
                 },
                 "model_distribution": self.metrics.model_distribution,
                 "active_experiments": len(self.active_experiments),
-                "model_performance": {}
+                "model_performance": {},
             }
 
             # Get individual model performance
             for model_id in self.model_registry.keys():
                 model_metrics = await self.get_model_performance_metrics(model_id)
                 if "error" not in model_metrics:
-                    analytics["model_performance"][model_id] = model_metrics["performance"]
+                    analytics["model_performance"][model_id] = model_metrics[
+                        "performance"
+                    ]
 
             return analytics
 
@@ -632,10 +695,7 @@ class AIModelOrchestrationService:
         return len(text) // 4
 
     async def _calculate_request_cost(
-        self,
-        model_id: str,
-        input_tokens: int,
-        context: Dict[str, Any]
+        self, model_id: str, input_tokens: int, context: Dict[str, Any]
     ) -> Decimal:
         """Calculate estimated cost for request."""
         model_profile = self.model_registry.get(model_id)
@@ -646,23 +706,24 @@ class AIModelOrchestrationService:
         output_tokens = min(input_tokens * 2, model_profile.max_tokens // 2)
         total_tokens = input_tokens + output_tokens
 
-        cost = (Decimal(total_tokens) / Decimal(1000)) * model_profile.cost_per_1k_tokens
+        cost = (
+            Decimal(total_tokens) / Decimal(1000)
+        ) * model_profile.cost_per_1k_tokens
         return cost.quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
 
-    async def _get_fallback_models(self, primary_model: str, context: Dict[str, Any]) -> List[str]:
+    async def _get_fallback_models(
+        self, primary_model: str, context: Dict[str, Any]
+    ) -> List[str]:
         """Get fallback models for request."""
         return self.fallback_chain
 
     def _generate_routing_reasoning(
-        self,
-        model_id: str,
-        optimization_result: Any,
-        context: Dict[str, Any]
+        self, model_id: str, optimization_result: Any, context: Dict[str, Any]
     ) -> str:
         """Generate reasoning for routing decision."""
         reasoning_parts = [f"Selected {model_id}"]
 
-        if hasattr(optimization_result, 'reasoning'):
+        if hasattr(optimization_result, "reasoning"):
             reasoning_parts.append(optimization_result.reasoning)
 
         if context.get("priority") == "high":
@@ -674,10 +735,7 @@ class AIModelOrchestrationService:
         return ". ".join(reasoning_parts)
 
     async def _record_routing_decision(
-        self,
-        tenant_id: UUID,
-        decision: RoutingDecision,
-        request_data: Dict[str, Any]
+        self, tenant_id: UUID, decision: RoutingDecision, request_data: Dict[str, Any]
     ) -> None:
         """Record routing decision for analytics."""
         try:
@@ -694,7 +752,7 @@ class AIModelOrchestrationService:
                 "confidence": decision.confidence,
                 "estimated_cost": float(decision.estimated_cost),
                 "experiment_id": decision.experiment_id,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.utcnow().isoformat(),
             }
 
             self.performance_history.append(decision_record)
@@ -712,11 +770,24 @@ class AIModelOrchestrationService:
             health_status = {
                 "status": "healthy",
                 "models_registered": len(self.model_registry),
-                "active_models": len([m for m in self.model_registry.values() if m.status == ModelStatus.ACTIVE]),
+                "active_models": len(
+                    [
+                        m
+                        for m in self.model_registry.values()
+                        if m.status == ModelStatus.ACTIVE
+                    ]
+                ),
                 "active_experiments": len(self.active_experiments),
                 "total_requests": self.metrics.total_requests,
-                "success_rate": (self.metrics.successful_requests / self.metrics.total_requests * 100)
-                              if self.metrics.total_requests > 0 else 0
+                "success_rate": (
+                    (
+                        self.metrics.successful_requests
+                        / self.metrics.total_requests
+                        * 100
+                    )
+                    if self.metrics.total_requests > 0
+                    else 0
+                ),
             }
 
             # Check if we have at least one active model
@@ -727,7 +798,4 @@ class AIModelOrchestrationService:
             return health_status
 
         except Exception as e:
-            return {
-                "status": "unhealthy",
-                "error": str(e)
-            }
+            return {"status": "unhealthy", "error": str(e)}

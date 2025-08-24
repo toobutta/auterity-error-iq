@@ -16,9 +16,7 @@ sys.modules["openai.APIError"] = Exception
 
 # Import after mocking
 from app.services.ai_service import AIResponse  # noqa: E402
-from app.services.ai_service import AIService
-from app.services.ai_service import AIServiceError
-from app.services.ai_service import PromptTemplate
+from app.services.ai_service import AIService, AIServiceError, PromptTemplate
 
 
 def validate_ai_service_class():

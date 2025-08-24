@@ -33,7 +33,7 @@ const mockExecutions = [
     outputData: { response: 'Thank you for your inquiry' },
     startedAt: '2023-01-01T10:00:00Z',
     completedAt: '2023-01-01T10:05:00Z',
-    duration: 300000
+    duration: 300000,
   },
   {
     id: 'execution-2',
@@ -44,7 +44,7 @@ const mockExecutions = [
     startedAt: '2023-01-01T11:00:00Z',
     completedAt: '2023-01-01T11:02:00Z',
     errorMessage: 'AI service unavailable',
-    duration: 120000
+    duration: 120000,
   },
   {
     id: 'execution-3',
@@ -52,8 +52,8 @@ const mockExecutions = [
     workflowName: 'Customer Inquiry Workflow',
     status: 'running' as const,
     inputData: { customerName: 'Jane Smith' },
-    startedAt: '2023-01-01T12:00:00Z'
-  }
+    startedAt: '2023-01-01T12:00:00Z',
+  },
 ];
 
 const mockHistoryResponse = {
@@ -61,7 +61,7 @@ const mockHistoryResponse = {
   total: 3,
   page: 1,
   pageSize: 10,
-  totalPages: 1
+  totalPages: 1,
 };
 
 describe('WorkflowExecutionHistory', () => {
@@ -79,7 +79,7 @@ describe('WorkflowExecutionHistory', () => {
 
   it('renders loading state initially', () => {
     render(<WorkflowExecutionHistory onExecutionSelect={mockOnExecutionSelect} />);
-    
+
     expect(screen.getByText('Loading executions...')).toBeInTheDocument();
   });
 
@@ -151,7 +151,7 @@ describe('WorkflowExecutionHistory', () => {
     expect(mockGetExecutionHistory).toHaveBeenCalledWith(
       expect.objectContaining({
         search: 'Customer',
-        page: 1
+        page: 1,
       })
     );
   });
@@ -172,7 +172,7 @@ describe('WorkflowExecutionHistory', () => {
     expect(mockGetExecutionHistory).toHaveBeenCalledWith(
       expect.objectContaining({
         status: 'completed',
-        page: 1
+        page: 1,
       })
     );
   });
@@ -196,7 +196,7 @@ describe('WorkflowExecutionHistory', () => {
       expect.objectContaining({
         startDate: '2023-01-01',
         endDate: '2023-01-31',
-        page: 1
+        page: 1,
       })
     );
   });
@@ -209,7 +209,7 @@ describe('WorkflowExecutionHistory', () => {
     });
 
     const statusHeader = screen.getByText('Status');
-    
+
     // Click the status header to sort by status
     fireEvent.click(statusHeader);
 
@@ -219,7 +219,7 @@ describe('WorkflowExecutionHistory', () => {
         expect.objectContaining({
           sortBy: 'status',
           sortOrder: 'desc',
-          page: 1
+          page: 1,
         })
       );
     });
@@ -229,7 +229,7 @@ describe('WorkflowExecutionHistory', () => {
     const paginatedResponse = {
       ...mockHistoryResponse,
       totalPages: 3,
-      page: 1
+      page: 1,
     };
     mockGetExecutionHistory.mockResolvedValue(paginatedResponse);
 
@@ -244,7 +244,7 @@ describe('WorkflowExecutionHistory', () => {
 
     expect(mockGetExecutionHistory).toHaveBeenCalledWith(
       expect.objectContaining({
-        page: 2
+        page: 2,
       })
     );
   });
@@ -252,7 +252,7 @@ describe('WorkflowExecutionHistory', () => {
   it('handles page size changes', async () => {
     const paginatedResponse = {
       ...mockHistoryResponse,
-      totalPages: 2
+      totalPages: 2,
     };
     mockGetExecutionHistory.mockResolvedValue(paginatedResponse);
 
@@ -268,7 +268,7 @@ describe('WorkflowExecutionHistory', () => {
     expect(mockGetExecutionHistory).toHaveBeenCalledWith(
       expect.objectContaining({
         pageSize: 25,
-        page: 1
+        page: 1,
       })
     );
   });
@@ -303,7 +303,7 @@ describe('WorkflowExecutionHistory', () => {
       total: 0,
       page: 1,
       pageSize: 10,
-      totalPages: 0
+      totalPages: 0,
     };
     mockGetExecutionHistory.mockResolvedValue(emptyResponse);
 
@@ -351,7 +351,7 @@ describe('WorkflowExecutionHistory', () => {
     const multiPageResponse = {
       ...mockHistoryResponse,
       totalPages: 3,
-      page: 1
+      page: 1,
     };
     mockGetExecutionHistory.mockResolvedValue(multiPageResponse);
 
@@ -377,10 +377,7 @@ describe('WorkflowExecutionHistory', () => {
 
   it('refreshes data when refreshTrigger changes', async () => {
     const { rerender } = render(
-      <WorkflowExecutionHistory 
-        onExecutionSelect={mockOnExecutionSelect} 
-        refreshTrigger={1}
-      />
+      <WorkflowExecutionHistory onExecutionSelect={mockOnExecutionSelect} refreshTrigger={1} />
     );
 
     await waitFor(() => {
@@ -388,10 +385,7 @@ describe('WorkflowExecutionHistory', () => {
     });
 
     rerender(
-      <WorkflowExecutionHistory 
-        onExecutionSelect={mockOnExecutionSelect} 
-        refreshTrigger={2}
-      />
+      <WorkflowExecutionHistory onExecutionSelect={mockOnExecutionSelect} refreshTrigger={2} />
     );
 
     await waitFor(() => {
