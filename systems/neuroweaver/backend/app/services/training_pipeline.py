@@ -8,44 +8,70 @@ import json
 import logging
 import os
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Union, TYPE_CHECKING
 from dataclasses import dataclass
 from pathlib import Path
 
+# Core ML libraries with graceful fallbacks
 try:
     import torch
     from transformers import (
         AutoTokenizer, AutoModelForCausalLM, TrainingArguments, Trainer,
-        DataCollatorForLanguageModeling
+        DataCollatorForLanguageModeling, AutoModelForSequenceClassification
     )
     from peft import LoraConfig, get_peft_model, TaskType
     from datasets import Dataset, load_dataset
     import wandb
+    import numpy as np
+    import pandas as pd
+    from tqdm import tqdm
     ML_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     ML_AVAILABLE = False
+    # Create placeholder classes to prevent runtime errors
+    torch = None
+    AutoTokenizer = None
+    AutoModelForCausalLM = None
+    TrainingArguments = None
+    Trainer = None
+    DataCollatorForLanguageModeling = None
+    AutoModelForSequenceClassification = None
+    LoraConfig = None
+    get_peft_model = None
+    TaskType = None
+    Dataset = None
+    load_dataset = None
+    wandb = None
+    np = None
+    pd = None
+    tqdm = None
     logger = logging.getLogger(__name__)
-    logger.warning("ML libraries not available. Training functionality will be limited.")
+    logger.warning(f"ML libraries not available: {e}. Training functionality will be limited.")
 
+# YAML support
 try:
     import yaml
 except ImportError:
     yaml = None
 
+# Import core services
 from app.core.config import settings
 from app.core.logging import logger
 from app.services.model_registry import ModelRegistry, ModelInfo
 
-# Import additional libraries for RLAIF
+# TRL and OpenAI for RLAIF
 try:
     from trl import PPOTrainer, PPOConfig, AutoModelForCausalLMWithValueHead
-    from transformers import AutoModelForSequenceClassification
     import openai
     TRL_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     TRL_AVAILABLE = False
+    PPOTrainer = None
+    PPOConfig = None
+    AutoModelForCausalLMWithValueHead = None
+    openai = None
     logger = logging.getLogger(__name__)
-    logger.warning("TRL library not available. RLAIF functionality will be limited.")
+    logger.warning(f"TRL/OpenAI libraries not available: {e}. RLAIF functionality will be limited.")
 
 
 @dataclass
@@ -88,12 +114,35 @@ class TrainingConfig:
             self.target_modules = ["q_proj", "v_proj", "k_proj", "o_proj"]
 
 
+def validate_ml_dependencies() -> None:
+    """Validate that required ML dependencies are available"""
+    if not ML_AVAILABLE:
+        raise ImportError(
+            "ML libraries (torch, transformers, etc.) are not available. "
+            "Please install required dependencies with: "
+            "pip install torch transformers datasets peft trl wandb"
+        )
+
+
+def validate_trl_dependencies() -> None:
+    """Validate that TRL dependencies are available for RLAIF"""
+    if not TRL_AVAILABLE:
+        raise ImportError(
+            "TRL and OpenAI libraries are not available. "
+            "Please install with: pip install trl openai"
+        )
+
+
 class QLoRATrainer:
     """QLoRA training implementation"""
     
     def __init__(self, config: TrainingConfig):
         self.config = config
         self.model_registry = ModelRegistry()
+        
+        # Validate dependencies at initialization
+        validate_ml_dependencies()
+        
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
     async def train_model(self, job_id: str, model_id: str) -> Dict[str, Any]:
@@ -152,7 +201,7 @@ class QLoRATrainer:
             })
             raise
     
-    async def _prepare_dataset(self) -> Dataset:
+    async def _prepare_dataset(self) -> Any:
         """Prepare training dataset with security validation"""
         logger.info("Preparing training dataset")
         
@@ -259,7 +308,7 @@ class QLoRATrainer:
         
         return model
     
-    def _get_training_arguments(self) -> TrainingArguments:
+    def _get_training_arguments(self) -> Any:
         """Get training arguments"""
         return TrainingArguments(
             output_dir=self.config.output_dir,
@@ -352,9 +401,7 @@ class QLoRATrainer:
 
         try:
             # Check TRL availability
-            if not TRL_AVAILABLE:
-                logger.warning("TRL not available, skipping RLAIF")
-                return
+            validate_trl_dependencies()
                 
             rlaif_trainer = RLAIFTrainer(
                 model=model,
@@ -375,6 +422,9 @@ class QLoRATrainer:
 
             logger.info(f"RLAIF completed successfully for job {job_id}")
 
+        except ImportError as e:
+            logger.warning(f"RLAIF dependencies not available: {e}")
+            logger.info(f"Continuing without RLAIF for job {job_id}")
         except Exception as e:
             logger.error(f"RLAIF failed for job {job_id}: {e}")
             # Continue without RLAIF if it fails
@@ -471,13 +521,14 @@ class RLAIFTrainer:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         # Initialize OpenAI client if needed
-        if feedback_model.startswith("gpt"):
+        if feedback_model.startswith("gpt") and openai:
             try:
-                import openai
                 self.openai_client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
-            except:
+            except Exception as e:
                 self.openai_client = None
-                logger.warning("OpenAI client not available for RLAIF feedback")
+                logger.warning(f"OpenAI client not available for RLAIF feedback: {e}")
+        else:
+            self.openai_client = None
 
     async def generate_feedback_samples(self, job_id: str) -> List[Dict[str, Any]]:
         """Generate model responses for feedback evaluation"""
@@ -522,11 +573,9 @@ class RLAIFTrainer:
         """Train reward model using AI feedback"""
         logger.info(f"Training reward model for job {job_id}")
 
-        if not TRL_AVAILABLE:
-            logger.warning("TRL not available, skipping reward model training")
-            return None
-
         try:
+            validate_trl_dependencies()
+
             # Get feedback samples
             samples = await self.generate_feedback_samples(job_id)
 
@@ -552,6 +601,9 @@ class RLAIFTrainer:
             logger.info("Reward model training completed")
             return reward_model
 
+        except ImportError as e:
+            logger.warning(f"TRL not available, skipping reward model training: {e}")
+            return None
         except Exception as e:
             logger.error(f"Error training reward model: {e}")
             return None
@@ -560,11 +612,9 @@ class RLAIFTrainer:
         """Apply PPO training using the reward model"""
         logger.info(f"Applying PPO training for job {job_id}")
 
-        if not TRL_AVAILABLE:
-            logger.warning("TRL not available, skipping PPO training")
-            return
-
         try:
+            validate_trl_dependencies()
+
             # Create PPO config
             ppo_config = PPOConfig(
                 model_name=self.model.config._name_or_path,
@@ -582,6 +632,8 @@ class RLAIFTrainer:
             # In a full implementation, this would use the actual PPO trainer
             logger.info("PPO training simulation completed")
 
+        except ImportError as e:
+            logger.warning(f"TRL not available, skipping PPO training: {e}")
         except Exception as e:
             logger.error(f"Error in PPO training: {e}")
 
@@ -614,18 +666,18 @@ class RLAIFTrainer:
 
                 import concurrent.futures
                 with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-                    response = await asyncio.get_event_loop().run_in_executor(
-                        executor,
+                    future = executor.submit(
                         lambda: self.openai_client.chat.completions.create(
-                        model=self.feedback_model,
-                        messages=[
-                            {"role": "system", "content": "You are an expert evaluator of automotive assistant responses. Rate the response quality from 1-10 based on accuracy, helpfulness, professionalism, and relevance to automotive context."},
-                            {"role": "user", "content": prompt}
-                        ],
-                        temperature=0.1,
-                        max_tokens=50
+                            model=self.feedback_model,
+                            messages=[
+                                {"role": "system", "content": "You are an expert evaluator of automotive assistant responses. Rate the response quality from 1-10 based on accuracy, helpfulness, professionalism, and relevance to automotive context."},
+                                {"role": "user", "content": prompt}
+                            ],
+                            temperature=0.1,
+                            max_tokens=50
+                        )
                     )
-                )
+                    response = await asyncio.get_event_loop().run_in_executor(None, future.result)
 
                 # Extract score from response
                 content = response.choices[0].message.content.strip()
@@ -633,7 +685,6 @@ class RLAIFTrainer:
                 return min(max(score, 1.0), 10.0)
 
             except Exception as e:
-                from app.core.security import SecurityValidator
                 logger.error(f"Error getting AI feedback: {str(e)[:200]}...")
                 return self._heuristic_scoring(sample)
 
@@ -701,7 +752,7 @@ Provide only the numerical score.
 
         return max(1.0, min(10.0, score))
 
-    def _prepare_reward_dataset(self, samples: List[Dict[str, Any]]) -> Dataset:
+    def _prepare_reward_dataset(self, samples: List[Dict[str, Any]]) -> Any:
         """Prepare dataset for reward model training"""
         reward_data = []
 
@@ -713,7 +764,7 @@ Provide only the numerical score.
 
         return Dataset.from_list(reward_data)
 
-    async def _train_reward_classifier(self, dataset: Dataset):
+    async def _train_reward_classifier(self, dataset: Any):
         """Train reward classifier model"""
         logger.info("Training reward classifier")
 
