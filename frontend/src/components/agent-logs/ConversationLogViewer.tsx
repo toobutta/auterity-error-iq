@@ -13,7 +13,7 @@ export interface AgentLog {
   modelName?: string;
   tokens?: number;
   response_time?: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface ModelTrainingJob {

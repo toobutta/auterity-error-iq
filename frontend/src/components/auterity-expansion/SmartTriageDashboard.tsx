@@ -172,7 +172,7 @@ const SmartTriageDashboard: React.FC = () => {
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
+            onClick={() => setActiveTab(tab.id as 'overview' | 'rules' | 'results' | 'analytics')}
             className={`flex-1 flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
               activeTab === tab.id
                 ? 'bg-automotive-primary text-white shadow-md'

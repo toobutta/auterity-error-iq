@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import SmartTriageDashboard from '../components/auterity-expansion/SmartTriageDashboard';
 import VectorSimilarityDashboard from '../components/auterity-expansion/VectorSimilarityDashboard';
@@ -55,7 +56,7 @@ const AuterityExpansion: React.FC = () => {
             {features.map((feature) => (
               <button
                 key={feature.id}
-                onClick={() => setActiveFeature(feature.id as any)}
+                onClick={() => setActiveFeature(feature.id as 'triage' | 'vector' | 'agents')}
                 className={`flex-1 flex flex-col items-center justify-center p-6 rounded-lg transition-all duration-300 ${
                   activeFeature === feature.id
                     ? 'bg-automotive-primary text-white shadow-lg transform scale-105'
