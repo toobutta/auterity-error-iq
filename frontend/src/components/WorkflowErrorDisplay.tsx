@@ -54,10 +54,9 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
             data: entry.data || {},
             inputData: entry.data || {},
             outputData: entry.data || {},
-            duration: entry.duration || 0,
+            duration: 0, // Default duration since API doesn't provide it
             timestamp: entry.timestamp,
             errorMessage: entry.level === 'error' ? entry.message : undefined,
-            stepType: entry.stepType,
           })) as ExecutionLog[];
           setLogs(transformedLogs);
         } catch (logError) {

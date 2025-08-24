@@ -852,22 +852,3 @@ jobs:
           echo "  • Integration tests: All systems communicating"
           echo "  • Code quality: Passing all checks"
         fi
-
-    - name: Post to Slack (if configured)
-      if: always()
-      run: |
-        # This would typically use a Slack webhook
-        # Uncomment and configure with your webhook URL
-        # WEBHOOK_URL="${{ secrets.SLACK_WEBHOOK_URL }}"
-        # if [[ -n "$WEBHOOK_URL" ]]; then
-        #   if [[ "${{ steps.final-gate-check.outputs.status }}" == "passed" ]]; then
-        #     curl -X POST -H 'Content-type: application/json' \
-        #       --data '{"text":"✅ Quality gates passed for commit ${{ github.sha }}"}' \
-        #       $WEBHOOK_URL
-        #   else
-        #     curl -X POST -H 'Content-type: application/json' \
-        #       --data '{"text":"❌ Quality gates failed for commit ${{ github.sha }}"}' \
-        #       $WEBHOOK_URL
-        #   fi
-        # fi
-        echo "Slack notification configured but disabled. Uncomment to enable."
