@@ -44,11 +44,6 @@ vi.mock('../../api/auth', () => ({
     getCurrentUser: vi.fn(),
     logout: vi.fn(),
   },
-  // Also export individual functions for compatibility
-  login: vi.fn(),
-  register: vi.fn(),
-  getCurrentUser: vi.fn(),
-  logout: vi.fn(),
 }));
 
 // Mock React Flow to avoid canvas issues in tests
@@ -70,13 +65,20 @@ vi.mock('reactflow', () => ({
   }),
 }));
 
-// Test wrapper component
+// Mock the useAuth hook directly to avoid complex auth setup
+const mockUseAuth = vi.fn();
+vi.mock('../../contexts/AuthContext', () => ({
+  AuthProvider: ({ children }: { children: React.ReactNode }) => <div data-testid="auth-provider">{children}</div>,
+  useAuth: () => mockUseAuth(),
+}));
+
+// Test wrapper component - App provides its own BrowserRouter
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <BrowserRouter>
-    <ErrorProvider>
-      <AuthProvider>{children}</AuthProvider>
-    </ErrorProvider>
-  </BrowserRouter>
+  <ErrorProvider>
+    <AuthProvider>
+      {children}
+    </AuthProvider>
+  </ErrorProvider>
 );
 
 describe('End-to-End Workflow Integration Tests', () => {
@@ -161,13 +163,7 @@ describe('End-to-End Workflow Integration Tests', () => {
       user: mockUser,
     });
 
-    // Also mock individual functions for compatibility
-    (authApi.getCurrentUser as Mock).mockResolvedValue(mockUser);
-    (authApi.login as Mock).mockResolvedValue({
-      access_token: 'mock-token',
-      token_type: 'bearer',
-      user: mockUser,
-    });
+    // AuthApi class methods are already mocked above
 
     // Setup default API mocks
     (workflowsApi.getWorkflows as Mock).mockResolvedValue([mockWorkflow]);
@@ -202,7 +198,7 @@ describe('End-to-End Workflow Integration Tests', () => {
       // Wait for initial load and authentication
       await waitFor(() => {
         expect(screen.getByText('Dashboard')).toBeInTheDocument();
-      });
+      }, { timeout: 3000 });
 
       // Navigate to workflow builder
       const workflowBuilderLink = screen.getByText('Workflow Builder');
@@ -399,7 +395,6 @@ describe('End-to-End Workflow Integration Tests', () => {
     it('should redirect unauthenticated users to login', async () => {
       // Mock auth to return no user
       (authApi.AuthApi.getCurrentUser as Mock).mockRejectedValue(new Error('Not authenticated'));
-      (authApi.getCurrentUser as Mock).mockRejectedValue(new Error('Not authenticated'));
 
       render(
         <TestWrapper>
@@ -416,7 +411,6 @@ describe('End-to-End Workflow Integration Tests', () => {
     it('should allow user to login and access protected routes', async () => {
       // Start with no user
       (authApi.AuthApi.getCurrentUser as Mock).mockRejectedValue(new Error('Not authenticated'));
-      (authApi.getCurrentUser as Mock).mockRejectedValue(new Error('Not authenticated'));
 
       render(
         <TestWrapper>

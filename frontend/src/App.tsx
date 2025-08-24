@@ -18,6 +18,7 @@ const ErrorDisplayDemo = lazy(() => import('./pages/ErrorDisplayDemo'));
 const KiroTestPage = lazy(() => import('./pages/KiroTestPage'));
 const AgentModelCorrelationPage = lazy(() => import('./pages/AgentModelCorrelationPage'));
 const AuterityExpansion = lazy(() => import('./pages/AuterityExpansion'));
+const EnterpriseDashboard = lazy(() => import('./components/enterprise/EnterpriseDashboard'));
 
 // Loading component for lazy-loaded routes
 const LoadingSpinner = () => (
@@ -103,6 +104,18 @@ function App() {
                           <ErrorBoundary component="Templates">
                             <Suspense fallback={<LoadingSpinner />}>
                               <Templates />
+                            </Suspense>
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/enterprise"
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary component="EnterpriseDashboard">
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <EnterpriseDashboard />
                             </Suspense>
                           </ErrorBoundary>
                         </ProtectedRoute>

@@ -13,19 +13,50 @@
     "dev:logs": "docker-compose -f docker-compose.unified.yml logs -f",
     "dev:stop": "docker-compose -f docker-compose.unified.yml down",
     "prod": "docker-compose -f docker-compose.unified.yml -f docker-compose.production.yml up -d",
+
     "test": "npm run test:frontend && npm run test:backend",
     "test:frontend": "cd frontend && npm run test",
     "test:backend": "cd backend && python -m pytest",
     "test:integration": "cd tests/integration && python -m pytest",
     "test:e2e": "cd tests/e2e && npm run test",
+    "test:coverage": "npm run test:coverage:frontend && npm run test:coverage:backend",
+    "test:coverage:frontend": "cd frontend && npm run test:coverage",
+    "test:coverage:backend": "cd backend && python -m pytest --cov=. --cov-report=xml",
+
     "lint": "npm run lint:frontend && npm run lint:backend",
     "lint:frontend": "cd frontend && npm run lint",
     "lint:backend": "cd backend && python -m flake8",
-    "build": "npm run build:frontend",
+    "lint:fix": "npm run lint:fix:frontend && npm run lint:fix:backend",
+    "lint:fix:frontend": "cd frontend && npm run lint:fix",
+    "lint:fix:backend": "cd backend && python -m black . && python -m isort .",
+
+    "build": "npm run build:frontend && npm run build:backend",
     "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && python -m py_compile app/main.py",
+
+    "type-check": "npm run type-check:frontend",
+    "type-check:frontend": "cd frontend && npx tsc --noEmit",
+
+    "security-scan": "npm run security-scan:frontend && npm run security-scan:backend",
+    "security-scan:frontend": "cd frontend && npm audit --audit-level moderate",
+    "security-scan:backend": "cd backend && python -m bandit -r . -f json -o security-report.json",
+
+    "performance-test": "npm run performance-test:frontend",
+    "performance-test:frontend": "cd frontend && npm run performance-test",
+
+    "quality-gate": "npm run type-check && npm run lint && npm run test && npm run security-scan && npm run performance-test",
+    "quality-gate:ci": "npm run quality-gate && npm run build",
+
+    "pre-commit": "npm run quality-gate",
+    "pre-push": "npm run test:coverage",
+
     "health-check": "./scripts/health-check.sh",
     "deploy:staging": "./scripts/deploy.sh staging",
-    "deploy:production": "./scripts/deploy-production.sh"
+    "deploy:production": "./scripts/deploy-production.sh",
+
+    "docs:generate": "npm run docs:generate:api && npm run docs:generate:coverage",
+    "docs:generate:api": "cd backend && python -m sphinx docs/ _build/html",
+    "docs:generate:coverage": "cd frontend && npm run test:coverage && npx istanbul report html"
   },
   "engines": {
     "node": ">=18.0.0",

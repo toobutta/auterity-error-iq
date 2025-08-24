@@ -21,6 +21,7 @@ from app.api import (
     websockets,
     workflows,
 )
+from app.api.enterprise import router as enterprise_router
 from app.middleware.enhanced_error_middleware import (
     EnhancedErrorHandlingMiddleware,
     ErrorMetricsMiddleware,
@@ -119,6 +120,9 @@ app.include_router(auterity_expansion.router)
 # Include Enhanced AI Service Management routes
 app.include_router(service_status_enhanced.router)
 app.include_router(ecosystem_management.router)
+
+# Include Enterprise Platform routes
+app.include_router(enterprise_router)
 
 # Include WebSocket routes (no prefix for WebSocket endpoints)
 app.include_router(websockets.router)

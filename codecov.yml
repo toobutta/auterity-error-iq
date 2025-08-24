@@ -1,0 +1,40 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+        base: auto
+    patch:
+      default:
+        target: auto
+        threshold: 1%
+
+  ignore:
+    - "node_modules/"
+    - "tests/"
+    - "docs/"
+    - "*.config.js"
+    - "*.config.ts"
+    - "migrations/"
+    - "scripts/"
+
+comment:
+  layout: "reach, diff, flags, files, footer"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+
+flags:
+  frontend:
+    paths:
+      - "frontend/"
+    carryforward: true
+  backend:
+    paths:
+      - "backend/"
+    carryforward: true
+
+github_checks:
+  annotations: true

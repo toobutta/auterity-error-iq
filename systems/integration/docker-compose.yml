@@ -1,0 +1,205 @@
+version: '3.8'
+
+services:
+  # Integration Layer
+  integration:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - INTEGRATION_PORT=3002
+      - REDIS_URL=redis://redis:6379
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - AUTERITY_URL=http://auterity:3000
+      - RELAYCORE_URL=http://relaycore:3001
+      - NEUROWEAVER_URL=http://neuroweaver:3003
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:3003
+    depends_on:
+      - redis
+      - rabbitmq
+      - auterity
+      - relaycore
+      - neuroweaver
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+    networks:
+      - auterity-network
+    restart: unless-stopped
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - auterity-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # RabbitMQ for message queuing
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - auterity-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Auterity System
+  auterity:
+    build:
+      context: ../../
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - API_URL=http://localhost:8000
+      - INTEGRATION_URL=http://integration:3002
+    volumes:
+      - ../../frontend:/app
+    networks:
+      - auterity-network
+    restart: unless-stopped
+
+  # RelayCore System
+  relaycore:
+    build:
+      context: ../relaycore
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - REDIS_URL=redis://redis:6379
+      - INTEGRATION_URL=http://integration:3002
+    volumes:
+      - ../relaycore:/app
+    networks:
+      - auterity-network
+    restart: unless-stopped
+
+  # NeuroWeaver System
+  neuroweaver:
+    build:
+      context: ../neuroweaver
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+      - REDIS_URL=redis://redis:6379
+      - INTEGRATION_URL=http://integration:3002
+    volumes:
+      - ../neuroweaver:/app
+    networks:
+      - auterity-network
+    restart: unless-stopped
+
+  # Backend API
+  backend:
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://auterity:password@postgres:5432/auterity
+      - REDIS_URL=redis://redis:6379
+      - INTEGRATION_URL=http://integration:3002
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ../../backend:/app
+    networks:
+      - auterity-network
+    restart: unless-stopped
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=auterity
+      - POSTGRES_USER=auterity
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - auterity-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auterity -d auterity"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@auterity.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    depends_on:
+      - postgres
+    networks:
+      - auterity-network
+    restart: unless-stopped
+
+  # Prometheus for monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - auterity-network
+    restart: unless-stopped
+
+  # Grafana for dashboards
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3004:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - auterity-network
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  rabbitmq_data:
+  postgres_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  auterity-network:
+    driver: bridge

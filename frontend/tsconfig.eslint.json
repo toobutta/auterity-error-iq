@@ -1,0 +1,37 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/**/*.{ts,tsx}",
+    "__tests__/**/*.{ts,tsx}",
+    "src/**/*.test.{ts,tsx}",
+    "src/**/*.spec.{ts,tsx}"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    "*.config.js",
+    "*.config.cjs",
+    "*.config.ts",
+    "*.config.tsx",
+    "eslint.config.js",
+    "eslint.config.cjs",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "vitest.setup.ts",
+    "tailwind.config.js",
+    "tailwind-simple.config.js",
+    "postcss.config.cjs",
+    "fix-all-typescript-errors.js",
+    "fix-remaining-types.js",
+    "fix-typescript-issues.js",
+    "lint_fix.cjs",
+    "test-runner.js",
+    ".eslintrc.js",
+    "eslint.config.js",
+    "src/api/workflows.d.ts",
+    "src/types/test-utils.tsx",
+    "src/types/vitest.d.ts"
+  ]
+}
