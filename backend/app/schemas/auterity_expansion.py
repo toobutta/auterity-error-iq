@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, validator
 class TriageRuleBase(BaseModel):
     """Base schema for triage rules."""
     name: str = Field(..., min_length=1, max_length=255)
-    rule_type: str = Field(..., regex="^(ml|rule_based|hybrid)$")
+    rule_type: str = Field(..., pattern="^(ml|rule_based|hybrid)$")
     conditions: Dict[str, Any] = Field(..., description="JSON conditions for rule matching")
     routing_logic: Dict[str, Any] = Field(..., description="JSON routing decisions")
     confidence_threshold: Decimal = Field(..., ge=0.0, le=1.0)
@@ -27,7 +27,7 @@ class TriageRuleCreate(TriageRuleBase):
 class TriageRuleUpdate(BaseModel):
     """Schema for updating a triage rule."""
     name: Optional[str] = Field(None, min_length=1, max_length=255)
-    rule_type: Optional[str] = Field(None, regex="^(ml|rule_based|hybrid)$")
+    rule_type: Optional[str] = Field(None, pattern="^(ml|rule_based|hybrid)$")
     conditions: Optional[Dict[str, Any]] = None
     routing_logic: Optional[Dict[str, Any]] = None
     confidence_threshold: Optional[Decimal] = Field(None, ge=0.0, le=1.0)
@@ -48,7 +48,7 @@ class TriageRuleResponse(TriageRuleBase):
 
 class VectorEmbeddingBase(BaseModel):
     """Base schema for vector embeddings."""
-    item_type: str = Field(..., regex="^(workflow|ticket|template)$")
+    item_type: str = Field(..., pattern="^(workflow|ticket|template)$")
     item_id: UUID
     content_hash: str = Field(..., min_length=1, max_length=64)
     embedding_vector: List[float] = Field(..., description="Vector embedding values")
@@ -81,7 +81,7 @@ class SimilarityResult(BaseModel):
 
 class IntegrationBase(BaseModel):
     """Base schema for integrations."""
-    provider: str = Field(..., regex="^(slack|zendesk|salesforce|fireflies|github|jira|custom)$")
+    provider: str = Field(..., pattern="^(slack|zendesk|salesforce|fireflies|github|jira|custom)$")
     name: str = Field(..., min_length=1, max_length=255)
     config: Dict[str, Any] = Field(..., description="Integration configuration")
     sync_interval_minutes: Optional[int] = Field(None, ge=1)
@@ -137,7 +137,7 @@ class IntegrationWebhookResponse(IntegrationWebhookBase):
 
 class ChannelTriggerBase(BaseModel):
     """Base schema for channel triggers."""
-    channel_type: str = Field(..., regex="^(voice|sms|email|webhook|slack|api)$")
+    channel_type: str = Field(..., pattern="^(voice|sms|email|webhook|slack|api)$")
     name: str = Field(..., min_length=1, max_length=255)
     trigger_config: Dict[str, Any] = Field(..., description="Channel-specific configuration")
     workflow_mapping: Dict[str, Any] = Field(..., description="Workflow mapping configuration")
@@ -171,9 +171,9 @@ class CustomModelBase(BaseModel):
     """Base schema for custom models."""
     model_name: str = Field(..., min_length=1, max_length=255)
     endpoint_url: str = Field(..., description="Model endpoint URL")
-    model_type: str = Field(..., regex="^(llm|embedding|classification|translation|summarization)$")
+    model_type: str = Field(..., pattern="^(llm|embedding|classification|translation|summarization)$")
     config: Dict[str, Any] = Field(..., description="Model configuration")
-    version: str = Field("1.0.0", regex="^\\d+\\.\\d+\\.\\d+$")
+    version: str = Field("1.0.0", pattern="^\\d+\\.\\d+\\.\\d+$")
 
 
 class CustomModelCreate(CustomModelBase):
@@ -186,7 +186,7 @@ class CustomModelUpdate(BaseModel):
     model_name: Optional[str] = Field(None, min_length=1, max_length=255)
     endpoint_url: Optional[str] = None
     config: Optional[Dict[str, Any]] = None
-    version: Optional[str] = Field(None, regex="^\\d+\\.\\d+\\.\\d+$")
+    version: Optional[str] = Field(None, pattern="^\\d+\\.\\d+\\.\\d+$")
 
 
 class CustomModelResponse(CustomModelBase):
@@ -295,7 +295,7 @@ class TriageResponse(BaseModel):
 class SimilaritySearchRequest(BaseModel):
     """Schema for similarity search requests."""
     content: str = Field(..., description="Content to search for similarities")
-    item_type: str = Field(..., regex="^(workflow|ticket|template)$")
+    item_type: str = Field(..., pattern="^(workflow|ticket|template)$")
     threshold: float = Field(0.8, ge=0.0, le=1.0, description="Similarity threshold")
     limit: int = Field(10, ge=1, le=100, description="Maximum results to return")
 

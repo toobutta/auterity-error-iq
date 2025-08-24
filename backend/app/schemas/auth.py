@@ -82,3 +82,48 @@ class PermissionResponse(BaseModel):
 class UserRoleAssignment(BaseModel):
     """User role assignment request."""
     role_names: List[str]
+
+
+class SSOInitiateResponse(BaseModel):
+    """SSO initiation response."""
+    redirect_url: str
+    provider: str
+    tenant_slug: str
+
+
+class SSOLoginResponse(BaseModel):
+    """SSO login response."""
+    access_token: str
+    token_type: str
+    user: dict
+
+
+class SSOConfigurationResponse(BaseModel):
+    """SSO configuration response."""
+    id: str
+    tenant_id: str
+    provider: str
+    auto_provision_users: bool
+    default_role: str
+    is_active: bool
+    created_at: str
+    updated_at: str
+
+
+class AuditLogResponse(BaseModel):
+    """Audit log response schema."""
+    id: str
+    tenant_id: str
+    user_id: Optional[str] = None
+    event_type: str
+    resource_type: str
+    resource_id: Optional[str] = None
+    action: str
+    ip_address: Optional[str] = None
+    user_agent: Optional[str] = None
+    old_values: Optional[dict] = None
+    new_values: Optional[dict] = None
+    metadata: Optional[dict] = None
+    status: str
+    error_message: Optional[str] = None
+    timestamp: str

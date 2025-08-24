@@ -277,7 +277,7 @@ async def get_system_status():
 @router.get("/export/error-report")
 async def export_error_report(
     period_hours: int = Query(24, ge=1, le=168),
-    format: str = Query("json", regex="^(json|csv)$")
+    format: str = Query("json", pattern="^(json|csv)$")
 ):
     """Export comprehensive error report."""
     try:
