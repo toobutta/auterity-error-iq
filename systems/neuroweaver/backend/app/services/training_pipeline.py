@@ -7,22 +7,30 @@ import asyncio
 import json
 import logging
 import os
-import subprocess
-import tempfile
-import yaml
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from pathlib import Path
 
-import torch
-from transformers import (
-    AutoTokenizer, AutoModelForCausalLM, TrainingArguments, Trainer,
-    DataCollatorForLanguageModeling
-)
-from peft import LoraConfig, get_peft_model, TaskType
-from datasets import Dataset, load_dataset
-import wandb
+try:
+    import torch
+    from transformers import (
+        AutoTokenizer, AutoModelForCausalLM, TrainingArguments, Trainer,
+        DataCollatorForLanguageModeling
+    )
+    from peft import LoraConfig, get_peft_model, TaskType
+    from datasets import Dataset, load_dataset
+    import wandb
+    ML_AVAILABLE = True
+except ImportError:
+    ML_AVAILABLE = False
+    logger = logging.getLogger(__name__)
+    logger.warning("ML libraries not available. Training functionality will be limited.")
+
+try:
+    import yaml
+except ImportError:
+    yaml = None
 
 from app.core.config import settings
 from app.core.logging import logger
@@ -36,6 +44,7 @@ try:
     TRL_AVAILABLE = True
 except ImportError:
     TRL_AVAILABLE = False
+    logger = logging.getLogger(__name__)
     logger.warning("TRL library not available. RLAIF functionality will be limited.")
 
 
@@ -90,8 +99,7 @@ class QLoRATrainer:
     async def train_model(self, job_id: str, model_id: str) -> Dict[str, Any]:
         """Execute QLoRA training pipeline"""
         try:
-            from app.core.security import SecurityValidator
-            logger.info(f"Starting QLoRA training for job {SecurityValidator.sanitize_log_input(job_id)}")
+            logger.info(f"Starting QLoRA training for job {job_id[:50]}...")
             
             # Initialize wandb if configured
             if settings.WANDB_API_KEY:
@@ -138,22 +146,27 @@ class QLoRATrainer:
             return training_result
             
         except Exception as e:
-            from app.core.security import SecurityValidator
-            logger.error(f"QLoRA training failed for job {SecurityValidator.sanitize_log_input(job_id)}: {SecurityValidator.sanitize_log_input(str(e))}")
+            logger.error(f"QLoRA training failed for job {job_id[:50]}...: {str(e)[:200]}...")
             await self._update_model_status(model_id, "training_failed", {
-                "error": str(e)
+                "error": str(e)[:500]  # Limit error message length
             })
             raise
     
     async def _prepare_dataset(self) -> Dataset:
         """Prepare training dataset with security validation"""
-        from app.core.security import SecurityValidator
-        
         logger.info("Preparing training dataset")
         
         try:
-            # Validate and sanitize dataset path
-            safe_path = SecurityValidator.validate_path(self.config.dataset_path, settings.DATA_DIR)
+            # Validate dataset path
+            if not os.path.exists(self.config.dataset_path):
+                raise FileNotFoundError(f"Dataset not found: {self.config.dataset_path}")
+            
+            # Ensure path is within allowed directory
+            safe_path = os.path.abspath(self.config.dataset_path)
+            if not safe_path.startswith(os.path.abspath(settings.DATA_DIR)):
+                raise ValueError("Dataset path outside allowed directory")
+            
+            safe_path = self.config.dataset_path
             
             if safe_path.endswith('.jsonl'):
                 data = []
@@ -180,7 +193,7 @@ class QLoRATrainer:
             return dataset
             
         except (FileNotFoundError, PermissionError, ValueError) as e:
-            logger.error(f"Dataset preparation failed: {SecurityValidator.sanitize_log_input(str(e))}")
+            logger.error(f"Dataset preparation failed: {str(e)[:200]}...")
             raise
     
     def _preprocess_function(self, examples):
@@ -209,8 +222,7 @@ class QLoRATrainer:
     
     async def _load_base_model(self):
         """Load base model and tokenizer"""
-        from app.core.security import SecurityValidator
-        logger.info(f"Loading base model: {SecurityValidator.sanitize_log_input(self.config.base_model)}")
+        logger.info(f"Loading base model: {self.config.base_model[:100]}...")
         
         # Load tokenizer
         tokenizer = AutoTokenizer.from_pretrained(self.config.base_model)
@@ -315,9 +327,7 @@ class QLoRATrainer:
     
     async def _execute_training(self, trainer, job_id: str) -> Dict[str, Any]:
         """Execute training process asynchronously"""
-        from app.core.security import SecurityValidator
-        
-        logger.info(f"Starting training execution for job {SecurityValidator.sanitize_log_input(job_id)}")
+        logger.info(f"Starting training execution for job {job_id[:50]}...")
         
         start_time = datetime.utcnow()
         
@@ -372,17 +382,18 @@ class QLoRATrainer:
     
     async def _save_model(self, model, tokenizer) -> str:
         """Save trained model with path validation"""
-        from app.core.security import SecurityValidator
-        
         # Validate output directory
-        safe_output_dir = SecurityValidator.validate_path(self.config.output_dir, settings.MODEL_STORAGE_PATH)
+        safe_output_dir = os.path.abspath(self.config.output_dir)
+        if not safe_output_dir.startswith(os.path.abspath(settings.MODEL_STORAGE_PATH)):
+            raise ValueError("Output directory outside allowed path")
+        
         model_path = os.path.join(safe_output_dir, "final_model")
         os.makedirs(model_path, exist_ok=True)
         
         model.save_pretrained(model_path)
         tokenizer.save_pretrained(model_path)
         
-        logger.info(f"Model saved to {SecurityValidator.sanitize_log_input(model_path)}")
+        logger.info(f"Model saved to {model_path[:100]}...")
         return model_path
     
     async def _update_model_status(self, model_id: str, status: str, metrics: Dict):
@@ -406,12 +417,12 @@ class TrainingPipelineService:
         training_config: Dict[str, Any]
     ) -> str:
         """Start training pipeline for a model with security validation"""
-        from app.core.security import SecurityValidator
-        
         try:
-            # Validate inputs
-            model_id = SecurityValidator.validate_model_id(model_id)
-            training_config = SecurityValidator.validate_config(training_config)
+            # Basic input validation
+            if not model_id or not isinstance(model_id, str):
+                raise ValueError("Invalid model_id")
+            if not training_config or not isinstance(training_config, dict):
+                raise ValueError("Invalid training_config")
             
             config = TrainingConfig(**training_config)
             trainer = QLoRATrainer(config)
@@ -420,11 +431,11 @@ class TrainingPipelineService:
             
             asyncio.create_task(trainer.train_model(job_id, model_id))
             
-            logger.info(f"Training pipeline started for model {SecurityValidator.sanitize_log_input(model_id)}, job {SecurityValidator.sanitize_log_input(job_id)}")
+            logger.info(f"Training pipeline started for model {model_id[:50]}..., job {job_id[:50]}...")
             return job_id
             
         except Exception as e:
-            logger.error(f"Failed to start training pipeline: {SecurityValidator.sanitize_log_input(str(e))}")
+            logger.error(f"Failed to start training pipeline: {str(e)[:200]}...")
             raise
     
     async def get_training_progress(self, job_id: str) -> Dict[str, Any]:
@@ -623,7 +634,7 @@ class RLAIFTrainer:
 
             except Exception as e:
                 from app.core.security import SecurityValidator
-                logger.error(f"Error getting AI feedback: {SecurityValidator.sanitize_log_input(str(e))}")
+                logger.error(f"Error getting AI feedback: {str(e)[:200]}...")
                 return self._heuristic_scoring(sample)
 
         # Fallback scoring based on heuristics

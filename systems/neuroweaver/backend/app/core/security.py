@@ -1,63 +1,63 @@
 """
-Security utilities and validation functions
+Security utilities for NeuroWeaver
 """
-
 import os
 import re
-import html
 from pathlib import Path
-from typing import Any, Dict, List
-from urllib.parse import quote
+from typing import Any, Dict
+
 
 class SecurityValidator:
-    """Centralized security validation"""
+    """Security validation utilities"""
+    
+    @staticmethod
+    def sanitize_log_input(input_str: str) -> str:
+        """Sanitize input for logging to prevent log injection"""
+        if not isinstance(input_str, str):
+            input_str = str(input_str)
+        
+        # Remove control characters and limit length
+        sanitized = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', input_str)
+        return sanitized[:200] + "..." if len(sanitized) > 200 else sanitized
     
     @staticmethod
     def validate_path(path: str, base_dir: str) -> str:
-        """Prevent path traversal attacks"""
-        if not path or not base_dir:
-            raise ValueError("Path and base_dir required")
+        """Validate file path to prevent directory traversal"""
+        if not path or not isinstance(path, str):
+            raise ValueError("Invalid path")
         
-        # Normalize and resolve paths
-        base = Path(base_dir).resolve()
-        target = (base / Path(path).name).resolve()
+        # Resolve absolute paths
+        abs_path = os.path.abspath(path)
+        abs_base = os.path.abspath(base_dir)
         
-        # Ensure target is within base directory
-        if not str(target).startswith(str(base)):
-            raise ValueError(f"Path traversal detected: {path}")
+        # Check if path is within base directory
+        if not abs_path.startswith(abs_base):
+            raise ValueError("Path outside allowed directory")
         
-        return str(target)
-    
-    @staticmethod
-    def sanitize_log_input(data: Any) -> str:
-        """Sanitize data for logging"""
-        text = str(data)
-        # Remove control characters and newlines
-        return re.sub(r'[\r\n\t\x00-\x1f\x7f-\x9f]', '', text)[:500]
-    
-    @staticmethod
-    def sanitize_html(data: str) -> str:
-        """Sanitize HTML content"""
-        return html.escape(str(data))
+        return abs_path
     
     @staticmethod
     def validate_model_id(model_id: str) -> str:
         """Validate model ID format"""
+        if not model_id or not isinstance(model_id, str):
+            raise ValueError("Invalid model ID")
+        
+        # Allow alphanumeric, hyphens, underscores
         if not re.match(r'^[a-zA-Z0-9_-]+$', model_id):
-            raise ValueError("Invalid model ID format")
-        return model_id
+            raise ValueError("Model ID contains invalid characters")
+        
+        return model_id[:100]  # Limit length
     
     @staticmethod
     def validate_config(config: Dict[str, Any]) -> Dict[str, Any]:
         """Validate training configuration"""
-        required = ['model_name', 'base_model', 'dataset_path']
-        for field in required:
+        if not isinstance(config, dict):
+            raise ValueError("Config must be a dictionary")
+        
+        # Basic validation - extend as needed
+        required_fields = ['model_name', 'base_model', 'dataset_path']
+        for field in required_fields:
             if field not in config:
                 raise ValueError(f"Missing required field: {field}")
-        
-        # Sanitize string fields
-        for key, value in config.items():
-            if isinstance(value, str):
-                config[key] = SecurityValidator.sanitize_log_input(value)
         
         return config

@@ -6,9 +6,15 @@ Handles model deployment with health checks and monitoring
 import asyncio
 import logging
 import json
-import aiohttp
-import yaml
-import base64
+
+try:
+    import aiohttp
+    import yaml
+    HTTP_AVAILABLE = True
+except ImportError:
+    HTTP_AVAILABLE = False
+    logger = logging.getLogger(__name__)
+    logger.warning("HTTP libraries not available. Deployment functionality will be limited.")
 from datetime import datetime, timedelta
 from typing import Dict, Optional, List, Any
 from dataclasses import dataclass, asdict
@@ -242,6 +248,14 @@ class ModelDeployer:
     
     async def _perform_health_check(self, deployment_info: Dict) -> HealthCheckResult:
         """Perform health check on deployment"""
+        if not HTTP_AVAILABLE:
+            return HealthCheckResult(
+                is_healthy=False,
+                response_time_ms=0,
+                error_message="HTTP client not available",
+                timestamp=datetime.utcnow()
+            )
+        
         endpoint = deployment_info["endpoint"]
         health_path = deployment_info["health_check"]["path"]
         max_response_time = deployment_info["health_check"]["max_response_time"]
@@ -507,7 +521,10 @@ class ModelDeployer:
             # For now, we'll simulate the application
 
             # Convert manifest to YAML
-            manifest_yaml = yaml.dump(manifest, default_flow_style=False)
+            if 'yaml' in globals() and yaml:
+                manifest_yaml = yaml.dump(manifest, default_flow_style=False)
+            else:
+                manifest_yaml = str(manifest)  # Fallback to string representation
 
             # Simulate applying to Kubernetes
             # In production, you would use:

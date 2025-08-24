@@ -5,11 +5,18 @@ Handles model registration, metadata management, and versioning
 
 import logging
 import re
-import semver
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 from dataclasses import dataclass, asdict
-from sqlalchemy import select, update, and_, or_, func
+
+try:
+    import semver
+    from sqlalchemy import select, update, and_, or_, func
+    DB_AVAILABLE = True
+except ImportError:
+    DB_AVAILABLE = False
+    logger = logging.getLogger(__name__)
+    logger.warning("Database libraries not available. Registry functionality will be limited.")
 
 from app.core.database import AsyncSessionLocal, ModelRecord
 
@@ -50,6 +57,9 @@ class ModelRegistry:
 
     async def register_model(self, model_info: ModelInfo) -> ModelInfo:
         """Register a new model in the registry"""
+        if not DB_AVAILABLE:
+            raise RuntimeError("Database not available")
+        
         async with self.session_factory() as session:
             try:
                 model_record = ModelRecord(

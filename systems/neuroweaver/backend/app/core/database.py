@@ -1,190 +1,104 @@
 """
-NeuroWeaver Database Configuration
-SQLAlchemy async database setup and models
+Database configuration and models for NeuroWeaver
 """
+import logging
+from typing import Optional, AsyncGenerator
 
-from sqlalchemy import Column, String, DateTime, Boolean, JSON, Float, Integer, Text
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql import func
-from datetime import datetime
+try:
+    from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+    from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+    from sqlalchemy import String, DateTime, Boolean, JSON, Text
+    from datetime import datetime
+    DB_AVAILABLE = True
+except ImportError:
+    DB_AVAILABLE = False
 
-from app.core.config import settings
-
-# Create async engine
-engine = create_async_engine(
-    settings.DATABASE_URL,
-    echo=settings.DATABASE_ECHO,
-    future=True
-)
-
-# Create async session factory
-AsyncSessionLocal = sessionmaker(
-    engine, class_=AsyncSession, expire_on_commit=False
-)
-
-# Create declarative base
-Base = declarative_base()
+logger = logging.getLogger(__name__)
 
 
-class ModelRecord(Base):
-    """Model registry database table"""
-    __tablename__ = "models"
-    
-    id = Column(String, primary_key=True, index=True)
-    name = Column(String, nullable=False, index=True)
-    description = Column(Text)
-    specialization = Column(String, nullable=False, index=True)
-    base_model = Column(String, nullable=False)
-    status = Column(String, nullable=False, default="registered", index=True)
-    version = Column(String, default="1.0.0")
-    created_by = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, server_default=func.now())
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
-    # JSON fields for flexible data storage
-    training_config = Column(JSON)
-    performance_metrics = Column(JSON)
-    deployment_info = Column(JSON)
-    
-    # Flags
-    is_active = Column(Boolean, default=True, index=True)
-    auto_deploy = Column(Boolean, default=False)
+if DB_AVAILABLE:
+    class Base(DeclarativeBase):
+        pass
 
+    class ModelRecord(Base):
+        __tablename__ = "models"
+        
+        id: Mapped[str] = mapped_column(String(255), primary_key=True)
+        name: Mapped[str] = mapped_column(String(255), nullable=False)
+        description: Mapped[Optional[str]] = mapped_column(Text)
+        specialization: Mapped[str] = mapped_column(String(100), nullable=False)
+        base_model: Mapped[str] = mapped_column(String(255), nullable=False)
+        status: Mapped[str] = mapped_column(String(50), nullable=False)
+        version: Mapped[str] = mapped_column(String(50), nullable=False)
+        created_by: Mapped[str] = mapped_column(String(255), nullable=False)
+        created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+        updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+        training_config: Mapped[Optional[dict]] = mapped_column(JSON)
+        performance_metrics: Mapped[Optional[dict]] = mapped_column(JSON)
+        deployment_info: Mapped[Optional[dict]] = mapped_column(JSON)
+        is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+        auto_deploy: Mapped[bool] = mapped_column(Boolean, default=False)
 
-class TrainingJobRecord(Base):
-    """Training job tracking table"""
-    __tablename__ = "training_jobs"
-    
-    id = Column(String, primary_key=True, index=True)  # job_id
-    model_id = Column(String, nullable=False, index=True)
-    status = Column(String, nullable=False, default="queued", index=True)
-    progress_percent = Column(Float, default=0.0)
-    current_epoch = Column(Integer)
-    total_epochs = Column(Integer)
-    current_loss = Column(Float)
-    best_eval_loss = Column(Float)
-    
-    # Timestamps
-    started_at = Column(DateTime)
-    completed_at = Column(DateTime)
-    created_at = Column(DateTime, default=datetime.utcnow, server_default=func.now())
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
-    # Configuration and results
-    training_config = Column(JSON)
-    training_results = Column(JSON)
-    error_message = Column(Text)
-    
-    # Resource usage
-    estimated_time_remaining = Column(Integer)  # seconds
-    gpu_memory_used = Column(Float)
-    cpu_usage_percent = Column(Float)
+    # Database engine and session
+    engine = None
+    AsyncSessionLocal = None
 
-
-class DatasetRecord(Base):
-    """Dataset metadata table"""
-    __tablename__ = "datasets"
-    
-    id = Column(String, primary_key=True, index=True)
-    name = Column(String, nullable=False, index=True)
-    description = Column(Text)
-    category = Column(String, nullable=False, index=True)
-    format = Column(String, nullable=False)  # jsonl, csv, yaml
-    file_path = Column(String, nullable=False)
-    size_mb = Column(Float)
-    sample_count = Column(Integer)
-    
-    # Metadata
-    specializations = Column(JSON)  # List of applicable specializations
-    created_at = Column(DateTime, default=datetime.utcnow, server_default=func.now())
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    version = Column(String, default="1.0.0")
-    is_active = Column(Boolean, default=True, index=True)
-    
-    # Statistics
-    preprocessing_stats = Column(JSON)
-    quality_metrics = Column(JSON)
-
-
-class TemplateRecord(Base):
-    """Template metadata table"""
-    __tablename__ = "templates"
-    
-    id = Column(String, primary_key=True, index=True)
-    name = Column(String, nullable=False, index=True)
-    description = Column(Text)
-    category = Column(String, nullable=False, index=True)
-    specialization = Column(String, nullable=False, index=True)
-    
-    # Template content
-    prompt_template = Column(Text, nullable=False)
-    example_inputs = Column(JSON)
-    expected_outputs = Column(JSON)
-    parameters = Column(JSON)
-    
-    # Metadata
-    created_at = Column(DateTime, default=datetime.utcnow, server_default=func.now())
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    version = Column(String, default="1.0.0")
-    is_active = Column(Boolean, default=True, index=True)
-    created_by = Column(String, nullable=False)
-    
-    # Usage statistics
-    usage_count = Column(Integer, default=0)
-    success_rate = Column(Float)
-    average_response_time = Column(Float)
-
-
-class DeploymentRecord(Base):
-    """Model deployment tracking table"""
-    __tablename__ = "deployments"
-    
-    id = Column(String, primary_key=True, index=True)
-    model_id = Column(String, nullable=False, index=True)
-    status = Column(String, nullable=False, default="deploying", index=True)
-    endpoint_url = Column(String)
-    
-    # Deployment configuration
-    deployment_config = Column(JSON)
-    instance_type = Column(String)
-    instance_count = Column(Integer, default=1)
-    
-    # Performance metrics
-    requests_per_minute = Column(Float)
-    average_latency_ms = Column(Float)
-    error_rate = Column(Float)
-    
-    # Timestamps
-    deployed_at = Column(DateTime)
-    last_health_check = Column(DateTime)
-    created_at = Column(DateTime, default=datetime.utcnow, server_default=func.now())
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
-    # RelayCore integration
-    relaycore_registered = Column(Boolean, default=False)
-    relaycore_model_id = Column(String)
-
-
-# Dependency to get database session
-async def get_db_session() -> AsyncSession:
-    """Get database session"""
-    async with AsyncSessionLocal() as session:
+    async def init_database():
+        """Initialize database connection"""
+        global engine, AsyncSessionLocal
+        
+        if not DB_AVAILABLE:
+            logger.warning("Database libraries not available")
+            return
+        
         try:
-            yield session
-        finally:
-            await session.close()
+            from .config import settings
+            engine = create_async_engine(settings.DATABASE_URL)
+            AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
+            
+            # Create tables
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            
+            logger.info("Database initialized successfully")
+        except Exception as e:
+            logger.error(f"Failed to initialize database: {e}")
+            raise
 
+    async def close_database():
+        """Close database connection"""
+        global engine
+        
+        if engine:
+            await engine.dispose()
+            logger.info("Database connection closed")
 
-# Database initialization
-async def init_database():
-    """Initialize database tables"""
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
+        """Get database session"""
+        if not AsyncSessionLocal:
+            raise RuntimeError("Database not initialized")
+        
+        async with AsyncSessionLocal() as session:
+            try:
+                yield session
+            except Exception:
+                await session.rollback()
+                raise
+            finally:
+                await session.close()
 
+else:
+    # Fallback implementations when database is not available
+    class ModelRecord:
+        pass
 
-# Database cleanup
-async def close_database():
-    """Close database connections"""
-    await engine.dispose()
+    async def init_database():
+        logger.warning("Database not available - using fallback")
+
+    async def close_database():
+        pass
+
+    async def get_db_session():
+        raise RuntimeError("Database not available")
+
+    AsyncSessionLocal = None
