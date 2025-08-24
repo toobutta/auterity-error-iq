@@ -13,6 +13,7 @@ from app.core.config import settings
 from app.core.logging import logger
 from app.core.database import init_database, close_database
 from app.middleware.prometheus import PrometheusMiddleware
+from app.middleware.security import SecurityMiddleware
 
 # Import API routers
 from app.api.health import router as health_router
@@ -71,6 +72,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add security middleware
+app.add_middleware(SecurityMiddleware)
 
 # Add Prometheus middleware
 app.add_middleware(PrometheusMiddleware)

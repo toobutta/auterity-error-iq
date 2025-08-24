@@ -90,7 +90,8 @@ class QLoRATrainer:
     async def train_model(self, job_id: str, model_id: str) -> Dict[str, Any]:
         """Execute QLoRA training pipeline"""
         try:
-            logger.info(f"Starting QLoRA training for job {job_id}")
+            from app.core.security import SecurityValidator
+        logger.info(f"Starting QLoRA training for job {SecurityValidator.sanitize_log_input(job_id)}")
             
             # Initialize wandb if configured
             if settings.WANDB_API_KEY:
@@ -137,37 +138,50 @@ class QLoRATrainer:
             return training_result
             
         except Exception as e:
-            logger.error(f"QLoRA training failed for job {job_id}: {e}")
+            from app.core.security import SecurityValidator
+            logger.error(f"QLoRA training failed for job {SecurityValidator.sanitize_log_input(job_id)}: {SecurityValidator.sanitize_log_input(str(e))}")
             await self._update_model_status(model_id, "training_failed", {
                 "error": str(e)
             })
             raise
     
     async def _prepare_dataset(self) -> Dataset:
-        """Prepare training dataset"""
+        """Prepare training dataset with security validation"""
+        from app.core.security import SecurityValidator
+        
         logger.info("Preparing training dataset")
         
-        if self.config.dataset_path.endswith('.jsonl'):
-            # Load JSONL dataset
-            data = []
-            with open(self.config.dataset_path, 'r') as f:
-                for line in f:
-                    data.append(json.loads(line))
+        try:
+            # Validate and sanitize dataset path
+            safe_path = SecurityValidator.validate_path(self.config.dataset_path, settings.DATA_DIR)
             
-            # Convert to Hugging Face dataset format
-            dataset = Dataset.from_list(data)
+            if safe_path.endswith('.jsonl'):
+                data = []
+                with open(safe_path, 'r', encoding='utf-8') as f:
+                    for line_num, line in enumerate(f, 1):
+                        try:
+                            data.append(json.loads(line))
+                        except json.JSONDecodeError:
+                            logger.warning(f"Skipping invalid JSON at line {line_num}")
+                            continue
+                        if line_num > 100000:  # Limit dataset size
+                            break
+                
+                if not data:
+                    raise ValueError("No valid data found in dataset")
+                dataset = Dataset.from_list(data)
+                
+            elif safe_path.endswith('.csv'):
+                dataset = load_dataset('csv', data_files=safe_path)['train']
+            else:
+                raise ValueError(f"Unsupported dataset format: {safe_path}")
             
-        elif self.config.dataset_path.endswith('.csv'):
-            # Load CSV dataset
-            dataset = load_dataset('csv', data_files=self.config.dataset_path)['train']
+            dataset = dataset.map(self._preprocess_function, batched=True)
+            return dataset
             
-        else:
-            raise ValueError(f"Unsupported dataset format: {self.config.dataset_path}")
-        
-        # Apply preprocessing
-        dataset = dataset.map(self._preprocess_function, batched=True)
-        
-        return dataset
+        except (FileNotFoundError, PermissionError, ValueError) as e:
+            logger.error(f"Dataset preparation failed: {SecurityValidator.sanitize_log_input(str(e))}")
+            raise
     
     def _preprocess_function(self, examples):
         """Preprocess dataset examples for training"""
@@ -195,7 +209,8 @@ class QLoRATrainer:
     
     async def _load_base_model(self):
         """Load base model and tokenizer"""
-        logger.info(f"Loading base model: {self.config.base_model}")
+        from app.core.security import SecurityValidator
+        logger.info(f"Loading base model: {SecurityValidator.sanitize_log_input(self.config.base_model)}")
         
         # Load tokenizer
         tokenizer = AutoTokenizer.from_pretrained(self.config.base_model)
@@ -299,19 +314,20 @@ class QLoRATrainer:
         return trainer
     
     async def _execute_training(self, trainer, job_id: str) -> Dict[str, Any]:
-        """Execute training process"""
-        logger.info(f"Starting training execution for job {job_id}")
+        """Execute training process asynchronously"""
+        from app.core.security import SecurityValidator
+        
+        logger.info(f"Starting training execution for job {SecurityValidator.sanitize_log_input(job_id)}")
         
         start_time = datetime.utcnow()
         
-        # Train model
-        training_result = trainer.train()
+        # Run blocking operations in executor to avoid blocking event loop
+        loop = asyncio.get_event_loop()
+        training_result = await loop.run_in_executor(None, trainer.train)
+        eval_result = await loop.run_in_executor(None, trainer.evaluate)
         
         end_time = datetime.utcnow()
         training_time = (end_time - start_time).total_seconds()
-        
-        # Evaluate model
-        eval_result = trainer.evaluate()
         
         return {
             "train_loss": training_result.training_loss,
@@ -325,7 +341,11 @@ class QLoRATrainer:
         logger.info(f"Applying RLAIF for job {job_id}")
 
         try:
-            # Initialize RLAIF trainer
+            # Check TRL availability
+            if not TRL_AVAILABLE:
+                logger.warning("TRL not available, skipping RLAIF")
+                return
+                
             rlaif_trainer = RLAIFTrainer(
                 model=model,
                 tokenizer=tokenizer,
@@ -351,15 +371,18 @@ class QLoRATrainer:
             logger.info(f"Continuing without RLAIF for job {job_id}")
     
     async def _save_model(self, model, tokenizer) -> str:
-        """Save trained model"""
-        model_path = os.path.join(self.config.output_dir, "final_model")
+        """Save trained model with path validation"""
+        from app.core.security import SecurityValidator
+        
+        # Validate output directory
+        safe_output_dir = SecurityValidator.validate_path(self.config.output_dir, settings.MODEL_STORAGE_PATH)
+        model_path = os.path.join(safe_output_dir, "final_model")
         os.makedirs(model_path, exist_ok=True)
         
-        # Save model and tokenizer
         model.save_pretrained(model_path)
         tokenizer.save_pretrained(model_path)
         
-        logger.info(f"Model saved to {model_path}")
+        logger.info(f"Model saved to {SecurityValidator.sanitize_log_input(model_path)}")
         return model_path
     
     async def _update_model_status(self, model_id: str, status: str, metrics: Dict):
@@ -382,25 +405,26 @@ class TrainingPipelineService:
         model_id: str,
         training_config: Dict[str, Any]
     ) -> str:
-        """Start training pipeline for a model"""
+        """Start training pipeline for a model with security validation"""
+        from app.core.security import SecurityValidator
+        
         try:
-            # Create training configuration
-            config = TrainingConfig(**training_config)
+            # Validate inputs
+            model_id = SecurityValidator.validate_model_id(model_id)
+            training_config = SecurityValidator.validate_config(training_config)
             
-            # Create trainer
+            config = TrainingConfig(**training_config)
             trainer = QLoRATrainer(config)
             
-            # Generate job ID
             job_id = f"train_{model_id}_{int(datetime.utcnow().timestamp())}"
             
-            # Start training in background
             asyncio.create_task(trainer.train_model(job_id, model_id))
             
-            logger.info(f"Training pipeline started for model {model_id}, job {job_id}")
+            logger.info(f"Training pipeline started for model {SecurityValidator.sanitize_log_input(model_id)}, job {SecurityValidator.sanitize_log_input(job_id)}")
             return job_id
             
         except Exception as e:
-            logger.error(f"Failed to start training pipeline: {e}")
+            logger.error(f"Failed to start training pipeline: {SecurityValidator.sanitize_log_input(str(e))}")
             raise
     
     async def get_training_progress(self, job_id: str) -> Dict[str, Any]:
@@ -457,7 +481,7 @@ class RLAIFTrainer:
             try:
                 # Generate response from the model
                 inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
-                with torch.no_grad():
+                with torch.inference_mode():
                     outputs = self.model.generate(
                         **inputs,
                         max_length=inputs.input_ids.shape[1] + 200,
@@ -577,8 +601,10 @@ class RLAIFTrainer:
             try:
                 prompt = self._create_feedback_prompt(sample)
 
-                response = await asyncio.get_event_loop().run_in_executor(
-                    None,
+                import concurrent.futures
+                with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+                    response = await asyncio.get_event_loop().run_in_executor(
+                        executor,
                     lambda: self.openai_client.chat.completions.create(
                         model=self.feedback_model,
                         messages=[
@@ -596,7 +622,9 @@ class RLAIFTrainer:
                 return min(max(score, 1.0), 10.0)
 
             except Exception as e:
-                logger.error(f"Error getting AI feedback: {e}")
+                from app.core.security import SecurityValidator
+                logger.error(f"Error getting AI feedback: {SecurityValidator.sanitize_log_input(str(e))}")
+                return self._heuristic_scoring(sample)
 
         # Fallback scoring based on heuristics
         return self._heuristic_scoring(sample)
