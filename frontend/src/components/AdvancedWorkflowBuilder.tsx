@@ -1,34 +1,24 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
-  Plus,
   Play,
-  Pause,
   Square,
   Save,
   Download,
-  Upload,
-  Undo,
-  Redo,
   ZoomIn,
   ZoomOut,
-  ZoomFit,
+  Maximize2,
   Move,
   Copy,
   Trash2,
   Settings,
-  Eye,
-  EyeOff,
   Grid,
   ArrowRight,
   CheckCircle,
   AlertTriangle,
-  Clock,
   Zap,
   Database,
   Mail,
   MessageSquare,
-  FileText,
-  Users,
   Bot
 } from 'lucide-react';
 
@@ -160,12 +150,10 @@ const AdvancedWorkflowBuilder: React.FC = () => {
   const [connectingNodes, setConnectingNodes] = useState<{ from: string; to: string } | null>(null);
   const [zoom, setZoom] = useState(1);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
-  const [isPanning, setIsPanning] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
   const [activeTab, setActiveTab] = useState<'design' | 'config' | 'test'>('design');
 
   const canvasRef = useRef<HTMLDivElement>(null);
-  const panStartRef = useRef({ x: 0, y: 0 });
 
   // Initialize with start and end nodes
   useEffect(() => {
@@ -493,7 +481,7 @@ const AdvancedWorkflowBuilder: React.FC = () => {
             }}
             className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <ZoomFit className="h-4 w-4" />
+            <Maximize2 className="h-4 w-4" />
           </button>
           <button
             onClick={() => setShowGrid(!showGrid)}
@@ -549,7 +537,17 @@ const AdvancedWorkflowBuilder: React.FC = () => {
               <Download className="h-4 w-4" />
               <span>Export</span>
             </button>
-            <button className="flex items-center space-x-2 px-3 py-1.5 text-sm bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors">
+            <button
+              onClick={() => {
+                const errors = validateWorkflow();
+                if (errors.length === 0) {
+                  alert('Workflow is valid and ready to run!');
+                } else {
+                  alert(`Validation errors:\n${errors.join('\n')}`);
+                }
+              }}
+              className="flex items-center space-x-2 px-3 py-1.5 text-sm bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors"
+            >
               <Play className="h-4 w-4" />
               <span>Run</span>
             </button>
@@ -560,7 +558,7 @@ const AdvancedWorkflowBuilder: React.FC = () => {
         <div className="flex-1 relative overflow-hidden">
           <div
             ref={canvasRef}
-            className={`w-full h-full relative ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`}
+            className="w-full h-full relative cursor-grab"
             onClick={handleCanvasClick}
             style={{
               backgroundImage: showGrid

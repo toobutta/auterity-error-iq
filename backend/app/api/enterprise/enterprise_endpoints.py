@@ -17,7 +17,7 @@ from datetime import datetime
 
 from ...database import get_db
 from ...models.user import User
-from ...auth.dependencies import get_current_user
+from ..dependencies import get_current_user
 
 router = APIRouter(prefix="/api/v1/enterprise", tags=["enterprise"])
 

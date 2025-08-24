@@ -41,7 +41,7 @@ interface CostAlert {
 }
 
 const BudgetMonitoring: React.FC = () => {
-  const [budget, setBudget] = useState<BudgetData>({
+  const [budget] = useState<BudgetData>({
     totalBudget: 500,
     usedAmount: 247.50,
     remainingAmount: 252.50,
@@ -50,7 +50,7 @@ const BudgetMonitoring: React.FC = () => {
     endDate: '2025-08-31'
   });
 
-  const [costBreakdown, setCostBreakdown] = useState<CostBreakdown[]>([
+  const [costBreakdown] = useState<CostBreakdown[]>([
     { provider: 'OpenAI', amount: 145.30, percentage: 58.7, trend: 'up' },
     { provider: 'Anthropic', amount: 78.20, percentage: 31.6, trend: 'stable' },
     { provider: 'NeuroWeaver', amount: 24.00, percentage: 9.7, trend: 'down' }

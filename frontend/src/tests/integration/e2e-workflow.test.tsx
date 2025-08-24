@@ -5,7 +5,6 @@
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach, Mock } from 'vitest';
-import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '../../contexts/AuthContext';
 import { ErrorProvider } from '../../contexts/ErrorContext';
 import App from '../../App';

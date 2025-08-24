@@ -1,12 +1,10 @@
-import React, { Suspense, useState, useEffect } from 'react';
-import {
-  MetricCard,
-  MetricGrid,
-  RevenueMetricCard,
-  CustomerMetricCard,
-  WorkflowMetricCard,
-  ServiceMetricCard,
-} from '../components/MetricCard';
+import React, { useState, useEffect } from 'react';
+import MetricCard from '../components/MetricCard';
+import MetricGrid from '../components/MetricGrid';
+import RevenueMetricCard from '../components/RevenueMetricCard';
+import CustomerMetricCard from '../components/CustomerMetricCard';
+import WorkflowMetricCard from '../components/WorkflowMetricCard';
+import ServiceMetricCard from '../components/ServiceMetricCard';
 
 // Mock data - replace with real API calls
 const mockMetrics = {
@@ -30,9 +28,13 @@ const QuickActions = () => {
         <span className="mr-2">📅</span>
         Schedule Service
       </button>
-      <button className="btn-automotive-secondary">
+      <button className="btn-automotive-secondary" onClick={() => console.log('Navigate to reports')}>
         <span className="mr-2">📊</span>
         View Reports
+      </button>
+      <button className="btn-automotive-secondary">
+        <span className="mr-2">📦</span>
+        Manage Inventory
       </button>
     </div>
   );
@@ -154,7 +156,7 @@ const DashboardSkeleton = () => (
 
 const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  const [metrics, setMetrics] = useState(mockMetrics);
+  const [metrics] = useState(mockMetrics);
 
   // Simulate loading data
   useEffect(() => {

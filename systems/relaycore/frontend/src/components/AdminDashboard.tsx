@@ -1,19 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
   BarChart3,
-  Users,
-  Settings,
-  Shield,
-  TrendingUp,
   AlertTriangle,
   CheckCircle,
   Clock,
   DollarSign,
   Activity,
   Zap,
-  Server,
-  Globe,
-  Database
+  Server
 } from 'lucide-react';
 
 interface SystemMetrics {

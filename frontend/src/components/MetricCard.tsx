@@ -6,7 +6,7 @@ interface MetricCardProps {
   subtitle?: string;
   change?: string;
   changeType?: 'positive' | 'negative' | 'neutral';
-  icon?: string;
+  icon?: React.ReactNode;
   gradient?: string;
   trend?: 'up' | 'down' | 'stable';
   loading?: boolean;

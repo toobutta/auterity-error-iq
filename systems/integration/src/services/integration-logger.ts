@@ -42,7 +42,7 @@ export interface LogStats {
 }
 
 export class IntegrationLogger extends EventEmitter {
-  private logger: winston.Logger;
+  private logger!: winston.Logger;
   private logEntries: LogEntry[] = [];
   private maxEntries = 10000;
 

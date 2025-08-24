@@ -17,8 +17,13 @@ export const authMiddleware = (unifiedAuth: UnifiedAuth) => {
       }
 
       const decoded = await unifiedAuth.verifyToken(token);
-      req.user = decoded;
-      req.systemId = decoded.systemId;
+      if (decoded) {
+        req.user = decoded;
+        req.systemId = (decoded as any).systemId;
+      } else {
+        res.status(401).json({ error: 'Invalid authentication token' });
+        return;
+      }
       
       next();
     } catch (error) {

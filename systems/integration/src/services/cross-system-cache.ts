@@ -467,17 +467,19 @@ export class CrossSystemCache extends EventEmitter {
 
     try {
       const info = await this.client.info();
+      const redisInfo = info as any; // Redis INFO command returns string keys
       return {
         status: 'connected',
-        version: info.redis_version,
-        uptime: info.uptime_in_seconds,
-        memory: info.used_memory_human,
-        connections: info.connected_clients,
-        commands: info.total_commands_processed
+        version: redisInfo.redis_version,
+        uptime: redisInfo.uptime_in_seconds,
+        memory: redisInfo.used_memory_human,
+        connections: redisInfo.connected_clients,
+        commands: redisInfo.total_commands_processed
       };
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       console.error('Error getting Redis info:', error);
-      return { status: 'error', error: error.message };
+      return { status: 'error', error: errorMessage };
     }
   }
 

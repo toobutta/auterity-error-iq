@@ -41,17 +41,41 @@ const HEALTH_CHECK_INTERVAL = 30000; // 30 seconds
 const ENABLE_ALERTS_DEFAULT = true;
 const SHUTDOWN_TIMEOUT = 10000; // 10 seconds
 
+interface CoreServices {
+  messageBus: MessageBus;
+  unifiedAuth: UnifiedAuth;
+  crossSystemCache: CrossSystemCache;
+  integrationLogger: IntegrationLogger;
+  healthMonitor: HealthMonitor;
+}
+
+/**
+ * Initialize core services with dependency injection
+ */
+function createCoreServices(): CoreServices {
+  const messageBus = new MessageBus();
+  const unifiedAuth = new UnifiedAuth();
+  const crossSystemCache = new CrossSystemCache();
+  const integrationLogger = new IntegrationLogger();
+  const healthMonitor = new HealthMonitor(
+    integrationLogger,
+    crossSystemCache,
+    HEALTH_CHECK_INTERVAL,
+    ENABLE_ALERTS_DEFAULT
+  );
+
+  return {
+    messageBus,
+    unifiedAuth,
+    crossSystemCache,
+    integrationLogger,
+    healthMonitor
+  };
+}
+
 // Initialize core services
-const messageBus = new MessageBus();
-const unifiedAuth = new UnifiedAuth();
-const crossSystemCache = new CrossSystemCache();
-const integrationLogger = new IntegrationLogger();
-const healthMonitor = new HealthMonitor(
-  integrationLogger,
-  crossSystemCache,
-  HEALTH_CHECK_INTERVAL,
-  ENABLE_ALERTS_DEFAULT
-);
+const coreServices = createCoreServices();
+const { messageBus, unifiedAuth, crossSystemCache, integrationLogger, healthMonitor } = coreServices;
 
 // Initialize system integrations
 const auterityIntegration = new AuterityIntegration({
@@ -91,7 +115,7 @@ app.use(cors({
 
 // Logging middleware
 app.use(morgan('combined', {
-  stream: { write: (message) => integrationLogger.info('HTTP', 'request', message.trim()) }
+  stream: { write: (message: string) => integrationLogger.info('HTTP', 'request', message.trim()) }
 }));
 
 // Body parsing middleware
@@ -125,20 +149,78 @@ app.use(errorHandler);
 // Initialize database connection and start server
 const startServer = async () => {
   try {
-    // Initialize system integrations in parallel for better performance
-    await Promise.all([
+    // Initialize system integrations with proper error handling and timeout
+    integrationLogger.info('Integration', 'startup', 'Initializing system integrations...');
+    
+    // Parallel initialization with timeout to prevent hanging
+    const INITIALIZATION_TIMEOUT = 30000; // 30 seconds
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Initialization timeout')), INITIALIZATION_TIMEOUT)
+    );
+    
+    const initializationPromises = [
       auterityIntegration.initialize(),
-      relayCoreIntegration.initialize(),
+      relayCoreIntegration.initialize(), 
       neuroWeaverIntegration.initialize(),
       messageBus.initialize()
-    ]);
+    ];
+    
+    const initializationResults = await Promise.race([
+      Promise.allSettled(initializationPromises),
+      timeoutPromise
+    ]) as PromiseSettledResult<void>[];
+
+    // Check for initialization failures with detailed recovery options
+    const failedServices: string[] = [];
+    const criticalServices = ['MessageBus']; // Services that must initialize
+    let hasCriticalFailure = false;
+    
+    initializationResults.forEach((result, index) => {
+      const serviceNames = ['Auterity', 'RelayCore', 'NeuroWeaver', 'MessageBus'];
+      const serviceName = serviceNames[index];
+      
+      if (result.status === 'rejected') {
+        const error = result.reason instanceof Error ? result.reason : new Error(String(result.reason));
+        integrationLogger.error('Integration', 'startup', `Failed to initialize ${serviceName}:`, error);
+        failedServices.push(serviceName);
+        
+        // Check if this is a critical service
+        if (criticalServices.includes(serviceName)) {
+          hasCriticalFailure = true;
+        }
+      } else {
+        integrationLogger.info('Integration', 'startup', `Successfully initialized ${serviceName}`);
+      }
+    });
+
+    // Handle failures based on criticality
+    if (hasCriticalFailure) {
+      throw new Error(`Critical services failed to initialize: ${failedServices.filter(s => criticalServices.includes(s)).join(', ')}`);
+    }
+    
+    if (failedServices.length > 0) {
+      integrationLogger.warn('Integration', 'startup', `Non-critical services failed: ${failedServices.join(', ')}. Continuing with degraded functionality.`);
+    }
 
     // Start health monitoring after other services are ready
-    await healthMonitor.initialize();
+    await healthMonitor.initialize().catch((error) => {
+      const errorMessage = error instanceof Error ? error : new Error(String(error));
+      integrationLogger.error('Integration', 'health-monitor', 'Failed to initialize health monitor:', errorMessage);
+      throw errorMessage;
+    });
 
     integrationLogger.info('Integration', 'startup', 'All system integrations initialized successfully');
 
     const server = createServer(app);
+
+    // Add server error handling
+    server.on('error', (error: Error) => {
+      integrationLogger.error('Integration', 'server', 'Server error:', error);
+      if (error.message.includes('EADDRINUSE')) {
+        integrationLogger.error('Integration', 'server', `Port ${PORT} is already in use. Please check for other running instances.`);
+        process.exit(1);
+      }
+    });
 
     server.listen(PORT, () => {
       integrationLogger.info('Integration', 'server', `Three-system integration server running on port ${PORT}`);
@@ -151,12 +233,25 @@ const startServer = async () => {
       integrationLogger.info('Integration', 'shutdown', 'SIGTERM received, shutting down gracefully');
 
       try {
-        await auterityIntegration.disconnect();
-        await relayCoreIntegration.disconnect();
-        await neuroWeaverIntegration.disconnect();
-        await messageBus.disconnect();
+        // Disconnect services with individual error handling
+        const services = [
+          { name: 'Auterity', service: auterityIntegration },
+          { name: 'RelayCore', service: relayCoreIntegration },
+          { name: 'NeuroWeaver', service: neuroWeaverIntegration },
+          { name: 'MessageBus', service: messageBus }
+        ];
+        
+        const disconnectPromises = services.map(({ name, service }) =>
+          service.disconnect().catch((err) => {
+            const error = err instanceof Error ? err : new Error(String(err));
+            integrationLogger.error('Integration', 'shutdown', `Failed to disconnect ${name}:`, error);
+          })
+        );
+        
+        await Promise.allSettled(disconnectPromises);
       } catch (error) {
-        integrationLogger.error('Integration', 'shutdown', 'Error during service disconnection:', error);
+        const errorMessage = error instanceof Error ? error : new Error(String(error));
+        integrationLogger.error('Integration', 'shutdown', 'Error during service disconnection:', errorMessage);
       }
 
       const shutdownTimeout = setTimeout(() => {
@@ -172,7 +267,8 @@ const startServer = async () => {
     });
 
   } catch (error) {
-    integrationLogger.error('Integration', 'server', 'Failed to start integration server:', error);
+    const errorMessage = error instanceof Error ? error : new Error(String(error));
+    integrationLogger.error('Integration', 'server', 'Failed to start integration server:', errorMessage);
     process.exit(1);
   }
 };
@@ -191,7 +287,8 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 startServer().catch((error) => {
-  integrationLogger.error('Integration', 'server', 'Failed to start server:', error);
+  const errorMessage = error instanceof Error ? error : new Error(String(error));
+  integrationLogger.error('Integration', 'server', 'Failed to start server:', errorMessage);
   process.exit(1);
 });
 

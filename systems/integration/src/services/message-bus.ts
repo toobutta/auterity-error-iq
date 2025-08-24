@@ -1,4 +1,4 @@
-import { Connection, Channel, connect } from 'amqplib';
+import * as amqp from 'amqplib';
 import { EventEmitter } from 'events';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -14,12 +14,12 @@ export interface Message {
 }
 
 export interface MessageHandler {
-  (message: Message): Promise<void> | void;
+  (routingKey: string, message: Message): Promise<void> | void;
 }
 
 export class MessageBus extends EventEmitter {
-  private connection?: Connection;
-  private channel?: Channel;
+  private connection?: amqp.Connection;
+  private channel?: amqp.Channel;
   private isConnected = false;
   private handlers = new Map<string, MessageHandler[]>();
   private queues = new Set<string>();
@@ -33,23 +33,23 @@ export class MessageBus extends EventEmitter {
 
   async initialize(): Promise<void> {
     try {
-      this.connection = await connect(this.url);
-      this.channel = await this.connection.createChannel();
+      this.connection = await amqp.connect(this.url) as any;
+      this.channel = await (this.connection as any).createChannel();
 
       // Create exchange
-      await this.channel.assertExchange(this.exchange, 'topic', { durable: true });
+      await (this.channel as any).assertExchange(this.exchange, 'topic', { durable: true });
 
       this.isConnected = true;
       console.log('Message bus initialized successfully');
 
       // Setup error handling
-      this.connection.on('error', (error) => {
+      (this.connection as any).on('error', (error: any) => {
         console.error('RabbitMQ connection error:', error);
         this.isConnected = false;
         this.emit('connection-error', error);
       });
 
-      this.connection.on('close', () => {
+      (this.connection as any).on('close', () => {
         console.log('RabbitMQ connection closed');
         this.isConnected = false;
         this.emit('connection-closed');
@@ -64,10 +64,10 @@ export class MessageBus extends EventEmitter {
   async disconnect(): Promise<void> {
     try {
       if (this.channel) {
-        await this.channel.close();
+        await (this.channel as any).close();
       }
       if (this.connection) {
-        await this.connection.close();
+        await (this.connection as any).close();
       }
       this.isConnected = false;
       console.log('Message bus disconnected');
@@ -125,7 +125,7 @@ export class MessageBus extends EventEmitter {
     await this.channel.bindQueue(queue, this.exchange, routingKey);
 
     // Start consuming
-    await this.channel.consume(queue, async (msg) => {
+    await this.channel.consume(queue, async (msg: any) => {
       if (msg) {
         try {
           const message: Message = JSON.parse(msg.content.toString());
@@ -135,7 +135,7 @@ export class MessageBus extends EventEmitter {
             message.correlationId = message.id;
           }
 
-          await handler(message);
+          await handler(routingKey, message);
 
           this.channel!.ack(msg);
           this.emit('message-processed', message);
@@ -183,7 +183,7 @@ export class MessageBus extends EventEmitter {
       };
 
       // Setup reply handler
-      this.subscribe(replyQueue, (message: Message) => {
+      this.subscribe(replyQueue, (routingKey: string, message: Message) => {
         if (message.correlationId === correlationId) {
           cleanup();
           resolve(message.payload);
@@ -244,7 +244,7 @@ export class MessageBus extends EventEmitter {
       const queueInfo: any = {};
 
       for (const queue of queues) {
-        const result = await this.channel.assertQueue(queue, { passive: true });
+        const result = await (this.channel as any).assertQueue(queue, { passive: true });
         queueInfo[queue] = {
           messageCount: result.messageCount,
           consumerCount: result.consumerCount

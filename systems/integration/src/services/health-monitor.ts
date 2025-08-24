@@ -53,7 +53,7 @@ export class HealthMonitor extends EventEmitter {
   }
 
   async initialize(): Promise<void> {
-    this.logger.info('HealthMonitor', 'Initializing health monitoring system');
+    this.logger.info('HealthMonitor', 'initialize', 'Initializing health monitoring system');
 
     // Initialize default system monitoring
     await this.registerSystem('integration', 'http://localhost:3002/health');
@@ -65,7 +65,7 @@ export class HealthMonitor extends EventEmitter {
     this.initializeDefaultAlertRules();
 
     this.isMonitoring = true;
-    this.logger.info('HealthMonitor', 'Health monitoring system initialized');
+    this.logger.info('HealthMonitor', 'initialize', 'Health monitoring system initialized');
   }
 
   async registerSystem(name: string, healthEndpoint: string, customConfig?: any): Promise<void> {
@@ -84,7 +84,7 @@ export class HealthMonitor extends EventEmitter {
     // Start health checking for this system
     await this.startHealthChecks(name);
 
-    this.logger.info('HealthMonitor', `Registered system: ${name} at ${healthEndpoint}`);
+    this.logger.info('HealthMonitor', 'registerSystem', `Registered system: ${name} at ${healthEndpoint}`);
     this.emit('system-registered', { name, healthEndpoint });
   }
 
@@ -94,7 +94,7 @@ export class HealthMonitor extends EventEmitter {
     }, this.checkInterval);
 
     this.checkIntervals.set(systemName, interval);
-    this.logger.debug('HealthMonitor', `Started health checks for: ${systemName}`);
+    this.logger.debug('HealthMonitor', 'startHealthChecks', `Started health checks for: ${systemName}`);
   }
 
   private async performHealthCheck(systemName: string): Promise<void> {
@@ -130,7 +130,8 @@ export class HealthMonitor extends EventEmitter {
       this.emit('health-check', { system: systemName, result, duration });
 
     } catch (error) {
-      this.logger.error('HealthMonitor', `Health check failed for ${systemName}`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error('HealthMonitor', 'performHealthCheck', `Health check failed for ${systemName}: ${errorMessage}`);
 
       system.status = 'unhealthy';
       system.lastCheck = new Date().toISOString();
@@ -172,12 +173,13 @@ export class HealthMonitor extends EventEmitter {
       };
 
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       return {
         system: systemName,
         status: 'offline',
         timestamp: new Date().toISOString(),
         duration: Date.now() - startTime,
-        error: error.message
+        error: errorMessage
       };
     }
   }
@@ -223,7 +225,7 @@ export class HealthMonitor extends EventEmitter {
       this.alertRules.set(rule.id, rule);
     });
 
-    this.logger.info('HealthMonitor', `Initialized ${defaultRules.length} default alert rules`);
+    this.logger.info('HealthMonitor', 'initializeDefaultAlertRules', `Initialized ${defaultRules.length} default alert rules`);
   }
 
   private async checkAlertRules(systemName: string, system: SystemHealth): Promise<void> {
@@ -302,7 +304,7 @@ export class HealthMonitor extends EventEmitter {
     };
 
     // Log the alert
-    this.logger.warn('HealthMonitor', `Alert triggered: ${alert.message}`, alert);
+    this.logger.warn('HealthMonitor', 'triggerAlert', `Alert triggered: ${alert.message}`);
 
     // Emit alert event
     this.emit('alert-triggered', alert);
@@ -321,7 +323,7 @@ export class HealthMonitor extends EventEmitter {
     this.alertRules.set(id, newRule);
     await this.cache.set(`alert-rule:${id}`, newRule);
 
-    this.logger.info('HealthMonitor', `Added alert rule: ${newRule.name}`);
+    this.logger.info('HealthMonitor', 'addAlertRule', `Added alert rule: ${newRule.name}`);
     this.emit('alert-rule-added', newRule);
 
     return id;
@@ -334,7 +336,7 @@ export class HealthMonitor extends EventEmitter {
     this.alertRules.delete(ruleId);
     await this.cache.delete(`alert-rule:${ruleId}`);
 
-    this.logger.info('HealthMonitor', `Removed alert rule: ${rule.name}`);
+    this.logger.info('HealthMonitor', 'removeAlertRule', `Removed alert rule: ${rule.name}`);
     this.emit('alert-rule-removed', rule);
 
     return true;
@@ -369,7 +371,7 @@ export class HealthMonitor extends EventEmitter {
 
     return {
       status: overallStatus,
-      systems: systems.length,
+      systemCount: systems.length,
       healthy,
       degraded,
       unhealthy,
@@ -385,7 +387,7 @@ export class HealthMonitor extends EventEmitter {
   }
 
   async forceHealthCheck(systemName: string): Promise<HealthCheckResult> {
-    this.logger.info('HealthMonitor', `Forced health check for: ${systemName}`);
+    this.logger.info('HealthMonitor', 'forceHealthCheck', `Forced health check for: ${systemName}`);
     return await this.checkSystemHealth(systemName);
   }
 
@@ -395,17 +397,17 @@ export class HealthMonitor extends EventEmitter {
     // Clear all intervals
     for (const [systemName, interval] of this.checkIntervals.entries()) {
       clearInterval(interval);
-      this.logger.debug('HealthMonitor', `Stopped health checks for: ${systemName}`);
+      this.logger.debug('HealthMonitor', 'stop', `Stopped health checks for: ${systemName}`);
     }
 
     this.checkIntervals.clear();
-    this.logger.info('HealthMonitor', 'Health monitoring stopped');
+    this.logger.info('HealthMonitor', 'stopMonitoring', 'Health monitoring stopped');
   }
 
   async restart(): Promise<void> {
     await this.stop();
     await this.initialize();
-    this.logger.info('HealthMonitor', 'Health monitoring restarted');
+    this.logger.info('HealthMonitor', 'restartMonitoring', 'Health monitoring restarted');
   }
 
   // Health check for the monitor itself
