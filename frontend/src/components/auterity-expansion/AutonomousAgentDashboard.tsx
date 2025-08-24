@@ -25,7 +25,10 @@ interface AgentTask {
   description: string;
   assigned_at: string;
   completed_at?: string;
-  result?: any;
+  result?: {
+    insights?: string[];
+    [key: string]: unknown;
+  };
   error_message?: string;
 }
 
@@ -33,7 +36,11 @@ interface AgentMemory {
   id: string;
   agent_id: string;
   context_hash: string;
-  memory_data: any;
+  memory_data: {
+    context?: string;
+    patterns?: string[];
+    [key: string]: unknown;
+  };
   importance_score: number;
   created_at: string;
   accessed_at?: string;
@@ -258,7 +265,7 @@ const AutonomousAgentDashboard: React.FC = () => {
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
+            onClick={() => setActiveTab(tab.id as 'overview' | 'agents' | 'tasks' | 'memories' | 'coordination')}
             className={`flex-1 flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
               activeTab === tab.id
                 ? 'bg-automotive-primary text-white shadow-md'

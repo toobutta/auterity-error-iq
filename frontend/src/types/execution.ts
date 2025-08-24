@@ -2,49 +2,52 @@ export interface ExecutionLogEntry {
   id: string;
   executionId: string;
   timestamp: string;
-  level: 'info' | 'warning' | 'error' | 'debug';
+  level: 'info' | 'warn' | 'error' | 'debug';
   message: string;
   stepId?: string;
   stepName?: string;
   data?: Record<string, unknown>;
-  duration?: number;
 }
 
-export interface ExecutionMetrics {
-  totalExecutions: number;
-  successfulExecutions: number;
-  failedExecutions: number;
-  averageDuration: number;
-  successRate: number;
-  errorRate: number;
-  executionsToday: number;
-  executionsThisWeek: number;
-  executionsThisMonth: number;
-}
-
-export interface ExecutionStep {
+export interface ExecutionLog {
   id: string;
-  name: string;
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'skipped';
-  startedAt?: string;
-  completedAt?: string;
-  duration?: number;
-  input?: Record<string, unknown>;
-  output?: Record<string, unknown>;
-  error?: string;
+  timestamp: string;
+  level: 'info' | 'warn' | 'error' | 'debug';
+  message: string;
+  stepId?: string;
+  stepName?: string;
+  data?: Record<string, unknown>;
 }
 
-export interface ExecutionDetails {
-  id: string;
+export interface StatusUpdate {
+  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+  message?: string;
+  progress?: number;
+  timestamp: string;
+}
+
+export interface SystemMetrics {
+  timestamp: string;
+  cpuUsage: number;
+  memoryUsage: number;
+  diskUsage: number;
+  networkIO: number;
+}
+
+export interface PerformanceMetrics {
   workflowId: string;
-  workflowName: string;
-  status: 'pending' | 'running' | 'completed' | 'failed';
-  startedAt: string;
-  completedAt?: string;
-  duration?: number;
-  inputData: Record<string, unknown>;
-  outputData?: Record<string, unknown>;
-  steps: ExecutionStep[];
+  executionTime: number;
+  resourceUsage: {
+    cpu: number;
+    memory: number;
+    network: number;
+  };
+  timestamp: string;
+}
+
+export interface UseWebSocketLogsReturn {
   logs: ExecutionLogEntry[];
-  errorMessage?: string;
+  isConnected: boolean;
+  connect: (executionId: string) => void;
+  disconnect: () => void;
 }

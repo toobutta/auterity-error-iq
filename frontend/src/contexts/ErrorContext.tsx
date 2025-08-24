@@ -49,7 +49,7 @@ export const ErrorProvider: React.FC<ErrorProviderProps> = ({
 
   const handleRetry = async (error: AppError) => {
     // Default retry logic - can be overridden by specific components
-    if (error.category === 'authentication' || error.category === 'api') {
+    if (error.category === 'auth' || error.category === 'api') {
       // For network/API errors, we could retry the last failed request
       // This would need to be implemented based on the specific use case
       console.log('Retrying error:', error);
@@ -61,7 +61,7 @@ export const ErrorProvider: React.FC<ErrorProviderProps> = ({
 
     // Add common recovery actions based on error category
     switch (error.category) {
-      case 'authentication':
+      case 'auth':
         actions.push({
           label: 'Login Again',
           action: () => {

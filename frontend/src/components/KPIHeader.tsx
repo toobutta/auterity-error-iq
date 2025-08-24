@@ -1,7 +1,5 @@
 import React from 'react';
-import { cn, formatNumber, getSeverityStyles } from '../lib/utils';
-import { Card, CardContent } from './ui/card';
-import { Badge } from './ui/badge';
+import { cn, formatNumber } from '../lib/utils';
 
 interface KPIMetric {
   label: string;
@@ -24,25 +22,7 @@ interface KPIHeaderProps {
   className?: string;
 }
 
-// Modern gradient background component
-const GradientBackground: React.FC<{ severity?: string; children: React.ReactNode }> = ({ 
-  severity, 
-  children 
-}) => {
-  const gradients = {
-    critical: 'bg-gradient-to-br from-red-50 via-red-25 to-white dark:from-red-900/20 dark:via-red-900/10 dark:to-neutral-900',
-    high: 'bg-gradient-to-br from-orange-50 via-orange-25 to-white dark:from-orange-900/20 dark:via-orange-900/10 dark:to-neutral-900',
-    medium: 'bg-gradient-to-br from-yellow-50 via-yellow-25 to-white dark:from-yellow-900/20 dark:via-yellow-900/10 dark:to-neutral-900',
-    low: 'bg-gradient-to-br from-green-50 via-green-25 to-white dark:from-green-900/20 dark:via-green-900/10 dark:to-neutral-900',
-    default: 'bg-gradient-to-br from-blue-50 via-blue-25 to-white dark:from-blue-900/20 dark:via-blue-900/10 dark:to-neutral-900',
-  };
-  
-  return (
-    <div className={cn(gradients[severity as keyof typeof gradients] || gradients.default)}>
-      {children}
-    </div>
-  );
-};
+
 
 const TrendIcon: React.FC<{ trend: 'up' | 'down' | 'neutral' }> = ({ trend }) => {
   const baseClasses = "w-4 h-4";

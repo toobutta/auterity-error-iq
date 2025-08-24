@@ -9,7 +9,7 @@ interface VectorEmbedding {
   item_id: string;
   content_hash: string;
   embedding_vector: number[];
-  embedding_metadata: any;
+  embedding_metadata: unknown;
   created_at: string;
 }
 
@@ -19,7 +19,7 @@ interface SimilarityResult {
   item_type: string;
   item_id: string;
   content_preview: string;
-  metadata: any;
+  metadata: unknown;
 }
 
 interface SimilarityCluster {

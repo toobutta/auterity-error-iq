@@ -34,6 +34,10 @@ export interface TemplateInstantiateRequest {
   parameterValues: Record<string, unknown>;
 }
 
+export interface FormData {
+  [key: string]: string | number | boolean | Record<string, unknown> | unknown[];
+}
+
 export interface TemplateSearchParams {
   category?: string;
   page?: number;

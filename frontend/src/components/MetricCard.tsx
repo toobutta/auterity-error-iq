@@ -3,6 +3,7 @@ import React from 'react';
 interface MetricCardProps {
   title: string;
   value: string | number;
+  subtitle?: string;
   change?: string;
   changeType?: 'positive' | 'negative' | 'neutral';
   icon?: string;
@@ -15,6 +16,7 @@ interface MetricCardProps {
 export const MetricCard: React.FC<MetricCardProps> = ({
   title,
   value,
+  subtitle,
   change,
   changeType = 'neutral',
   icon = '📊',
@@ -71,6 +73,13 @@ export const MetricCard: React.FC<MetricCardProps> = ({
           <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1 group-hover:text-automotive-primary transition-colors">
             {title}
           </p>
+          
+          {/* Subtitle */}
+          {subtitle && (
+            <p className="text-xs text-gray-500 dark:text-gray-500 mb-1">
+              {subtitle}
+            </p>
+          )}
           
           {/* Value */}
           <p className="text-3xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-automotive-primary transition-colors">

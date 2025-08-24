@@ -34,20 +34,24 @@ export interface WorkflowExecution {
   id: string;
   workflowId: string;
   workflowName?: string;
-  status: 'pending' | 'running' | 'completed' | 'failed';
+  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
   inputData: Record<string, unknown>;
-  outputData?: Record<string, unknown>;
+  outputData?: Record<string, unknown> | null;
   startedAt: string;
   completedAt?: string;
   errorMessage?: string;
   duration?: number; // in milliseconds
 }
 
+export interface NodeConfig extends Record<string, unknown> {
+  [key: string]: unknown;
+}
+
 export interface NodeData {
   label: string;
   description?: string;
   type: WorkflowStep['type'];
-  config: WorkflowStep['config'];
+  config: NodeConfig;
   isValid?: boolean;
   validationErrors?: string[];
 }

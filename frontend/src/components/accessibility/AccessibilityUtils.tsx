@@ -15,49 +15,49 @@ export const useFocusManagement = () => {
     }
   };
 
-  const trapFocus = (containerRef: React.RefObject<HTMLElement>) => {
-    useEffect(() => {
-      const container = containerRef.current;
-      if (!container) return;
-
-      const focusableElements = container.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      const firstFocusable = focusableElements[0] as HTMLElement;
-      const lastFocusable = focusableElements[focusableElements.length - 1] as HTMLElement;
-
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Tab') {
-          if (e.shiftKey) {
-            if (document.activeElement === firstFocusable) {
-              e.preventDefault();
-              lastFocusable?.focus();
-            }
-          } else {
-            if (document.activeElement === lastFocusable) {
-              e.preventDefault();
-              firstFocusable?.focus();
-            }
-          }
-        }
-      };
-
-      container.addEventListener('keydown', handleKeyDown);
-      firstFocusable?.focus();
-
-      return () => {
-        container.removeEventListener('keydown', handleKeyDown);
-      };
-    }, [containerRef]);
-  };
-
   return {
     focusedElement,
     setFocusedElement,
     captureFocus,
-    restoreFocus,
-    trapFocus
+    restoreFocus
   };
+};
+
+// Focus trap hook
+export const useFocusTrap = (containerRef: React.RefObject<HTMLElement>) => {
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const focusableElements = container.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstFocusable = focusableElements[0] as HTMLElement;
+    const lastFocusable = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Tab') {
+        if (e.shiftKey) {
+          if (document.activeElement === firstFocusable) {
+            e.preventDefault();
+            lastFocusable?.focus();
+          }
+        } else {
+          if (document.activeElement === lastFocusable) {
+            e.preventDefault();
+            firstFocusable?.focus();
+          }
+        }
+      }
+    };
+
+    container.addEventListener('keydown', handleKeyDown);
+    firstFocusable?.focus();
+
+    return () => {
+      container.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [containerRef]);
 };
 
 // Keyboard navigation hook
@@ -256,7 +256,8 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
   closeOnEscape = true
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  const { captureFocus, restoreFocus, trapFocus } = useFocusManagement();
+  const { captureFocus, restoreFocus } = useFocusManagement();
+  useFocusTrap(modalRef);
 
   useEffect(() => {
     if (isOpen) {
@@ -284,8 +285,6 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, closeOnEscape, onClose]);
-
-  trapFocus(modalRef);
 
   if (!isOpen) return null;
 

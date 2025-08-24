@@ -21,8 +21,8 @@ const mockTemplate: Template = {
       description: 'Name of the customer',
       parameterType: 'string',
       isRequired: true,
-      defaultValue: null,
-      validationRules: null
+      defaultValue: undefined,
+      validationRules: undefined
     }
   ]
 };

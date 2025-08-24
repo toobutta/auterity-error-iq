@@ -7,7 +7,7 @@ export interface ValidationRule {
   minLength?: number;
   maxLength?: number;
   pattern?: RegExp;
-  custom?: (value: any) => string | null;
+  custom?: (value: unknown) => string | null;
 }
 
 export interface FieldConfig {
@@ -17,7 +17,7 @@ export interface FieldConfig {
   placeholder?: string;
   options?: Array<{ value: string | number; label: string }>;
   validation?: ValidationRule;
-  defaultValue?: any;
+  defaultValue?: string | number | boolean | File | null;
   disabled?: boolean;
   helpText?: string;
 }
@@ -27,7 +27,7 @@ export interface FormConfig {
   description?: string;
   fields: FieldConfig[];
   submitText?: string;
-  onSubmit: (data: Record<string, any>) => Promise<void> | void;
+  onSubmit: (data: Record<string, unknown>) => Promise<void> | void;
   autoSave?: boolean;
   autoSaveInterval?: number;
 }
@@ -37,7 +37,7 @@ interface FormErrors {
 }
 
 interface FormData {
-  [fieldName: string]: any;
+  [fieldName: string]: string | number | boolean | File | null;
 }
 
 export const EnhancedForm: React.FC<FormConfig> = ({
@@ -66,7 +66,7 @@ export const EnhancedForm: React.FC<FormConfig> = ({
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
 
   // Validation logic
-  const validateField = useCallback((field: FieldConfig, value: any): string | null => {
+  const validateField = useCallback((field: FieldConfig, value: unknown): string | null => {
     const { validation } = field;
     if (!validation) return null;
 
@@ -119,7 +119,7 @@ export const EnhancedForm: React.FC<FormConfig> = ({
   }, [fields, formData, validateField]);
 
   // Handle field changes
-  const handleFieldChange = useCallback((fieldName: string, value: any) => {
+  const handleFieldChange = useCallback((fieldName: string, value: string | number | boolean | File | null) => {
     setFormData(prev => ({ ...prev, [fieldName]: value }));
     
     // Mark field as touched

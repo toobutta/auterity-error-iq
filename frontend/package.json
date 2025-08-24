@@ -46,6 +46,7 @@
     "postcss": "^8.4.31",
     "prettier": "^3.0.3",
     "rollup-plugin-visualizer": "^6.0.3",
+    "typescript-eslint": "^7.0.0",
     "vite": "^7.1.3",
     "vite-bundle-analyzer": "^1.1.0",
     "vitest": "^3.2.4"
@@ -59,7 +60,9 @@
     "test": "vitest run --config vitest.config.ts",
     "test:watch": "vitest --config vitest.config.ts",
     "test:coverage": "vitest run --coverage --config vitest.config.ts",
-    "test:runner": "node test-runner.js"
+    "test:runner": "node test-runner.js",
+    "fix:typescript": "node fix-all-typescript-errors.js",
+    "fix:all": "node fix-all-typescript-errors.js && npm run lint -- --fix"
   },
   "eslintConfig": {
     "extends": [

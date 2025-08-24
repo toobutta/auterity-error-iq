@@ -8,7 +8,7 @@ interface IssueEvent {
   timestamp: Date;
   description: string;
   user?: string;
-  data?: any;
+  data?: Record<string, unknown>;
 }
 
 interface StackFrame {
@@ -177,7 +177,6 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({
   events,
   stackTrace,
   onStatusChange,
-  onAssign,
   onClose,
 }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'stacktrace'>('overview');

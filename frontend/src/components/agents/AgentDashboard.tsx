@@ -13,7 +13,7 @@ interface WorkflowExecution {
   workflowId: string;
   status: 'running' | 'completed' | 'failed';
   startTime: string;
-  result?: any;
+  result?: Record<string, unknown>;
 }
 
 interface RAGQuery {
@@ -57,7 +57,16 @@ export default function AgentDashboard() {
     useQA: true
   });
 
-  const [ragResults, setRAGResults] = useState<any>(null);
+  const [ragResults, setRAGResults] = useState<{
+    answer?: string;
+    confidence?: number;
+    documents?: Array<{
+      title?: string;
+      content: string;
+      score: number;
+      source?: string;
+    }>;
+  } | null>(null);
 
   useEffect(() => {
     loadAgentStatus();
@@ -511,7 +520,7 @@ export default function AgentDashboard() {
                   <div>
                     <h4 className="font-medium mb-2">Source Documents:</h4>
                     <div className="space-y-2">
-                      {ragResults.documents.map((doc: any, index: number) => (
+                      {ragResults.documents.map((doc, index: number) => (
                         <div key={index} className="p-2 border rounded">
                           <div className="flex justify-between items-start mb-1">
                             <span className="font-medium text-sm">{doc.title || 'Untitled'}</span>

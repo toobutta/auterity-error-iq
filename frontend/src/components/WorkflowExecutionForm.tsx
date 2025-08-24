@@ -15,6 +15,7 @@ interface WorkflowExecutionFormProps {
   workflowId: string;
   onExecutionStart?: (executionId: string) => void;
   onError?: (error: string) => void;
+  className?: string;
 }
 
 interface FormField {
@@ -28,7 +29,8 @@ interface FormField {
 const WorkflowExecutionForm: React.FC<WorkflowExecutionFormProps> = ({
   workflowId,
   onExecutionStart,
-  onError
+  onError,
+  className = ''
 }) => {
   const [workflow, setWorkflow] = useState<WorkflowDefinition | null>(null);
   const [formFields, setFormFields] = useState<FormField[]>([]);
@@ -237,7 +239,7 @@ const WorkflowExecutionForm: React.FC<WorkflowExecutionFormProps> = ({
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+    <div className={`max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md ${className}`}>
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Execute Workflow</h2>
         <h3 className="text-lg font-semibold text-gray-700">{workflow.name}</h3>

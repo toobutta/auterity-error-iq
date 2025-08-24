@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,6 +18,8 @@ from app.api import (
     websockets,
     workflows,
     auterity_expansion,
+    service_status_enhanced,
+    ecosystem_management,
 )
 from app.middleware.error_handler import (
     ErrorReportingMiddleware,
@@ -32,19 +35,31 @@ from app.middleware.prometheus import prometheus_middleware
 from app.middleware.tracing import setup_tracing
 from app.middleware.otel_middleware import setup_opentelemetry
 from app.middleware.tenant_middleware import TenantIsolationMiddleware, AuditLoggingMiddleware
+from app.startup.ai_ecosystem_startup import startup_event, shutdown_event, ecosystem_manager
 
 # Environment configuration
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 DEBUG = os.getenv("DEBUG", "true").lower() == "true"
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await startup_event()
+    yield
+    # Shutdown
+    await shutdown_event()
+
+
 app = FastAPI(
-    title="AutoMatrix AI Hub Workflow Engine MVP",
-    description="A streamlined workflow automation platform for automotive dealerships",
-    version="0.1.0",
+    title="AutoMatrix AI Hub Workflow Engine MVP - Enhanced with AI Ecosystem",
+    description="A streamlined workflow automation platform with AI-driven service orchestration, predictive analytics, and autonomous optimization",
+    version="0.2.0",
     debug=DEBUG,
     docs_url="/docs" if DEBUG else None,  # Disable docs in production
     redoc_url="/redoc" if DEBUG else None,  # Disable redoc in production
+    lifespan=lifespan
 )
 
 # Add error handling middleware (order matters - add first to catch all errors)
@@ -102,15 +117,49 @@ app.include_router(error_management.router)
 # Include Auterity Expansion routes
 app.include_router(auterity_expansion.router)
 
+# Include Enhanced AI Service Management routes
+app.include_router(service_status_enhanced.router)
+app.include_router(ecosystem_management.router)
+
 # Include WebSocket routes (no prefix for WebSocket endpoints)
 app.include_router(websockets.router)
 
 
 @app.get("/")
 async def root():
-    return {"message": "AutoMatrix AI Hub Workflow Engine MVP"}
+    return {
+        "message": "AutoMatrix AI Hub Workflow Engine MVP - Enhanced with AI Ecosystem",
+        "version": "0.2.0",
+        "features": [
+            "AI Service Orchestration",
+            "Predictive Analytics", 
+            "Autonomous Optimization",
+            "Real-time Monitoring",
+            "RelayCore Message Routing",
+            "NeuroWeaver ML Pipeline"
+        ],
+        "ecosystem_status": ecosystem_manager.get_ecosystem_status()
+    }
 
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy"}
+    ecosystem_status = ecosystem_manager.get_ecosystem_status()
+    
+    return {
+        "status": "healthy" if ecosystem_status.get("ready_for_production") else "starting",
+        "ecosystem": ecosystem_status,
+        "components": {
+            "ai_orchestrator": "healthy" if ecosystem_status.get("components_status", {}).get("ai_orchestrator") else "offline",
+            "relay_core": "healthy" if ecosystem_status.get("components_status", {}).get("relay_core") else "offline", 
+            "neuro_weaver": "healthy" if ecosystem_status.get("components_status", {}).get("neuro_weaver") else "offline",
+            "service_registry": "healthy" if ecosystem_status.get("components_status", {}).get("service_registry") else "offline"
+        },
+        "timestamp": "2025-08-23T00:00:00Z"
+    }
+
+
+@app.get("/ai-ecosystem/status")
+async def ai_ecosystem_detailed_status():
+    """Detailed AI ecosystem status endpoint"""
+    return ecosystem_manager.get_ecosystem_status()

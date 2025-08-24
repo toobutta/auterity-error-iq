@@ -48,7 +48,7 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
         sortOrder
       };
       
-      if (statusFilter) params.status = statusFilter as 'pending' | 'running' | 'completed' | 'failed';
+      if (statusFilter) params.status = statusFilter as 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
       if (searchQuery.trim()) params.search = searchQuery.trim();
       if (startDate) params.startDate = startDate;
       if (endDate) params.endDate = endDate;

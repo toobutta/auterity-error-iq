@@ -307,7 +307,7 @@ export const automotiveDesignTokens = {
  */
 export function getColor(path: string): string {
   const keys = path.split('.');
-  let value: any = automotiveDesignTokens.colors;
+  let value: unknown = automotiveDesignTokens.colors;
   
   for (const key of keys) {
     value = value?.[key];

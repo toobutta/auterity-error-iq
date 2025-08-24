@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "fix-types": "node fix-typescript-issues.js && node fix-remaining-types.js",
+    "type-check": "tsc --noEmit --skipLibCheck",
+    "type-check:watch": "tsc --noEmit --skipLibCheck --watch",
+    "test:types": "npm run type-check && npm run test",
+    "lint:fix": "eslint . --ext ts,tsx --fix"
+  }
+}

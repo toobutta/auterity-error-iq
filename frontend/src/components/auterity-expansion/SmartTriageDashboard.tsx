@@ -11,8 +11,8 @@ interface TriageRule {
   priority: number;
   is_active: boolean;
   created_at: string;
-  conditions: any;
-  routing_logic: any;
+  conditions: unknown;
+  routing_logic: unknown;
 }
 
 interface TriageResult {

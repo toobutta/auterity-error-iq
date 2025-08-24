@@ -68,7 +68,7 @@ const mockFailedExecution: WorkflowExecution = {
     customerName: 'John Doe',
     vehicleType: 'sedan'
   },
-  outputData: null,
+  outputData: undefined,
   startedAt: '2024-01-01T10:00:00Z',
   completedAt: '2024-01-01T10:05:00Z',
   errorMessage: 'AI service timeout occurred during processing',
