@@ -1,80 +1,11 @@
 {
-  "gitlens.advanced.messages": {
-    "suppressCommitHasNoPreviousCommitWarning": false,
-    "suppressCommitNotFoundWarning": false,
-    "suppressFileNotUnderSourceControlWarning": false,
-    "suppressGitVersionWarning": false,
-    "suppressLineUncommittedWarning": false,
-    "suppressNoRepositoryWarning": false
-  },
-  "gitlens.blame.format": "${message|50?} ${agoOrDate|14-}",
-  "gitlens.blame.heatmap.enabled": true,
-  "gitlens.codeLens.enabled": true,
-  "gitlens.currentLine.enabled": true,
-  "gitlens.hovers.enabled": true,
-  "gitlens.statusBar.enabled": true,
-  "gitlens.views.repositories.files.layout": "tree",
-  "gitlens.views.fileHistory.enabled": true,
-  "gitlens.views.lineHistory.enabled": true,
-  "git.enableCommitSigning": false,
-  "git.fetchOnPull": true,
-  "git.autofetch": true,
-  "git.confirmSync": false,
-  "git.enableSmartCommit": true,
-  "git.suggestSmartCommit": true,
-  "conventionalCommits.emojiFormat": "emoji",
-  "conventionalCommits.showEditor": true,
-  "conventionalCommits.scopes": [
-    "backend",
-    "frontend", 
-    "api",
-    "auth",
-    "workflow",
-    "template",
-    "infra",
-    "docs"
-  ],
-  "zencoder.mcpServers": {
-    "context7": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@upstash/context7-mcp@latest"
-      ]
-    },
-    "codacy": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@codacy/codacy-mcp"
-      ],
-      "env": {
-        "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>"
-      }
-    },
-    "circleci": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@circleci/mcp-server-circleci"
-      ],
-      "env": {
-        "CIRCLECI_TOKEN": "your-circleci-token",
-        "CIRCLECI_BASE_URL": "https://circleci.com"
-      }
-    },
-    "playwright": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@latest",
-        "--isolated",
-        "--headless",
-        "--browser",
-        "firefox",
-        "--user-agent",
-        "\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.6422.112 Safari/537.3\""
-      ]
-    }
-  }
+  "codeQL.cli.executablePath": "c:\\Users\\Andrew\\AppData\\Roaming\\Kiro\\User\\globalStorage\\github.vscode-codeql\\distribution1\\codeql\\codeql.exe",
+  "codeQL.runningQueries.numberOfThreads": 2,
+  "codeQL.runningQueries.memory": 1024,
+  "codeQL.runningQueries.timeout": 600,
+  "codeQL.runningTests.numberOfThreads": 1,
+  "codeQL.canary": false,
+  "codeQL.cli.serverTimeout": 30000,
+  "codeQL.autoUpdateChecks": false,
+  "codeQL.telemetry.enableTelemetry": false
 }

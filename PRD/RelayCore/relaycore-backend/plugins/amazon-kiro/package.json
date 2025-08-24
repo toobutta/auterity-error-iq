@@ -5,29 +5,13 @@
   "version": "0.1.0",
   "publisher": "relaycore",
   "engines": {
-    "vscode": "^1.60.0"
+    "vscode": "^1.75.0"
   },
   "categories": [
     "Programming Languages",
     "Machine Learning",
     "AWS",
     "Other"
-  ],
-  "activationEvents": [
-    "onCommand:relaycore.configureApiKey",
-    "onCommand:relaycore.explainCode",
-    "onCommand:relaycore.generateDocumentation",
-    "onCommand:relaycore.optimizeCode",
-    "onCommand:relaycore.askQuestion",
-    "onCommand:relaycore.showSettings",
-    "onCommand:relaycore.generateTests",
-    "onCommand:relaycore.findBugs",
-    "onCommand:relaycore.suggestRefactoring",
-    "onCommand:relaycore.kiro.navigateToImplementation",
-    "onCommand:relaycore.kiro.explainAwsService",
-    "onCommand:relaycore.kiro.generateCloudFormation",
-    "onCommand:relaycore.kiro.generateCdkCode",
-    "onCommand:relaycore.kiro.generateLambdaFunction"
   ],
   "main": "./kiro-relay.js",
   "contributes": {
