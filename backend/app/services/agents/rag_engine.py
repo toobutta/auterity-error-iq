@@ -42,8 +42,8 @@ class RAGEngine:
     - Real-time index updates and synchronization
     """
     
-    def __init__(self, config: Dict[str, Any]):
-        self.config = config
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
+        self.config = config or {}
         self.document_store = None
         self.retrieval_pipeline = None
         self.qa_pipeline = None
@@ -57,91 +57,118 @@ class RAGEngine:
     
     def _initialize_document_store(self):
         """Initialize document store based on configuration"""
+        if not HAYSTACK_AVAILABLE:
+            logger.warning("Document store not available - using fallback")
+            self.document_store = {'type': 'fallback', 'documents': {}}
+            return
+            
         store_type = self.config.get("document_store", "inmemory")
         
-        if store_type == "pinecone":
-            self.document_store = PineconeDocumentStore(
-                api_key=self.config.get("pinecone_api_key"),
-                environment=self.config.get("pinecone_environment"),
-                index_name=self.config.get("pinecone_index", "auterity-docs")
-            )
-        else:
-            self.document_store = InMemoryDocumentStore()
-        
-        logger.info(f"Initialized {store_type} document store")
+        try:
+            if store_type == "pinecone":
+                self.document_store = PineconeDocumentStore(
+                    api_key=self.config.get("pinecone_api_key"),
+                    environment=self.config.get("pinecone_environment"),
+                    index_name=self.config.get("pinecone_index", "auterity-docs")
+                )
+            else:
+                self.document_store = InMemoryDocumentStore()
+            
+            logger.info(f"Initialized {store_type} document store")
+        except Exception as e:
+            logger.warning(f"Failed to initialize document store: {e}")
+            self.document_store = {'type': 'fallback', 'documents': {}}
     
     def _initialize_pipelines(self):
         """Initialize Haystack retrieval and QA pipelines"""
-        
-        # Retrieval pipeline
-        retriever = DensePassageRetriever(
-            document_store=self.document_store,
-            query_embedding_model="facebook/dpr-question_encoder-single-nq-base",
-            passage_embedding_model="facebook/dpr-ctx_encoder-single-nq-base",
-            use_gpu=self.config.get("use_gpu", False)
-        )
-        
-        self.retrieval_pipeline = Pipeline()
-        self.retrieval_pipeline.add_node(
-            component=retriever, 
-            name="Retriever", 
-            inputs=["Query"]
-        )
-        
-        # QA pipeline with reader
-        reader = FARMReader(
-            model_name_or_path="deepset/roberta-base-squad2",
-            use_gpu=self.config.get("use_gpu", False),
-            context_window_size=512,
-            return_no_answer=True
-        )
-        
-        self.qa_pipeline = Pipeline()
-        self.qa_pipeline.add_node(
-            component=retriever, 
-            name="Retriever", 
-            inputs=["Query"]
-        )
-        self.qa_pipeline.add_node(
-            component=reader, 
-            name="Reader", 
-            inputs=["Retriever"]
-        )
-        
-        logger.info("Initialized Haystack pipelines")
+        if not HAYSTACK_AVAILABLE:
+            logger.warning("Haystack pipelines not available - using fallback")
+            self.retrieval_pipeline = {'type': 'fallback'}
+            self.qa_pipeline = {'type': 'fallback'}
+            return
+            
+        try:
+            # Retrieval pipeline
+            retriever = DensePassageRetriever(
+                document_store=self.document_store,
+                query_embedding_model="facebook/dpr-question_encoder-single-nq-base",
+                passage_embedding_model="facebook/dpr-ctx_encoder-single-nq-base",
+                use_gpu=self.config.get("use_gpu", False)
+            )
+            
+            self.retrieval_pipeline = Pipeline()
+            self.retrieval_pipeline.add_node(
+                component=retriever, 
+                name="Retriever", 
+                inputs=["Query"]
+            )
+            
+            # QA pipeline with reader
+            reader = FARMReader(
+                model_name_or_path="deepset/roberta-base-squad2",
+                use_gpu=self.config.get("use_gpu", False),
+                context_window_size=512,
+                return_no_answer=True
+            )
+            
+            self.qa_pipeline = Pipeline()
+            self.qa_pipeline.add_node(
+                component=retriever, 
+                name="Retriever", 
+                inputs=["Query"]
+            )
+            self.qa_pipeline.add_node(
+                component=reader, 
+                name="Reader", 
+                inputs=["Retriever"]
+            )
+            
+            logger.info("Initialized Haystack pipelines")
+        except Exception as e:
+            logger.warning(f"Failed to initialize pipelines: {e}")
+            self.retrieval_pipeline = {'type': 'fallback'}
+            self.qa_pipeline = {'type': 'fallback'}
     
     def _initialize_llama_index(self):
         """Initialize LlamaIndex for advanced indexing and querying"""
-        
-        # Configure service context
-        embed_model = OpenAIEmbedding(
-            api_key=self.config.get("openai_api_key")
-        )
-        
-        service_context = ServiceContext.from_defaults(
-            embed_model=embed_model,
-            chunk_size=512,
-            chunk_overlap=50
-        )
-        
-        # Initialize vector store if using Pinecone
-        if self.config.get("document_store") == "pinecone":
-            vector_store = PineconeVectorStore(
-                api_key=self.config.get("pinecone_api_key"),
-                environment=self.config.get("pinecone_environment"),
-                index_name=self.config.get("pinecone_index", "auterity-llama")
+        if not LLAMA_INDEX_AVAILABLE:
+            logger.warning("LlamaIndex not available - using fallback")
+            self.llama_index = {'type': 'fallback'}
+            return
+            
+        try:
+            # Configure service context
+            embed_model = OpenAIEmbedding(
+                api_key=self.config.get("openai_api_key")
             )
-            storage_context = StorageContext.from_defaults(vector_store=vector_store)
-        else:
-            storage_context = StorageContext.from_defaults()
-        
-        self.llama_index = VectorStoreIndex(
-            nodes=[],
-            service_context=service_context,
-            storage_context=storage_context
-        )
-        
-        logger.info("Initialized LlamaIndex")
+            
+            service_context = ServiceContext.from_defaults(
+                embed_model=embed_model,
+                chunk_size=512,
+                chunk_overlap=50
+            )
+            
+            # Initialize vector store if using Pinecone
+            if self.config.get("document_store") == "pinecone":
+                vector_store = PineconeVectorStore(
+                    api_key=self.config.get("pinecone_api_key"),
+                    environment=self.config.get("pinecone_environment"),
+                    index_name=self.config.get("pinecone_index", "auterity-llama")
+                )
+                storage_context = StorageContext.from_defaults(vector_store=vector_store)
+            else:
+                storage_context = StorageContext.from_defaults()
+            
+            self.llama_index = VectorStoreIndex(
+                nodes=[],
+                service_context=service_context,
+                storage_context=storage_context
+            )
+            
+            logger.info("Initialized LlamaIndex")
+        except Exception as e:
+            logger.warning(f"Failed to initialize LlamaIndex: {e}")
+            self.llama_index = {'type': 'fallback'}
     
     async def index_documents(
         self, 

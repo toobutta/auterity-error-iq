@@ -1,11 +1,14 @@
 """
-Agent Orchestrator - Minimal compatible version for Auterity
+Agent Orchestrator using LangChain for multi-agent coordination
 
 This module provides the core orchestration layer for Auterity's agent ecosystem,
-with fallbacks for external dependencies.
+enabling seamless coordination between AutoMatrix, RelayCore, and NeuroWeaver systems.
 """
 
 from typing import Dict, List, Any, Optional
+from langchain_core.callbacks import BaseCallbackHandler
+from langchain_core.messages import BaseMessage
+from langchain_core.tools import BaseTool
 import asyncio
 import logging
 import json
@@ -13,21 +16,6 @@ import uuid
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
-
-# Try importing LangChain components with fallbacks
-try:
-    from langchain_core.callbacks import BaseCallbackHandler
-    LANGCHAIN_AVAILABLE = True
-except ImportError:
-    logger.warning("LangChain not available, using fallback implementations")
-    LANGCHAIN_AVAILABLE = False
-    
-    class BaseCallbackHandler:
-        """Fallback BaseCallbackHandler"""
-        def on_agent_action(self, action, **kwargs):
-            pass
-        def on_agent_finish(self, finish, **kwargs):
-            pass
 
 
 class AuterityCallbackHandler(BaseCallbackHandler):
@@ -61,7 +49,7 @@ class AuterityCallbackHandler(BaseCallbackHandler):
 
 class AgentOrchestrator:
     """
-    Central orchestrator for multi-agent coordination
+    Central orchestrator for multi-agent coordination using LangChain
     
     Provides sophisticated agent management, workflow execution, and
     integration with Auterity's compliance and security layers.
@@ -71,17 +59,17 @@ class AgentOrchestrator:
         """Initialize the agent orchestrator"""
         self.config = config or {}
         
-        # Agent registry
+        # Agent registry - storing agent metadata instead of LangChain agents for now
         self.agents: Dict[str, Dict[str, Any]] = {}
         
         # Workflow management
         self.workflows: Dict[str, Dict[str, Any]] = {}
         self.execution_history: List[Dict[str, Any]] = []
         
-        # Memory management
+        # Memory management - simplified for compatibility
         self.conversation_memory: Dict[str, List[Dict[str, Any]]] = {}
         
-        logger.info(f"Agent Orchestrator initialized (LangChain available: {LANGCHAIN_AVAILABLE})")
+        logger.info("Agent Orchestrator initialized")
     
     def register_agent(self, agent_config: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -252,6 +240,8 @@ class AgentOrchestrator:
     
     async def _execute_hierarchical_workflow(self, steps: List[Dict[str, Any]], execution_id: str) -> List[Dict[str, Any]]:
         """Execute workflow with manager/worker pattern"""
+        # For now, this is similar to sequential but with coordination logic
+        # In a full implementation, this would include manager agent coordination
         return await self._execute_sequential_workflow(steps, execution_id)
     
     async def _execute_agent_step(self, step: Dict[str, Any], context: Dict[str, Any], execution_id: str, step_index: int) -> Dict[str, Any]:
@@ -266,7 +256,7 @@ class AgentOrchestrator:
             
             agent = self.agents[agent_id]
             
-            # Simulate agent execution
+            # Simulate agent execution (in a real implementation, this would call the actual agent)
             await asyncio.sleep(0.1)  # Simulate processing time
             
             # Mock response based on agent type and action

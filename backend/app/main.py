@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import (
+    agents,
     auth,
     error_correlation,
     error_management,
@@ -86,6 +87,7 @@ app.add_middleware(
 )
 
 # Include API routes
+app.include_router(agents.router)
 app.include_router(auth.router, prefix="/api")
 app.include_router(sso.router, prefix="/api")
 app.include_router(tenants.router, prefix="/api")

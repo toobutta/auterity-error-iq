@@ -1,0 +1,93 @@
+# Agent Framework Configuration
+agent_orchestrator:
+  llm_provider: "openai"
+  memory_type: "buffer"
+  max_iterations: 10
+  default_temperature: 0.7
+  max_tokens: 2048
+
+rag_engine:
+  document_store: "inmemory"  # or "pinecone" for production
+  use_gpu: false
+  chunk_size: 512
+  chunk_overlap: 50
+  similarity_threshold: 0.7
+  max_results: 10
+  
+  # Vector store configuration
+  pinecone:
+    api_key: "${PINECONE_API_KEY}"
+    environment: "${PINECONE_ENVIRONMENT}"
+    index_name: "auterity-docs"
+    dimension: 1536
+  
+  # LLM configuration for embeddings
+  embeddings:
+    provider: "openai"
+    model: "text-embedding-ada-002"
+    api_key: "${OPENAI_API_KEY}"
+
+compliance_layer:
+  compliance_level: "gdpr"  # basic, gdpr, hipaa, sox, automotive, finance
+  audit_retention_days: 365
+  enable_data_anonymization: true
+  enable_consent_tracking: true
+  enable_breach_notification: true
+  
+  # Data classification settings
+  auto_classify_data: true
+  default_classification: "internal"
+  pii_detection_enabled: true
+  phi_detection_enabled: true
+
+security_manager:
+  # JWT configuration
+  jwt_secret: "${JWT_SECRET}"
+  jwt_expiration_hours: 24
+  jwt_algorithm: "HS256"
+  
+  # Encryption configuration
+  encryption_password: "${ENCRYPTION_PASSWORD}"
+  encryption_salt: "${ENCRYPTION_SALT}"
+  
+  # Rate limiting
+  rate_limit_window_minutes: 10
+  rate_limit_max_requests: 100
+  rate_limit_block_threshold: 200
+  
+  # Threat detection
+  enable_threat_detection: true
+  block_suspicious_ips: true
+  threat_detection_sensitivity: "medium"  # low, medium, high
+
+# Integration settings
+integrations:
+  autmatrix:
+    enabled: true
+    agent_type: "autmatrix"
+    default_tools: ["inventory", "crm", "sales"]
+    
+  relaycore:
+    enabled: true
+    agent_type: "relaycore"
+    default_tools: ["communication", "data_relay", "api_gateway"]
+    
+  neuroweaver:
+    enabled: true
+    agent_type: "neuroweaver"
+    default_tools: ["model_training", "inference", "evaluation"]
+
+# Monitoring and observability
+monitoring:
+  enable_metrics: true
+  enable_tracing: true
+  enable_structured_logging: true
+  metrics_port: 8090
+  health_check_interval: 30
+
+# Performance settings
+performance:
+  max_concurrent_agents: 10
+  max_workflow_execution_time: 300  # seconds
+  cache_ttl: 3600  # seconds
+  async_task_timeout: 600  # seconds
