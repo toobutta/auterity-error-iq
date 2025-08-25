@@ -5,7 +5,7 @@
   "private": true,
   "dependencies": {
     "@tailwindcss/line-clamp": "^0.4.4",
-    "@types/react": "^18.2.37",
+    "@types/react": "^19.1.11",
     "@types/react-dom": "^18.2.15",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/uuid": "^9.0.8",
@@ -13,7 +13,7 @@
     "immer": "^10.1.1",
     "langchain": "^0.3.31",
     "llamaindex": "^0.11.27",
-    "react": "^18.3.1",
+    "react": "^19.1.1",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.3.1",
