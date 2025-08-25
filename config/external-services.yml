@@ -6,7 +6,7 @@ vector_databases:
     environment: "${PINECONE_ENVIRONMENT:-us-west1-gcp}"
     index_name: "${PINECONE_INDEX:-auterity-vectors}"
     dimension: 1536
-    
+
   weaviate:
     enabled: true
     url: "${WEAVIATE_URL:-http://localhost:8080}"
@@ -18,7 +18,7 @@ llm_providers:
     enabled: true
     api_key: "${OPENAI_API_KEY}"
     models: ["gpt-4-turbo-preview", "gpt-3.5-turbo", "text-embedding-ada-002"]
-    
+
   anthropic:
     enabled: true
     api_key: "${ANTHROPIC_API_KEY}"
@@ -31,7 +31,7 @@ authentication:
       domain: "${AUTH0_DOMAIN}"
       client_id: "${AUTH0_CLIENT_ID}"
       client_secret: "${AUTH0_CLIENT_SECRET}"
-      
+
     cognito:
       enabled: false
       user_pool_id: "${COGNITO_USER_POOL_ID}"

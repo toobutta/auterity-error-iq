@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   BarChart3,
   AlertTriangle,
@@ -7,8 +7,8 @@ import {
   DollarSign,
   Activity,
   Zap,
-  Server
-} from 'lucide-react';
+  Server,
+} from "lucide-react";
 
 interface SystemMetrics {
   totalRequests: number;
@@ -21,7 +21,7 @@ interface SystemMetrics {
 
 interface ProviderStatus {
   name: string;
-  status: 'operational' | 'degraded' | 'offline';
+  status: "operational" | "degraded" | "offline";
   requestsPerMinute: number;
   averageCost: number;
   errorRate: number;
@@ -41,7 +41,7 @@ const AdminDashboard: React.FC = () => {
     totalCost: 0,
     averageResponseTime: 0,
     errorRate: 0,
-    uptime: 0
+    uptime: 0,
   });
 
   const [providers, setProviders] = useState<ProviderStatus[]>([]);
@@ -49,28 +49,28 @@ const AdminDashboard: React.FC = () => {
     total: 0,
     used: 0,
     remaining: 0,
-    period: 'monthly'
+    period: "monthly",
   });
 
   const [alerts] = useState([
     {
       id: 1,
-      type: 'warning',
-      message: 'OpenAI usage approaching budget limit',
-      timestamp: '2 minutes ago'
+      type: "warning",
+      message: "OpenAI usage approaching budget limit",
+      timestamp: "2 minutes ago",
     },
     {
       id: 2,
-      type: 'error',
-      message: 'Anthropic API temporarily unavailable',
-      timestamp: '5 minutes ago'
+      type: "error",
+      message: "Anthropic API temporarily unavailable",
+      timestamp: "5 minutes ago",
     },
     {
       id: 3,
-      type: 'info',
-      message: 'New model version deployed',
-      timestamp: '1 hour ago'
-    }
+      type: "info",
+      message: "New model version deployed",
+      timestamp: "1 hour ago",
+    },
   ]);
 
   useEffect(() => {
@@ -78,41 +78,41 @@ const AdminDashboard: React.FC = () => {
     setMetrics({
       totalRequests: 15420,
       activeProviders: 3,
-      totalCost: 247.50,
+      totalCost: 247.5,
       averageResponseTime: 234,
       errorRate: 0.023,
-      uptime: 99.97
+      uptime: 99.97,
     });
 
     setProviders([
       {
-        name: 'OpenAI',
-        status: 'operational',
+        name: "OpenAI",
+        status: "operational",
         requestsPerMinute: 45,
         averageCost: 0.0023,
-        errorRate: 0.01
+        errorRate: 0.01,
       },
       {
-        name: 'Anthropic',
-        status: 'degraded',
+        name: "Anthropic",
+        status: "degraded",
         requestsPerMinute: 28,
         averageCost: 0.0031,
-        errorRate: 0.05
+        errorRate: 0.05,
       },
       {
-        name: 'NeuroWeaver',
-        status: 'operational',
+        name: "NeuroWeaver",
+        status: "operational",
         requestsPerMinute: 12,
         averageCost: 0.0018,
-        errorRate: 0.02
-      }
+        errorRate: 0.02,
+      },
     ]);
 
     setBudget({
       total: 500,
-      used: 247.50,
-      remaining: 252.50,
-      period: 'monthly'
+      used: 247.5,
+      remaining: 252.5,
+      period: "monthly",
     });
   }, []);
 
@@ -121,7 +121,7 @@ const AdminDashboard: React.FC = () => {
     value,
     icon: Icon,
     trend,
-    color = 'blue'
+    color = "blue",
   }: {
     title: string;
     value: string | number;
@@ -134,9 +134,7 @@ const AdminDashboard: React.FC = () => {
         <div>
           <p className="text-sm font-medium text-gray-600">{title}</p>
           <p className="text-2xl font-bold text-gray-900">{value}</p>
-          {trend && (
-            <p className="text-sm text-green-600 mt-1">{trend}</p>
-          )}
+          {trend && <p className="text-sm text-green-600 mt-1">{trend}</p>}
         </div>
         <div className={`p-3 rounded-full bg-${color}-50`}>
           <Icon className={`h-6 w-6 text-${color}-600`} />
@@ -149,16 +147,22 @@ const AdminDashboard: React.FC = () => {
     <div className="bg-white rounded-lg shadow-sm border p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-medium text-gray-900">{provider.name}</h3>
-        <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs ${
-          provider.status === 'operational'
-            ? 'bg-green-100 text-green-800'
-            : provider.status === 'degraded'
-            ? 'bg-yellow-100 text-yellow-800'
-            : 'bg-red-100 text-red-800'
-        }`}>
-          {provider.status === 'operational' && <CheckCircle className="h-3 w-3" />}
-          {provider.status === 'degraded' && <Clock className="h-3 w-3" />}
-          {provider.status === 'offline' && <AlertTriangle className="h-3 w-3" />}
+        <div
+          className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs ${
+            provider.status === "operational"
+              ? "bg-green-100 text-green-800"
+              : provider.status === "degraded"
+                ? "bg-yellow-100 text-yellow-800"
+                : "bg-red-100 text-red-800"
+          }`}
+        >
+          {provider.status === "operational" && (
+            <CheckCircle className="h-3 w-3" />
+          )}
+          {provider.status === "degraded" && <Clock className="h-3 w-3" />}
+          {provider.status === "offline" && (
+            <AlertTriangle className="h-3 w-3" />
+          )}
           <span className="capitalize">{provider.status}</span>
         </div>
       </div>
@@ -174,32 +178,44 @@ const AdminDashboard: React.FC = () => {
         </div>
         <div>
           <p className="text-gray-600">Error Rate</p>
-          <p className="font-medium">{(provider.errorRate * 100).toFixed(1)}%</p>
+          <p className="font-medium">
+            {(provider.errorRate * 100).toFixed(1)}%
+          </p>
         </div>
       </div>
     </div>
   );
 
   const AlertItem = ({ alert }: { alert: any }) => (
-    <div className={`p-4 rounded-lg border ${
-      alert.type === 'error'
-        ? 'bg-red-50 border-red-200'
-        : alert.type === 'warning'
-        ? 'bg-yellow-50 border-yellow-200'
-        : 'bg-blue-50 border-blue-200'
-    }`}>
+    <div
+      className={`p-4 rounded-lg border ${
+        alert.type === "error"
+          ? "bg-red-50 border-red-200"
+          : alert.type === "warning"
+            ? "bg-yellow-50 border-yellow-200"
+            : "bg-blue-50 border-blue-200"
+      }`}
+    >
       <div className="flex items-start justify-between">
         <div className="flex items-start space-x-3">
-          <div className={`p-1 rounded ${
-            alert.type === 'error'
-              ? 'bg-red-100'
-              : alert.type === 'warning'
-              ? 'bg-yellow-100'
-              : 'bg-blue-100'
-          }`}>
-            {alert.type === 'error' && <AlertTriangle className="h-4 w-4 text-red-600" />}
-            {alert.type === 'warning' && <Clock className="h-4 w-4 text-yellow-600" />}
-            {alert.type === 'info' && <Activity className="h-4 w-4 text-blue-600" />}
+          <div
+            className={`p-1 rounded ${
+              alert.type === "error"
+                ? "bg-red-100"
+                : alert.type === "warning"
+                  ? "bg-yellow-100"
+                  : "bg-blue-100"
+            }`}
+          >
+            {alert.type === "error" && (
+              <AlertTriangle className="h-4 w-4 text-red-600" />
+            )}
+            {alert.type === "warning" && (
+              <Clock className="h-4 w-4 text-yellow-600" />
+            )}
+            {alert.type === "info" && (
+              <Activity className="h-4 w-4 text-blue-600" />
+            )}
           </div>
           <div>
             <p className="text-sm font-medium text-gray-900">{alert.message}</p>
@@ -215,8 +231,12 @@ const AdminDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">RelayCore Admin Dashboard</h1>
-          <p className="text-gray-600 mt-2">AI Routing Hub Management & Analytics</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            RelayCore Admin Dashboard
+          </h1>
+          <p className="text-gray-600 mt-2">
+            AI Routing Hub Management & Analytics
+          </p>
         </div>
 
         {/* Key Metrics */}
@@ -265,7 +285,9 @@ const AdminDashboard: React.FC = () => {
           />
           <div className="bg-white rounded-lg shadow-sm border p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600">Budget Usage</h3>
+              <h3 className="text-sm font-medium text-gray-600">
+                Budget Usage
+              </h3>
               <DollarSign className="h-5 w-5 text-gray-400" />
             </div>
             <div className="space-y-2">
@@ -275,7 +297,9 @@ const AdminDashboard: React.FC = () => {
               </div>
               <div className="flex justify-between text-sm">
                 <span>Remaining</span>
-                <span className="font-medium text-green-600">${budget.remaining.toFixed(2)}</span>
+                <span className="font-medium text-green-600">
+                  ${budget.remaining.toFixed(2)}
+                </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
@@ -284,7 +308,8 @@ const AdminDashboard: React.FC = () => {
                 ></div>
               </div>
               <p className="text-xs text-gray-500">
-                {((budget.used / budget.total) * 100).toFixed(1)}% of {budget.period} budget
+                {((budget.used / budget.total) * 100).toFixed(1)}% of{" "}
+                {budget.period} budget
               </p>
             </div>
           </div>
@@ -304,7 +329,10 @@ const AdminDashboard: React.FC = () => {
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {providers.map((provider) => (
-                    <ProviderStatusCard key={provider.name} provider={provider} />
+                    <ProviderStatusCard
+                      key={provider.name}
+                      provider={provider}
+                    />
                   ))}
                 </div>
               </div>
@@ -346,7 +374,9 @@ const AdminDashboard: React.FC = () => {
             <div className="text-center">
               <BarChart3 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500">Performance charts and analytics</p>
-              <p className="text-sm text-gray-400">Integration with monitoring stack needed</p>
+              <p className="text-sm text-gray-400">
+                Integration with monitoring stack needed
+              </p>
             </div>
           </div>
         </div>

@@ -6,13 +6,12 @@ from unittest.mock import Mock, patch
 from uuid import uuid4
 
 import pytest
-from sqlalchemy.orm import Session
-
 from app.core.saas_config import saas_config
 from app.models.tenant import SubscriptionPlan, Tenant, TenantStatus
 from app.models.user import User
 from app.services.billing_service import BillingService
 from app.services.branding_service import BrandingService
+from sqlalchemy.orm import Session
 
 
 class TestBillingService:
@@ -83,7 +82,6 @@ class TestBillingService:
             patch("stripe.Customer.create", return_value=mock_customer),
             patch("stripe.Subscription.create", return_value=mock_subscription),
         ):
-
             # Mock database queries
             mock_db.query.return_value.filter.return_value.first.return_value = (
                 mock_tenant
@@ -132,7 +130,6 @@ class TestBillingService:
             patch("stripe.Customer.create", return_value=mock_customer),
             patch("stripe.Subscription.create", return_value=mock_subscription),
         ):
-
             # Mock database queries
             mock_db.query.return_value.filter.return_value.first.return_value = (
                 mock_tenant
@@ -162,7 +159,6 @@ class TestBillingService:
             patch("stripe.Subscription.retrieve", return_value=mock_subscription),
             patch("stripe.Subscription.modify") as mock_modify,
         ):
-
             # Mock database queries
             mock_db.query.return_value.filter.return_value.first.return_value = (
                 mock_tenant
@@ -567,7 +563,6 @@ class TestSaaSIntegration:
             patch("stripe.Customer.create") as mock_customer_create,
             patch("stripe.Subscription.create") as mock_subscription_create,
         ):
-
             # Mock Stripe responses
             mock_customer = Mock()
             mock_customer.id = "cus_test123"

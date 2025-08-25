@@ -3,12 +3,11 @@
 import uuid
 from typing import Optional
 
-from fastapi import HTTPException, Request, Response, status
-from starlette.middleware.base import BaseHTTPMiddleware
-
 from app.database import SessionLocal
 from app.models.tenant import Tenant
 from app.models.user import User
+from fastapi import HTTPException, Request, Response, status
+from starlette.middleware.base import BaseHTTPMiddleware
 
 
 class TenantIsolationMiddleware(BaseHTTPMiddleware):

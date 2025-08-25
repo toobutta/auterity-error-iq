@@ -1,8 +1,11 @@
-import React from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
-import { NodeData } from '../../types/workflow';
+import React from "react";
+import { Handle, Position, NodeProps } from "@xyflow/react";
+import { NodeData } from "../../types/workflow";
 
-export const StartNode: React.FC<NodeProps<NodeData>> = ({ data, isConnectable }) => {
+export const StartNode: React.FC<NodeProps<NodeData>> = ({
+  data,
+  isConnectable,
+}) => {
   return (
     <div className="bg-green-100 border-2 border-green-300 rounded-lg p-3 shadow-md min-w-[120px]">
       <div className="text-center">
@@ -10,7 +13,9 @@ export const StartNode: React.FC<NodeProps<NodeData>> = ({ data, isConnectable }
           <span className="text-white text-sm font-bold">▶</span>
         </div>
         <h3 className="font-bold text-green-800">{data.label}</h3>
-        {data.description && <p className="text-xs text-green-600 mt-1">{data.description}</p>}
+        {data.description && (
+          <p className="text-xs text-green-600 mt-1">{data.description}</p>
+        )}
       </div>
 
       <Handle

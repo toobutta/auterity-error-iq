@@ -7,9 +7,11 @@
 **Estimated Effort**: 2 weeks (80 hours)
 
 ## Task Overview
+
 Enhance the existing drag-and-drop workflow builder with advanced features including multiple node types, visual rule builder, real-time validation, versioning, and template composition.
 
 ## Business Context
+
 The workflow builder is the core user interface for creating AI-powered automation workflows. This enhancement transforms it from a basic builder into a professional-grade workflow design tool with enterprise features.
 
 ## Current State Analysis Required
@@ -17,6 +19,7 @@ The workflow builder is the core user interface for creating AI-powered automati
 ### Pre-Development Assessment Tasks for Cline
 
 #### 1. Existing Workflow Builder Analysis
+
 ```bash
 # Find existing workflow builder components
 find frontend/src/ -name "*workflow*" -o -name "*builder*" -o -name "*flow*" | grep -i component
@@ -30,6 +33,7 @@ find frontend/src/ -name "*node*" | grep -v node_modules
 ```
 
 #### 2. Current Feature Inventory
+
 ```bash
 # Check for existing drag-and-drop functionality
 grep -r "onDrop\|onDrag\|draggable" frontend/src/ --include="*.tsx"
@@ -42,6 +46,7 @@ grep -r "template" frontend/src/ --include="*.tsx" --include="*.ts"
 ```
 
 #### 3. Dependencies and Libraries Assessment
+
 ```bash
 # Check React Flow version and features
 npm list react-flow-renderer @reactflow/core @reactflow/node-toolbar
@@ -58,6 +63,7 @@ npm list zustand redux @reduxjs/toolkit
 ### 1. Multiple Node Types System
 
 #### Node Type Architecture
+
 ```typescript
 interface BaseNode {
   id: string;
@@ -67,7 +73,15 @@ interface BaseNode {
   style?: React.CSSProperties;
 }
 
-type NodeType = 'start' | 'end' | 'action' | 'decision' | 'ai' | 'condition' | 'loop' | 'parallel';
+type NodeType =
+  | "start"
+  | "end"
+  | "action"
+  | "decision"
+  | "ai"
+  | "condition"
+  | "loop"
+  | "parallel";
 
 interface NodeData {
   label: string;
@@ -78,6 +92,7 @@ interface NodeData {
 ```
 
 #### Node Types to Implement
+
 1. **Start Node** - Workflow entry point with trigger configuration
 2. **End Node** - Workflow termination with result handling
 3. **Action Node** - Execute specific actions (API calls, data processing)
@@ -90,6 +105,7 @@ interface NodeData {
 ### 2. Visual Rule Builder Integration
 
 #### Rule Builder Components
+
 ```typescript
 interface RuleBuilderProps {
   nodeId: string;
@@ -107,20 +123,23 @@ interface Rule {
 
 interface Condition {
   field: string;
-  operator: 'equals' | 'contains' | 'greater' | 'less' | 'exists';
+  operator: "equals" | "contains" | "greater" | "less" | "exists";
   value: any;
-  logicalOperator?: 'AND' | 'OR';
+  logicalOperator?: "AND" | "OR";
 }
 ```
 
 ### 3. Real-Time Validation System
 
 #### Validation Framework
+
 ```typescript
 interface ValidationEngine {
   validateNode: (node: BaseNode) => ValidationResult;
   validateWorkflow: (workflow: Workflow) => WorkflowValidationResult;
-  validateConnections: (connections: Connection[]) => ConnectionValidationResult;
+  validateConnections: (
+    connections: Connection[],
+  ) => ConnectionValidationResult;
 }
 
 interface ValidationResult {
@@ -133,6 +152,7 @@ interface ValidationResult {
 ### 4. Workflow Versioning and Rollback
 
 #### Version Management
+
 ```typescript
 interface WorkflowVersion {
   id: string;
@@ -145,7 +165,10 @@ interface WorkflowVersion {
 }
 
 interface VersionControl {
-  saveVersion: (workflow: Workflow, message: string) => Promise<WorkflowVersion>;
+  saveVersion: (
+    workflow: Workflow,
+    message: string,
+  ) => Promise<WorkflowVersion>;
   loadVersion: (versionId: string) => Promise<Workflow>;
   compareVersions: (v1: string, v2: string) => Promise<VersionDiff>;
   rollback: (versionId: string) => Promise<Workflow>;
@@ -155,6 +178,7 @@ interface VersionControl {
 ### 5. Template Composition System
 
 #### Template Architecture
+
 ```typescript
 interface WorkflowTemplate {
   id: string;
@@ -169,8 +193,14 @@ interface WorkflowTemplate {
 
 interface TemplateComposer {
   combineTemplates: (templates: WorkflowTemplate[]) => Workflow;
-  extractTemplate: (workflow: Workflow, selection: string[]) => WorkflowTemplate;
-  instantiateTemplate: (template: WorkflowTemplate, params: Record<string, any>) => Workflow;
+  extractTemplate: (
+    workflow: Workflow,
+    selection: string[],
+  ) => WorkflowTemplate;
+  instantiateTemplate: (
+    template: WorkflowTemplate,
+    params: Record<string, any>,
+  ) => Workflow;
 }
 ```
 
@@ -246,6 +276,7 @@ frontend/src/components/workflow-builder/
 ### Phase 1: Enhanced Foundation (Week 1 - 40 hours)
 
 #### Days 1-2: Core Architecture (16 hours)
+
 1. **Enhanced WorkflowBuilder Component** (4 hours)
    - Upgrade existing builder with new architecture
    - Implement advanced state management
@@ -262,6 +293,7 @@ frontend/src/components/workflow-builder/
    - Implement zoom, pan, and fit-to-screen functionality
 
 #### Days 3-4: Validation and Rules (16 hours)
+
 1. **Real-Time Validation Engine** (8 hours)
    - Build comprehensive validation framework
    - Implement node-level and workflow-level validation
@@ -273,6 +305,7 @@ frontend/src/components/workflow-builder/
    - Add rule testing and preview functionality
 
 #### Day 5: Testing and Polish (8 hours)
+
 1. **Unit Testing** (4 hours)
    - Write comprehensive tests for all components
    - Mock React Flow and external dependencies
@@ -286,6 +319,7 @@ frontend/src/components/workflow-builder/
 ### Phase 2: Advanced Features (Week 2 - 40 hours)
 
 #### Days 6-7: Versioning System (16 hours)
+
 1. **Version Control Implementation** (8 hours)
    - Build version management system
    - Implement change tracking and snapshots
@@ -297,6 +331,7 @@ frontend/src/components/workflow-builder/
    - Add version branching and merging
 
 #### Days 8-9: Template System (16 hours)
+
 1. **Template Management** (8 hours)
    - Build template library interface
    - Implement template CRUD operations
@@ -308,6 +343,7 @@ frontend/src/components/workflow-builder/
    - Add template instantiation with customization
 
 #### Day 10: Final Integration (8 hours)
+
 1. **Feature Integration** (4 hours)
    - Integrate all features into main builder
    - Test cross-feature interactions
@@ -321,6 +357,7 @@ frontend/src/components/workflow-builder/
 ## Technical Requirements
 
 ### React Flow Integration
+
 - Upgrade to latest React Flow version with advanced features
 - Custom node types with configuration panels
 - Enhanced edge types with conditional styling
@@ -328,24 +365,28 @@ frontend/src/components/workflow-builder/
 - Custom controls for workflow operations
 
 ### State Management
+
 - Zustand or Redux for complex workflow state
 - Undo/redo functionality with command pattern
 - Real-time collaboration state synchronization
 - Optimistic updates for better UX
 
 ### Performance Optimization
+
 - Virtual scrolling for large workflows
 - Lazy loading of node configurations
 - Memoization of expensive calculations
 - Bundle splitting for workflow builder features
 
 ### Accessibility
+
 - Full keyboard navigation support
 - Screen reader compatibility
 - High contrast mode support
 - Focus management for complex interactions
 
 ## Success Criteria
+
 ✅ Multiple node types (8 types) with full configuration
 ✅ Drag-and-drop from node palette to canvas
 ✅ Real-time validation with visual feedback
@@ -361,6 +402,7 @@ frontend/src/components/workflow-builder/
 ✅ WCAG 2.1 AA accessibility compliance
 
 ## Quality Gates
+
 - **Performance**: <3s load time, <100ms interaction response
 - **Accessibility**: Full keyboard navigation, screen reader support
 - **Testing**: 95%+ coverage with integration tests
@@ -368,6 +410,7 @@ frontend/src/components/workflow-builder/
 - **Bundle Size**: Workflow builder features <500KB additional
 
 ## Dependencies
+
 - **Blocking**: TASK-004 (RelayCore admin interface) for shared patterns
 - **React Flow**: Latest version with advanced features
 - **State Management**: Zustand or Redux for complex state
@@ -375,6 +418,7 @@ frontend/src/components/workflow-builder/
 - **Testing**: React Testing Library with React Flow mocks
 
 ## Context Files to Reference
+
 - `frontend/src/components/` - Existing workflow components
 - `frontend/src/types/` - Current workflow type definitions
 - `shared/components/` - Shared UI components
@@ -382,7 +426,9 @@ frontend/src/components/workflow-builder/
 - Existing workflow builder implementation
 
 ## Handback Criteria
+
 Task is complete when:
+
 1. All 8 node types implemented with full configuration
 2. Visual rule builder functional with drag-and-drop
 3. Real-time validation working with visual feedback

@@ -116,7 +116,7 @@ class UserResponse(BaseModel):
     name: str
     is_active: bool
     roles: List[str] = []
-    
+
     @classmethod
     def from_user(cls, user):
         """Create from User model."""

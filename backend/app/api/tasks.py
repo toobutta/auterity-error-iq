@@ -1,7 +1,6 @@
-from fastapi import APIRouter
-
 from app.celery_app import celery_app
 from app.tasks import execute_workflow_async, process_ai_request
+from fastapi import APIRouter
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 

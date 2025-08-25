@@ -1,24 +1,30 @@
 # AMAZON-Q-TASK: Enterprise SSO Implementation
 
 ## Task Overview
-**Status:** 🚀 **READY FOR IMMEDIATE DELEGATION**  
-**Assigned to:** Amazon Q (Claude 3.7)  
-**Priority:** CRITICAL - Enterprise Feature  
-**Complexity:** High  
-**Estimated Timeline:** 3-4 days  
-**Dependencies:** None - can work independently  
+
+**Status:** 🚀 **READY FOR IMMEDIATE DELEGATION**
+**Assigned to:** Amazon Q (Claude 3.7)
+**Priority:** CRITICAL - Enterprise Feature
+**Complexity:** High
+**Estimated Timeline:** 3-4 days
+**Dependencies:** None - can work independently
 
 ## Executive Summary
+
 Implement comprehensive Enterprise Single Sign-On (SSO) capabilities for the Auterity Platform using AWS Cognito, IAM Identity Center, and enterprise identity providers. This task leverages Amazon Q's deep AWS expertise to deliver production-ready enterprise authentication.
 
 ## Current State Analysis
+
 The platform currently uses basic JWT authentication with local user management:
+
 - Frontend: React AuthContext with localStorage token management
 - Backend: FastAPI JWT authentication with local user database
 - API Client: Bearer token authentication with 401 handling
 
 ## Target Architecture
+
 Transform the authentication system to support enterprise SSO while maintaining backward compatibility:
+
 - **Primary:** SAML 2.0 and OIDC enterprise integration
 - **Fallback:** Existing JWT system for non-enterprise users
 - **MFA:** Delegated to enterprise identity providers
@@ -27,6 +33,7 @@ Transform the authentication system to support enterprise SSO while maintaining 
 ## Technical Requirements
 
 ### 1. AWS Cognito User Pool Configuration
+
 - Configure User Pool with enterprise identity provider integration
 - Support both SAML 2.0 and OIDC protocols
 - Implement attribute mapping for email, name, groups, roles
@@ -34,6 +41,7 @@ Transform the authentication system to support enterprise SSO while maintaining 
 - Enable MFA delegation to enterprise IdP
 
 ### 2. Enterprise Identity Provider Integration
+
 - Support major enterprise IdPs (Active Directory, Azure AD, Okta, Ping Identity)
 - SAML 2.0 metadata exchange and certificate management
 - OIDC discovery and client configuration
@@ -41,6 +49,7 @@ Transform the authentication system to support enterprise SSO while maintaining 
 - Group-based access control implementation
 
 ### 3. Backend API Integration
+
 - Modify FastAPI authentication to support Cognito JWT tokens
 - Implement dual authentication support (Cognito + legacy JWT)
 - Create user provisioning and role mapping logic
@@ -48,6 +57,7 @@ Transform the authentication system to support enterprise SSO while maintaining 
 - Implement group-based authorization middleware
 
 ### 4. Frontend Authentication Flow
+
 - Extend AuthContext to support enterprise SSO flows
 - Implement Cognito Hosted UI integration
 - Add enterprise login detection and routing
@@ -55,7 +65,9 @@ Transform the authentication system to support enterprise SSO while maintaining 
 - Handle SSO session management and token refresh
 
 ### 5. Role-Based Access Control (RBAC)
+
 Implement the following role hierarchy:
+
 - **Admin:** Full platform access and user management
 - **Developer:** Workflow creation, execution, and debugging
 - **Data Analyst:** Read-only access to execution data and analytics
@@ -63,6 +75,7 @@ Implement the following role hierarchy:
 - **Custom Roles:** Configurable permissions for specific use cases
 
 ### 6. Security and Compliance
+
 - Implement comprehensive audit logging with CloudTrail
 - Add correlation ID tracking for all authentication events
 - Configure session timeout and forced re-authentication
@@ -72,6 +85,7 @@ Implement the following role hierarchy:
 ## Implementation Specifications
 
 ### Phase 1: AWS Infrastructure Setup (Day 1)
+
 ```yaml
 # Cognito User Pool Configuration
 UserPool:
@@ -83,7 +97,7 @@ UserPool:
       RequireLowercase: true
       RequireNumbers: true
       RequireSymbols: true
-  MfaConfiguration: "OPTIONAL"  # Delegated to IdP
+  MfaConfiguration: "OPTIONAL" # Delegated to IdP
   Schema:
     - Name: "email"
       Required: true
@@ -105,7 +119,7 @@ IdentityProviders:
       given_name: "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname"
       family_name: "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname"
       groups: "http://schemas.microsoft.com/ws/2008/06/identity/claims/groups"
-  
+
   OIDC:
     ProviderName: "EnterpriseOIDC"
     ClientId: "${OIDC_CLIENT_ID}"
@@ -119,6 +133,7 @@ IdentityProviders:
 ```
 
 ### Phase 2: Backend Integration (Day 2)
+
 ```python
 # backend/app/auth/cognito.py
 from typing import Optional, Dict, Any
@@ -134,30 +149,30 @@ class CognitoAuthenticator:
         self.user_pool_id = os.getenv('COGNITO_USER_POOL_ID')
         self.client_id = os.getenv('COGNITO_CLIENT_ID')
         self.region = os.getenv('AWS_REGION', 'us-east-1')
-        
+
     async def verify_token(self, token: str) -> Dict[str, Any]:
         """Verify Cognito JWT token and extract user claims"""
         try:
             # Get Cognito public keys
             keys_url = f"https://cognito-idp.{self.region}.amazonaws.com/{self.user_pool_id}/.well-known/jwks.json"
             # Implement JWT verification logic
-            
+
             # Extract user claims
             claims = jwt.get_unverified_claims(token)
             return claims
-            
+
         except JWTError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid authentication token"
             )
-    
+
     async def provision_user(self, claims: Dict[str, Any]) -> User:
         """Provision or update user from Cognito claims"""
         email = claims.get('email')
         groups = claims.get('custom:groups', '').split(',')
         roles = claims.get('custom:roles', '').split(',')
-        
+
         # Create or update user in local database
         # Map enterprise groups to local roles
         # Return User object
@@ -191,39 +206,40 @@ async def get_current_user(token: str = Depends(security)):
 ```
 
 ### Phase 3: Frontend Integration (Day 3)
+
 ```typescript
 // frontend/src/auth/CognitoAuth.ts
-import { CognitoAuth } from '@aws-amplify/auth';
-import { Hub } from '@aws-amplify/core';
+import { CognitoAuth } from "@aws-amplify/auth";
+import { Hub } from "@aws-amplify/core";
 
 export class EnterpriseSSOAuth {
   private cognitoAuth: CognitoAuth;
-  
+
   constructor() {
     this.cognitoAuth = new CognitoAuth({
       domain: process.env.VITE_COGNITO_DOMAIN,
       clientId: process.env.VITE_COGNITO_CLIENT_ID,
       redirectSignIn: `${window.location.origin}/auth/callback`,
       redirectSignOut: `${window.location.origin}/login`,
-      responseType: 'code',
-      scope: ['openid', 'email', 'profile'],
+      responseType: "code",
+      scope: ["openid", "email", "profile"],
     });
-    
+
     // Listen for auth events
-    Hub.listen('auth', this.handleAuthEvents);
+    Hub.listen("auth", this.handleAuthEvents);
   }
-  
-  async signInWithSSO(provider: 'SAML' | 'OIDC'): Promise<void> {
+
+  async signInWithSSO(provider: "SAML" | "OIDC"): Promise<void> {
     try {
       await this.cognitoAuth.federatedSignIn({
-        provider: provider === 'SAML' ? 'EnterpriseIdP' : 'EnterpriseOIDC'
+        provider: provider === "SAML" ? "EnterpriseIdP" : "EnterpriseOIDC",
       });
     } catch (error) {
-      console.error('SSO sign-in error:', error);
+      console.error("SSO sign-in error:", error);
       throw error;
     }
   }
-  
+
   async getCurrentSession(): Promise<any> {
     try {
       return await this.cognitoAuth.currentSession();
@@ -231,18 +247,18 @@ export class EnterpriseSSOAuth {
       return null;
     }
   }
-  
+
   private handleAuthEvents = (data: any) => {
     const { payload } = data;
     switch (payload.event) {
-      case 'signIn':
-        console.log('User signed in:', payload.data);
+      case "signIn":
+        console.log("User signed in:", payload.data);
         break;
-      case 'signOut':
-        console.log('User signed out');
+      case "signOut":
+        console.log("User signed out");
         break;
-      case 'tokenRefresh':
-        console.log('Token refreshed');
+      case "tokenRefresh":
+        console.log("Token refreshed");
         break;
     }
   };
@@ -255,23 +271,25 @@ interface AuthContextType {
   isLoading: boolean;
   isEnterpriseUser: boolean;
   login: (credentials: LoginRequest) => Promise<void>;
-  loginWithSSO: (provider: 'SAML' | 'OIDC') => Promise<void>;
+  loginWithSSO: (provider: "SAML" | "OIDC") => Promise<void>;
   register: (userData: RegisterRequest) => Promise<void>;
   logout: () => Promise<void>;
 }
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEnterpriseUser, setIsEnterpriseUser] = useState(false);
   const ssoAuth = new EnterpriseSSOAuth();
 
-  const loginWithSSO = async (provider: 'SAML' | 'OIDC') => {
+  const loginWithSSO = async (provider: "SAML" | "OIDC") => {
     try {
       await ssoAuth.signInWithSSO(provider);
       // Handle redirect to Cognito Hosted UI
     } catch (error) {
-      console.error('SSO login error:', error);
+      console.error("SSO login error:", error);
       throw error;
     }
   };
@@ -288,16 +306,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsEnterpriseUser(true);
           return;
         }
-        
+
         // Fallback to legacy JWT check
-        const token = localStorage.getItem('access_token');
+        const token = localStorage.getItem("access_token");
         if (token) {
           const currentUser = await AuthApi.getCurrentUser();
           setUser(currentUser);
           setIsEnterpriseUser(false);
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        console.error("Auth initialization error:", error);
       } finally {
         setIsLoading(false);
       }
@@ -311,6 +329,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 ```
 
 ### Phase 4: Testing and Validation (Day 4)
+
 ```typescript
 // Test scenarios implementation
 const testScenarios = {
@@ -319,36 +338,37 @@ const testScenarios = {
     // Verify token exchange and user provisioning
     // Validate role mapping and permissions
   },
-  
+
   async testRoleMapping() {
     // Test enterprise group to local role mapping
     // Verify permission inheritance
     // Test role-based access control
   },
-  
+
   async testMFAChallenge() {
     // Test MFA delegation to enterprise IdP
     // Verify MFA bypass for trusted devices
     // Test MFA failure scenarios
   },
-  
+
   async testExpiredSession() {
     // Test session timeout handling
     // Verify automatic token refresh
     // Test forced re-authentication
   },
-  
+
   async testLoggingValidation() {
     // Verify CloudTrail logging
     // Test correlation ID tracking
     // Validate audit trail completeness
-  }
+  },
 };
 ```
 
 ## Configuration Files
 
 ### Environment Variables
+
 ```bash
 # AWS Configuration
 AWS_REGION=us-east-1
@@ -369,44 +389,46 @@ AUDIT_LOG_RETENTION_DAYS=90
 ```
 
 ### CloudFormation Template
+
 ```yaml
 # infrastructure/cognito-sso.yaml
-AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Auterity Enterprise SSO Infrastructure'
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Auterity Enterprise SSO Infrastructure"
 
 Parameters:
   Environment:
     Type: String
-    Default: 'production'
-    AllowedValues: ['development', 'staging', 'production']
+    Default: "production"
+    AllowedValues: ["development", "staging", "production"]
 
 Resources:
   UserPool:
     Type: AWS::Cognito::UserPool
     Properties:
-      UserPoolName: !Sub 'auterity-${Environment}-users'
+      UserPoolName: !Sub "auterity-${Environment}-users"
       # Complete Cognito configuration
-      
+
   UserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
       UserPoolId: !Ref UserPool
       # Client configuration
-      
+
   IdentityPool:
     Type: AWS::Cognito::IdentityPool
     Properties:
-      IdentityPoolName: !Sub 'auterity-${Environment}-identity'
+      IdentityPoolName: !Sub "auterity-${Environment}-identity"
       # Identity pool configuration
 
 Outputs:
   UserPoolId:
     Value: !Ref UserPool
     Export:
-      Name: !Sub '${AWS::StackName}-UserPoolId'
+      Name: !Sub "${AWS::StackName}-UserPoolId"
 ```
 
 ## Success Criteria
+
 1. **Authentication Flow:** 100% success rate for SAML/OIDC login flows
 2. **Role Mapping:** Accurate mapping of enterprise groups to platform roles
 3. **Session Management:** Proper token refresh and session timeout handling
@@ -417,6 +439,7 @@ Outputs:
 8. **Error Handling:** Graceful handling of all failure scenarios
 
 ## Deliverables
+
 1. **AWS Infrastructure:** Complete Cognito and IAM configuration
 2. **Backend Integration:** FastAPI authentication middleware and user provisioning
 3. **Frontend Components:** Enhanced AuthContext and SSO login flows
@@ -426,12 +449,14 @@ Outputs:
 7. **Security Review:** Security assessment and vulnerability analysis
 
 ## Risk Mitigation
+
 - **Rollback Plan:** Ability to disable SSO and revert to JWT authentication
 - **Gradual Rollout:** Feature flags for controlled enterprise user migration
 - **Monitoring:** Real-time monitoring of authentication success rates
 - **Support:** Comprehensive error messages and troubleshooting guides
 
 ## Integration Points
+
 - **Current JWT System:** Maintain backward compatibility
 - **User Database:** Sync enterprise users with local user records
 - **API Authorization:** Extend existing role-based access control

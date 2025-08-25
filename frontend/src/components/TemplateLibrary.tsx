@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Template, TemplateSearchParams } from '../types/template';
-import { getTemplates, getTemplateCategories } from '../api/templates';
-import TemplateCard from './TemplateCard';
+import React, { useState, useEffect, useCallback } from "react";
+import { Template, TemplateSearchParams } from "../types/template";
+import { getTemplates, getTemplateCategories } from "../api/templates";
+import TemplateCard from "./TemplateCard";
 
 interface TemplateLibraryProps {
   onTemplateSelect: (template: Template) => void;
@@ -23,17 +23,19 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
   const [searchParams, setSearchParams] = useState<TemplateSearchParams>({
     page: 1,
     pageSize: 12,
-    sortBy: 'name',
-    sortOrder: 'asc',
+    sortBy: "name",
+    sortOrder: "asc",
   });
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
 
   // Search and filter state
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [sortBy, setSortBy] = useState<'name' | 'created_at' | 'updated_at'>('name');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [sortBy, setSortBy] = useState<"name" | "created_at" | "updated_at">(
+    "name",
+  );
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const loadTemplates = useCallback(async () => {
     try {
@@ -53,8 +55,8 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
       setTotal(response.total);
       setTotalPages(Math.ceil(response.total / response.pageSize));
     } catch (err) {
-      setError('Failed to load templates. Please try again.');
-      console.error('Error loading templates:', err);
+      setError("Failed to load templates. Please try again.");
+      console.error("Error loading templates:", err);
     } finally {
       setLoading(false);
     }
@@ -65,7 +67,7 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
       const response = await getTemplateCategories();
       setCategories(response.categories);
     } catch (err) {
-      console.error('Error loading categories:', err);
+      console.error("Error loading categories:", err);
     }
   }, []);
 
@@ -88,8 +90,8 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
   };
 
   const handleSortChange = (
-    newSortBy: 'name' | 'created_at' | 'updated_at',
-    newSortOrder: 'asc' | 'desc'
+    newSortBy: "name" | "created_at" | "updated_at",
+    newSortOrder: "asc" | "desc",
   ) => {
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);
@@ -101,11 +103,16 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
   };
 
   const clearFilters = () => {
-    setSearchTerm('');
-    setSelectedCategory('');
-    setSortBy('name');
-    setSortOrder('asc');
-    setSearchParams({ page: 1, pageSize: 12, sortBy: 'name', sortOrder: 'asc' });
+    setSearchTerm("");
+    setSelectedCategory("");
+    setSortBy("name");
+    setSortOrder("asc");
+    setSearchParams({
+      page: 1,
+      pageSize: 12,
+      sortBy: "name",
+      sortOrder: "asc",
+    });
   };
 
   if (loading && templates.length === 0) {
@@ -124,7 +131,10 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Search Input */}
           <div className="md:col-span-2">
-            <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="search"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Search Templates
             </label>
             <input
@@ -139,7 +149,10 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
 
           {/* Category Filter */}
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="category"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Category
             </label>
             <select
@@ -159,16 +172,19 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
 
           {/* Sort Options */}
           <div>
-            <label htmlFor="sort" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="sort"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Sort By
             </label>
             <select
               id="sort"
               value={`${sortBy}-${sortOrder}`}
               onChange={(e) => {
-                const [newSortBy, newSortOrder] = e.target.value.split('-') as [
-                  'name' | 'created_at' | 'updated_at',
-                  'asc' | 'desc',
+                const [newSortBy, newSortOrder] = e.target.value.split("-") as [
+                  "name" | "created_at" | "updated_at",
+                  "asc" | "desc",
                 ];
                 handleSortChange(newSortBy, newSortOrder);
               }}
@@ -184,7 +200,10 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
         </div>
 
         {/* Active Filters and Clear Button */}
-        {(searchTerm || selectedCategory || sortBy !== 'name' || sortOrder !== 'asc') && (
+        {(searchTerm ||
+          selectedCategory ||
+          sortBy !== "name" ||
+          sortOrder !== "asc") && (
           <div className="mt-4 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600">Active filters:</span>
@@ -227,7 +246,11 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
         <div className="bg-red-50 border border-red-200 rounded-md p-4">
           <div className="flex">
             <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <svg
+                className="h-5 w-5 text-red-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
                 <path
                   fillRule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -252,7 +275,9 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
               onSelect={onTemplateSelect}
               onPreview={onTemplatePreview}
               onAddToComparison={onAddToComparison}
-              isInComparison={comparisonTemplates.some((t) => t.id === template.id)}
+              isInComparison={comparisonTemplates.some(
+                (t) => t.id === template.id,
+              )}
             />
           ))}
         </div>
@@ -272,11 +297,13 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No templates found</h3>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">
+              No templates found
+            </h3>
             <p className="mt-1 text-sm text-gray-500">
               {searchTerm || selectedCategory
-                ? 'Try adjusting your search criteria or filters.'
-                : 'No templates are available at the moment.'}
+                ? "Try adjusting your search criteria or filters."
+                : "No templates are available at the moment."}
             </p>
           </div>
         )
@@ -304,7 +331,8 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
           <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Showing page <span className="font-medium">{searchParams.page}</span> of{' '}
+                Showing page{" "}
+                <span className="font-medium">{searchParams.page}</span> of{" "}
                 <span className="font-medium">{totalPages}</span>
               </p>
             </div>
@@ -335,7 +363,11 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
 
                 {/* Page Numbers */}
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const pageNum = Math.max(1, Math.min(totalPages - 4, searchParams.page! - 2)) + i;
+                  const pageNum =
+                    Math.max(
+                      1,
+                      Math.min(totalPages - 4, searchParams.page! - 2),
+                    ) + i;
                   if (pageNum > totalPages) return null;
 
                   return (
@@ -344,8 +376,8 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
                       onClick={() => handlePageChange(pageNum)}
                       className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
                         pageNum === searchParams.page
-                          ? 'z-10 bg-indigo-600 text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
-                          : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                          ? "z-10 bg-indigo-600 text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                          : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                       }`}
                     >
                       {pageNum}

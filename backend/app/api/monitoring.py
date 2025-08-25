@@ -3,13 +3,12 @@
 import time
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy import func, text
-from sqlalchemy.orm import Session
-
 from app.database import get_db
 from app.models.execution import ExecutionStatus, WorkflowExecution
 from app.models.workflow import Workflow
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy import func, text
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/monitoring", tags=["monitoring"])
 

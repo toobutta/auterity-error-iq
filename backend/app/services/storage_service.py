@@ -4,10 +4,9 @@ import io
 from datetime import timedelta
 from typing import BinaryIO, Optional
 
+from app.config.settings import get_settings
 from minio import Minio
 from minio.error import S3Error
-
-from app.config.settings import get_settings
 
 
 class StorageService:

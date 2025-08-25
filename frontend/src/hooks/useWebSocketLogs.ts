@@ -1,7 +1,11 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
-import { ExecutionLog } from '../components/ExecutionLogViewer';
+import { useEffect, useState, useRef, useCallback } from "react";
+import { ExecutionLog } from "../components/ExecutionLogViewer";
 
-export type WebSocketConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'error';
+export type WebSocketConnectionStatus =
+  | "connecting"
+  | "connected"
+  | "disconnected"
+  | "error";
 
 interface InputData {
   [key: string]: string | number | boolean | null;
@@ -21,7 +25,7 @@ export interface WebSocketLogMessage {
   duration_ms: number;
   timestamp: string;
   error_message?: string;
-  level: 'info' | 'warning' | 'error';
+  level: "info" | "warning" | "error";
 }
 
 export interface UseWebSocketLogsOptions {
@@ -49,13 +53,13 @@ const DEFAULT_OPTIONS: Required<UseWebSocketLogsOptions> = {
 
 export const useWebSocketLogs = (
   executionId: string,
-  options: UseWebSocketLogsOptions = {}
+  options: UseWebSocketLogsOptions = {},
 ): UseWebSocketLogsReturn => {
   const opts = { ...DEFAULT_OPTIONS, ...options };
 
   const [logs, setLogs] = useState<ExecutionLog[]>([]);
   const [connectionStatus, setConnectionStatus] =
-    useState<WebSocketConnectionStatus>('disconnected');
+    useState<WebSocketConnectionStatus>("disconnected");
   const [error, setError] = useState<string | null>(null);
 
   const wsRef = useRef<WebSocket | null>(null);
@@ -65,26 +69,30 @@ export const useWebSocketLogs = (
 
   // Get WebSocket URL from environment or default to localhost
   const getWebSocketUrl = useCallback(() => {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-    const wsUrl = baseUrl.replace(/^http/, 'ws');
+    const baseUrl =
+      import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+    const wsUrl = baseUrl.replace(/^http/, "ws");
     return `${wsUrl}/ws/executions/${executionId}/logs`;
   }, [executionId]);
 
   // Transform WebSocket message to ExecutionLog format
-  const transformLogMessage = useCallback((message: WebSocketLogMessage): ExecutionLog => {
-    return {
-      id: message.id,
-      execution_id: message.execution_id,
-      step_name: message.step_name,
-      step_type: message.step_type,
-      input_data: message.input_data as InputData,
-      output_data: message.output_data as OutputData,
-      duration_ms: message.duration_ms,
-      timestamp: message.timestamp,
-      error_message: message.error_message,
-      level: message.level,
-    };
-  }, []);
+  const transformLogMessage = useCallback(
+    (message: WebSocketLogMessage): ExecutionLog => {
+      return {
+        id: message.id,
+        execution_id: message.execution_id,
+        step_name: message.step_name,
+        step_type: message.step_type,
+        input_data: message.input_data as InputData,
+        output_data: message.output_data as OutputData,
+        duration_ms: message.duration_ms,
+        timestamp: message.timestamp,
+        error_message: message.error_message,
+        level: message.level,
+      };
+    },
+    [],
+  );
 
   // Add new log with buffer management
   const addLog = useCallback(
@@ -100,7 +108,7 @@ export const useWebSocketLogs = (
         return updatedLogs;
       });
     },
-    [opts.bufferSize]
+    [opts.bufferSize],
   );
 
   // Clear all logs
@@ -113,7 +121,7 @@ export const useWebSocketLogs = (
     if (!opts.enabled || !executionId || !mountedRef.current) return;
 
     try {
-      setConnectionStatus('connecting');
+      setConnectionStatus("connecting");
       setError(null);
 
       const wsUrl = getWebSocketUrl();
@@ -123,7 +131,7 @@ export const useWebSocketLogs = (
       ws.onopen = () => {
         if (!mountedRef.current) return;
         console.log(`WebSocket connected for execution ${executionId}`);
-        setConnectionStatus('connected');
+        setConnectionStatus("connected");
         setError(null);
         reconnectAttemptsRef.current = 0;
       };
@@ -136,16 +144,20 @@ export const useWebSocketLogs = (
           const transformedLog = transformLogMessage(message);
           addLog(transformedLog);
         } catch (parseError) {
-          console.error('Failed to parse WebSocket message:', parseError);
-          setError('Failed to parse log message');
+          console.error("Failed to parse WebSocket message:", parseError);
+          setError("Failed to parse log message");
         }
       };
 
       ws.onclose = (event) => {
         if (!mountedRef.current) return;
 
-        console.log(`WebSocket closed for execution ${executionId}:`, event.code, event.reason);
-        setConnectionStatus('disconnected');
+        console.log(
+          `WebSocket closed for execution ${executionId}:`,
+          event.code,
+          event.reason,
+        );
+        setConnectionStatus("disconnected");
         wsRef.current = null;
 
         // Attempt reconnection if not a normal closure and we haven't exceeded attempts
@@ -156,7 +168,7 @@ export const useWebSocketLogs = (
         ) {
           reconnectAttemptsRef.current++;
           console.log(
-            `Attempting reconnection ${reconnectAttemptsRef.current}/${opts.reconnectAttempts}`
+            `Attempting reconnection ${reconnectAttemptsRef.current}/${opts.reconnectAttempts}`,
           );
 
           reconnectTimeoutRef.current = setTimeout(() => {
@@ -170,14 +182,14 @@ export const useWebSocketLogs = (
       ws.onerror = (event) => {
         if (!mountedRef.current) return;
 
-        console.error('WebSocket error:', event);
-        setConnectionStatus('error');
-        setError('WebSocket connection error');
+        console.error("WebSocket error:", event);
+        setConnectionStatus("error");
+        setError("WebSocket connection error");
       };
     } catch (connectionError) {
-      console.error('Failed to create WebSocket connection:', connectionError);
-      setConnectionStatus('error');
-      setError('Failed to establish WebSocket connection');
+      console.error("Failed to create WebSocket connection:", connectionError);
+      setConnectionStatus("error");
+      setError("Failed to establish WebSocket connection");
     }
   }, [
     executionId,
@@ -197,11 +209,11 @@ export const useWebSocketLogs = (
     }
 
     if (wsRef.current) {
-      wsRef.current.close(1000, 'Component unmounting');
+      wsRef.current.close(1000, "Component unmounting");
       wsRef.current = null;
     }
 
-    setConnectionStatus('disconnected');
+    setConnectionStatus("disconnected");
   }, []);
 
   // Manual reconnect function

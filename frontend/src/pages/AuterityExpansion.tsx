@@ -1,39 +1,43 @@
-import React, { useState } from 'react';
-import React, { useState } from 'react';
-import Layout from '../components/Layout';
-import SmartTriageDashboard from '../components/auterity-expansion/SmartTriageDashboard';
-import VectorSimilarityDashboard from '../components/auterity-expansion/VectorSimilarityDashboard';
-import AutonomousAgentDashboard from '../components/auterity-expansion/AutonomousAgentDashboard';
+import React, { useState } from "react";
+import React, { useState } from "react";
+import Layout from "../components/Layout";
+import SmartTriageDashboard from "../components/auterity-expansion/SmartTriageDashboard";
+import VectorSimilarityDashboard from "../components/auterity-expansion/VectorSimilarityDashboard";
+import AutonomousAgentDashboard from "../components/auterity-expansion/AutonomousAgentDashboard";
 
 const AuterityExpansion: React.FC = () => {
-  const [activeFeature, setActiveFeature] = useState<'triage' | 'vector' | 'agents'>('triage');
+  const [activeFeature, setActiveFeature] = useState<
+    "triage" | "vector" | "agents"
+  >("triage");
 
   const features = [
     {
-      id: 'triage',
-      name: 'Smart Triage',
-      description: 'AI-powered workflow routing and intelligent task triage',
-      icon: '🎯',
+      id: "triage",
+      name: "Smart Triage",
+      description: "AI-powered workflow routing and intelligent task triage",
+      icon: "🎯",
       component: SmartTriageDashboard,
     },
     {
-      id: 'vector',
-      name: 'Vector Similarity',
-      description: 'Duplicate detection and similarity analysis using vector embeddings',
-      icon: '🧠',
+      id: "vector",
+      name: "Vector Similarity",
+      description:
+        "Duplicate detection and similarity analysis using vector embeddings",
+      icon: "🧠",
       component: VectorSimilarityDashboard,
     },
     {
-      id: 'agents',
-      name: 'Autonomous Agents',
-      description: 'AI agent management and multi-agent coordination',
-      icon: '🤖',
+      id: "agents",
+      name: "Autonomous Agents",
+      description: "AI agent management and multi-agent coordination",
+      icon: "🤖",
       component: AutonomousAgentDashboard,
     },
   ];
 
   const ActiveComponent =
-    features.find((f) => f.id === activeFeature)?.component || SmartTriageDashboard;
+    features.find((f) => f.id === activeFeature)?.component ||
+    SmartTriageDashboard;
 
   return (
     <Layout>
@@ -45,8 +49,8 @@ const AuterityExpansion: React.FC = () => {
               Auterity AI Platform Expansion
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Advanced AI-powered workflow automation with intelligent triage, vector similarity
-              detection, and autonomous agent coordination
+              Advanced AI-powered workflow automation with intelligent triage,
+              vector similarity detection, and autonomous agent coordination
             </p>
           </div>
         </div>
@@ -57,16 +61,20 @@ const AuterityExpansion: React.FC = () => {
             {features.map((feature) => (
               <button
                 key={feature.id}
-                onClick={() => setActiveFeature(feature.id as 'triage' | 'vector' | 'agents')}
+                onClick={() =>
+                  setActiveFeature(feature.id as "triage" | "vector" | "agents")
+                }
                 className={`flex-1 flex flex-col items-center justify-center p-6 rounded-lg transition-all duration-300 ${
                   activeFeature === feature.id
-                    ? 'bg-automotive-primary text-white shadow-lg transform scale-105'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-neutral-700'
+                    ? "bg-automotive-primary text-white shadow-lg transform scale-105"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-neutral-700"
                 }`}
               >
                 <span className="text-3xl mb-2">{feature.icon}</span>
                 <h3 className="text-lg font-semibold mb-1">{feature.name}</h3>
-                <p className="text-sm text-center opacity-90">{feature.description}</p>
+                <p className="text-sm text-center opacity-90">
+                  {feature.description}
+                </p>
               </button>
             ))}
           </div>
@@ -85,8 +93,8 @@ const AuterityExpansion: React.FC = () => {
               Smart Triage System
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              AI-powered workflow routing with hybrid ML and rule-based logic for intelligent task
-              classification
+              AI-powered workflow routing with hybrid ML and rule-based logic
+              for intelligent task classification
             </p>
             <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 text-left">
               <li>• NLP-based content analysis</li>
@@ -102,7 +110,8 @@ const AuterityExpansion: React.FC = () => {
               Vector Similarity Engine
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Real-time duplicate detection and similarity analysis using advanced vector embeddings
+              Real-time duplicate detection and similarity analysis using
+              advanced vector embeddings
             </p>
             <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 text-left">
               <li>• Multi-dimensional vector embeddings</li>
@@ -118,7 +127,8 @@ const AuterityExpansion: React.FC = () => {
               Autonomous Agents
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Deployable AI agents with memory persistence and intelligent coordination
+              Deployable AI agents with memory persistence and intelligent
+              coordination
             </p>
             <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 text-left">
               <li>• Domain-specific agent types</li>
@@ -172,8 +182,8 @@ const AuterityExpansion: React.FC = () => {
                 Backend Services
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                FastAPI-based microservices with SQLAlchemy ORM, PostgreSQL, and Redis for caching
-                and queuing
+                FastAPI-based microservices with SQLAlchemy ORM, PostgreSQL, and
+                Redis for caching and queuing
               </p>
             </div>
             <div className="text-center">
@@ -182,8 +192,8 @@ const AuterityExpansion: React.FC = () => {
                 Frontend Components
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                React TypeScript components with Tailwind CSS, glassmorphism design, and responsive
-                layouts
+                React TypeScript components with Tailwind CSS, glassmorphism
+                design, and responsive layouts
               </p>
             </div>
             <div className="text-center">
@@ -192,7 +202,8 @@ const AuterityExpansion: React.FC = () => {
                 AI Integration
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                LiteLLM integration, custom model support, and vector similarity algorithms
+                LiteLLM integration, custom model support, and vector similarity
+                algorithms
               </p>
             </div>
           </div>

@@ -79,9 +79,9 @@ check_service() {
     local service_name=$1
     local url=$2
     local expected_code=${3:-200}
-    
+
     echo -n "   Checking $service_name... "
-    
+
     if curl -s -o /dev/null -w "%{http_code}" "$url" | grep -q "$expected_code"; then
         echo "✅ OK"
         return 0

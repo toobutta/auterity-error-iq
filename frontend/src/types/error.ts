@@ -3,24 +3,24 @@
  */
 
 export enum ErrorSeverity {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
-  CRITICAL = 'critical',
+  LOW = "low",
+  MEDIUM = "medium",
+  HIGH = "high",
+  CRITICAL = "critical",
 }
 
 export enum ErrorCategory {
-  AUTHENTICATION = 'authentication',
-  AUTHORIZATION = 'authorization',
-  VALIDATION = 'validation',
-  NETWORK = 'network',
-  API = 'api',
-  WORKFLOW = 'workflow',
-  AI_SERVICE = 'ai_service',
-  DATABASE = 'database',
-  SYSTEM = 'system',
-  USER_INPUT = 'user_input',
-  UNKNOWN = 'unknown',
+  AUTHENTICATION = "authentication",
+  AUTHORIZATION = "authorization",
+  VALIDATION = "validation",
+  NETWORK = "network",
+  API = "api",
+  WORKFLOW = "workflow",
+  AI_SERVICE = "ai_service",
+  DATABASE = "database",
+  SYSTEM = "system",
+  USER_INPUT = "user_input",
+  UNKNOWN = "unknown",
 }
 
 export interface ErrorContext {

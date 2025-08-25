@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import requests
-
 from app.config.settings import get_settings
 from app.services.storage_service import get_storage_service
 
@@ -122,14 +121,14 @@ class PuppeteerService:
             script = f"""
             const page = await browser.newPage();
             await page.goto('{url}', {{ waitUntil: 'networkidle2' }});
-            
+
             {f"await page.waitForSelector('{wait_for}');" if wait_for else ""}
-            
+
             const title = await page.title();
             const content = {f"await page.$eval('{selector}', el => el.textContent)" if selector else "await page.content()"};
-            
+
             await page.close();
-            
+
             return {{ title, content }};
             """
 
@@ -194,14 +193,14 @@ class PuppeteerService:
             script = f"""
             const page = await browser.newPage();
             await page.goto('{url}', {{ waitUntil: 'networkidle2' }});
-            
+
             const metrics = await page.metrics();
-            const performanceEntries = await page.evaluate(() => 
+            const performanceEntries = await page.evaluate(() =>
                 JSON.stringify(performance.getEntriesByType('navigation'))
             );
-            
+
             await page.close();
-            
+
             return {{ metrics, performanceEntries: JSON.parse(performanceEntries) }};
             """
 

@@ -3,10 +3,9 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from app.config.settings import get_settings
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import RequestError
-
-from app.config.settings import get_settings
 
 
 class SearchService:

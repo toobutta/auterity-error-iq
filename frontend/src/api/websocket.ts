@@ -38,14 +38,17 @@ export class WebSocketClient {
   private reconnectTimer: NodeJS.Timeout | null = null;
   private messageHandlers = new Map<string, Set<(data: unknown) => void>>();
   private statusHandlers = new Set<
-    (status: 'connecting' | 'connected' | 'disconnected' | 'error') => void
+    (status: "connecting" | "connected" | "disconnected" | "error") => void
   >();
 
   constructor(config: WebSocketConfig = {}) {
     this.config = {
       baseUrl:
         config.baseUrl ||
-        (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(/^http/, 'ws'),
+        (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000").replace(
+          /^http/,
+          "ws",
+        ),
       reconnectAttempts: config.reconnectAttempts || 5,
       reconnectInterval: config.reconnectInterval || 3000,
       heartbeatInterval: config.heartbeatInterval || 30000,
@@ -61,11 +64,11 @@ export class WebSocketClient {
         const url = `${this.config.baseUrl}${endpoint}`;
         this.ws = new WebSocket(url);
 
-        this.notifyStatusHandlers('connecting');
+        this.notifyStatusHandlers("connecting");
 
         this.ws.onopen = () => {
           this.reconnectCount = 0;
-          this.notifyStatusHandlers('connected');
+          this.notifyStatusHandlers("connected");
           this.startHeartbeat();
           resolve();
         };
@@ -75,13 +78,13 @@ export class WebSocketClient {
             const message: WebSocketMessage = JSON.parse(event.data);
             this.handleMessage(message);
           } catch (error) {
-            console.error('Failed to parse WebSocket message:', error);
+            console.error("Failed to parse WebSocket message:", error);
           }
         };
 
         this.ws.onclose = (event) => {
           this.stopHeartbeat();
-          this.notifyStatusHandlers('disconnected');
+          this.notifyStatusHandlers("disconnected");
 
           // Attempt reconnection for unexpected closures
           if (
@@ -94,8 +97,8 @@ export class WebSocketClient {
         };
 
         this.ws.onerror = () => {
-          this.notifyStatusHandlers('error');
-          reject(new Error('WebSocket connection failed'));
+          this.notifyStatusHandlers("error");
+          reject(new Error("WebSocket connection failed"));
         };
       } catch (error) {
         reject(error);
@@ -111,7 +114,7 @@ export class WebSocketClient {
     this.clearReconnectTimer();
 
     if (this.ws) {
-      this.ws.close(1000, 'Client disconnect');
+      this.ws.close(1000, "Client disconnect");
       this.ws = null;
     }
   }
@@ -123,7 +126,7 @@ export class WebSocketClient {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
     } else {
-      console.warn('WebSocket is not connected. Cannot send message:', message);
+      console.warn("WebSocket is not connected. Cannot send message:", message);
     }
   }
 
@@ -153,7 +156,9 @@ export class WebSocketClient {
    * Subscribe to connection status changes
    */
   onStatusChange(
-    handler: (status: 'connecting' | 'connected' | 'disconnected' | 'error') => void
+    handler: (
+      status: "connecting" | "connected" | "disconnected" | "error",
+    ) => void,
   ): () => void {
     this.statusHandlers.add(handler);
 
@@ -165,18 +170,18 @@ export class WebSocketClient {
   /**
    * Get current connection status
    */
-  getStatus(): 'connecting' | 'connected' | 'disconnected' | 'error' {
-    if (!this.ws) return 'disconnected';
+  getStatus(): "connecting" | "connected" | "disconnected" | "error" {
+    if (!this.ws) return "disconnected";
 
     switch (this.ws.readyState) {
       case WebSocket.CONNECTING:
-        return 'connecting';
+        return "connecting";
       case WebSocket.OPEN:
-        return 'connected';
+        return "connected";
       case WebSocket.CLOSING:
       case WebSocket.CLOSED:
       default:
-        return 'disconnected';
+        return "disconnected";
     }
   }
 
@@ -187,20 +192,20 @@ export class WebSocketClient {
         try {
           handler(message.data);
         } catch (error) {
-          console.error('Error in message handler:', error);
+          console.error("Error in message handler:", error);
         }
       });
     }
   }
 
   private notifyStatusHandlers(
-    status: 'connecting' | 'connected' | 'disconnected' | 'error'
+    status: "connecting" | "connected" | "disconnected" | "error",
   ): void {
     this.statusHandlers.forEach((handler) => {
       try {
         handler(status);
       } catch (error) {
-        console.error('Error in status handler:', error);
+        console.error("Error in status handler:", error);
       }
     });
   }
@@ -210,7 +215,7 @@ export class WebSocketClient {
 
     this.heartbeatTimer = setInterval(() => {
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-        this.send({ type: 'ping', data: null });
+        this.send({ type: "ping", data: null });
       }
     }, this.config.heartbeatInterval);
   }
@@ -228,10 +233,10 @@ export class WebSocketClient {
 
     this.reconnectTimer = setTimeout(() => {
       console.log(
-        `Attempting WebSocket reconnection ${this.reconnectCount}/${this.config.reconnectAttempts}`
+        `Attempting WebSocket reconnection ${this.reconnectCount}/${this.config.reconnectAttempts}`,
       );
       this.connect(endpoint).catch((error) => {
-        console.error('Reconnection failed:', error);
+        console.error("Reconnection failed:", error);
       });
     }, this.config.reconnectInterval);
   }
@@ -257,9 +262,14 @@ export const connectToExecutionStatus = (executionId: string) => {
 };
 
 export const subscribeToLogs = (handler: (log: LogMessage) => void) => {
-  return wsClient.subscribe('log', handler as (data: unknown) => void);
+  return wsClient.subscribe("log", handler as (data: unknown) => void);
 };
 
-export const subscribeToStatusUpdates = (handler: (status: StatusUpdate) => void) => {
-  return wsClient.subscribe('status_update', handler as (data: unknown) => void);
+export const subscribeToStatusUpdates = (
+  handler: (status: StatusUpdate) => void,
+) => {
+  return wsClient.subscribe(
+    "status_update",
+    handler as (data: unknown) => void,
+  );
 };

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { AppError } from '../types/error';
-import apiClient from '../api/client';
+import React, { useState, useEffect } from "react";
+import { AppError } from "../types/error";
+import apiClient from "../api/client";
 
 interface InputData {
   [key: string]: string | number | boolean | null;
@@ -24,7 +24,9 @@ const RetryWorkflowModal: React.FC<RetryWorkflowModalProps> = ({
   onRetry,
 }) => {
   const [inputs, setInputs] = useState<InputData>({});
-  const [retryHistory, setRetryHistory] = useState<{ timestamp: string; status: string }[]>([]);
+  const [retryHistory, setRetryHistory] = useState<
+    { timestamp: string; status: string }[]
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorState, setErrorState] = useState<string | null>(null);
 
@@ -58,7 +60,9 @@ const RetryWorkflowModal: React.FC<RetryWorkflowModalProps> = ({
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const value = e.target.value;
     setInputs({
       ...inputs,
@@ -69,7 +73,11 @@ const RetryWorkflowModal: React.FC<RetryWorkflowModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 overflow-y-auto">
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 overflow-y-auto"
+    >
       <div className="flex min-h-screen items-center justify-center p-4">
         <div
           className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm"
@@ -77,10 +85,14 @@ const RetryWorkflowModal: React.FC<RetryWorkflowModalProps> = ({
         ></div>
 
         <div className="relative z-10 w-full max-w-3xl rounded-lg bg-white p-6 shadow-xl">
-          <h2 className="mb-4 text-xl font-bold">Retry Workflow: {workflowId}</h2>
+          <h2 className="mb-4 text-xl font-bold">
+            Retry Workflow: {workflowId}
+          </h2>
 
           {errorState && (
-            <div className="mb-4 rounded-md bg-red-50 p-3 text-red-700">{errorState}</div>
+            <div className="mb-4 rounded-md bg-red-50 p-3 text-red-700">
+              {errorState}
+            </div>
           )}
 
           <div className="mb-6">
@@ -109,14 +121,17 @@ const RetryWorkflowModal: React.FC<RetryWorkflowModalProps> = ({
 
             {Object.entries(inputs).map(([key, value]) => (
               <div key={key} className="space-y-2">
-                <label htmlFor={key} className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor={key}
+                  className="block text-sm font-medium text-gray-700"
+                >
                   {key}
                 </label>
                 <input
                   id={key}
                   name={key}
                   type="text"
-                  value={value === null ? '' : String(value)}
+                  value={value === null ? "" : String(value)}
                   onChange={handleChange}
                   className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring focus:ring-blue-200"
                   disabled={isLoading}
@@ -139,7 +154,7 @@ const RetryWorkflowModal: React.FC<RetryWorkflowModalProps> = ({
                 className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
                 disabled={isLoading}
               >
-                {isLoading ? 'Retrying...' : 'Retry Workflow'}
+                {isLoading ? "Retrying..." : "Retry Workflow"}
               </button>
             </div>
           </form>

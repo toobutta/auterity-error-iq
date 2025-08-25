@@ -7,6 +7,7 @@
 ## 📋 Three-System Architecture Summary
 
 ### System 1: AutoMatrix (Core Engine)
+
 - **Location**: `/backend/` + `/frontend/`
 - **Purpose**: Visual workflow automation platform
 - **Technology**: FastAPI + React + PostgreSQL
@@ -14,6 +15,7 @@
 - **Key Files**: 200+ files across backend/frontend
 
 ### System 2: RelayCore (AI Router)
+
 - **Location**: `/systems/relaycore/`
 - **Purpose**: AI request routing and cost optimization
 - **Technology**: Node.js + TypeScript + Redis
@@ -21,6 +23,7 @@
 - **Key Files**: 50+ TypeScript files
 
 ### System 3: NeuroWeaver (Model Management)
+
 - **Location**: `/systems/neuroweaver/`
 - **Purpose**: Specialized AI model training and deployment
 - **Technology**: Python + FastAPI + ML Pipeline
@@ -30,12 +33,14 @@
 ## 🎯 MANDATORY Context for ALL Development Tasks
 
 ### When Working on ANY Component:
+
 1. **Check Cross-System Impact**: Changes may affect all 3 systems
 2. **Verify Integration Points**: AutoMatrix ↔ RelayCore ↔ NeuroWeaver
 3. **Consider Shared Infrastructure**: Auth, monitoring, database
 4. **Review Enterprise Requirements**: SSO, multi-tenancy, security
 
 ### Critical Integration Points:
+
 - **AutoMatrix → RelayCore**: All AI calls route through RelayCore
 - **RelayCore → NeuroWeaver**: Specialized model access
 - **Shared Auth**: JWT tokens across all systems
@@ -44,6 +49,7 @@
 ## 📁 Complete File Structure Context
 
 ### Core Systems (ALWAYS Consider)
+
 ```
 /backend/           # AutoMatrix API (FastAPI)
 /frontend/          # AutoMatrix UI (React)
@@ -53,6 +59,7 @@
 ```
 
 ### Infrastructure (ALWAYS Consider)
+
 ```
 /infrastructure/    # Terraform IaC
 /monitoring/        # Prometheus/Grafana
@@ -61,6 +68,7 @@
 ```
 
 ### Specifications (ALWAYS Review)
+
 ```
 /docs/              # Complete documentation
 /PRD/               # Product requirements
@@ -70,19 +78,23 @@
 ## 🔧 Development Rules for AI Tools
 
 ### Rule 1: Always Check Dependencies
+
 Before making ANY change, verify impact on:
+
 - Other systems in the three-system architecture
 - Shared components and libraries
 - Database schema and migrations
 - API contracts between systems
 
 ### Rule 2: Maintain Integration Integrity
+
 - AutoMatrix MUST route AI calls through RelayCore
 - RelayCore MUST integrate with NeuroWeaver models
 - All systems MUST use unified authentication
 - Monitoring MUST cover all three systems
 
 ### Rule 3: Consider Enterprise Requirements
+
 - Multi-tenant architecture
 - SSO integration (SAML/OIDC)
 - Audit logging and compliance
@@ -91,16 +103,19 @@ Before making ANY change, verify impact on:
 ## 🚨 Current Critical Issues (Context for ALL Tasks)
 
 ### 1. Test Infrastructure Crisis
+
 - **Impact**: Blocks ALL development across ALL systems
 - **Files**: 22 vitest module resolution errors
 - **Priority**: CRITICAL - Must fix before any other work
 
 ### 2. TypeScript Compliance
+
 - **Impact**: Frontend development blocked
 - **Files**: 108 TypeScript errors in AutoMatrix frontend
 - **Priority**: HIGH - Blocks clean development
 
 ### 3. Cross-System Integration Gaps
+
 - **Impact**: Three systems not fully connected
 - **Files**: Integration protocols incomplete
 - **Priority**: HIGH - Core architecture requirement
@@ -108,12 +123,14 @@ Before making ANY change, verify impact on:
 ## 📊 Project Statistics (Full Scope)
 
 ### Codebase Size
+
 - **Total Files**: 500+ files across all systems
 - **Lines of Code**: ~75,000 lines
 - **Languages**: Python, TypeScript, JavaScript, SQL, YAML
 - **Systems**: 3 integrated platforms
 
 ### Component Breakdown
+
 - **AutoMatrix**: 250+ files (backend + frontend)
 - **RelayCore**: 100+ files (Node.js + admin UI)
 - **NeuroWeaver**: 80+ files (Python + React)
@@ -122,6 +139,7 @@ Before making ANY change, verify impact on:
 ## 🎯 Task Context Requirements
 
 ### For ANY Development Task:
+
 1. **Read This Document First**: Understand full project scope
 2. **Check Integration Impact**: How does this affect other systems?
 3. **Review Related Systems**: What other components are involved?
@@ -129,18 +147,21 @@ Before making ANY change, verify impact on:
 5. **Test Cross-System**: Ensure all integrations still work
 
 ### For Frontend Tasks:
+
 - Consider AutoMatrix frontend AND RelayCore admin interface
 - Ensure shared component library compatibility
 - Verify cross-system authentication flows
 - Check responsive design across all UIs
 
 ### For Backend Tasks:
+
 - Consider AutoMatrix API AND NeuroWeaver API
 - Ensure RelayCore integration points work
 - Verify database schema compatibility
 - Check monitoring and logging integration
 
 ### For Infrastructure Tasks:
+
 - Consider ALL three systems in deployment
 - Ensure monitoring covers all components
 - Verify security across entire platform
@@ -153,6 +174,7 @@ User Request → AutoMatrix Frontend → AutoMatrix Backend → RelayCore → AI
 ```
 
 ### Critical Integration Points:
+
 1. **Authentication**: JWT tokens shared across all systems
 2. **AI Routing**: All AI calls go through RelayCore
 3. **Model Access**: RelayCore routes to NeuroWeaver when appropriate
@@ -162,16 +184,19 @@ User Request → AutoMatrix Frontend → AutoMatrix Backend → RelayCore → AI
 ## 📚 Required Reading for ALL Tasks
 
 ### Architecture Documents:
+
 - `/docs/ARCHITECTURE_OVERVIEW.md`
 - `/.kiro/specs/three-system-ai-platform/design.md`
 - `/PROJECT_STRUCTURE_COMPREHENSIVE.md`
 
 ### Integration Specifications:
+
 - `/.kiro/specs/three-system-ai-platform/requirements.md`
 - `/PRD/RelayCore/integration_architecture.md`
 - `/systems/relaycore/README.md`
 
 ### Current Status:
+
 - `/CURRENT_PROJECT_STATUS.md`
 - `/.kiro/PROJECT-ROADMAP-AND-STRATEGY.md`
 - `/COMPREHENSIVE_PROJECT_OVERVIEW.md`
@@ -179,12 +204,14 @@ User Request → AutoMatrix Frontend → AutoMatrix Backend → RelayCore → AI
 ## ⚠️ WARNING: Scope Blindness Prevention
 
 ### Common AI Tool Mistakes:
+
 1. **Tunnel Vision**: Only looking at immediate files
 2. **Integration Ignorance**: Not considering cross-system impact
 3. **Architecture Amnesia**: Forgetting the three-system design
 4. **Enterprise Oversight**: Missing enterprise requirements
 
 ### Prevention Protocol:
+
 1. **Always start with this document**
 2. **Review integration points before coding**
 3. **Check all three systems for impact**
@@ -194,12 +221,14 @@ User Request → AutoMatrix Frontend → AutoMatrix Backend → RelayCore → AI
 ## 🎯 Success Criteria for ALL Tasks
 
 ### Technical Success:
+
 - All three systems continue to work together
 - Integration points remain functional
 - Enterprise requirements are met
 - Performance standards maintained
 
 ### Quality Success:
+
 - Code quality standards across all systems
 - Security requirements for entire platform
 - Documentation updated for all affected systems

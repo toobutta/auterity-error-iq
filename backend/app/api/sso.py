@@ -2,13 +2,12 @@
 
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
-from sqlalchemy.orm import Session
-
 from app.database import get_db
 from app.schemas import SSOInitiateResponse, SSOLoginResponse
 from app.services.audit_service import AuditService
 from app.services.sso_service import SSOService
+from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/sso", tags=["sso"])
 
@@ -232,7 +231,7 @@ async def get_saml_metadata(tenant_slug: str, db: Session = Depends(get_db)):
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
                      entityID="{sso_config.saml_entity_id}">
     <md:SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
-        <md:AssertionConsumerService 
+        <md:AssertionConsumerService
             Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
             Location="{sso_config.oidc_redirect_uri}"
             index="0" />

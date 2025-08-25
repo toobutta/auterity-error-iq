@@ -2,8 +2,8 @@
  * Retry utilities for error recovery mechanisms
  */
 
-import { ErrorCategory } from '../types/error';
-import { logWarn, logError, logInfo } from './logger';
+import { ErrorCategory } from "../types/error";
+import { logWarn, logError, logInfo } from "./logger";
 
 export interface RetryOptions {
   maxAttempts: number;
@@ -23,15 +23,17 @@ export interface CircuitBreakerOptions {
 }
 
 export enum CircuitBreakerState {
-  CLOSED = 'closed',
-  OPEN = 'open',
-  HALF_OPEN = 'half_open',
+  CLOSED = "closed",
+  OPEN = "open",
+  HALF_OPEN = "half_open",
 }
 
 /**
  * Default retry options for different error categories
  */
-export const getDefaultRetryOptions = (category: ErrorCategory): RetryOptions => {
+export const getDefaultRetryOptions = (
+  category: ErrorCategory,
+): RetryOptions => {
   const baseOptions: RetryOptions = {
     maxAttempts: 3,
     baseDelay: 1000,
@@ -47,7 +49,8 @@ export const getDefaultRetryOptions = (category: ErrorCategory): RetryOptions =>
         maxAttempts: 5,
         baseDelay: 500,
         retryCondition: (error) => {
-          const status = (error as { response?: { status?: number } }).response?.status;
+          const status = (error as { response?: { status?: number } }).response
+            ?.status;
           return !status || status >= 500 || status === 408 || status === 429;
         },
       };
@@ -59,7 +62,8 @@ export const getDefaultRetryOptions = (category: ErrorCategory): RetryOptions =>
         baseDelay: 2000,
         maxDelay: 30000,
         retryCondition: (error) => {
-          const status = (error as { response?: { status?: number } }).response?.status;
+          const status = (error as { response?: { status?: number } }).response
+            ?.status;
           return status === 503 || status === 502 || status === 429;
         },
       };
@@ -70,7 +74,8 @@ export const getDefaultRetryOptions = (category: ErrorCategory): RetryOptions =>
         maxAttempts: 3,
         baseDelay: 1000,
         retryCondition: (error) => {
-          const status = (error as { response?: { status?: number } }).response?.status;
+          const status = (error as { response?: { status?: number } }).response
+            ?.status;
           return status >= 500 || status === 429;
         },
       };
@@ -81,7 +86,8 @@ export const getDefaultRetryOptions = (category: ErrorCategory): RetryOptions =>
         maxAttempts: 2,
         baseDelay: 2000,
         retryCondition: (error) => {
-          const status = (error as { response?: { status?: number } }).response?.status;
+          const status = (error as { response?: { status?: number } }).response
+            ?.status;
           return status === 503 || status === 502;
         },
       };
@@ -103,9 +109,11 @@ const calculateDelay = (
   baseDelay: number,
   maxDelay: number,
   exponentialBackoff: boolean,
-  jitter: boolean
+  jitter: boolean,
 ): number => {
-  let delay = exponentialBackoff ? baseDelay * Math.pow(2, attempt - 1) : baseDelay;
+  let delay = exponentialBackoff
+    ? baseDelay * Math.pow(2, attempt - 1)
+    : baseDelay;
 
   // Apply maximum delay limit
   delay = Math.min(delay, maxDelay);
@@ -131,7 +139,7 @@ const sleep = (ms: number): Promise<void> => {
 export async function retryWithBackoff<T>(
   operation: () => Promise<T>,
   options: Partial<RetryOptions> = {},
-  context?: { component?: string; action?: string }
+  context?: { component?: string; action?: string },
 ): Promise<T> {
   const config: RetryOptions = {
     maxAttempts: 3,
@@ -164,7 +172,7 @@ export async function retryWithBackoff<T>(
 
       // Check if we should retry this error
       if (!config.retryCondition!(error)) {
-        logWarn('Error not retryable, failing immediately', {
+        logWarn("Error not retryable, failing immediately", {
           component: context?.component,
           action: context?.action,
           error: (error as Error).message,
@@ -175,7 +183,7 @@ export async function retryWithBackoff<T>(
 
       // If this was the last attempt, don't retry
       if (attempt === config.maxAttempts) {
-        logError('Max retry attempts reached', {
+        logError("Max retry attempts reached", {
           component: context?.component,
           action: context?.action,
           error: (error as Error).message,
@@ -193,7 +201,7 @@ export async function retryWithBackoff<T>(
         config.baseDelay,
         config.maxDelay,
         config.exponentialBackoff,
-        config.jitter
+        config.jitter,
       );
 
       logWarn(`Operation failed, retrying in ${delay}ms`, {
@@ -224,7 +232,7 @@ export class CircuitBreaker {
 
   constructor(
     private options: CircuitBreakerOptions,
-    private name = 'CircuitBreaker'
+    private name = "CircuitBreaker",
   ) {}
 
   async execute<T>(operation: () => Promise<T>): Promise<T> {
@@ -234,7 +242,9 @@ export class CircuitBreaker {
         logInfo(`Circuit breaker ${this.name} transitioning to HALF_OPEN`);
       } else {
         const error = new Error(`Circuit breaker ${this.name} is OPEN`);
-        logWarn(`Circuit breaker ${this.name} rejecting request - circuit is OPEN`);
+        logWarn(
+          `Circuit breaker ${this.name} rejecting request - circuit is OPEN`,
+        );
         throw error;
       }
     }
@@ -277,10 +287,14 @@ export class CircuitBreaker {
     if (this.state === CircuitBreakerState.HALF_OPEN) {
       this.state = CircuitBreakerState.OPEN;
       this.successCount = 0;
-      logWarn(`Circuit breaker ${this.name} transitioning to OPEN from HALF_OPEN`);
+      logWarn(
+        `Circuit breaker ${this.name} transitioning to OPEN from HALF_OPEN`,
+      );
     } else if (this.failureCount >= this.options.failureThreshold) {
       this.state = CircuitBreakerState.OPEN;
-      logWarn(`Circuit breaker ${this.name} transitioning to OPEN - failure threshold reached`);
+      logWarn(
+        `Circuit breaker ${this.name} transitioning to OPEN - failure threshold reached`,
+      );
     }
   }
 
@@ -312,7 +326,7 @@ export class CircuitBreaker {
 export function withRetry<T extends (...args: unknown[]) => Promise<unknown>>(
   fn: T,
   options: Partial<RetryOptions> = {},
-  context?: { component?: string; action?: string }
+  context?: { component?: string; action?: string },
 ): T {
   return (async (...args: Parameters<T>) => {
     return retryWithBackoff(() => fn(...args), options, context);
@@ -324,12 +338,14 @@ export function withRetry<T extends (...args: unknown[]) => Promise<unknown>>(
  */
 export async function retryBatch<T>(
   operations: Array<() => Promise<T>>,
-  options: Partial<RetryOptions> = {}
+  options: Partial<RetryOptions> = {},
 ): Promise<Array<{ success: boolean; result?: T; error?: unknown }>> {
-  const results = await Promise.allSettled(operations.map((op) => retryWithBackoff(op, options)));
+  const results = await Promise.allSettled(
+    operations.map((op) => retryWithBackoff(op, options)),
+  );
 
   return results.map((result) => {
-    if (result.status === 'fulfilled') {
+    if (result.status === "fulfilled") {
       return { success: true, result: result.value };
     } else {
       return { success: false, error: result.reason };
@@ -342,7 +358,7 @@ export async function retryBatch<T>(
  */
 export function createApiCircuitBreaker(
   endpoint: string,
-  options: Partial<CircuitBreakerOptions> = {}
+  options: Partial<CircuitBreakerOptions> = {},
 ): CircuitBreaker {
   const defaultOptions: CircuitBreakerOptions = {
     failureThreshold: 5,
@@ -358,8 +374,20 @@ export function createApiCircuitBreaker(
  * Global circuit breakers for common services
  */
 export const circuitBreakers = {
-  api: createApiCircuitBreaker('api', { failureThreshold: 5, resetTimeout: 30000 }),
-  workflows: createApiCircuitBreaker('workflows', { failureThreshold: 3, resetTimeout: 60000 }),
-  ai: createApiCircuitBreaker('ai', { failureThreshold: 2, resetTimeout: 120000 }),
-  templates: createApiCircuitBreaker('templates', { failureThreshold: 5, resetTimeout: 30000 }),
+  api: createApiCircuitBreaker("api", {
+    failureThreshold: 5,
+    resetTimeout: 30000,
+  }),
+  workflows: createApiCircuitBreaker("workflows", {
+    failureThreshold: 3,
+    resetTimeout: 60000,
+  }),
+  ai: createApiCircuitBreaker("ai", {
+    failureThreshold: 2,
+    resetTimeout: 120000,
+  }),
+  templates: createApiCircuitBreaker("templates", {
+    failureThreshold: 5,
+    resetTimeout: 30000,
+  }),
 };

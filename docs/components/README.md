@@ -7,7 +7,7 @@ This directory contains detailed documentation for each open-source component in
 ```
 components/
 ├── relaycore/          # AI Request Router & Cost Optimizer
-├── neuroweaver/        # ML Model Management Platform  
+├── neuroweaver/        # ML Model Management Platform
 ├── autmatrix/          # Visual Workflow Automation Engine
 ├── shared/             # Reusable UI Components & Libraries
 └── integration/        # Cross-Component Integration Guides
@@ -15,28 +15,31 @@ components/
 
 ## 🎯 **Component Overview**
 
-| Component | Purpose | Language | Status | Documentation |
-|-----------|---------|----------|--------|---------------|
-| **RelayCore** | AI routing & cost optimization | TypeScript | ✅ Stable | [📖 Docs](relaycore/README.md) |
-| **NeuroWeaver** | ML model training & deployment | Python/React | ✅ Stable | [📖 Docs](neuroweaver/README.md) |
-| **AutoMatrix** | Visual workflow automation | Python/React | ✅ Stable | [📖 Docs](autmatrix/README.md) |
-| **Shared Library** | Cross-system components | TypeScript | ✅ Stable | [📖 Docs](shared/README.md) |
+| Component          | Purpose                        | Language     | Status    | Documentation                    |
+| ------------------ | ------------------------------ | ------------ | --------- | -------------------------------- |
+| **RelayCore**      | AI routing & cost optimization | TypeScript   | ✅ Stable | [📖 Docs](relaycore/README.md)   |
+| **NeuroWeaver**    | ML model training & deployment | Python/React | ✅ Stable | [📖 Docs](neuroweaver/README.md) |
+| **AutoMatrix**     | Visual workflow automation     | Python/React | ✅ Stable | [📖 Docs](autmatrix/README.md)   |
+| **Shared Library** | Cross-system components        | TypeScript   | ✅ Stable | [📖 Docs](shared/README.md)      |
 
 ## 🚀 **Quick Navigation**
 
 ### **For Developers**
+
 - [RelayCore API Reference](relaycore/API.md)
 - [NeuroWeaver Training Guide](neuroweaver/TRAINING.md)
 - [AutoMatrix Workflow Builder](autmatrix/WORKFLOWS.md)
 - [Shared Component Library](shared/COMPONENTS.md)
 
 ### **For Contributors**
+
 - [RelayCore Contributing](relaycore/CONTRIBUTING.md)
 - [NeuroWeaver Contributing](neuroweaver/CONTRIBUTING.md)
 - [AutoMatrix Contributing](autmatrix/CONTRIBUTING.md)
 - [Shared Library Contributing](shared/CONTRIBUTING.md)
 
 ### **For DevOps**
+
 - [RelayCore Deployment](relaycore/DEPLOYMENT.md)
 - [NeuroWeaver Deployment](neuroweaver/DEPLOYMENT.md)
 - [AutoMatrix Deployment](autmatrix/DEPLOYMENT.md)
@@ -58,12 +61,12 @@ component-name/
 
 ## 📊 **Integration Matrix**
 
-| From/To | RelayCore | NeuroWeaver | AutoMatrix | Shared |
-|---------|-----------|-------------|------------|--------|
-| **RelayCore** | - | ✅ Model routing | ✅ AI requests | ✅ Components |
-| **NeuroWeaver** | ✅ Registration | - | ✅ Models | ✅ Components |
-| **AutoMatrix** | ✅ AI calls | ✅ Workflows | - | ✅ Components |
-| **Shared** | ✅ UI/Utils | ✅ UI/Utils | ✅ UI/Utils | - |
+| From/To         | RelayCore       | NeuroWeaver      | AutoMatrix     | Shared        |
+| --------------- | --------------- | ---------------- | -------------- | ------------- |
+| **RelayCore**   | -               | ✅ Model routing | ✅ AI requests | ✅ Components |
+| **NeuroWeaver** | ✅ Registration | -                | ✅ Models      | ✅ Components |
+| **AutoMatrix**  | ✅ AI calls     | ✅ Workflows     | -              | ✅ Components |
+| **Shared**      | ✅ UI/Utils     | ✅ UI/Utils      | ✅ UI/Utils    | -             |
 
 ## 🎯 **Getting Started**
 

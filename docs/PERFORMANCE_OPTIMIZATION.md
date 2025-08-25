@@ -3,6 +3,7 @@
 ## Database Optimization
 
 ### Query Performance
+
 ```sql
 -- Add indexes for frequent queries
 CREATE INDEX idx_workflow_user_id ON workflows(user_id);
@@ -11,6 +12,7 @@ CREATE INDEX idx_created_at ON workflows(created_at);
 ```
 
 ### Connection Pooling
+
 ```python
 # SQLAlchemy configuration
 engine = create_engine(
@@ -24,6 +26,7 @@ engine = create_engine(
 ## Caching Strategy
 
 ### Redis Caching
+
 ```python
 # Cache workflow results
 @cache(expire=3600)
@@ -32,6 +35,7 @@ async def get_workflow(workflow_id: str):
 ```
 
 ### Application Caching
+
 - Template caching (1 hour)
 - User session caching (30 minutes)
 - API response caching (5 minutes)
@@ -39,6 +43,7 @@ async def get_workflow(workflow_id: str):
 ## Async Processing
 
 ### Celery Tasks
+
 ```python
 # Long-running tasks
 @celery_app.task
@@ -48,6 +53,7 @@ def process_large_dataset(data):
 ```
 
 ### Background Jobs
+
 - Workflow execution
 - Data processing
 - Report generation
@@ -56,12 +62,14 @@ def process_large_dataset(data):
 ## Resource Management
 
 ### Memory Optimization
+
 - Lazy loading for large datasets
 - Pagination for API responses
 - Connection pooling
 - Garbage collection tuning
 
 ### CPU Optimization
+
 - Async/await patterns
 - Worker process scaling
 - Load balancing
@@ -70,12 +78,14 @@ def process_large_dataset(data):
 ## Monitoring Performance
 
 ### Key Metrics
+
 - Response time (p95 < 500ms)
 - Throughput (>1000 req/s)
 - Error rate (<1%)
 - Resource utilization (<80%)
 
 ### Optimization Tools
+
 - Prometheus metrics
 - APM tracing
 - Database query analysis

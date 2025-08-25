@@ -3,25 +3,30 @@
 ## Message Queue Service
 
 ### Overview
+
 Redis-based message queue service providing reliable message delivery with persistence and delivery guarantees for multi-agent workflow orchestration.
 
 ### Location
+
 `/backend/app/services/message_queue.py`
 
 ### Key Features
 
 #### Message Persistence
+
 - Messages stored in Redis with configurable TTL
 - Survives Redis restarts when persistence enabled
 - Automatic cleanup of expired messages
 
 #### Delivery Guarantees
+
 - **At-least-once delivery** through acknowledgment system
 - **Automatic retry** with exponential backoff (max 3 retries)
 - **Dead letter queue** for permanently failed messages
 - **Processing timeout recovery** for stale messages
 
 #### Core Operations
+
 ```python
 from app.services.message_queue import get_message_queue
 
@@ -48,6 +53,7 @@ if message:
 ```
 
 #### Message Model
+
 ```python
 class QueueMessage(BaseModel):
     id: str                    # Unique message ID
@@ -66,18 +72,21 @@ class QueueMessage(BaseModel):
 #### Advanced Features
 
 **Scheduled Messages**
+
 ```python
 # Process scheduled messages (run periodically)
 processed = mq.process_scheduled_messages()
 ```
 
 **Recovery Operations**
+
 ```python
 # Recover stale processing messages
 recovered = mq.recover_stale_messages()
 ```
 
 **Monitoring**
+
 ```python
 # Queue statistics
 stats = mq.get_queue_stats("workflow_tasks")
@@ -89,17 +98,21 @@ health = mq.health_check()
 ```
 
 ### Configuration
+
 Uses Redis connection from application settings:
+
 - Default: `redis://localhost:6379`
 - Configurable via `REDIS_URL` environment variable
 
 ### Usage in MCP Architecture
+
 - **Agent Communication**: Reliable message passing between agents
 - **Workflow Orchestration**: Task distribution and coordination
 - **Error Recovery**: Automatic retry and failure handling
 - **Monitoring**: Real-time queue metrics and health status
 
 ### Integration Points
+
 - **Workflow Engine**: Task execution and coordination
 - **Protocol Manager**: Inter-agent message routing
 - **Context Manager**: State synchronization messages
@@ -108,12 +121,15 @@ Uses Redis connection from application settings:
 ## Storage Service
 
 ### Overview
+
 MinIO-based S3-compatible object storage for workflow artifacts, agent outputs, and file management.
 
 ### Location
+
 `/backend/app/services/storage_service.py`
 
 ### Usage
+
 ```python
 from app.services.storage_service import get_storage_service
 
@@ -132,12 +148,15 @@ url = storage.get_presigned_url("workflows", "result.json")
 ## Vector Service
 
 ### Overview
+
 Qdrant vector database for semantic search, context similarity, and AI-powered workflow recommendations.
 
 ### Location
+
 `/backend/app/services/vector_service.py`
 
 ### Usage
+
 ```python
 from app.services.vector_service import get_vector_service
 
@@ -161,12 +180,15 @@ similar = vector_db.search_similar(
 ## Search Service
 
 ### Overview
+
 Elasticsearch-based search and analytics for workflows, executions, and logs with Kibana visualization.
 
 ### Location
+
 `/backend/app/services/search_service.py`
 
 ### Usage
+
 ```python
 from app.services.search_service import get_search_service
 
@@ -193,12 +215,15 @@ logs = search.search_logs(
 ## ML Monitoring Service
 
 ### Overview
+
 Evidently.ai-based ML model monitoring for data drift detection, model performance tracking, and data quality validation.
 
 ### Location
+
 `/backend/app/services/ml_monitoring_service.py`
 
 ### Usage
+
 ```python
 from app.services.ml_monitoring_service import get_ml_monitoring_service
 import pandas as pd
@@ -222,6 +247,7 @@ quality_tests = ml_monitor.run_data_quality_tests(data_df)
 ```
 
 ## Service Access
+
 - **MinIO Console**: http://localhost:9001 (minioadmin/minioadmin123)
 - **Qdrant Dashboard**: http://localhost:6333/dashboard
 - **Ollama API**: http://localhost:11434

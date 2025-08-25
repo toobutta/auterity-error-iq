@@ -1,5 +1,5 @@
-import React from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
+import React from "react";
+import { Handle, Position, NodeProps } from "@xyflow/react";
 
 export const WorkflowNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
   return (
@@ -12,7 +12,7 @@ export const WorkflowNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
       />
 
       <div className="p-2">
-        <h3 className="font-bold">{data.label || 'Workflow Node'}</h3>
+        <h3 className="font-bold">{data.label || "Workflow Node"}</h3>
         <p className="text-sm text-gray-500">{data.description}</p>
       </div>
 

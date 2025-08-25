@@ -1,12 +1,19 @@
-import React, { useMemo } from 'react';
-import { ReactFlow, Background, Controls, Node, Edge, NodeTypes } from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
+import React, { useMemo } from "react";
+import {
+  ReactFlow,
+  Background,
+  Controls,
+  Node,
+  Edge,
+  NodeTypes,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 
-import { StartNode } from './nodes/StartNode';
-import { AIProcessNode } from './nodes/AIProcessNode';
-import { EndNode } from './nodes/EndNode';
-import { Template } from '../types/template';
-import { NodeData, WorkflowStep } from '../types/workflow';
+import { StartNode } from "./nodes/StartNode";
+import { AIProcessNode } from "./nodes/AIProcessNode";
+import { EndNode } from "./nodes/EndNode";
+import { Template } from "../types/template";
+import { NodeData, WorkflowStep } from "../types/workflow";
 
 const nodeTypes: NodeTypes = {
   start: StartNode,
@@ -36,17 +43,19 @@ const TemplateComparison: React.FC<TemplateComparisonProps> = ({
         return { template, nodes: [], edges: [] };
       }
 
-      const flowNodes: Node<NodeData>[] = template.definition.steps.map((step: WorkflowStep) => ({
-        id: step.id,
-        type: step.type,
-        position: step.position,
-        data: {
-          label: step.name,
-          description: step.description,
+      const flowNodes: Node<NodeData>[] = template.definition.steps.map(
+        (step: WorkflowStep) => ({
+          id: step.id,
           type: step.type,
-          config: step.config,
-        },
-      }));
+          position: step.position,
+          data: {
+            label: step.name,
+            description: step.description,
+            type: step.type,
+            config: step.config,
+          },
+        }),
+      );
 
       const flowEdges: Edge[] = (template.definition.connections || []).map(
         (conn: {
@@ -61,7 +70,7 @@ const TemplateComparison: React.FC<TemplateComparisonProps> = ({
           target: conn.target,
           label: conn.label,
           animated: true,
-        })
+        }),
       );
 
       return { template, nodes: flowNodes, edges: flowEdges };
@@ -70,16 +79,16 @@ const TemplateComparison: React.FC<TemplateComparisonProps> = ({
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'sales':
-        return 'bg-blue-100 text-blue-800';
-      case 'service':
-        return 'bg-green-100 text-green-800';
-      case 'parts':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'general':
-        return 'bg-gray-100 text-gray-800';
+      case "sales":
+        return "bg-blue-100 text-blue-800";
+      case "service":
+        return "bg-green-100 text-green-800";
+      case "parts":
+        return "bg-yellow-100 text-yellow-800";
+      case "general":
+        return "bg-gray-100 text-gray-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -102,7 +111,9 @@ const TemplateComparison: React.FC<TemplateComparisonProps> = ({
           <div className="bg-white px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-medium text-gray-900">Template Comparison</h3>
+                <h3 className="text-lg font-medium text-gray-900">
+                  Template Comparison
+                </h3>
                 <p className="text-sm text-gray-500 mt-1">
                   Compare {templates.length} templates side by side
                 </p>
@@ -111,7 +122,12 @@ const TemplateComparison: React.FC<TemplateComparisonProps> = ({
                 onClick={onClose}
                 className="text-gray-400 hover:text-gray-600 focus:outline-none"
               >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -124,14 +140,17 @@ const TemplateComparison: React.FC<TemplateComparisonProps> = ({
           </div>
 
           {/* Content */}
-          <div className="bg-white" style={{ height: '80vh' }}>
+          <div className="bg-white" style={{ height: "80vh" }}>
             {/* Comparison summary */}
             <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
                   <div className="text-2xl font-bold text-gray-900">
                     {Math.round(
-                      templates.reduce((sum, t) => sum + t.parameters.length, 0) / templates.length
+                      templates.reduce(
+                        (sum, t) => sum + t.parameters.length,
+                        0,
+                      ) / templates.length,
                     )}
                   </div>
                   <div className="text-xs text-gray-500">Avg Parameters</div>
@@ -139,15 +158,18 @@ const TemplateComparison: React.FC<TemplateComparisonProps> = ({
                 <div>
                   <div className="text-2xl font-bold text-gray-900">
                     {Math.round(
-                      templateFlows.reduce((sum, t) => sum + t.nodes.length, 0) /
-                        templateFlows.length
+                      templateFlows.reduce(
+                        (sum, t) => sum + t.nodes.length,
+                        0,
+                      ) / templateFlows.length,
                     )}
                   </div>
                   <div className="text-xs text-gray-500">Avg Steps</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-gray-900">
-                    {templates.filter((t) => t.isActive).length}/{templates.length}
+                    {templates.filter((t) => t.isActive).length}/
+                    {templates.length}
                   </div>
                   <div className="text-xs text-gray-500">Active Templates</div>
                 </div>
@@ -196,26 +218,30 @@ const TemplateComparison: React.FC<TemplateComparisonProps> = ({
                       <span
                         className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                           template.isActive
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
                         }`}
                       >
-                        {template.isActive ? 'Active' : 'Inactive'}
+                        {template.isActive ? "Active" : "Inactive"}
                       </span>
                     </div>
 
                     <p className="text-xs text-gray-600 mb-3 line-clamp-2">
-                      {template.description || 'No description available'}
+                      {template.description || "No description available"}
                     </p>
 
                     {/* Enhanced stats */}
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div className="bg-white rounded p-2 text-center">
-                        <div className="font-medium text-gray-900">{nodes.length}</div>
+                        <div className="font-medium text-gray-900">
+                          {nodes.length}
+                        </div>
                         <div className="text-gray-500">Steps</div>
                       </div>
                       <div className="bg-white rounded p-2 text-center">
-                        <div className="font-medium text-gray-900">{edges.length}</div>
+                        <div className="font-medium text-gray-900">
+                          {edges.length}
+                        </div>
                         <div className="text-gray-500">Connections</div>
                       </div>
                       <div className="bg-white rounded p-2 text-center">
@@ -226,7 +252,10 @@ const TemplateComparison: React.FC<TemplateComparisonProps> = ({
                       </div>
                       <div className="bg-white rounded p-2 text-center">
                         <div className="font-medium text-gray-900">
-                          {template.parameters.filter((p) => p.isRequired).length}
+                          {
+                            template.parameters.filter((p) => p.isRequired)
+                              .length
+                          }
                         </div>
                         <div className="text-gray-500">Required</div>
                       </div>
@@ -267,7 +296,9 @@ const TemplateComparison: React.FC<TemplateComparisonProps> = ({
                               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                             />
                           </svg>
-                          <p className="text-xs text-gray-500 mt-1">No visual workflow</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            No visual workflow
+                          </p>
                         </div>
                       </div>
                     )}
@@ -278,27 +309,37 @@ const TemplateComparison: React.FC<TemplateComparisonProps> = ({
                     <div className="space-y-3 text-xs">
                       {/* Complexity indicator */}
                       <div className="flex items-center justify-between">
-                        <span className="font-medium text-gray-700">Complexity:</span>
+                        <span className="font-medium text-gray-700">
+                          Complexity:
+                        </span>
                         <span
                           className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                             nodes.length <= 3
-                              ? 'bg-green-100 text-green-800'
+                              ? "bg-green-100 text-green-800"
                               : nodes.length <= 6
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-red-100 text-red-800'
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-800"
                           }`}
                         >
-                          {nodes.length <= 3 ? 'Simple' : nodes.length <= 6 ? 'Medium' : 'Complex'}
+                          {nodes.length <= 3
+                            ? "Simple"
+                            : nodes.length <= 6
+                              ? "Medium"
+                              : "Complex"}
                         </span>
                       </div>
 
                       {/* Parameter breakdown */}
                       {template.parameters.length > 0 && (
                         <div>
-                          <span className="font-medium text-gray-700">Parameter Types:</span>
+                          <span className="font-medium text-gray-700">
+                            Parameter Types:
+                          </span>
                           <div className="mt-1 flex flex-wrap gap-1">
                             {Array.from(
-                              new Set(template.parameters.map((p) => p.parameterType))
+                              new Set(
+                                template.parameters.map((p) => p.parameterType),
+                              ),
                             ).map((type) => (
                               <span
                                 key={type}
@@ -316,9 +357,10 @@ const TemplateComparison: React.FC<TemplateComparisonProps> = ({
                         <span className="font-medium text-gray-700">Age:</span>
                         <span className="text-gray-600">
                           {Math.floor(
-                            (Date.now() - new Date(template.createdAt).getTime()) /
-                              (1000 * 60 * 60 * 24)
-                          )}{' '}
+                            (Date.now() -
+                              new Date(template.createdAt).getTime()) /
+                              (1000 * 60 * 60 * 24),
+                          )}{" "}
                           days
                         </span>
                       </div>
@@ -343,7 +385,11 @@ const TemplateComparison: React.FC<TemplateComparisonProps> = ({
                           d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                         />
                       </svg>
-                      <span>{template.isActive ? 'Use This Template' : 'Template Inactive'}</span>
+                      <span>
+                        {template.isActive
+                          ? "Use This Template"
+                          : "Template Inactive"}
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -355,7 +401,8 @@ const TemplateComparison: React.FC<TemplateComparisonProps> = ({
           <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-600">
-                Comparing {templates.length} template{templates.length !== 1 ? 's' : ''}
+                Comparing {templates.length} template
+                {templates.length !== 1 ? "s" : ""}
               </div>
               <div className="flex space-x-3">
                 <button

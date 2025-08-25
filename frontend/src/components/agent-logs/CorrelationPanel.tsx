@@ -1,5 +1,9 @@
-import React, { useState, useMemo } from 'react';
-import { AgentLog, ModelTrainingJob, CorrelationData } from './ConversationLogViewer';
+import React, { useState, useMemo } from "react";
+import {
+  AgentLog,
+  ModelTrainingJob,
+  CorrelationData,
+} from "./ConversationLogViewer";
 
 interface CorrelationPanelProps {
   logs: AgentLog[];
@@ -18,8 +22,12 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
   onLogSelect,
   onJobSelect,
 }) => {
-  const [viewMode, setViewMode] = useState<'timeline' | 'network' | 'details'>('timeline');
-  const [timeRange, setTimeRange] = useState<'1h' | '6h' | '24h' | '7d' | 'all'>('24h');
+  const [viewMode, setViewMode] = useState<"timeline" | "network" | "details">(
+    "timeline",
+  );
+  const [timeRange, setTimeRange] = useState<
+    "1h" | "6h" | "24h" | "7d" | "all"
+  >("24h");
 
   // Calculate correlations
   const correlations = useMemo(() => {
@@ -38,7 +46,9 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
         }
 
         // Temporal correlation - job started within timeframe of log
-        const timeDiff = Math.abs(job.startTime.getTime() - log.timestamp.getTime());
+        const timeDiff = Math.abs(
+          job.startTime.getTime() - log.timestamp.getTime(),
+        );
         return timeDiff < 3600000; // Within 1 hour
       });
 
@@ -48,20 +58,22 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
           relatedTrainingJobs: relatedJobs,
           correlation: {
             type: relatedJobs.some((job) => job.triggeredBy?.logId === log.id)
-              ? 'direct'
+              ? "direct"
               : relatedJobs.some((job) => job.modelId === log.modelId)
-                ? 'indirect'
-                : 'temporal',
-            confidence: relatedJobs.some((job) => job.triggeredBy?.logId === log.id)
+                ? "indirect"
+                : "temporal",
+            confidence: relatedJobs.some(
+              (job) => job.triggeredBy?.logId === log.id,
+            )
               ? 0.9
               : relatedJobs.some((job) => job.modelId === log.modelId)
                 ? 0.7
                 : 0.4,
             reason: relatedJobs.some((job) => job.triggeredBy?.logId === log.id)
-              ? 'Training job directly triggered by this conversation'
+              ? "Training job directly triggered by this conversation"
               : relatedJobs.some((job) => job.modelId === log.modelId)
-                ? 'Same model used in conversation and training'
-                : 'Training job started around the same time as conversation',
+                ? "Same model used in conversation and training"
+                : "Training job started around the same time as conversation",
           },
         });
       }
@@ -72,22 +84,22 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
 
   // Filter by time range
   const filteredCorrelations = useMemo(() => {
-    if (timeRange === 'all') return correlations;
+    if (timeRange === "all") return correlations;
 
     const now = new Date();
     const cutoff = new Date();
 
     switch (timeRange) {
-      case '1h':
+      case "1h":
         cutoff.setHours(now.getHours() - 1);
         break;
-      case '6h':
+      case "6h":
         cutoff.setHours(now.getHours() - 6);
         break;
-      case '24h':
+      case "24h":
         cutoff.setDate(now.getDate() - 1);
         break;
-      case '7d':
+      case "7d":
         cutoff.setDate(now.getDate() - 7);
         break;
     }
@@ -105,33 +117,35 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
   const selectedJobCorrelations = useMemo(() => {
     if (!selectedJob) return [];
     return filteredCorrelations.filter((c) =>
-      c.relatedTrainingJobs.some((job) => job.id === selectedJob.id)
+      c.relatedTrainingJobs.some((job) => job.id === selectedJob.id),
     );
   }, [filteredCorrelations, selectedJob]);
 
-  const getCorrelationColor = (type: CorrelationData['correlation']['type']) => {
+  const getCorrelationColor = (
+    type: CorrelationData["correlation"]["type"],
+  ) => {
     switch (type) {
-      case 'direct':
-        return 'text-green-600 bg-green-50 border-green-200';
-      case 'indirect':
-        return 'text-blue-600 bg-blue-50 border-blue-200';
-      case 'temporal':
-        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case "direct":
+        return "text-green-600 bg-green-50 border-green-200";
+      case "indirect":
+        return "text-blue-600 bg-blue-50 border-blue-200";
+      case "temporal":
+        return "text-yellow-600 bg-yellow-50 border-yellow-200";
       default:
-        return 'text-gray-600 bg-gray-50 border-gray-200';
+        return "text-gray-600 bg-gray-50 border-gray-200";
     }
   };
 
-  const getCorrelationIcon = (type: CorrelationData['correlation']['type']) => {
+  const getCorrelationIcon = (type: CorrelationData["correlation"]["type"]) => {
     switch (type) {
-      case 'direct':
-        return '🎯';
-      case 'indirect':
-        return '🔗';
-      case 'temporal':
-        return '⏰';
+      case "direct":
+        return "🎯";
+      case "indirect":
+        return "🔗";
+      case "temporal":
+        return "⏰";
       default:
-        return '❓';
+        return "❓";
     }
   };
 
@@ -145,7 +159,7 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
       const events: Array<{
         id: string;
         timestamp: Date;
-        type: 'log' | 'job_start' | 'job_end';
+        type: "log" | "job_start" | "job_end";
         data: AgentLog | ModelTrainingJob;
         correlation?: CorrelationData;
       }> = [];
@@ -155,7 +169,7 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
         events.push({
           id: `log-${correlation.agentLog.id}`,
           timestamp: correlation.agentLog.timestamp,
-          type: 'log',
+          type: "log",
           data: correlation.agentLog,
           correlation,
         });
@@ -165,7 +179,7 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
           events.push({
             id: `job-start-${job.id}`,
             timestamp: job.startTime,
-            type: 'job_start',
+            type: "job_start",
             data: job,
             correlation,
           });
@@ -174,7 +188,7 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
             events.push({
               id: `job-end-${job.id}`,
               timestamp: job.endTime,
-              type: 'job_end',
+              type: "job_end",
               data: job,
               correlation,
             });
@@ -182,7 +196,9 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
         });
       });
 
-      return events.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+      return events.sort(
+        (a, b) => a.timestamp.getTime() - b.timestamp.getTime(),
+      );
     }, [filteredCorrelations]);
 
     return (
@@ -194,15 +210,18 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
           {/* Timeline events */}
           <div className="space-y-6">
             {timelineData.map((event) => (
-              <div key={event.id} className="relative flex items-start space-x-4">
+              <div
+                key={event.id}
+                className="relative flex items-start space-x-4"
+              >
                 {/* Timeline dot */}
                 <div
                   className={`relative z-10 w-4 h-4 rounded-full border-2 ${
-                    event.type === 'log'
-                      ? 'bg-blue-500 border-blue-500'
-                      : event.type === 'job_start'
-                        ? 'bg-green-500 border-green-500'
-                        : 'bg-red-500 border-red-500'
+                    event.type === "log"
+                      ? "bg-blue-500 border-blue-500"
+                      : event.type === "job_start"
+                        ? "bg-green-500 border-green-500"
+                        : "bg-red-500 border-red-500"
                   }`}
                 ></div>
 
@@ -212,23 +231,25 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
                         <span className="text-sm font-medium">
-                          {event.type === 'log'
-                            ? '💬 Agent Log'
-                            : event.type === 'job_start'
-                              ? '🚀 Training Started'
-                              : '✅ Training Completed'}
+                          {event.type === "log"
+                            ? "💬 Agent Log"
+                            : event.type === "job_start"
+                              ? "🚀 Training Started"
+                              : "✅ Training Completed"}
                         </span>
                         <span className="text-xs text-gray-500 dark:text-gray-400">
                           {event.timestamp.toLocaleString()}
                         </span>
                       </div>
 
-                      {event.type === 'log' ? (
+                      {event.type === "log" ? (
                         <div
                           className="cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded"
                           onClick={() => onLogSelect?.(event.data as AgentLog)}
                         >
-                          <div className="font-medium">{(event.data as AgentLog).agentName}</div>
+                          <div className="font-medium">
+                            {(event.data as AgentLog).agentName}
+                          </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
                             {(event.data as AgentLog).message}
                           </div>
@@ -236,14 +257,16 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
                       ) : (
                         <div
                           className="cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 p-2 rounded"
-                          onClick={() => onJobSelect?.(event.data as ModelTrainingJob)}
+                          onClick={() =>
+                            onJobSelect?.(event.data as ModelTrainingJob)
+                          }
                         >
                           <div className="font-medium">
                             {(event.data as ModelTrainingJob).modelName}
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400">
-                            {event.type === 'job_start'
-                              ? 'Training started'
+                            {event.type === "job_start"
+                              ? "Training started"
                               : `Training completed - ${(event.data as ModelTrainingJob).progress}%`}
                           </div>
                         </div>
@@ -256,9 +279,13 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
                         className={`px-2 py-1 rounded text-xs font-medium border ${getCorrelationColor(event.correlation.correlation.type)}`}
                       >
                         <span className="mr-1">
-                          {getCorrelationIcon(event.correlation.correlation.type)}
+                          {getCorrelationIcon(
+                            event.correlation.correlation.type,
+                          )}
                         </span>
-                        {formatConfidence(event.correlation.correlation.confidence)}
+                        {formatConfidence(
+                          event.correlation.correlation.confidence,
+                        )}
                       </div>
                     )}
                   </div>
@@ -282,18 +309,24 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
     return (
       <div className="space-y-4">
         {activeCorrelations.map((correlation, index) => (
-          <div key={`${correlation.agentLog.id}-${index}`} className="glass-card p-6">
+          <div
+            key={`${correlation.agentLog.id}-${index}`}
+            className="glass-card p-6"
+          >
             {/* Correlation Header */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
                 <div
                   className={`px-3 py-1 rounded-lg text-sm font-medium border ${getCorrelationColor(correlation.correlation.type)}`}
                 >
-                  <span className="mr-2">{getCorrelationIcon(correlation.correlation.type)}</span>
+                  <span className="mr-2">
+                    {getCorrelationIcon(correlation.correlation.type)}
+                  </span>
                   {correlation.correlation.type} correlation
                 </div>
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Confidence: {formatConfidence(correlation.correlation.confidence)}
+                  Confidence:{" "}
+                  {formatConfidence(correlation.correlation.confidence)}
                 </span>
               </div>
             </div>
@@ -305,12 +338,16 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
             {/* Agent Log */}
             <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-4">
               <div className="flex items-center space-x-2 mb-2">
-                <span className="text-blue-600 dark:text-blue-400 font-medium">💬 Agent Log</span>
+                <span className="text-blue-600 dark:text-blue-400 font-medium">
+                  💬 Agent Log
+                </span>
                 <span className="text-xs text-gray-500 dark:text-gray-400">
                   {correlation.agentLog.timestamp.toLocaleString()}
                 </span>
               </div>
-              <div className="font-medium mb-1">{correlation.agentLog.agentName}</div>
+              <div className="font-medium mb-1">
+                {correlation.agentLog.agentName}
+              </div>
               <div className="text-sm">{correlation.agentLog.message}</div>
               {correlation.agentLog.modelName && (
                 <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
@@ -325,7 +362,10 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
                 Related Training Jobs ({correlation.relatedTrainingJobs.length})
               </div>
               {correlation.relatedTrainingJobs.map((job) => (
-                <div key={job.id} className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                <div
+                  key={job.id}
+                  className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg"
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
                       <span className="text-green-600 dark:text-green-400 font-medium">
@@ -338,13 +378,13 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
                     <div className="text-sm">
                       <span
                         className={`px-2 py-1 rounded text-xs ${
-                          job.status === 'completed'
-                            ? 'bg-green-500 text-white'
-                            : job.status === 'running'
-                              ? 'bg-blue-500 text-white'
-                              : job.status === 'failed'
-                                ? 'bg-red-500 text-white'
-                                : 'bg-gray-500 text-white'
+                          job.status === "completed"
+                            ? "bg-green-500 text-white"
+                            : job.status === "running"
+                              ? "bg-blue-500 text-white"
+                              : job.status === "failed"
+                                ? "bg-red-500 text-white"
+                                : "bg-gray-500 text-white"
                         }`}
                       >
                         {job.status} - {job.progress}%
@@ -362,15 +402,19 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
                   {job.metrics && (
                     <div className="mt-2 flex space-x-4 text-xs">
                       {job.metrics.accuracy && (
-                        <div>Accuracy: {(job.metrics.accuracy * 100).toFixed(1)}%</div>
+                        <div>
+                          Accuracy: {(job.metrics.accuracy * 100).toFixed(1)}%
+                        </div>
                       )}
-                      {job.metrics.loss && <div>Loss: {job.metrics.loss.toFixed(4)}</div>}
+                      {job.metrics.loss && (
+                        <div>Loss: {job.metrics.loss.toFixed(4)}</div>
+                      )}
                     </div>
                   )}
 
                   {job.triggeredBy && (
                     <div className="mt-2 text-xs text-green-600 dark:text-green-400">
-                      Triggered by: {job.triggeredBy.type.replace('_', ' ')}
+                      Triggered by: {job.triggeredBy.type.replace("_", " ")}
                     </div>
                   )}
                 </div>
@@ -383,11 +427,13 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
           <div className="glass-card p-8 text-center">
             <div className="text-gray-500 dark:text-gray-400">
               <div className="text-4xl mb-2">🔍</div>
-              <div className="text-lg font-medium mb-1">No correlations found</div>
+              <div className="text-lg font-medium mb-1">
+                No correlations found
+              </div>
               <div className="text-sm">
                 {selectedLog || selectedJob
-                  ? 'No related training activities for the selected item'
-                  : 'Select a log or training job to see correlations'}
+                  ? "No related training activities for the selected item"
+                  : "Select a log or training job to see correlations"}
               </div>
             </div>
           </div>
@@ -402,17 +448,19 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
       <div className="glass-card p-4">
         <div className="flex flex-wrap gap-4 items-center justify-between">
           <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">View:</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              View:
+            </span>
             <div className="flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
               <button
-                onClick={() => setViewMode('timeline')}
-                className={`px-3 py-1 text-xs ${viewMode === 'timeline' ? 'bg-blue-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
+                onClick={() => setViewMode("timeline")}
+                className={`px-3 py-1 text-xs ${viewMode === "timeline" ? "bg-blue-500 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"}`}
               >
                 Timeline
               </button>
               <button
-                onClick={() => setViewMode('details')}
-                className={`px-3 py-1 text-xs ${viewMode === 'details' ? 'bg-blue-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
+                onClick={() => setViewMode("details")}
+                className={`px-3 py-1 text-xs ${viewMode === "details" ? "bg-blue-500 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"}`}
               >
                 Details
               </button>
@@ -446,7 +494,7 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
       {(selectedLog || selectedJob) && (
         <div className="glass-card p-4 bg-blue-50 dark:bg-blue-900/20">
           <div className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-1">
-            {selectedLog ? '💬 Selected Log' : '🤖 Selected Training Job'}
+            {selectedLog ? "💬 Selected Log" : "🤖 Selected Training Job"}
           </div>
           <div className="text-sm text-blue-600 dark:text-blue-400">
             {selectedLog
@@ -457,8 +505,8 @@ export const CorrelationPanel: React.FC<CorrelationPanelProps> = ({
       )}
 
       {/* View Content */}
-      {viewMode === 'timeline' && <TimelineView />}
-      {viewMode === 'details' && <DetailsView />}
+      {viewMode === "timeline" && <TimelineView />}
+      {viewMode === "details" && <DetailsView />}
     </div>
   );
 };

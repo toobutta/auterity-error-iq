@@ -1,8 +1,8 @@
 # Backend API Documentation
 
-**Document Version**: 1.0  
-**Last Updated**: August 8, 2025  
-**Maintained By**: Backend Team  
+**Document Version**: 1.0
+**Last Updated**: August 8, 2025
+**Maintained By**: Backend Team
 
 ## Overview
 
@@ -13,6 +13,7 @@ The Auterity Unified Platform backend is built with FastAPI, providing high-perf
 ## Technology Stack
 
 ### Core Framework
+
 - **FastAPI 0.104.1** - Modern Python web framework
 - **Python 3.12** - Programming language runtime
 - **Uvicorn 0.24.0** - ASGI server implementation
@@ -20,11 +21,13 @@ The Auterity Unified Platform backend is built with FastAPI, providing high-perf
 - **Alembic 1.12.1** - Database migration tool
 
 ### Security & Authentication
+
 - **JWT (python-jose)** - JSON Web Token implementation
 - **BCrypt (passlib)** - Password hashing
 - **OAuth2** - Industry-standard authorization
 
 ### External Integrations
+
 - **OpenAI 1.3.7** - GPT model integration
 - **LiteLLM 1.10.1** - Multi-provider AI abstraction
 - **Redis 5.0.1** - Caching and session storage
@@ -74,11 +77,13 @@ The Auterity Unified Platform backend is built with FastAPI, providing high-perf
 ## API Endpoints Overview
 
 ### Base URL
+
 - **Development**: `http://localhost:8000`
 - **Staging**: `https://staging-api.auterity.com`
 - **Production**: `https://api.auterity.com`
 
 ### Documentation
+
 - **Swagger UI**: `/docs`
 - **ReDoc**: `/redoc`
 - **OpenAPI Spec**: `/openapi.json`
@@ -90,12 +95,14 @@ The Auterity Unified Platform backend is built with FastAPI, providing high-perf
 ### Base Path: `/api/auth`
 
 #### User Registration
+
 ```http
 POST /api/auth/register
 Content-Type: application/json
 ```
 
 **Request Body**:
+
 ```json
 {
   "email": "user@example.com",
@@ -107,6 +114,7 @@ Content-Type: application/json
 ```
 
 **Response (201 Created)**:
+
 ```json
 {
   "id": "uuid-string",
@@ -121,16 +129,19 @@ Content-Type: application/json
 ```
 
 **Error Responses**:
+
 - `400 Bad Request`: Email already registered
 - `422 Unprocessable Entity`: Validation errors
 
 #### User Login
+
 ```http
 POST /api/auth/login
 Content-Type: application/json
 ```
 
 **Request Body**:
+
 ```json
 {
   "email": "user@example.com",
@@ -139,6 +150,7 @@ Content-Type: application/json
 ```
 
 **Response (200 OK)**:
+
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -148,16 +160,19 @@ Content-Type: application/json
 ```
 
 **Error Responses**:
+
 - `401 Unauthorized`: Invalid credentials
 - `400 Bad Request`: Inactive user account
 
 #### Get Current User
+
 ```http
 GET /api/auth/me
 Authorization: Bearer <jwt_token>
 ```
 
 **Response (200 OK)**:
+
 ```json
 {
   "id": "uuid-string",
@@ -172,12 +187,14 @@ Authorization: Bearer <jwt_token>
 ```
 
 #### Token Refresh
+
 ```http
 POST /api/auth/refresh
 Authorization: Bearer <jwt_token>
 ```
 
 **Response (200 OK)**:
+
 ```json
 {
   "access_token": "new_jwt_token",
@@ -187,6 +204,7 @@ Authorization: Bearer <jwt_token>
 ```
 
 #### Cross-System Token
+
 ```http
 POST /api/auth/cross-system-token
 Authorization: Bearer <jwt_token>
@@ -194,6 +212,7 @@ Content-Type: application/json
 ```
 
 **Request Body**:
+
 ```json
 {
   "target_system": "relaycore",
@@ -202,6 +221,7 @@ Content-Type: application/json
 ```
 
 **Response (200 OK)**:
+
 ```json
 {
   "token": "cross_system_jwt_token",
@@ -217,6 +237,7 @@ Content-Type: application/json
 ### Base Path: `/api/workflows`
 
 #### Create Workflow
+
 ```http
 POST /api/workflows
 Authorization: Bearer <jwt_token>
@@ -224,6 +245,7 @@ Content-Type: application/json
 ```
 
 **Request Body**:
+
 ```json
 {
   "name": "Customer Follow-up Workflow",
@@ -236,7 +258,7 @@ Content-Type: application/json
         "data": {
           "label": "Start Process"
         },
-        "position": {"x": 100, "y": 100}
+        "position": { "x": 100, "y": 100 }
       },
       {
         "id": "send_email",
@@ -246,7 +268,7 @@ Content-Type: application/json
           "to": "{{customer_email}}",
           "template": "follow_up_template"
         },
-        "position": {"x": 300, "y": 100}
+        "position": { "x": 300, "y": 100 }
       }
     ],
     "edges": [
@@ -262,6 +284,7 @@ Content-Type: application/json
 ```
 
 **Response (201 Created)**:
+
 ```json
 {
   "id": "workflow-uuid",
@@ -276,18 +299,21 @@ Content-Type: application/json
 ```
 
 #### List Workflows
+
 ```http
 GET /api/workflows?page=1&page_size=10&is_active=true
 Authorization: Bearer <jwt_token>
 ```
 
 **Query Parameters**:
+
 - `page` (int): Page number (default: 1)
 - `page_size` (int): Items per page (default: 10, max: 100)
 - `is_active` (bool): Filter by active status
 - `search` (string): Search in name and description
 
 **Response (200 OK)**:
+
 ```json
 {
   "workflows": [
@@ -309,12 +335,14 @@ Authorization: Bearer <jwt_token>
 ```
 
 #### Get Workflow
+
 ```http
 GET /api/workflows/{workflow_id}
 Authorization: Bearer <jwt_token>
 ```
 
 **Response (200 OK)**:
+
 ```json
 {
   "id": "workflow-uuid",
@@ -338,6 +366,7 @@ Authorization: Bearer <jwt_token>
 ```
 
 #### Execute Workflow
+
 ```http
 POST /api/workflows/{workflow_id}/execute
 Authorization: Bearer <jwt_token>
@@ -345,6 +374,7 @@ Content-Type: application/json
 ```
 
 **Request Body**:
+
 ```json
 {
   "input_data": {
@@ -358,6 +388,7 @@ Content-Type: application/json
 ```
 
 **Response (202 Accepted)**:
+
 ```json
 {
   "execution_id": "execution-uuid",
@@ -373,12 +404,14 @@ Content-Type: application/json
 ```
 
 #### Get Execution Status
+
 ```http
 GET /api/workflows/executions/{execution_id}
 Authorization: Bearer <jwt_token>
 ```
 
 **Response (200 OK)**:
+
 ```json
 {
   "id": "execution-uuid",
@@ -421,17 +454,20 @@ Authorization: Bearer <jwt_token>
 ### Base Path: `/api/templates`
 
 #### List Templates
+
 ```http
 GET /api/templates?category=sales&page=1&page_size=10
 Authorization: Bearer <jwt_token>
 ```
 
 **Query Parameters**:
+
 - `category` (string): Filter by category (sales, service, marketing, etc.)
 - `page` (int): Page number
 - `page_size` (int): Items per page
 
 **Response (200 OK)**:
+
 ```json
 {
   "templates": [
@@ -453,12 +489,14 @@ Authorization: Bearer <jwt_token>
 ```
 
 #### Get Template
+
 ```http
 GET /api/templates/{template_id}
 Authorization: Bearer <jwt_token>
 ```
 
 **Response (200 OK)**:
+
 ```json
 {
   "id": "template-uuid",
@@ -499,6 +537,7 @@ Authorization: Bearer <jwt_token>
 ```
 
 #### Create Template
+
 ```http
 POST /api/templates
 Authorization: Bearer <jwt_token>
@@ -506,6 +545,7 @@ Content-Type: application/json
 ```
 
 **Request Body**:
+
 ```json
 {
   "name": "New Sales Template",
@@ -527,6 +567,7 @@ Content-Type: application/json
 ```
 
 **Response (201 Created)**:
+
 ```json
 {
   "id": "new-template-uuid",
@@ -541,6 +582,7 @@ Content-Type: application/json
 ```
 
 #### Instantiate Template
+
 ```http
 POST /api/templates/{template_id}/instantiate
 Authorization: Bearer <jwt_token>
@@ -548,6 +590,7 @@ Content-Type: application/json
 ```
 
 **Request Body**:
+
 ```json
 {
   "name": "Customer ABC Follow-up",
@@ -561,6 +604,7 @@ Content-Type: application/json
 ```
 
 **Response (200 OK)**:
+
 ```json
 {
   "id": "new-workflow-uuid",
@@ -588,11 +632,13 @@ Content-Type: application/json
 ### Base Path: `/api/monitoring`
 
 #### System Health
+
 ```http
 GET /api/monitoring/health
 ```
 
 **Response (200 OK)**:
+
 ```json
 {
   "status": "healthy",
@@ -629,12 +675,14 @@ GET /api/monitoring/health
 ```
 
 #### System Metrics
+
 ```http
 GET /api/monitoring/metrics
 Authorization: Bearer <jwt_token>
 ```
 
 **Response (200 OK)**:
+
 ```json
 {
   "system": {
@@ -671,18 +719,22 @@ Authorization: Bearer <jwt_token>
 ## WebSocket API
 
 ### Connection Endpoint
+
 ```
 ws://localhost:8000/ws/{client_id}?token={jwt_token}
 ```
 
 #### Real-time Updates
+
 The WebSocket connection provides real-time updates for:
+
 - Workflow execution status changes
 - System health alerts
 - Error notifications
 - Metrics updates
 
 **Message Format**:
+
 ```json
 {
   "type": "workflow_execution_update",
@@ -698,6 +750,7 @@ The WebSocket connection provides real-time updates for:
 ```
 
 **Event Types**:
+
 - `workflow_execution_update`: Workflow execution status changes
 - `system_alert`: System health alerts
 - `error_notification`: Error notifications
@@ -708,6 +761,7 @@ The WebSocket connection provides real-time updates for:
 ## Error Handling
 
 ### Standard Error Response Format
+
 ```json
 {
   "error": {
@@ -726,6 +780,7 @@ The WebSocket connection provides real-time updates for:
 ```
 
 ### HTTP Status Codes
+
 - **200 OK**: Successful request
 - **201 Created**: Resource created successfully
 - **202 Accepted**: Request accepted for processing
@@ -739,6 +794,7 @@ The WebSocket connection provides real-time updates for:
 - **503 Service Unavailable**: Service temporarily unavailable
 
 ### Error Categories
+
 - **Authentication Errors**: Invalid credentials, expired tokens
 - **Authorization Errors**: Insufficient permissions
 - **Validation Errors**: Invalid input data
@@ -750,6 +806,7 @@ The WebSocket connection provides real-time updates for:
 ## Rate Limiting
 
 ### Rate Limit Headers
+
 ```
 X-RateLimit-Limit: 1000
 X-RateLimit-Remaining: 999
@@ -758,6 +815,7 @@ X-RateLimit-Window: 3600
 ```
 
 ### Rate Limits by Endpoint
+
 - **Authentication**: 10 requests/minute per IP
 - **Workflow Operations**: 100 requests/minute per user
 - **Template Operations**: 50 requests/minute per user
@@ -769,18 +827,21 @@ X-RateLimit-Window: 3600
 ## Security Considerations
 
 ### Authentication
+
 - **JWT Tokens**: Bearer token authentication
 - **Token Expiration**: 30 minutes default
 - **Refresh Tokens**: Available for token renewal
 - **Cross-system Tokens**: Limited scope and duration
 
 ### Input Validation
+
 - **Request Validation**: Pydantic model validation
 - **SQL Injection Prevention**: SQLAlchemy ORM usage
 - **XSS Prevention**: Input sanitization
 - **CSRF Protection**: SameSite cookie settings
 
 ### API Security
+
 - **HTTPS Only**: TLS encryption required
 - **CORS Configuration**: Restricted origins
 - **Rate Limiting**: Request throttling
@@ -791,6 +852,7 @@ X-RateLimit-Window: 3600
 ## Database Schema
 
 ### Core Tables
+
 - **users**: User account information
 - **workflows**: Workflow definitions and metadata
 - **workflow_executions**: Execution instances and status
@@ -801,6 +863,7 @@ X-RateLimit-Window: 3600
 - **permissions**: System permissions
 
 ### Relationships
+
 ```sql
 -- Users can have multiple workflows
 workflows.created_by -> users.id
@@ -821,18 +884,21 @@ user_roles.role_id -> roles.id
 ## Performance Optimization
 
 ### Database Optimization
+
 - **Connection Pooling**: SQLAlchemy connection pool
 - **Query Optimization**: Eager loading, indexing
 - **Read Replicas**: Separate read/write connections
 - **Query Caching**: Redis-based query result caching
 
 ### API Optimization
+
 - **Response Caching**: Redis-based response caching
 - **Pagination**: Limit large result sets
 - **Field Selection**: Optional field filtering
 - **Async Processing**: Background task execution
 
 ### Monitoring
+
 - **Prometheus Metrics**: Request metrics collection
 - **Performance Tracking**: Response time monitoring
 - **Resource Monitoring**: CPU, memory, database metrics
@@ -843,12 +909,14 @@ user_roles.role_id -> roles.id
 ## Testing
 
 ### Test Categories
+
 - **Unit Tests**: Individual function testing
 - **Integration Tests**: API endpoint testing
 - **Database Tests**: Database operation testing
 - **Authentication Tests**: Security testing
 
 ### Test Commands
+
 ```bash
 # Run all tests
 pytest
@@ -864,6 +932,7 @@ pytest tests/integration/
 ```
 
 ### Test Database
+
 - **SQLite In-Memory**: Fast test execution
 - **Test Fixtures**: Reusable test data
 - **Mock Services**: External service mocking

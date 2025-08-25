@@ -136,7 +136,7 @@ cat performance-results.json
 ### Test Coverage Requirements
 
 | Component | Minimum Coverage |
-|-----------|------------------|
+| --------- | ---------------- |
 | Frontend  | 80%              |
 | Backend   | 75%              |
 | Overall   | 78%              |
@@ -144,11 +144,11 @@ cat performance-results.json
 ### Performance Thresholds
 
 | Metric | Threshold | Critical |
-|--------|-----------|----------|
-| FCP     | < 1.8s   | < 3.0s  |
-| LCP     | < 2.5s   | < 4.0s  |
-| FID     | < 100ms  | < 300ms |
-| CLS     | < 0.1    | < 0.25  |
+| ------ | --------- | -------- |
+| FCP    | < 1.8s    | < 3.0s   |
+| LCP    | < 2.5s    | < 4.0s   |
+| FID    | < 100ms   | < 300ms  |
+| CLS    | < 0.1     | < 0.25   |
 
 ### Security Requirements
 

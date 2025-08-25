@@ -1,9 +1,10 @@
 # Project Structure & Organization
 
 ## Root Level Organization
+
 ```
 ├── backend/                 # FastAPI backend application
-├── frontend/               # React frontend application  
+├── frontend/               # React frontend application
 ├── infra/                  # Infrastructure and deployment configs
 ├── .kiro/                  # Kiro AI assistant configuration
 ├── docker-compose.yml      # Development environment setup
@@ -12,6 +13,7 @@
 ```
 
 ## Backend Structure (`backend/`)
+
 ```
 backend/
 ├── app/                    # Main application package
@@ -34,6 +36,7 @@ backend/
 ```
 
 ## Frontend Structure (`frontend/`)
+
 ```
 frontend/
 ├── src/                   # Source code
@@ -65,6 +68,7 @@ frontend/
 ## Architecture Patterns
 
 ### Backend Patterns
+
 - **Layered Architecture**: API → Services → Models → Database
 - **Dependency Injection**: FastAPI's built-in DI for database sessions
 - **Repository Pattern**: Models handle data access logic
@@ -72,24 +76,28 @@ frontend/
 - **Environment-based Config**: Database URLs and API keys from environment
 
 ### Frontend Patterns
+
 - **Component-based Architecture**: React functional components with hooks
 - **TypeScript**: Strong typing throughout the application
 - **CSS-in-JS**: Tailwind utility classes for styling
 - **Single Page Application**: React Router for client-side routing
 
 ### Database Patterns
+
 - **ORM**: SQLAlchemy with declarative base models
 - **Migrations**: Alembic for version-controlled schema changes
 - **Naming Conventions**: Consistent constraint naming via metadata
 - **Test Isolation**: SQLite in-memory database for tests
 
 ## File Naming Conventions
+
 - **Python**: snake_case for files, modules, functions, variables
 - **TypeScript**: PascalCase for components, camelCase for functions/variables
 - **Database**: snake_case for table and column names
 - **API Routes**: kebab-case for URL paths
 
 ## Import Organization
+
 - **Python**: Standard library → Third party → Local imports (isort configured)
 - **TypeScript**: External libraries → Internal modules → Relative imports
 - **Absolute Imports**: Use relative imports for same-directory files

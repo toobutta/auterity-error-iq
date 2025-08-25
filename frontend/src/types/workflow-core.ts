@@ -18,7 +18,7 @@ export interface Workflow {
   metadata?: WorkflowMetadata;
 }
 
-export type WorkflowStatus = 'draft' | 'active' | 'inactive' | 'archived';
+export type WorkflowStatus = "draft" | "active" | "inactive" | "archived";
 
 export interface WorkflowNode {
   id: string;
@@ -50,14 +50,14 @@ export interface Position {
 }
 
 export type NodeType =
-  | 'input'
-  | 'output'
-  | 'process'
-  | 'decision'
-  | 'api'
-  | 'ai'
-  | 'custom'
-  | 'automotive';
+  | "input"
+  | "output"
+  | "process"
+  | "decision"
+  | "api"
+  | "ai"
+  | "custom"
+  | "automotive";
 
 export interface WorkflowNodeData {
   label: string;
@@ -72,7 +72,12 @@ export interface NodeConfiguration {
   [key: string]: ConfigValue;
 }
 
-export type ConfigValue = string | number | boolean | Record<string, unknown> | ConfigValue[];
+export type ConfigValue =
+  | string
+  | number
+  | boolean
+  | Record<string, unknown>
+  | ConfigValue[];
 
 export interface NodeInput {
   id: string;
@@ -90,11 +95,17 @@ export interface NodeOutput {
   description?: string;
 }
 
-export type InputType = 'string' | 'number' | 'boolean' | 'object' | 'array' | 'file';
+export type InputType =
+  | "string"
+  | "number"
+  | "boolean"
+  | "object"
+  | "array"
+  | "file";
 export type OutputType = InputType;
 
 export interface ValidationRule {
-  type: 'required' | 'minLength' | 'maxLength' | 'pattern' | 'custom';
+  type: "required" | "minLength" | "maxLength" | "pattern" | "custom";
   value?: unknown;
   message: string;
 }
@@ -108,8 +119,13 @@ export interface WorkflowMetadata {
 }
 
 export interface AutomotiveContext {
-  dealership_role: 'sales' | 'service' | 'parts' | 'finance' | 'management';
-  customer_journey_stage: 'lead' | 'prospect' | 'customer' | 'service' | 'retention';
+  dealership_role: "sales" | "service" | "parts" | "finance" | "management";
+  customer_journey_stage:
+    | "lead"
+    | "prospect"
+    | "customer"
+    | "service"
+    | "retention";
   integration_systems: string[];
 }
 
@@ -134,7 +150,12 @@ export interface WorkflowExecution {
   steps: ExecutionStep[];
 }
 
-export type ExecutionStatus = 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+export type ExecutionStatus =
+  | "pending"
+  | "running"
+  | "completed"
+  | "failed"
+  | "cancelled";
 
 export interface ExecutionStep {
   id: string;
@@ -165,4 +186,4 @@ export interface LogEntry {
   metadata?: Record<string, unknown>;
 }
 
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+export type LogLevel = "debug" | "info" | "warn" | "error" | "fatal";

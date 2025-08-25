@@ -1,6 +1,7 @@
 # [CLINE-TASK] RelayCore Admin Interface Implementation
 
 ## Task Assignment
+
 **Assigned Tool**: Cline
 **Priority**: High
 **Estimated Time**: 3-4 hours
@@ -8,9 +9,11 @@
 **Dependencies**: Amazon Q must fix file corruption first
 
 ## Component Overview
+
 Implement a comprehensive RelayCore administration interface for managing AI routing, provider configurations, budget tracking, and system monitoring.
 
 ## Props Interface
+
 ```typescript
 interface RelayCoreAdminInterfaceProps {
   onBudgetUpdate: (budget: number) => void;
@@ -19,7 +22,7 @@ interface RelayCoreAdminInterfaceProps {
 
 interface ProviderStatus {
   name: string;
-  status: 'online' | 'offline' | 'degraded';
+  status: "online" | "offline" | "degraded";
   responseTime: number;
   errorRate: number;
   costPerToken: number;
@@ -44,7 +47,8 @@ interface SystemMetrics {
 ```
 
 ## API Integration Details
-- **Endpoints**: 
+
+- **Endpoints**:
   - `GET /api/v1/relaycore/providers` - Provider status and metrics
   - `GET /api/v1/relaycore/budget` - Budget tracking data
   - `GET /api/v1/relaycore/metrics` - System performance metrics
@@ -52,6 +56,7 @@ interface SystemMetrics {
   - `PUT /api/v1/relaycore/budget` - Update budget limits
 
 ## Styling Requirements
+
 - **Framework**: Tailwind CSS with existing design system
 - **Layout**: Grid-based responsive design
 - **Components**: Use existing shared components from `shared/components/`
@@ -61,6 +66,7 @@ interface SystemMetrics {
 ## Component Structure
 
 ### 1. Provider Management Section
+
 ```typescript
 // Provider status cards with real-time updates
 const ProviderCard = ({ provider }: { provider: ProviderStatus }) => (
@@ -80,6 +86,7 @@ const ProviderCard = ({ provider }: { provider: ProviderStatus }) => (
 ```
 
 ### 2. Budget Tracking Section
+
 ```typescript
 // Budget overview with spending analytics
 const BudgetOverview = ({ metrics }: { metrics: BudgetMetrics }) => (
@@ -91,8 +98,8 @@ const BudgetOverview = ({ metrics }: { metrics: BudgetMetrics }) => (
         <span className="font-semibold">{formatCurrency(metrics.totalBudget)}</span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2">
-        <div 
-          className="bg-blue-600 h-2 rounded-full" 
+        <div
+          className="bg-blue-600 h-2 rounded-full"
           style={{ width: `${(metrics.usedBudget / metrics.totalBudget) * 100}%` }}
         />
       </div>
@@ -106,35 +113,37 @@ const BudgetOverview = ({ metrics }: { metrics: BudgetMetrics }) => (
 ```
 
 ### 3. System Metrics Dashboard
+
 ```typescript
 // Real-time system performance metrics
 const SystemDashboard = ({ metrics }: { metrics: SystemMetrics }) => (
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    <MetricCard 
+    <MetricCard
       icon={<TrendingUp className="h-5 w-5" />}
-      label="Total Requests" 
-      value={metrics.totalRequests.toLocaleString()} 
+      label="Total Requests"
+      value={metrics.totalRequests.toLocaleString()}
     />
-    <MetricCard 
+    <MetricCard
       icon={<Users className="h-5 w-5" />}
-      label="Success Rate" 
-      value={`${metrics.successRate}%`} 
+      label="Success Rate"
+      value={`${metrics.successRate}%`}
     />
-    <MetricCard 
+    <MetricCard
       icon={<Server className="h-5 w-5" />}
-      label="Avg Latency" 
-      value={`${metrics.averageLatency}ms`} 
+      label="Avg Latency"
+      value={`${metrics.averageLatency}ms`}
     />
-    <MetricCard 
+    <MetricCard
       icon={<Shield className="h-5 w-5" />}
-      label="Uptime" 
-      value={formatUptime(metrics.uptime)} 
+      label="Uptime"
+      value={formatUptime(metrics.uptime)}
     />
   </div>
 );
 ```
 
 ## Error Handling Requirements
+
 - **Network Errors**: Display user-friendly error messages for API failures
 - **Loading States**: Show skeleton loaders while fetching data
 - **Empty States**: Handle cases where no data is available
@@ -142,6 +151,7 @@ const SystemDashboard = ({ metrics }: { metrics: SystemMetrics }) => (
 - **Retry Logic**: Implement retry mechanisms for failed requests
 
 ## State Management
+
 ```typescript
 const RelayCoreAdminInterface: React.FC<RelayCoreAdminInterfaceProps> = ({
   onBudgetUpdate,
@@ -190,17 +200,20 @@ const RelayCoreAdminInterface: React.FC<RelayCoreAdminInterfaceProps> = ({
 ## Technical Context
 
 ### Existing Code Patterns
+
 - **API Client**: Use existing patterns from `frontend/src/api/monitoring.ts`
 - **Components**: Leverage `shared/components/MetricCard.tsx` and `StatusIndicator.tsx`
 - **Formatting**: Use utilities from `shared/utils/formatters.ts`
 - **Styling**: Follow patterns from existing dashboard components
 
 ### Integration Points
+
 - **Monitoring API**: Integrate with existing monitoring endpoints
 - **WebSocket**: Use existing WebSocket connection for real-time updates
 - **Error Handling**: Use existing error boundary and toast patterns
 
 ## Success Criteria
+
 - [ ] Component renders without TypeScript errors
 - [ ] All provider status cards display correctly with real-time updates
 - [ ] Budget tracking shows accurate spending data and progress bars
@@ -212,19 +225,23 @@ const RelayCoreAdminInterface: React.FC<RelayCoreAdminInterfaceProps> = ({
 - [ ] Component integrates seamlessly with existing AutoMatrix design system
 
 ## Testing Strategy
+
 - **Unit Tests**: Test component rendering and state management
 - **Integration Tests**: Test API integration and data flow
 - **User Interaction Tests**: Test form submissions and button clicks
 - **Responsive Tests**: Verify layout on different screen sizes
 
 ## Files to Create/Modify
+
 - `frontend/src/components/RelayCoreAdminInterface.tsx` - Main component (fix and implement)
 - `frontend/src/api/relaycore.ts` - API client functions (if not exists)
 - `frontend/src/types/relaycore.ts` - TypeScript type definitions
 - `frontend/src/components/__tests__/RelayCoreAdminInterface.test.tsx` - Component tests
 
 ## Priority Justification
+
 This component is essential for the RelayCore system administration and monitoring. It provides critical functionality for managing AI providers, tracking costs, and monitoring system performance.
 
 ## Handoff from Amazon Q
+
 This task should only begin after Amazon Q has successfully fixed the file corruption in `RelayCoreAdminInterface.tsx`. Cline should verify the file compiles correctly before beginning implementation.

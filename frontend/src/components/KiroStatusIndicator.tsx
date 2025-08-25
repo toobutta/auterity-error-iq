@@ -1,11 +1,13 @@
-import React from 'react';
-import { getEnabledKiroModules } from '../kiro/register';
+import React from "react";
+import { getEnabledKiroModules } from "../kiro/register";
 
 interface KiroStatusIndicatorProps {
   className?: string;
 }
 
-export const KiroStatusIndicator: React.FC<KiroStatusIndicatorProps> = ({ className = '' }) => {
+export const KiroStatusIndicator: React.FC<KiroStatusIndicatorProps> = ({
+  className = "",
+}) => {
   const enabledModules = getEnabledKiroModules();
   const isActive = enabledModules.length > 0;
 
@@ -18,7 +20,7 @@ export const KiroStatusIndicator: React.FC<KiroStatusIndicatorProps> = ({ classN
         <span className="text-xs text-gray-600 font-medium">Kiro Active</span>
       </div>
       <div className="text-xs text-gray-500">
-        {enabledModules.length} module{enabledModules.length !== 1 ? 's' : ''}
+        {enabledModules.length} module{enabledModules.length !== 1 ? "s" : ""}
       </div>
     </div>
   );

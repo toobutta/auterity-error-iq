@@ -1,8 +1,8 @@
 # CI/CD Pipeline Documentation
 
-**Document Version**: 1.0  
-**Last Updated**: August 8, 2025  
-**Maintained By**: DevOps Team  
+**Document Version**: 1.0
+**Last Updated**: August 8, 2025
+**Maintained By**: DevOps Team
 
 ## Overview
 
@@ -36,14 +36,17 @@ The Auterity Unified Platform uses GitHub Actions for continuous integration and
 ## Current Pipeline Configuration
 
 ### File Location
+
 - **Primary**: `.github/workflows/ci.yml`
 - **Deployment**: `.github/workflows/deploy.yml` (if exists)
 
 ### Pipeline Jobs
 
 #### 1. Setup Job
-**Purpose**: Generate cache keys and prepare environment  
+
+**Purpose**: Generate cache keys and prepare environment
 **Outputs**:
+
 - `backend-cache-key`: Cache key for Python dependencies
 - `frontend-cache-key`: Cache key for Node.js dependencies
 
@@ -64,11 +67,13 @@ setup:
 ```
 
 #### 2. Backend Test Job
-**Purpose**: Test Python backend components  
-**Dependencies**: setup job  
-**Environment**: Ubuntu Latest with Python 3.12  
+
+**Purpose**: Test Python backend components
+**Dependencies**: setup job
+**Environment**: Ubuntu Latest with Python 3.12
 
 **Steps**:
+
 1. **Checkout code** - `actions/checkout@v4`
 2. **Setup Python** - `actions/setup-python@v4`
    - Python version: 3.12
@@ -81,11 +86,13 @@ setup:
 7. **Upload coverage** - Coverage reports to codecov (if configured)
 
 #### 3. Frontend Test Job
-**Purpose**: Test React frontend components  
-**Dependencies**: setup job  
-**Environment**: Ubuntu Latest with Node.js 18  
+
+**Purpose**: Test React frontend components
+**Dependencies**: setup job
+**Environment**: Ubuntu Latest with Node.js 18
 
 **Steps**:
+
 1. **Checkout code** - `actions/checkout@v4`
 2. **Setup Node.js** - `actions/setup-node@v4`
    - Node version: 18
@@ -98,10 +105,12 @@ setup:
 8. **Upload build artifacts** - For deployment use
 
 #### 4. Systems Integration Tests
-**Purpose**: Test RelayCore and NeuroWeaver systems  
-**Dependencies**: backend-test, frontend-test  
+
+**Purpose**: Test RelayCore and NeuroWeaver systems
+**Dependencies**: backend-test, frontend-test
 
 **RelayCore Tests**:
+
 ```bash
 cd systems/relaycore
 npm ci
@@ -111,6 +120,7 @@ npm run build
 ```
 
 **NeuroWeaver Tests**:
+
 ```bash
 cd systems/neuroweaver/backend
 pip install -r requirements.txt
@@ -127,24 +137,28 @@ npm run build
 ## Quality Gates
 
 ### 1. Code Quality Checks
+
 - **Python Linting**: flake8 with custom configuration
 - **Python Formatting**: black with line length 88
 - **TypeScript Linting**: ESLint with React and TypeScript rules
 - **Code Formatting**: Prettier for consistent formatting
 
 ### 2. Testing Requirements
+
 - **Unit Tests**: Minimum 80% coverage required
 - **Integration Tests**: Critical path coverage
 - **Frontend Tests**: Component and hook testing
 - **API Tests**: Endpoint validation and error handling
 
 ### 3. Security Scanning
+
 - **Dependency Scanning**: npm audit and pip-audit
 - **SAST**: CodeQL analysis for security vulnerabilities
 - **Secret Scanning**: GitHub secret scanning enabled
 - **Container Scanning**: Docker image vulnerability scanning
 
 ### 4. Performance Checks
+
 - **Bundle Size**: Frontend bundle size monitoring
 - **Build Time**: Pipeline execution time tracking
 - **Resource Usage**: Memory and CPU usage validation
@@ -154,6 +168,7 @@ npm run build
 ## Deployment Workflow
 
 ### Development Branch Workflow
+
 1. **Feature Branch Creation** from main
 2. **Development** with local testing
 3. **Pull Request** creation
@@ -165,6 +180,7 @@ npm run build
 6. **Merge** to main branch
 
 ### Production Deployment
+
 1. **Main Branch Push** triggers CI pipeline
 2. **Full Test Suite** execution
 3. **Build Artifacts** generation
@@ -178,6 +194,7 @@ npm run build
 ## Environment Configuration
 
 ### Environment Variables
+
 ```bash
 # Database Configuration
 DATABASE_URL=postgresql://user:pass@host:5432/db
@@ -198,6 +215,7 @@ LOG_LEVEL=INFO|DEBUG|ERROR
 ```
 
 ### Secrets Management
+
 - **GitHub Secrets**: Store sensitive configuration
 - **Environment-specific**: Different secrets per environment
 - **Rotation Policy**: Regular secret rotation procedures
@@ -208,16 +226,19 @@ LOG_LEVEL=INFO|DEBUG|ERROR
 ## Caching Strategy
 
 ### 1. Dependency Caching
+
 - **Python Dependencies**: Monthly cache rotation
 - **Node.js Dependencies**: Monthly cache rotation
 - **Cache Key Strategy**: Hash of dependency files + date
 
 ### 2. Build Caching
+
 - **Docker Layers**: Multi-stage build optimization
 - **Build Artifacts**: Reuse between jobs
 - **Test Results**: Cache test outcomes for unchanged code
 
 ### 3. Cache Invalidation
+
 - **Dependency Changes**: Automatic cache invalidation
 - **Monthly Rotation**: Prevent stale cache issues
 - **Manual Invalidation**: Override mechanism available
@@ -227,18 +248,21 @@ LOG_LEVEL=INFO|DEBUG|ERROR
 ## Monitoring and Alerting
 
 ### 1. Pipeline Monitoring
+
 - **Success/Failure Rates**: Track pipeline reliability
 - **Execution Time**: Monitor performance degradation
 - **Resource Usage**: CPU and memory consumption
 - **Queue Times**: Job queue and runner availability
 
 ### 2. Deployment Monitoring
+
 - **Deployment Success**: Track deployment outcomes
 - **Rollback Frequency**: Monitor deployment stability
 - **Health Checks**: Post-deployment validation
 - **Performance Impact**: Monitor application performance
 
 ### 3. Alert Configuration
+
 ```yaml
 # GitHub Actions Alerts
 - Pipeline Failures
@@ -260,13 +284,16 @@ channels:
 ### Common Issues
 
 #### 1. Pipeline Failures
+
 **Cache Misses**:
+
 ```bash
 # Clear cache manually
 gh api repos/toobutta/auterity-error-iq/actions/caches --jq '.actions_caches[] | select(.key | contains("backend")) | .id' | xargs -I {} gh api --method DELETE repos/toobutta/auterity-error-iq/actions/caches/{}
 ```
 
 **Dependency Conflicts**:
+
 ```bash
 # Update requirements files
 pip freeze > requirements.txt
@@ -274,6 +301,7 @@ npm audit fix
 ```
 
 **Test Failures**:
+
 ```bash
 # Run tests locally first
 cd backend && pytest -v
@@ -281,23 +309,29 @@ cd frontend && npm test
 ```
 
 #### 2. Deployment Issues
+
 **Environment Variables**:
+
 - Verify all required secrets are configured
 - Check environment-specific variable values
 - Validate secret formatting and encoding
 
 **Permission Issues**:
+
 - Verify GitHub token permissions
 - Check deployment target access
 - Validate service account credentials
 
 #### 3. Performance Issues
+
 **Slow Builds**:
+
 - Review cache hit rates
 - Optimize Docker layer caching
 - Consider parallel job execution
 
 **Resource Limits**:
+
 - Monitor runner resource usage
 - Consider upgrading to larger runners
 - Optimize test execution time
@@ -307,18 +341,21 @@ cd frontend && npm test
 ## Pipeline Optimization
 
 ### 1. Performance Improvements
+
 - **Parallel Job Execution**: Independent jobs run concurrently
 - **Conditional Workflows**: Skip unnecessary steps
 - **Incremental Testing**: Test only changed components
 - **Matrix Builds**: Test multiple configurations efficiently
 
 ### 2. Cost Optimization
+
 - **Runner Selection**: Use appropriate runner sizes
 - **Job Timeout**: Set reasonable timeout limits
 - **Cache Optimization**: Maximize cache hit rates
 - **Conditional Execution**: Skip redundant operations
 
 ### 3. Reliability Improvements
+
 - **Retry Logic**: Automatic retry for flaky tests
 - **Health Checks**: Comprehensive post-deployment validation
 - **Rollback Procedures**: Automated rollback on failure
@@ -329,18 +366,21 @@ cd frontend && npm test
 ## Maintenance Procedures
 
 ### 1. Regular Maintenance
+
 - **Weekly**: Review pipeline performance metrics
 - **Monthly**: Update dependencies and cache rotation
 - **Quarterly**: Security audit and secret rotation
 - **Annually**: Architecture review and optimization
 
 ### 2. Updates and Upgrades
+
 - **Action Updates**: Keep GitHub Actions up to date
 - **Runner Updates**: Maintain runner environments
 - **Tool Updates**: Update linting and testing tools
 - **Security Updates**: Apply security patches promptly
 
 ### 3. Backup and Recovery
+
 - **Configuration Backup**: Version control all configurations
 - **Secret Backup**: Secure backup of secrets and keys
 - **Rollback Procedures**: Documented rollback processes
@@ -351,18 +391,21 @@ cd frontend && npm test
 ## Team Training
 
 ### 1. Pipeline Usage
+
 - **Developer Onboarding**: Pipeline overview and usage
 - **Debugging Skills**: Troubleshooting failed pipelines
 - **Best Practices**: Code quality and testing standards
 - **Security Awareness**: Secure development practices
 
 ### 2. Advanced Topics
+
 - **Custom Actions**: Creating reusable workflow components
 - **Performance Tuning**: Optimizing pipeline performance
 - **Security Hardening**: Advanced security configurations
 - **Monitoring Setup**: Implementing comprehensive monitoring
 
 ### 3. Emergency Procedures
+
 - **Incident Response**: Pipeline failure response procedures
 - **Rollback Execution**: Emergency rollback procedures
 - **Communication**: Incident communication protocols

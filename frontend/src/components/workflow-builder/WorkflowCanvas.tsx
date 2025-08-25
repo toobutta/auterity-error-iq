@@ -1,5 +1,5 @@
-import React, { useCallback, useRef, useEffect, useState } from 'react';
-import { useDrop } from 'react-dnd';
+import React, { useCallback, useRef, useEffect, useState } from "react";
+import { useDrop } from "react-dnd";
 import {
   ReactFlow,
   Background,
@@ -14,17 +14,21 @@ import {
   Panel,
   useReactFlow,
   ReactFlowProvider,
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
-import { v4 as uuidv4 } from 'uuid';
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import { v4 as uuidv4 } from "uuid";
 
-import { WorkflowCanvasProps, WorkflowNode, DragItem } from '../../types/workflow-builder';
-import { NodeData as LegacyNodeData } from '../../types/workflow';
+import {
+  WorkflowCanvasProps,
+  WorkflowNode,
+  DragItem,
+} from "../../types/workflow-builder";
+import { NodeData as LegacyNodeData } from "../../types/workflow";
 
 // Import existing node components
-import { StartNode } from '../nodes/StartNode';
-import { AIProcessNode } from '../nodes/AIProcessNode';
-import { EndNode } from '../nodes/EndNode';
+import { StartNode } from "../nodes/StartNode";
+import { AIProcessNode } from "../nodes/AIProcessNode";
+import { EndNode } from "../nodes/EndNode";
 
 // Import automotive node components
 import {
@@ -44,7 +48,7 @@ import {
   PriceOptimizationNode,
   CustomerSentimentNode,
   RecommendationEngineNode,
-} from './nodes';
+} from "./nodes";
 
 const nodeTypes: NodeTypes = {
   // Legacy nodes
@@ -98,7 +102,7 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
 
   // Drop zone for dragging nodes from palette
   const [{ isOver, canDrop }, drop] = useDrop({
-    accept: 'workflow-node',
+    accept: "workflow-node",
     drop: (item: DragItem, monitor) => {
       const clientOffset = monitor.getClientOffset();
       if (!clientOffset || !reactFlowWrapper.current || !reactFlowInstance) {
@@ -122,7 +126,7 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
   const addNodeFromTemplate = useCallback(
     (
       template: { type: string; name: string; category: string },
-      position: { x: number; y: number }
+      position: { x: number; y: number },
     ) => {
       const nodeId = uuidv4();
 
@@ -142,7 +146,7 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
 
       setNodes((nds) => [...nds, newNode]);
     },
-    [setNodes]
+    [setNodes],
   );
 
   const onConnect = useCallback(
@@ -151,11 +155,11 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
         ...params,
         id: uuidv4(),
         animated: true,
-        style: { stroke: '#3b82f6', strokeWidth: 2 },
+        style: { stroke: "#3b82f6", strokeWidth: 2 },
       };
       setEdges((eds) => addEdge(newEdge, eds));
     },
-    [setEdges]
+    [setEdges],
   );
 
   const onNodeClick = useCallback(
@@ -164,15 +168,15 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
       const workflowNode: WorkflowNode = {
         id: node.id,
         type:
-          node.data.type === 'start'
-            ? 'trigger'
-            : node.data.type === 'end'
-              ? 'action'
-              : node.data.type.includes('condition')
-                ? 'condition'
-                : node.data.type.includes('ai')
-                  ? 'ai_step'
-                  : 'action',
+          node.data.type === "start"
+            ? "trigger"
+            : node.data.type === "end"
+              ? "action"
+              : node.data.type.includes("condition")
+                ? "condition"
+                : node.data.type.includes("ai")
+                  ? "ai_step"
+                  : "action",
         position: node.position,
         data: {
           label: node.data.label,
@@ -187,7 +191,7 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
 
       onNodeSelect(workflowNode);
     },
-    [onNodeSelect]
+    [onNodeSelect],
   );
 
   const onPaneClick = useCallback(() => {
@@ -198,7 +202,10 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
     if (selectedNode) {
       setNodes((nds) => nds.filter((node) => node.id !== selectedNode.id));
       setEdges((eds) =>
-        eds.filter((edge) => edge.source !== selectedNode.id && edge.target !== selectedNode.id)
+        eds.filter(
+          (edge) =>
+            edge.source !== selectedNode.id && edge.target !== selectedNode.id,
+        ),
       );
       onNodeSelect(null);
     }
@@ -207,35 +214,37 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Delete' || event.key === 'Backspace') {
-        if (selectedNode && document.activeElement?.tagName !== 'INPUT') {
+      if (event.key === "Delete" || event.key === "Backspace") {
+        if (selectedNode && document.activeElement?.tagName !== "INPUT") {
           event.preventDefault();
           deleteSelectedNode();
         }
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [selectedNode, deleteSelectedNode]);
 
   // Combine refs for drop functionality
   const combinedRef = useCallback(
     (node: HTMLDivElement | null) => {
       if (reactFlowWrapper.current !== node) {
-        (reactFlowWrapper as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        (
+          reactFlowWrapper as React.MutableRefObject<HTMLDivElement | null>
+        ).current = node;
       }
       drop(node);
     },
-    [drop]
+    [drop],
   );
 
   const handleSave = useCallback(() => {
     const workflow = {
       id: workflowId || uuidv4(),
-      name: 'Automotive Workflow',
-      description: 'Auto-generated workflow',
-      category: 'sales' as const,
+      name: "Automotive Workflow",
+      description: "Auto-generated workflow",
+      category: "sales" as const,
       steps: nodes.map((node) => ({
         id: node.id,
         type: node.data.type,
@@ -253,7 +262,7 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
       triggers: [],
       variables: [],
       version: 1,
-      status: 'draft' as const,
+      status: "draft" as const,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -264,9 +273,9 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
   const handleTest = useCallback(() => {
     const workflow = {
       id: workflowId || uuidv4(),
-      name: 'Automotive Workflow',
-      description: 'Auto-generated workflow',
-      category: 'sales' as const,
+      name: "Automotive Workflow",
+      description: "Auto-generated workflow",
+      category: "sales" as const,
       steps: nodes.map((node) => ({
         id: node.id,
         type: node.data.type,
@@ -284,7 +293,7 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
       triggers: [],
       variables: [],
       version: 1,
-      status: 'draft' as const,
+      status: "draft" as const,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -298,7 +307,9 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
       {isOver && canDrop && (
         <div className="absolute inset-0 bg-blue-100 bg-opacity-50 border-2 border-dashed border-blue-400 z-10 flex items-center justify-center">
           <div className="bg-white p-4 rounded-lg shadow-lg">
-            <div className="text-blue-600 text-lg font-medium">Drop node here</div>
+            <div className="text-blue-600 text-lg font-medium">
+              Drop node here
+            </div>
           </div>
         </div>
       )}
@@ -316,9 +327,9 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
         fitView
         attributionPosition="bottom-left"
         className="bg-gray-50"
-        connectionLineStyle={{ stroke: '#3b82f6', strokeWidth: 2 }}
+        connectionLineStyle={{ stroke: "#3b82f6", strokeWidth: 2 }}
         defaultEdgeOptions={{
-          style: { stroke: '#3b82f6', strokeWidth: 2 },
+          style: { stroke: "#3b82f6", strokeWidth: 2 },
           animated: true,
         }}
       >
@@ -328,33 +339,33 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
           className="bg-white border border-gray-200 rounded-lg shadow-sm"
           nodeColor={(node) => {
             switch (node.data?.type) {
-              case 'start':
-              case 'customer_inquiry':
-              case 'inventory_update':
-              case 'service_appointment':
-              case 'lead_generation':
-                return '#fbbf24'; // Yellow for triggers
-              case 'send_email':
-              case 'update_crm':
-              case 'schedule_appointment':
-              case 'generate_quote':
-              case 'inventory_check':
-                return '#3b82f6'; // Blue for actions
-              case 'customer_type':
-              case 'budget_range':
-              case 'vehicle_preference':
-              case 'geographic_location':
-                return '#8b5cf6'; // Purple for conditions
-              case 'lead_qualification':
-              case 'price_optimization':
-              case 'customer_sentiment':
-              case 'recommendation_engine':
-              case 'ai_process':
-                return '#10b981'; // Green for AI
-              case 'end':
-                return '#ef4444'; // Red for end
+              case "start":
+              case "customer_inquiry":
+              case "inventory_update":
+              case "service_appointment":
+              case "lead_generation":
+                return "#fbbf24"; // Yellow for triggers
+              case "send_email":
+              case "update_crm":
+              case "schedule_appointment":
+              case "generate_quote":
+              case "inventory_check":
+                return "#3b82f6"; // Blue for actions
+              case "customer_type":
+              case "budget_range":
+              case "vehicle_preference":
+              case "geographic_location":
+                return "#8b5cf6"; // Purple for conditions
+              case "lead_qualification":
+              case "price_optimization":
+              case "customer_sentiment":
+              case "recommendation_engine":
+              case "ai_process":
+                return "#10b981"; // Green for AI
+              case "end":
+                return "#ef4444"; // Red for end
               default:
-                return '#6b7280'; // Gray for unknown
+                return "#6b7280"; // Gray for unknown
             }
           }}
         />
@@ -367,7 +378,12 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
                 onClick={handleSave}
                 className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors flex items-center space-x-1"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -382,7 +398,12 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
                 disabled={nodes.length === 0}
                 className="px-3 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-1"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -399,7 +420,12 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
                 onClick={deleteSelectedNode}
                 className="w-full px-3 py-1.5 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors flex items-center justify-center space-x-1"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -428,7 +454,9 @@ const WorkflowCanvasInternal: React.FC<WorkflowCanvasInternalProps> = ({
               {selectedNode && (
                 <div className="flex items-center space-x-2 pt-1 border-t border-gray-200">
                   <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
-                  <span className="font-medium">Selected: {selectedNode.data.label}</span>
+                  <span className="font-medium">
+                    Selected: {selectedNode.data.label}
+                  </span>
                 </div>
               )}
             </div>

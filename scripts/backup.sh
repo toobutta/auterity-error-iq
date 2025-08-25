@@ -52,21 +52,21 @@ create_backup_directory() {
 
 backup_database() {
     log_info "Backing up PostgreSQL database..."
-    
+
     docker-compose -f docker-compose.prod.yml exec -T postgres pg_dump \
         -U "$POSTGRES_USER" \
         -d "$POSTGRES_DB" \
         --clean --if-exists --create > "$DB_BACKUP_FILE"
-    
+
     # Compress the backup
     gzip "$DB_BACKUP_FILE"
-    
+
     log_success "Database backup completed: ${DB_BACKUP_FILE}.gz"
 }
 
 backup_volumes() {
     log_info "Backing up Docker volumes..."
-    
+
     # List of volumes to backup
     VOLUMES=(
         "postgres_data"
@@ -75,41 +75,41 @@ backup_volumes() {
         "prometheus_data"
         "neuroweaver_models"
     )
-    
+
     for volume in "${VOLUMES[@]}"; do
         log_info "Backing up volume: $volume"
-        
+
         docker run --rm \
             -v "${PWD##*/}_${volume}:/source:ro" \
             -v "$PWD/$VOLUME_BACKUP_DIR:/backup" \
             alpine:latest \
             tar czf "/backup/${volume}.tar.gz" -C /source .
-        
+
         log_success "Volume backup completed: ${volume}.tar.gz"
     done
 }
 
 backup_configuration() {
     log_info "Backing up configuration files..."
-    
+
     # Create config backup directory
     CONFIG_BACKUP_DIR="$VOLUME_BACKUP_DIR/config"
     mkdir -p "$CONFIG_BACKUP_DIR"
-    
+
     # Backup important configuration files
     cp .env.production "$CONFIG_BACKUP_DIR/"
     cp docker-compose.prod.yml "$CONFIG_BACKUP_DIR/"
     cp -r nginx/ "$CONFIG_BACKUP_DIR/" 2>/dev/null || true
     cp -r monitoring/ "$CONFIG_BACKUP_DIR/" 2>/dev/null || true
-    
+
     log_success "Configuration backup completed"
 }
 
 create_backup_manifest() {
     log_info "Creating backup manifest..."
-    
+
     MANIFEST_FILE="$BACKUP_DIR/backup_manifest_$TIMESTAMP.txt"
-    
+
     cat > "$MANIFEST_FILE" << EOF
 AutoMatrix AI Hub Backup Manifest
 Generated: $(date)
@@ -141,25 +141,25 @@ EOF
 
 cleanup_old_backups() {
     log_info "Cleaning up old backups (keeping last 7 days)..."
-    
+
     # Remove backups older than 7 days
     find "$BACKUP_DIR" -name "database_backup_*.sql.gz" -mtime +7 -delete 2>/dev/null || true
     find "$BACKUP_DIR" -name "volumes_*" -type d -mtime +7 -exec rm -rf {} + 2>/dev/null || true
     find "$BACKUP_DIR" -name "backup_manifest_*.txt" -mtime +7 -delete 2>/dev/null || true
-    
+
     log_success "Old backups cleaned up"
 }
 
 main() {
     log_info "Starting AutoMatrix AI Hub backup..."
-    
+
     create_backup_directory
     backup_database
     backup_volumes
     backup_configuration
     create_backup_manifest
     cleanup_old_backups
-    
+
     echo
     log_success "🎉 Backup completed successfully!"
     echo "Backup location: $VOLUME_BACKUP_DIR"

@@ -1,15 +1,18 @@
 # AMAZON-Q-TASK: Comprehensive Security Hardening and Compliance
 
 ## Task Assignment
-**Tool**: Amazon Q (Claude 3.7)  
-**Priority**: High  
-**Estimated Time**: 6-8 hours  
+
+**Tool**: Amazon Q (Claude 3.7)
+**Priority**: High
+**Estimated Time**: 6-8 hours
 **Status**: Ready for Implementation
 
 ## Task Overview
+
 Implement comprehensive security hardening and compliance measures across all three systems (AutoMatrix, RelayCore, NeuroWeaver) including data encryption, audit logging, and security validation.
 
 ## Requirements Reference
+
 - **Requirement 4.4**: Security compliance and data protection
 - **Requirement 6.4**: Production security and audit requirements
 
@@ -18,23 +21,29 @@ Implement comprehensive security hardening and compliance measures across all th
 ### 1. Data Encryption Implementation
 
 #### 1.1 Encryption at Rest
+
 **AutoMatrix Backend (FastAPI)**:
+
 - Implement database field-level encryption for sensitive data
 - Encrypt JWT secrets and API keys in environment variables
 - Set up encrypted backup storage for PostgreSQL
 
 **RelayCore (Node.js/TypeScript)**:
+
 - Encrypt API keys and provider credentials
 - Implement encrypted configuration storage
 - Set up encrypted logging for sensitive request data
 
 **NeuroWeaver Backend (FastAPI)**:
+
 - Encrypt model files and training data
 - Implement encrypted model registry storage
 - Set up encrypted user data and authentication tokens
 
 #### 1.2 Encryption in Transit
+
 **All Systems**:
+
 - Enforce HTTPS/TLS 1.3 for all API endpoints
 - Implement certificate management and rotation
 - Set up secure inter-service communication with mTLS
@@ -43,25 +52,30 @@ Implement comprehensive security hardening and compliance measures across all th
 ### 2. Audit Logging and Compliance
 
 #### 2.1 Comprehensive Audit Trail
+
 **AutoMatrix**:
+
 - Log all workflow executions with user context
 - Track AI API calls and responses (sanitized)
 - Monitor authentication and authorization events
 - Record data access and modification events
 
 **RelayCore**:
+
 - Log all AI request routing decisions
 - Track cost optimization and model switching events
 - Monitor provider failover and error events
 - Record steering rule applications and changes
 
 **NeuroWeaver**:
+
 - Log model training and deployment events
 - Track model performance and switching decisions
 - Monitor data access for training and inference
 - Record user interactions with model registry
 
 #### 2.2 Compliance Reporting
+
 - Implement GDPR compliance for user data handling
 - Set up SOC 2 Type II audit trail requirements
 - Create compliance dashboard for audit reporting
@@ -70,6 +84,7 @@ Implement comprehensive security hardening and compliance measures across all th
 ### 3. Security Validation and Testing
 
 #### 3.1 Penetration Testing
+
 - Automated security scanning with OWASP ZAP
 - SQL injection testing across all database interactions
 - Cross-site scripting (XSS) testing for frontend components
@@ -77,12 +92,14 @@ Implement comprehensive security hardening and compliance measures across all th
 - API endpoint security testing
 
 #### 3.2 Vulnerability Assessment
+
 - Dependency vulnerability scanning (npm audit, safety)
 - Container security scanning for Docker images
 - Infrastructure security assessment
 - Code security analysis with static analysis tools
 
 #### 3.3 Security Monitoring
+
 - Real-time intrusion detection system
 - Anomaly detection for unusual API usage patterns
 - Failed authentication attempt monitoring
@@ -91,6 +108,7 @@ Implement comprehensive security hardening and compliance measures across all th
 ## Technical Implementation Details
 
 ### Database Security
+
 ```sql
 -- Enable row-level security
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
@@ -101,7 +119,7 @@ ALTER TABLE ai_requests ENABLE ROW LEVEL SECURITY;
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- Implement field-level encryption for sensitive data
-CREATE OR REPLACE FUNCTION encrypt_sensitive_data(data TEXT) 
+CREATE OR REPLACE FUNCTION encrypt_sensitive_data(data TEXT)
 RETURNS TEXT AS $$
 BEGIN
     RETURN encode(encrypt(data::bytea, 'encryption_key', 'aes'), 'base64');
@@ -110,6 +128,7 @@ $$ LANGUAGE plpgsql;
 ```
 
 ### API Security Headers
+
 ```python
 # FastAPI security headers
 from fastapi.middleware.cors import CORSMiddleware
@@ -136,11 +155,12 @@ async def add_security_headers(request: Request, call_next):
 ```
 
 ### Audit Logging Schema
+
 ```python
 # Audit log model
 class AuditLog(Base):
     __tablename__ = "audit_logs"
-    
+
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
@@ -157,9 +177,10 @@ class AuditLog(Base):
 ## Security Configuration Files
 
 ### 1. Docker Security Configuration
+
 ```yaml
 # docker-compose.security.yml
-version: '3.8'
+version: "3.8"
 services:
   postgres:
     environment:
@@ -171,7 +192,7 @@ services:
       -c ssl=on
       -c ssl_cert_file=/var/lib/postgresql/certs/server.crt
       -c ssl_key_file=/var/lib/postgresql/certs/server.key
-      
+
   redis:
     command: >
       redis-server
@@ -182,6 +203,7 @@ services:
 ```
 
 ### 2. Nginx Security Configuration
+
 ```nginx
 # nginx.security.conf
 server {
@@ -190,14 +212,14 @@ server {
     ssl_certificate_key /etc/ssl/private/server.key;
     ssl_protocols TLSv1.3;
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512;
-    
+
     # Security headers
     add_header X-Frame-Options DENY;
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
     add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'";
-    
+
     # Rate limiting
     limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
     limit_req zone=api burst=20 nodelay;
@@ -207,6 +229,7 @@ server {
 ## Testing and Validation
 
 ### Security Test Suite
+
 ```python
 # test_security.py
 import pytest
@@ -240,6 +263,7 @@ def test_rate_limiting():
 ## Compliance Checklist
 
 ### GDPR Compliance
+
 - [ ] Data processing consent mechanisms
 - [ ] Right to be forgotten implementation
 - [ ] Data portability features
@@ -247,6 +271,7 @@ def test_rate_limiting():
 - [ ] Data breach notification system
 
 ### SOC 2 Type II Requirements
+
 - [ ] Access control implementation
 - [ ] System monitoring and logging
 - [ ] Change management procedures
@@ -254,6 +279,7 @@ def test_rate_limiting():
 - [ ] Data backup and recovery
 
 ### Security Best Practices
+
 - [ ] Principle of least privilege
 - [ ] Defense in depth strategy
 - [ ] Regular security updates
@@ -263,18 +289,21 @@ def test_rate_limiting():
 ## Deliverables
 
 ### 1. Security Implementation
+
 - Encrypted data storage and transmission
 - Comprehensive audit logging system
 - Security monitoring and alerting
 - Vulnerability scanning automation
 
 ### 2. Documentation
+
 - Security architecture documentation
 - Compliance procedures and policies
 - Incident response playbook
 - Security testing procedures
 
 ### 3. Monitoring and Reporting
+
 - Security dashboard with real-time metrics
 - Compliance reporting automation
 - Security incident tracking system
@@ -283,18 +312,21 @@ def test_rate_limiting():
 ## Success Criteria
 
 ### Security Metrics
+
 - Zero high or critical security vulnerabilities
 - 100% HTTPS/TLS encryption coverage
 - Complete audit trail for all sensitive operations
 - Successful penetration testing results
 
 ### Compliance Metrics
+
 - GDPR compliance verification
 - SOC 2 Type II readiness assessment
 - Security policy implementation
 - Regular security training completion
 
 ### Performance Impact
+
 - Encryption overhead < 5% performance impact
 - Audit logging with minimal latency increase
 - Security monitoring without system degradation
@@ -303,21 +335,25 @@ def test_rate_limiting():
 ## Implementation Timeline
 
 ### Phase 1 (2 hours): Encryption Implementation
+
 - Database encryption setup
 - API encryption configuration
 - Certificate management
 
 ### Phase 2 (2 hours): Audit Logging
+
 - Audit log schema implementation
 - Logging middleware setup
 - Compliance reporting framework
 
 ### Phase 3 (2 hours): Security Testing
+
 - Penetration testing automation
 - Vulnerability scanning setup
 - Security monitoring implementation
 
 ### Phase 4 (2 hours): Documentation and Validation
+
 - Security documentation
 - Compliance verification
 - Final security assessment
@@ -325,6 +361,7 @@ def test_rate_limiting():
 ## Handoff Instructions
 
 Upon completion, Amazon Q should:
+
 1. Update task status to completed
 2. Provide security assessment report
 3. Document all implemented security measures
@@ -334,6 +371,7 @@ Upon completion, Amazon Q should:
 ## Emergency Escalation
 
 If critical security vulnerabilities are discovered:
+
 1. Immediately halt all development
 2. Implement emergency security patches
 3. Notify all stakeholders

@@ -4,11 +4,10 @@ import logging
 from contextlib import contextmanager
 from typing import Generator
 
+from app.core.config import settings
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
-
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +16,7 @@ engine = create_engine(
     settings.SQLALCHEMY_DATABASE_URL,
     pool_pre_ping=True,
     pool_recycle=300,
-    echo=settings.DEBUG if hasattr(settings, 'DEBUG') else False
+    echo=settings.DEBUG if hasattr(settings, "DEBUG") else False,
 )
 
 # Session configuration

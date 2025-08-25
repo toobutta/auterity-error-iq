@@ -12,11 +12,11 @@ CREATE TABLE IF NOT EXISTS test_vectors (
 );
 
 -- Insert a test vector to verify functionality
-INSERT INTO test_vectors (embedding, metadata) VALUES 
+INSERT INTO test_vectors (embedding, metadata) VALUES
     ('[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]'::vector, '{"test": true}');
 
 -- Create a simple similarity search function for testing
-CREATE OR REPLACE FUNCTION test_similarity(a vector, b vector) 
+CREATE OR REPLACE FUNCTION test_similarity(a vector, b vector)
 RETURNS float AS $$
 BEGIN
     RETURN 1 - (a <=> b);

@@ -1,7 +1,13 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 
 // Theme types
-export type ThemeMode = 'light' | 'dark' | 'auto';
+export type ThemeMode = "light" | "dark" | "auto";
 
 export interface ThemeConfig {
   mode: ThemeMode;
@@ -12,11 +18,11 @@ export interface ThemeConfig {
   };
   glassmorphism: {
     enabled: boolean;
-    intensity: 'subtle' | 'medium' | 'strong';
+    intensity: "subtle" | "medium" | "strong";
   };
   animations: {
     enabled: boolean;
-    duration: 'fast' | 'normal' | 'slow';
+    duration: "fast" | "normal" | "slow";
   };
 }
 
@@ -32,25 +38,25 @@ interface ThemeContextType {
   updateConfig: (config: Partial<ThemeConfig>) => void;
 
   // System preferences
-  systemPreference: 'light' | 'dark';
+  systemPreference: "light" | "dark";
   isSystemMode: boolean;
 }
 
 // Default theme configuration
 const defaultThemeConfig: ThemeConfig = {
-  mode: 'auto',
+  mode: "auto",
   automotive: {
-    primary: '#2563eb', // Modern blue
-    accent: '#f59e0b', // Amber
-    surface: '#f8fafc', // Very light gray
+    primary: process.env.VITE_THEME_PRIMARY || "#2563eb",
+    accent: process.env.VITE_THEME_ACCENT || "#f59e0b",
+    surface: process.env.VITE_THEME_SURFACE || "#f8fafc"
   },
   glassmorphism: {
     enabled: true,
-    intensity: 'medium',
+    intensity: "medium",
   },
   animations: {
     enabled: true,
-    duration: 'normal',
+    duration: "normal",
   },
 };
 
@@ -66,22 +72,28 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   children,
-  defaultMode = 'auto',
-  storageKey = 'autmatrix-theme',
+  defaultMode = "auto",
+  storageKey = process.env.VITE_THEME_STORAGE_KEY || "autmatrix-theme",
 }) => {
   // System preference detection
-  const [systemPreference, setSystemPreference] = useState<'light' | 'dark'>(() => {
-    if (typeof window === 'undefined') return 'light';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  });
+  const [systemPreference, setSystemPreference] = useState<"light" | "dark">(
+    () => {
+      if (typeof window === "undefined") return "light";
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    },
+  );
 
   // Theme configuration state
   const [config, setConfig] = useState<ThemeConfig>(() => {
-    if (typeof window === 'undefined') return defaultThemeConfig;
+    if (typeof window === "undefined") return defaultThemeConfig;
 
     try {
       const stored = localStorage.getItem(`${storageKey}-config`);
-      return stored ? { ...defaultThemeConfig, ...JSON.parse(stored) } : defaultThemeConfig;
+      return stored
+        ? { ...defaultThemeConfig, ...JSON.parse(stored) }
+        : defaultThemeConfig;
     } catch {
       return defaultThemeConfig;
     }
@@ -89,7 +101,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
   // Current theme mode
   const [mode, setModeState] = useState<ThemeMode>(() => {
-    if (typeof window === 'undefined') return defaultMode;
+    if (typeof window === "undefined") return defaultMode;
 
     try {
       const stored = localStorage.getItem(storageKey);
@@ -100,58 +112,59 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   });
 
   // Computed dark mode state
-  const isDark = mode === 'dark' || (mode === 'auto' && systemPreference === 'dark');
-  const isSystemMode = mode === 'auto';
+  const isDark =
+    mode === "dark" || (mode === "auto" && systemPreference === "dark");
+  const isSystemMode = mode === "auto";
 
   // Listen for system preference changes
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     const handleChange = (e: MediaQueryListEvent) => {
-      setSystemPreference(e.matches ? 'dark' : 'light');
+      setSystemPreference(e.matches ? "dark" : "light");
     };
 
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
   // Apply theme to document
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     const root = document.documentElement;
     const body = document.body;
 
     // Apply dark/light mode
     if (isDark) {
-      root.classList.add('dark');
-      body.classList.add('dark');
+      root.classList.add("dark");
+      body.classList.add("dark");
     } else {
-      root.classList.remove('dark');
-      body.classList.remove('dark');
+      root.classList.remove("dark");
+      body.classList.remove("dark");
     }
 
     // Apply automotive theme variables
-    root.style.setProperty('--automotive-primary', config.automotive.primary);
-    root.style.setProperty('--automotive-accent', config.automotive.accent);
-    root.style.setProperty('--automotive-surface', config.automotive.surface);
+    root.style.setProperty("--automotive-primary", config.automotive.primary);
+    root.style.setProperty("--automotive-accent", config.automotive.accent);
+    root.style.setProperty("--automotive-surface", config.automotive.surface);
 
     // Apply glassmorphism settings
     if (config.glassmorphism.enabled) {
-      root.classList.add('glassmorphism-enabled');
-      root.setAttribute('data-glass-intensity', config.glassmorphism.intensity);
+      root.classList.add("glassmorphism-enabled");
+      root.setAttribute("data-glass-intensity", config.glassmorphism.intensity);
     } else {
-      root.classList.remove('glassmorphism-enabled');
+      root.classList.remove("glassmorphism-enabled");
     }
 
     // Apply animation settings
     if (config.animations.enabled) {
-      root.classList.add('animations-enabled');
-      root.setAttribute('data-animation-duration', config.animations.duration);
+      root.classList.add("animations-enabled");
+      root.setAttribute("data-animation-duration", config.animations.duration);
     } else {
-      root.classList.remove('animations-enabled');
+      root.classList.remove("animations-enabled");
     }
 
     // Store theme preference
@@ -169,10 +182,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   };
 
   const toggleTheme = () => {
-    if (mode === 'auto') {
-      setMode(systemPreference === 'dark' ? 'light' : 'dark');
+    if (mode === "auto") {
+      setMode(systemPreference === "dark" ? "light" : "dark");
     } else {
-      setMode(mode === 'dark' ? 'light' : 'dark');
+      setMode(mode === "dark" ? "light" : "dark");
     }
   };
 
@@ -192,7 +205,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     isSystemMode,
   };
 
-  return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={contextValue}>
+      {children}
+    </ThemeContext.Provider>
+  );
 };
 
 // Custom hook to use theme context
@@ -200,7 +217,7 @@ export const useTheme = (): ThemeContextType => {
   const context = useContext(ThemeContext);
 
   if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    throw new Error("useTheme must be used within a ThemeProvider");
   }
 
   return context;
@@ -209,7 +226,7 @@ export const useTheme = (): ThemeContextType => {
 // Theme utility hooks
 export const useColorScheme = () => {
   const { isDark } = useTheme();
-  return isDark ? 'dark' : 'light';
+  return isDark ? "dark" : "light";
 };
 
 export const useAutomotiveColors = () => {
@@ -228,8 +245,10 @@ export const useAnimations = () => {
 };
 
 // Theme preference persistence utilities
-export const getStoredTheme = (storageKey = 'autmatrix-theme'): ThemeMode | null => {
-  if (typeof window === 'undefined') return null;
+export const getStoredTheme = (
+  storageKey = process.env.VITE_THEME_STORAGE_KEY || "autmatrix-theme",
+): ThemeMode | null => {
+  if (typeof window === "undefined") return null;
 
   try {
     return localStorage.getItem(storageKey) as ThemeMode;
@@ -238,8 +257,8 @@ export const getStoredTheme = (storageKey = 'autmatrix-theme'): ThemeMode | null
   }
 };
 
-export const clearStoredTheme = (storageKey = 'autmatrix-theme'): void => {
-  if (typeof window === 'undefined') return;
+export const clearStoredTheme = (storageKey = process.env.VITE_THEME_STORAGE_KEY || "autmatrix-theme"): void => {
+  if (typeof window === "undefined") return;
 
   try {
     localStorage.removeItem(storageKey);
@@ -250,14 +269,16 @@ export const clearStoredTheme = (storageKey = 'autmatrix-theme'): void => {
 };
 
 // Theme detection utilities
-export const getSystemThemePreference = (): 'light' | 'dark' => {
-  if (typeof window === 'undefined') return 'light';
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+export const getSystemThemePreference = (): "light" | "dark" => {
+  if (typeof window === "undefined") return "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
 };
 
 export const supportsColorScheme = (): boolean => {
-  if (typeof window === 'undefined') return false;
-  return window.matchMedia('(prefers-color-scheme)').matches;
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-color-scheme)").matches;
 };
 
 // CSS-in-JS utilities for theme-aware styling
@@ -265,22 +286,24 @@ export const themeAware = (lightValue: string, darkValue: string) => {
   return `light-dark(${lightValue}, ${darkValue})`;
 };
 
-export const glassmorphismCSS = (intensity: 'subtle' | 'medium' | 'strong' = 'medium') => {
+export const glassmorphismCSS = (
+  intensity: "subtle" | "medium" | "strong" = "medium",
+) => {
   const intensityMap = {
     subtle: {
-      background: 'rgba(255, 255, 255, 0.08)',
-      border: 'rgba(255, 255, 255, 0.12)',
-      backdrop: 'blur(12px)',
+      background: "rgba(255, 255, 255, 0.08)",
+      border: "rgba(255, 255, 255, 0.12)",
+      backdrop: "blur(12px)",
     },
     medium: {
-      background: 'rgba(255, 255, 255, 0.12)',
-      border: 'rgba(255, 255, 255, 0.18)',
-      backdrop: 'blur(20px)',
+      background: "rgba(255, 255, 255, 0.12)",
+      border: "rgba(255, 255, 255, 0.18)",
+      backdrop: "blur(20px)",
     },
     strong: {
-      background: 'rgba(255, 255, 255, 0.20)',
-      border: 'rgba(255, 255, 255, 0.30)',
-      backdrop: 'blur(32px)',
+      background: "rgba(255, 255, 255, 0.20)",
+      border: "rgba(255, 255, 255, 0.30)",
+      backdrop: "blur(32px)",
     },
   };
 
@@ -291,8 +314,8 @@ export const glassmorphismCSS = (intensity: 'subtle' | 'medium' | 'strong' = 'me
     backdropFilter: config.backdrop,
     WebkitBackdropFilter: config.backdrop,
     border: `1px solid ${config.border}`,
-    borderRadius: '12px',
-    boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+    borderRadius: "12px",
+    boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
   };
 };
 

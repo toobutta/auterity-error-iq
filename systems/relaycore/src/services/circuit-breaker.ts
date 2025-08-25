@@ -3,22 +3,22 @@
  * Implements circuit breaker pattern for 99.99% availability with intelligent failover
  */
 
-import { EventEmitter } from 'events';
-import { logger } from '../utils/logger';
+import { EventEmitter } from "events";
+import { logger } from "../utils/logger";
 
 export enum CircuitState {
-  CLOSED = 'CLOSED',     // Normal operation
-  OPEN = 'OPEN',         // Circuit is open, requests fail fast
-  HALF_OPEN = 'HALF_OPEN' // Testing if service has recovered
+  CLOSED = "CLOSED", // Normal operation
+  OPEN = "OPEN", // Circuit is open, requests fail fast
+  HALF_OPEN = "HALF_OPEN", // Testing if service has recovered
 }
 
 export interface CircuitBreakerConfig {
-  failureThreshold: number;     // Number of failures to trigger open
-  recoveryTimeout: number;      // Time to wait before attempting recovery
-  monitoringPeriod: number;     // Period to monitor for failures
-  successThreshold: number;     // Successes needed to close circuit
-  timeout: number;              // Request timeout
-  maxRetries: number;           // Maximum retry attempts
+  failureThreshold: number; // Number of failures to trigger open
+  recoveryTimeout: number; // Time to wait before attempting recovery
+  monitoringPeriod: number; // Period to monitor for failures
+  successThreshold: number; // Successes needed to close circuit
+  timeout: number; // Request timeout
+  maxRetries: number; // Maximum retry attempts
 }
 
 export interface CircuitMetrics {
@@ -61,13 +61,13 @@ export class CircuitBreaker extends EventEmitter {
     super();
     this.providerName = providerName;
     this.config = config;
-    
+
     // Start monitoring period reset
     this.startMonitoringPeriod();
-    
+
     logger.info(`Circuit breaker initialized for ${providerName}`, {
       failureThreshold: config.failureThreshold,
-      recoveryTimeout: config.recoveryTimeout
+      recoveryTimeout: config.recoveryTimeout,
     });
   }
 
@@ -80,20 +80,24 @@ export class CircuitBreaker extends EventEmitter {
 
     // Check circuit state
     if (this.state === CircuitState.OPEN) {
-      const error = new Error(`Circuit breaker is OPEN for ${this.providerName}`);
-      this.emit('circuit-open-rejection', { provider: this.providerName, error });
+      const error = new Error(
+        `Circuit breaker is OPEN for ${this.providerName}`,
+      );
+      this.emit("circuit-open-rejection", {
+        provider: this.providerName,
+        error,
+      });
       throw error;
     }
 
     try {
       // Execute with timeout
       const result = await this.executeWithTimeout(operation);
-      
+
       // Record success
       this.onSuccess();
-      
-      return result;
 
+      return result;
     } catch (error) {
       // Record failure
       this.onFailure(error as Error);
@@ -107,21 +111,23 @@ export class CircuitBreaker extends EventEmitter {
   async executeWithFailover<T>(
     primaryOperation: () => Promise<T>,
     failoverProviders: FailoverProvider[],
-    failoverOperations: Map<string, () => Promise<T>>
+    failoverOperations: Map<string, () => Promise<T>>,
   ): Promise<T> {
     try {
       // Try primary provider
       return await this.execute(primaryOperation);
-      
     } catch (primaryError) {
-      logger.warn(`Primary provider ${this.providerName} failed, attempting failover`, {
-        error: primaryError,
-        availableFailovers: failoverProviders.length
-      });
+      logger.warn(
+        `Primary provider ${this.providerName} failed, attempting failover`,
+        {
+          error: primaryError,
+          availableFailovers: failoverProviders.length,
+        },
+      );
 
       // Sort failover providers by priority and health
       const sortedProviders = failoverProviders
-        .filter(p => p.isAvailable)
+        .filter((p) => p.isAvailable)
         .sort((a, b) => {
           // Sort by priority first, then by health score
           if (a.priority !== b.priority) {
@@ -133,50 +139,51 @@ export class CircuitBreaker extends EventEmitter {
       // Try each failover provider
       for (const provider of sortedProviders) {
         const failoverOp = failoverOperations.get(provider.id);
-        
+
         if (!failoverOp) {
-          logger.warn(`No failover operation defined for provider ${provider.id}`);
+          logger.warn(
+            `No failover operation defined for provider ${provider.id}`,
+          );
           continue;
         }
 
         try {
           logger.info(`Attempting failover to provider ${provider.id}`, {
             priority: provider.priority,
-            healthScore: provider.healthScore
+            healthScore: provider.healthScore,
           });
 
           const result = await this.executeWithTimeout(failoverOp);
-          
-          this.emit('failover-success', {
+
+          this.emit("failover-success", {
             originalProvider: this.providerName,
             failoverProvider: provider.id,
-            priority: provider.priority
+            priority: provider.priority,
           });
 
           return result;
-
         } catch (failoverError) {
           logger.warn(`Failover provider ${provider.id} also failed`, {
-            error: failoverError
+            error: failoverError,
           });
 
-          this.emit('failover-failed', {
+          this.emit("failover-failed", {
             originalProvider: this.providerName,
             failoverProvider: provider.id,
-            error: failoverError
+            error: failoverError,
           });
         }
       }
 
       // All providers failed
       const allFailedError = new Error(
-        `All providers failed. Primary: ${this.providerName}, Attempted failovers: ${sortedProviders.map(p => p.id).join(', ')}`
+        `All providers failed. Primary: ${this.providerName}, Attempted failovers: ${sortedProviders.map((p) => p.id).join(", ")}`,
       );
 
-      this.emit('all-providers-failed', {
+      this.emit("all-providers-failed", {
         originalProvider: this.providerName,
-        attemptedFailovers: sortedProviders.map(p => p.id),
-        originalError: primaryError
+        attemptedFailovers: sortedProviders.map((p) => p.id),
+        originalError: primaryError,
       });
 
       throw allFailedError;
@@ -189,9 +196,11 @@ export class CircuitBreaker extends EventEmitter {
   forceOpen(): void {
     this.setState(CircuitState.OPEN);
     this.startRecoveryTimer();
-    
-    logger.warn(`Circuit breaker for ${this.providerName} forced to OPEN state`);
-    this.emit('circuit-forced-open', { provider: this.providerName });
+
+    logger.warn(
+      `Circuit breaker for ${this.providerName} forced to OPEN state`,
+    );
+    this.emit("circuit-forced-open", { provider: this.providerName });
   }
 
   /**
@@ -200,9 +209,11 @@ export class CircuitBreaker extends EventEmitter {
   forceClose(): void {
     this.setState(CircuitState.CLOSED);
     this.resetCounters();
-    
-    logger.info(`Circuit breaker for ${this.providerName} forced to CLOSED state`);
-    this.emit('circuit-forced-closed', { provider: this.providerName });
+
+    logger.info(
+      `Circuit breaker for ${this.providerName} forced to CLOSED state`,
+    );
+    this.emit("circuit-forced-closed", { provider: this.providerName });
   }
 
   /**
@@ -219,7 +230,7 @@ export class CircuitBreaker extends EventEmitter {
       totalFailures: this.totalFailures,
       totalSuccesses: this.totalSuccesses,
       requestsInPeriod: this.requestsInCurrentPeriod,
-      failuresInPeriod: this.failuresInCurrentPeriod
+      failuresInPeriod: this.failuresInCurrentPeriod,
     };
   }
 
@@ -233,7 +244,8 @@ export class CircuitBreaker extends EventEmitter {
 
     // Check failure rate in current period
     if (this.requestsInCurrentPeriod > 0) {
-      const failureRate = this.failuresInCurrentPeriod / this.requestsInCurrentPeriod;
+      const failureRate =
+        this.failuresInCurrentPeriod / this.requestsInCurrentPeriod;
       return failureRate < 0.5; // Consider healthy if failure rate < 50%
     }
 
@@ -262,14 +274,16 @@ export class CircuitBreaker extends EventEmitter {
 
     if (this.state === CircuitState.HALF_OPEN) {
       this.successCount++;
-      
+
       // Check if we should close the circuit
       if (this.successCount >= this.config.successThreshold) {
         this.setState(CircuitState.CLOSED);
         this.resetCounters();
-        
-        logger.info(`Circuit breaker for ${this.providerName} moved to CLOSED state after successful recovery`);
-        this.emit('circuit-closed', { provider: this.providerName });
+
+        logger.info(
+          `Circuit breaker for ${this.providerName} moved to CLOSED state after successful recovery`,
+        );
+        this.emit("circuit-closed", { provider: this.providerName });
       }
     } else if (this.state === CircuitState.CLOSED) {
       // Reset failure count on success in closed state
@@ -285,23 +299,29 @@ export class CircuitBreaker extends EventEmitter {
     this.totalFailures++;
     this.failuresInCurrentPeriod++;
 
-    if (this.state === CircuitState.CLOSED || this.state === CircuitState.HALF_OPEN) {
+    if (
+      this.state === CircuitState.CLOSED ||
+      this.state === CircuitState.HALF_OPEN
+    ) {
       this.failureCount++;
 
       // Check if we should open the circuit
       if (this.failureCount >= this.config.failureThreshold) {
         this.setState(CircuitState.OPEN);
         this.startRecoveryTimer();
-        
-        logger.error(`Circuit breaker for ${this.providerName} moved to OPEN state after ${this.failureCount} failures`, {
-          error: error.message,
-          failureThreshold: this.config.failureThreshold
-        });
-        
-        this.emit('circuit-opened', {
+
+        logger.error(
+          `Circuit breaker for ${this.providerName} moved to OPEN state after ${this.failureCount} failures`,
+          {
+            error: error.message,
+            failureThreshold: this.config.failureThreshold,
+          },
+        );
+
+        this.emit("circuit-opened", {
           provider: this.providerName,
           failureCount: this.failureCount,
-          lastError: error.message
+          lastError: error.message,
         });
       }
     }
@@ -318,10 +338,11 @@ export class CircuitBreaker extends EventEmitter {
     this.recoveryTimer = setTimeout(() => {
       this.setState(CircuitState.HALF_OPEN);
       this.successCount = 0;
-      
-      logger.info(`Circuit breaker for ${this.providerName} moved to HALF_OPEN state for recovery testing`);
-      this.emit('circuit-half-open', { provider: this.providerName });
-      
+
+      logger.info(
+        `Circuit breaker for ${this.providerName} moved to HALF_OPEN state for recovery testing`,
+      );
+      this.emit("circuit-half-open", { provider: this.providerName });
     }, this.config.recoveryTimeout);
   }
 
@@ -331,11 +352,11 @@ export class CircuitBreaker extends EventEmitter {
   private setState(newState: CircuitState): void {
     const oldState = this.state;
     this.state = newState;
-    
-    this.emit('state-change', {
+
+    this.emit("state-change", {
       provider: this.providerName,
       oldState,
-      newState
+      newState,
     });
   }
 
@@ -366,7 +387,7 @@ export class CircuitBreaker extends EventEmitter {
       clearTimeout(this.recoveryTimer);
       this.recoveryTimer = null;
     }
-    
+
     this.removeAllListeners();
     logger.info(`Circuit breaker for ${this.providerName} destroyed`);
   }
@@ -381,24 +402,31 @@ export class CircuitBreakerManager {
 
   constructor(config: CircuitBreakerConfig) {
     this.globalConfig = config;
-    logger.info('Circuit breaker manager initialized');
+    logger.info("Circuit breaker manager initialized");
   }
 
   /**
    * Get or create circuit breaker for provider
    */
-  getCircuitBreaker(providerName: string, config?: Partial<CircuitBreakerConfig>): CircuitBreaker {
+  getCircuitBreaker(
+    providerName: string,
+    config?: Partial<CircuitBreakerConfig>,
+  ): CircuitBreaker {
     if (!this.circuitBreakers.has(providerName)) {
       const breaker = new CircuitBreaker(providerName, {
         ...this.globalConfig,
-        ...config
+        ...config,
       });
 
       // Forward events
-      breaker.on('circuit-opened', (data) => this.emit('circuit-opened', data));
-      breaker.on('circuit-closed', (data) => this.emit('circuit-closed', data));
-      breaker.on('failover-success', (data) => this.emit('failover-success', data));
-      breaker.on('all-providers-failed', (data) => this.emit('all-providers-failed', data));
+      breaker.on("circuit-opened", (data) => this.emit("circuit-opened", data));
+      breaker.on("circuit-closed", (data) => this.emit("circuit-closed", data));
+      breaker.on("failover-success", (data) =>
+        this.emit("failover-success", data),
+      );
+      breaker.on("all-providers-failed", (data) =>
+        this.emit("all-providers-failed", data),
+      );
 
       this.circuitBreakers.set(providerName, breaker);
     }
@@ -412,7 +440,7 @@ export class CircuitBreakerManager {
   async execute<T>(
     providerName: string,
     operation: () => Promise<T>,
-    config?: Partial<CircuitBreakerConfig>
+    config?: Partial<CircuitBreakerConfig>,
   ): Promise<T> {
     const breaker = this.getCircuitBreaker(providerName, config);
     return breaker.execute(operation);
@@ -423,11 +451,11 @@ export class CircuitBreakerManager {
    */
   getHealthStatus(): Record<string, boolean> {
     const status: Record<string, boolean> = {};
-    
+
     for (const [provider, breaker] of this.circuitBreakers) {
       status[provider] = breaker.isHealthy();
     }
-    
+
     return status;
   }
 
@@ -436,11 +464,11 @@ export class CircuitBreakerManager {
    */
   getAllMetrics(): Record<string, CircuitMetrics> {
     const metrics: Record<string, CircuitMetrics> = {};
-    
+
     for (const [provider, breaker] of this.circuitBreakers) {
       metrics[provider] = breaker.getMetrics();
     }
-    
+
     return metrics;
   }
 
@@ -451,8 +479,8 @@ export class CircuitBreakerManager {
     for (const [provider, breaker] of this.circuitBreakers) {
       breaker.forceClose();
     }
-    
-    logger.warn('All circuit breakers forced to CLOSED state');
+
+    logger.warn("All circuit breakers forced to CLOSED state");
   }
 
   /**
@@ -462,9 +490,9 @@ export class CircuitBreakerManager {
     for (const [provider, breaker] of this.circuitBreakers) {
       breaker.destroy();
     }
-    
+
     this.circuitBreakers.clear();
-    logger.info('Circuit breaker manager destroyed');
+    logger.info("Circuit breaker manager destroyed");
   }
 
   private emit(event: string, data: any): void {
@@ -477,10 +505,10 @@ export class CircuitBreakerManager {
  * Default circuit breaker configuration
  */
 export const defaultCircuitBreakerConfig: CircuitBreakerConfig = {
-  failureThreshold: 5,       // Open after 5 failures
-  recoveryTimeout: 30000,    // 30 seconds recovery timeout
-  monitoringPeriod: 60000,   // 1 minute monitoring period
-  successThreshold: 3,       // 3 successes to close
-  timeout: 30000,            // 30 second operation timeout
-  maxRetries: 3              // Maximum 3 retries
+  failureThreshold: 5, // Open after 5 failures
+  recoveryTimeout: 30000, // 30 seconds recovery timeout
+  monitoringPeriod: 60000, // 1 minute monitoring period
+  successThreshold: 3, // 3 successes to close
+  timeout: 30000, // 30 second operation timeout
+  maxRetries: 3, // Maximum 3 retries
 };

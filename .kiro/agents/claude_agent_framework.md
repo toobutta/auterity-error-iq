@@ -3,6 +3,7 @@
 ## Claude-Specific Agent Design Principles
 
 > **Claude's Unique Strengths:**
+>
 > - Deep analytical reasoning and systematic thinking
 > - Excellent code review and architectural analysis
 > - Strong at breaking down complex problems
@@ -17,13 +18,15 @@
 ### 🧠 Claude-ArchitecturalReasoningAgent
 
 **Primary Expertise**: System Architecture Analysis, Design Pattern Validation, Technical Decision Making
-**Claude-Specific Capabilities**: 
+**Claude-Specific Capabilities**:
+
 - Deep architectural reasoning with multiple perspective analysis
 - Systematic evaluation of trade-offs and alternatives
 - Comprehensive risk assessment and mitigation planning
 - Detailed documentation of architectural decisions and rationale
 
 **Core Responsibilities**:
+
 - Analyze and validate system architecture decisions across all agents
 - Provide systematic reasoning for technical choices and trade-offs
 - Identify potential architectural issues before implementation
@@ -31,6 +34,7 @@
 - Conduct systematic reviews of agent interactions and dependencies
 
 **Claude Instruction Set:**
+
 ```
 When analyzing architecture:
 1. First, understand the full context and requirements
@@ -44,6 +48,7 @@ When analyzing architecture:
 ```
 
 **Key Deliverables**:
+
 - Architectural Decision Records (ADRs)
 - System design analysis reports
 - Risk assessment documents
@@ -56,12 +61,14 @@ When analyzing architecture:
 
 **Primary Expertise**: Code Quality Analysis, Security Review, Performance Assessment
 **Claude-Specific Capabilities**:
+
 - Systematic code analysis with detailed reasoning
 - Identification of subtle bugs and edge cases
 - Comprehensive security vulnerability assessment
 - Performance bottleneck identification with optimization suggestions
 
 **Core Responsibilities**:
+
 - Conduct systematic code reviews for all agent implementations
 - Identify potential security vulnerabilities and suggest mitigations
 - Analyze performance implications and suggest optimizations
@@ -69,6 +76,7 @@ When analyzing architecture:
 - Provide detailed feedback with reasoning and examples
 
 **Claude Instruction Set:**
+
 ```
 When reviewing code:
 1. Understand the code's purpose and context within the larger system
@@ -88,6 +96,7 @@ When reviewing code:
 ```
 
 **Key Deliverables**:
+
 - Detailed code review reports
 - Security vulnerability assessments
 - Performance optimization recommendations
@@ -100,12 +109,14 @@ When reviewing code:
 
 **Primary Expertise**: Requirements Engineering, Stakeholder Analysis, Acceptance Criteria Definition
 **Claude-Specific Capabilities**:
+
 - Systematic requirement decomposition and analysis
 - Identification of implicit requirements and assumptions
 - Stakeholder perspective analysis
 - Comprehensive acceptance criteria definition
 
 **Core Responsibilities**:
+
 - Analyze and decompose complex requirements into actionable tasks
 - Identify missing requirements and potential ambiguities
 - Define clear acceptance criteria for all features
@@ -113,6 +124,7 @@ When reviewing code:
 - Ensure requirements traceability throughout development
 
 **Claude Instruction Set:**
+
 ```
 When analyzing requirements:
 1. Understand the business context and stakeholder needs
@@ -131,6 +143,7 @@ When analyzing requirements:
 ```
 
 **Key Deliverables**:
+
 - Requirements analysis documents
 - Acceptance criteria definitions
 - Stakeholder analysis reports
@@ -143,12 +156,14 @@ When analyzing requirements:
 
 **Primary Expertise**: Test Planning, Quality Assurance Strategy, Risk-Based Testing
 **Claude-Specific Capabilities**:
+
 - Systematic test case design with comprehensive coverage
 - Risk-based testing strategy development
 - Edge case identification and test scenario creation
 - Quality metrics definition and analysis
 
 **Core Responsibilities**:
+
 - Develop comprehensive testing strategies for all agents
 - Design test cases that cover functional, non-functional, and edge cases
 - Define quality metrics and acceptance criteria
@@ -156,6 +171,7 @@ When analyzing requirements:
 - Identify testing risks and mitigation strategies
 
 **Claude Instruction Set:**
+
 ```
 When developing test strategies:
 1. Analyze the system under test comprehensively
@@ -175,6 +191,7 @@ When developing test strategies:
 ```
 
 **Key Deliverables**:
+
 - Comprehensive test plans
 - Test case specifications
 - Quality metrics definitions
@@ -187,12 +204,14 @@ When developing test strategies:
 
 **Primary Expertise**: Data Analysis, Metrics Interpretation, Performance Analysis
 **Claude-Specific Capabilities**:
+
 - Systematic data analysis with statistical reasoning
 - Pattern identification and trend analysis
 - Comprehensive metric interpretation with actionable insights
 - Root cause analysis for performance and quality issues
 
 **Core Responsibilities**:
+
 - Analyze system performance metrics and identify optimization opportunities
 - Interpret user behavior data and suggest UX improvements
 - Conduct root cause analysis for issues and failures
@@ -200,6 +219,7 @@ When developing test strategies:
 - Monitor and analyze agent performance and coordination metrics
 
 **Claude Instruction Set:**
+
 ```
 When analyzing data:
 1. Understand the context and business objectives
@@ -218,6 +238,7 @@ When analyzing data:
 ```
 
 **Key Deliverables**:
+
 - Data analysis reports
 - Performance optimization recommendations
 - Trend analysis and forecasting
@@ -230,12 +251,14 @@ When analyzing data:
 
 **Primary Expertise**: Security Architecture Review, Threat Modeling, Vulnerability Assessment
 **Claude-Specific Capabilities**:
+
 - Systematic threat modeling with comprehensive attack vector analysis
 - Deep security architecture review with reasoning
 - Ethical consideration of security implications
 - Comprehensive security documentation
 
 **Core Responsibilities**:
+
 - Conduct systematic threat modeling for all system components
 - Review security architecture and identify potential vulnerabilities
 - Analyze agent-to-agent communication security
@@ -243,6 +266,7 @@ When analyzing data:
 - Provide security training and guidance to other agents
 
 **Claude Instruction Set:**
+
 ```
 When conducting security analysis:
 1. Understand the system architecture and data flows
@@ -265,6 +289,7 @@ When conducting security analysis:
 ```
 
 **Key Deliverables**:
+
 - Threat model documents
 - Security architecture reviews
 - Vulnerability assessment reports
@@ -277,12 +302,14 @@ When conducting security analysis:
 
 **Primary Expertise**: Documentation Strategy, Knowledge Organization, Learning Path Design
 **Claude-Specific Capabilities**:
+
 - Systematic knowledge organization and taxonomy creation
 - Comprehensive documentation with clear explanations
 - Learning path design with progressive complexity
 - Knowledge gap identification and filling
 
 **Core Responsibilities**:
+
 - Organize and maintain comprehensive project knowledge base
 - Create clear, systematic documentation for all agents and processes
 - Design learning paths for team members and stakeholders
@@ -290,6 +317,7 @@ When conducting security analysis:
 - Ensure knowledge transfer and continuity
 
 **Claude Instruction Set:**
+
 ```
 When managing knowledge:
 1. Understand the audience and their knowledge needs
@@ -309,6 +337,7 @@ When managing knowledge:
 ```
 
 **Key Deliverables**:
+
 - Comprehensive documentation portals
 - Learning path designs
 - Knowledge gap analyses
@@ -321,12 +350,14 @@ When managing knowledge:
 
 **Primary Expertise**: Stakeholder Communication, Technical Translation, Consensus Building
 **Claude-Specific Capabilities**:
+
 - Clear communication of complex technical concepts to non-technical stakeholders
 - Systematic stakeholder analysis and communication planning
 - Conflict resolution and consensus building
 - Comprehensive status reporting with context
 
 **Core Responsibilities**:
+
 - Translate technical decisions and progress into stakeholder-friendly communications
 - Facilitate communication between technical teams and business stakeholders
 - Build consensus around technical decisions and priorities
@@ -334,6 +365,7 @@ When managing knowledge:
 - Manage stakeholder expectations and feedback
 
 **Claude Instruction Set:**
+
 ```
 When communicating with stakeholders:
 1. Understand the audience's background and information needs
@@ -353,6 +385,7 @@ When communicating with stakeholders:
 ```
 
 **Key Deliverables**:
+
 - Stakeholder communication plans
 - Executive status reports
 - Technical decision summaries
@@ -366,6 +399,7 @@ When communicating with stakeholders:
 ### **Systematic Collaboration Patterns**
 
 #### **Analysis Pipeline**
+
 ```
 1. Requirements Analysis Agent → defines clear requirements
 2. Architectural Reasoning Agent → designs system approach
@@ -375,6 +409,7 @@ When communicating with stakeholders:
 ```
 
 #### **Quality Assurance Pipeline**
+
 ```
 1. Code Review Agent → systematic code analysis
 2. Security Analysis Agent → vulnerability assessment
@@ -384,6 +419,7 @@ When communicating with stakeholders:
 ```
 
 #### **Decision Making Framework**
+
 ```
 1. Gather all relevant information and context
 2. Analyze from multiple perspectives systematically
@@ -396,6 +432,7 @@ When communicating with stakeholders:
 ### **Claude-Specific Best Practices**
 
 #### **Reasoning Standards**
+
 - Always provide clear, logical reasoning for recommendations
 - Consider multiple perspectives and alternatives
 - Identify assumptions and limitations explicitly
@@ -403,6 +440,7 @@ When communicating with stakeholders:
 - Document decision-making processes
 
 #### **Communication Principles**
+
 - Structure information hierarchically (executive summary → details)
 - Use clear, precise language
 - Provide context and background
@@ -410,6 +448,7 @@ When communicating with stakeholders:
 - Cross-reference related information
 
 #### **Quality Assurance**
+
 - Systematic review processes for all deliverables
 - Comprehensive consideration of edge cases
 - Thorough documentation of analysis and decisions
@@ -419,6 +458,7 @@ When communicating with stakeholders:
 ### **Integration with Existing Agent Framework**
 
 The Claude agents work alongside the existing agents, providing:
+
 - **Deep Analysis**: Comprehensive reasoning and evaluation
 - **Quality Oversight**: Systematic review and validation
 - **Strategic Guidance**: Long-term thinking and planning

@@ -3,11 +3,11 @@
  * Provides SDK management and documentation interface
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Alert, AlertDescription } from '../ui/alert';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import { Alert, AlertDescription } from "../ui/alert";
 
 interface SDK {
   language: string;
@@ -16,7 +16,7 @@ interface SDK {
   documentationUrl: string;
   lastUpdated: string;
   size: string;
-  status: 'available' | 'generating' | 'error';
+  status: "available" | "generating" | "error";
 }
 
 interface APIEndpoint {
@@ -40,47 +40,77 @@ export const DeveloperPlatformDashboard: React.FC = () => {
   const loadPlatformData = async () => {
     try {
       setLoading(true);
-      
+
       // Mock data for demonstration
       setSDKs([
         {
-          language: 'TypeScript',
-          version: '1.0.0',
-          downloadUrl: '/api/sdks/typescript/download',
-          documentationUrl: '/docs/typescript',
-          lastUpdated: '2024-01-15',
-          size: '2.3 MB',
-          status: 'available',
+          language: "TypeScript",
+          version: "1.0.0",
+          downloadUrl: "/api/sdks/typescript/download",
+          documentationUrl: "/docs/typescript",
+          lastUpdated: "2024-01-15",
+          size: "2.3 MB",
+          status: "available",
         },
         {
-          language: 'Python',
-          version: '1.0.0',
-          downloadUrl: '/api/sdks/python/download',
-          documentationUrl: '/docs/python',
-          lastUpdated: '2024-01-15',
-          size: '1.8 MB',
-          status: 'available',
+          language: "Python",
+          version: "1.0.0",
+          downloadUrl: "/api/sdks/python/download",
+          documentationUrl: "/docs/python",
+          lastUpdated: "2024-01-15",
+          size: "1.8 MB",
+          status: "available",
         },
         {
-          language: 'Java',
-          version: '0.9.0',
-          downloadUrl: '/api/sdks/java/download',
-          documentationUrl: '/docs/java',
-          lastUpdated: '2024-01-10',
-          size: '3.2 MB',
-          status: 'generating',
+          language: "Java",
+          version: "0.9.0",
+          downloadUrl: "/api/sdks/java/download",
+          documentationUrl: "/docs/java",
+          lastUpdated: "2024-01-10",
+          size: "3.2 MB",
+          status: "generating",
         },
       ]);
 
       setEndpoints([
-        { path: '/api/v1/workflows', method: 'GET', description: 'List all workflows', parameters: 3, authenticated: true },
-        { path: '/api/v1/workflows', method: 'POST', description: 'Create new workflow', parameters: 1, authenticated: true },
-        { path: '/api/v1/workflows/{id}', method: 'GET', description: 'Get workflow by ID', parameters: 1, authenticated: true },
-        { path: '/api/v1/ai/chat', method: 'POST', description: 'Send chat request', parameters: 2, authenticated: true },
-        { path: '/api/v1/models', method: 'GET', description: 'List available models', parameters: 2, authenticated: true },
+        {
+          path: "/api/v1/workflows",
+          method: "GET",
+          description: "List all workflows",
+          parameters: 3,
+          authenticated: true,
+        },
+        {
+          path: "/api/v1/workflows",
+          method: "POST",
+          description: "Create new workflow",
+          parameters: 1,
+          authenticated: true,
+        },
+        {
+          path: "/api/v1/workflows/{id}",
+          method: "GET",
+          description: "Get workflow by ID",
+          parameters: 1,
+          authenticated: true,
+        },
+        {
+          path: "/api/v1/ai/chat",
+          method: "POST",
+          description: "Send chat request",
+          parameters: 2,
+          authenticated: true,
+        },
+        {
+          path: "/api/v1/models",
+          method: "GET",
+          description: "List available models",
+          parameters: 2,
+          authenticated: true,
+        },
       ]);
     } catch (error) {
-      console.error('Error loading platform data:', error);
+      console.error("Error loading platform data:", error);
     } finally {
       setLoading(false);
     }
@@ -89,23 +119,31 @@ export const DeveloperPlatformDashboard: React.FC = () => {
   const handleGenerateSDK = async (language: string) => {
     try {
       setGenerating(language);
-      
+
       // Simulate SDK generation
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
       // Update SDK status
-      setSDKs(prev => prev.map(sdk => 
-        sdk.language === language 
-          ? { ...sdk, status: 'available' as const, lastUpdated: new Date().toISOString().split('T')[0] }
-          : sdk
-      ));
+      setSDKs((prev) =>
+        prev.map((sdk) =>
+          sdk.language === language
+            ? {
+                ...sdk,
+                status: "available" as const,
+                lastUpdated: new Date().toISOString().split("T")[0],
+              }
+            : sdk,
+        ),
+      );
     } catch (error) {
-      console.error('Error generating SDK:', error);
-      setSDKs(prev => prev.map(sdk => 
-        sdk.language === language 
-          ? { ...sdk, status: 'error' as const }
-          : sdk
-      ));
+      console.error("Error generating SDK:", error);
+      setSDKs((prev) =>
+        prev.map((sdk) =>
+          sdk.language === language
+            ? { ...sdk, status: "error" as const }
+            : sdk,
+        ),
+      );
     } finally {
       setGenerating(null);
     }
@@ -113,20 +151,29 @@ export const DeveloperPlatformDashboard: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'available': return 'bg-green-100 text-green-800';
-      case 'generating': return 'bg-yellow-100 text-yellow-800';
-      case 'error': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "available":
+        return "bg-green-100 text-green-800";
+      case "generating":
+        return "bg-yellow-100 text-yellow-800";
+      case "error":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getMethodColor = (method: string) => {
     switch (method) {
-      case 'GET': return 'bg-blue-100 text-blue-800';
-      case 'POST': return 'bg-green-100 text-green-800';
-      case 'PUT': return 'bg-yellow-100 text-yellow-800';
-      case 'DELETE': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "GET":
+        return "bg-blue-100 text-blue-800";
+      case "POST":
+        return "bg-green-100 text-green-800";
+      case "PUT":
+        return "bg-yellow-100 text-yellow-800";
+      case "DELETE":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -143,25 +190,29 @@ export const DeveloperPlatformDashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900">Developer Platform</h1>
-        <Button onClick={loadPlatformData}>
-          Refresh
-        </Button>
+        <Button onClick={loadPlatformData}>Refresh</Button>
       </div>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Available SDKs</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Available SDKs
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{sdks.filter(sdk => sdk.status === 'available').length}</div>
+            <div className="text-2xl font-bold">
+              {sdks.filter((sdk) => sdk.status === "available").length}
+            </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">API Endpoints</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">
+              API Endpoints
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{endpoints.length}</div>
@@ -170,7 +221,9 @@ export const DeveloperPlatformDashboard: React.FC = () => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Downloads</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Total Downloads
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">1,247</div>
@@ -179,7 +232,9 @@ export const DeveloperPlatformDashboard: React.FC = () => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Active Developers</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Active Developers
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">89</div>
@@ -195,12 +250,16 @@ export const DeveloperPlatformDashboard: React.FC = () => {
         <CardContent>
           <div className="space-y-4">
             {sdks.map((sdk) => (
-              <div key={sdk.language} className="flex items-center justify-between p-4 border rounded-lg">
+              <div
+                key={sdk.language}
+                className="flex items-center justify-between p-4 border rounded-lg"
+              >
                 <div className="flex items-center space-x-4">
                   <div>
                     <h3 className="font-medium">{sdk.language} SDK</h3>
                     <p className="text-sm text-gray-500">
-                      Version {sdk.version} • {sdk.size} • Updated {sdk.lastUpdated}
+                      Version {sdk.version} • {sdk.size} • Updated{" "}
+                      {sdk.lastUpdated}
                     </p>
                   </div>
                 </div>
@@ -209,7 +268,7 @@ export const DeveloperPlatformDashboard: React.FC = () => {
                     {sdk.status}
                   </Badge>
                   <div className="flex space-x-2">
-                    {sdk.status === 'available' && (
+                    {sdk.status === "available" && (
                       <>
                         <Button variant="outline" size="sm" asChild>
                           <a href={sdk.downloadUrl} download>
@@ -217,7 +276,11 @@ export const DeveloperPlatformDashboard: React.FC = () => {
                           </a>
                         </Button>
                         <Button variant="outline" size="sm" asChild>
-                          <a href={sdk.documentationUrl} target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={sdk.documentationUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             Docs
                           </a>
                         </Button>
@@ -228,7 +291,9 @@ export const DeveloperPlatformDashboard: React.FC = () => {
                       onClick={() => handleGenerateSDK(sdk.language)}
                       disabled={generating === sdk.language}
                     >
-                      {generating === sdk.language ? 'Generating...' : 'Regenerate'}
+                      {generating === sdk.language
+                        ? "Generating..."
+                        : "Regenerate"}
                     </Button>
                   </div>
                 </div>
@@ -246,14 +311,19 @@ export const DeveloperPlatformDashboard: React.FC = () => {
         <CardContent>
           <div className="space-y-2">
             {endpoints.map((endpoint, index) => (
-              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+              <div
+                key={index}
+                className="flex items-center justify-between p-3 border rounded-lg"
+              >
                 <div className="flex items-center space-x-4">
                   <Badge className={getMethodColor(endpoint.method)}>
                     {endpoint.method}
                   </Badge>
                   <div>
                     <span className="font-mono text-sm">{endpoint.path}</span>
-                    <p className="text-sm text-gray-500">{endpoint.description}</p>
+                    <p className="text-sm text-gray-500">
+                      {endpoint.description}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -295,7 +365,11 @@ export const DeveloperPlatformDashboard: React.FC = () => {
                 Get up and running with our platform in minutes
               </p>
               <Button variant="outline" size="sm" asChild>
-                <a href="/docs/quickstart" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="/docs/quickstart"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Get Started
                 </a>
               </Button>
@@ -307,7 +381,11 @@ export const DeveloperPlatformDashboard: React.FC = () => {
                 Sample code and integration examples
               </p>
               <Button variant="outline" size="sm" asChild>
-                <a href="/docs/examples" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="/docs/examples"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   View Examples
                 </a>
               </Button>

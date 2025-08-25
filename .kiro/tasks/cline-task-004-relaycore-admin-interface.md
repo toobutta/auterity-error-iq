@@ -7,14 +7,17 @@
 **Estimated Effort**: 6-8 hours
 
 ## Task Overview
+
 Build comprehensive RelayCore admin interface with real-time metrics, cost analytics, and management capabilities.
 
 ## Business Context
+
 RelayCore is the AI routing and cost optimization system. This admin interface provides operational visibility and management capabilities for AI model routing, cost tracking, and performance monitoring.
 
 ## Technical Requirements
 
 ### Core Components to Build
+
 1. **AI Routing Dashboard** - Real-time metrics and routing status
 2. **Cost Analytics Interface** - Budget tracking and forecasting
 3. **Steering Rules Management** - Visual rule builder
@@ -22,6 +25,7 @@ RelayCore is the AI routing and cost optimization system. This admin interface p
 5. **Real-Time Monitoring** - WebSocket updates every 5 seconds
 
 ### Architecture Requirements
+
 - Use shared foundation components from `shared/components/`
 - Implement automotive theming consistency
 - Type-safe API integration with unified client
@@ -31,6 +35,7 @@ RelayCore is the AI routing and cost optimization system. This admin interface p
 ## Pre-Development Tasks for Cline
 
 ### 1. Foundation Analysis
+
 ```bash
 # Analyze shared foundation components
 find shared/components/ -name "*.tsx" -exec echo "=== {} ===" \; -exec head -20 {} \;
@@ -44,7 +49,9 @@ cat frontend/src/App.css | grep -A 10 -B 10 "automotive\|theme"
 ```
 
 ### 2. Component Architecture Planning
+
 Analyze existing patterns for:
+
 - Dashboard layouts and grid systems
 - Real-time data display components
 - Form builders and configuration wizards
@@ -52,6 +59,7 @@ Analyze existing patterns for:
 - WebSocket integration patterns
 
 ### 3. API Integration Analysis
+
 ```bash
 # Check existing API endpoints
 grep -r "api/" frontend/src/ --include="*.ts" --include="*.tsx" | head -20
@@ -61,6 +69,7 @@ cat frontend/src/api/client.ts 2>/dev/null || echo "API client not found"
 ```
 
 ### 4. Dependency Assessment
+
 ```bash
 # Check for WebSocket libraries
 npm list ws socket.io-client @types/ws
@@ -75,6 +84,7 @@ npm list react-hook-form formik
 ## Component Specifications
 
 ### 1. RelayCore Dashboard Layout (`RelayCoreDashboard.tsx`)
+
 ```typescript
 interface RelayCoreDashboardProps {
   refreshInterval?: number; // Default 5000ms
@@ -87,6 +97,7 @@ interface RelayCoreDashboardProps {
 ```
 
 ### 2. AI Routing Metrics (`AIRoutingMetrics.tsx`)
+
 ```typescript
 interface AIRoutingMetricsProps {
   models: AIModel[];
@@ -99,6 +110,7 @@ interface AIRoutingMetricsProps {
 ```
 
 ### 3. Cost Analytics Interface (`CostAnalytics.tsx`)
+
 ```typescript
 interface CostAnalyticsProps {
   timeRange: TimeRange;
@@ -111,6 +123,7 @@ interface CostAnalyticsProps {
 ```
 
 ### 4. Steering Rules Builder (`SteeringRulesBuilder.tsx`)
+
 ```typescript
 interface SteeringRulesBuilderProps {
   existingRules: SteeringRule[];
@@ -123,6 +136,7 @@ interface SteeringRulesBuilderProps {
 ```
 
 ### 5. Model Management Wizard (`ModelManagementWizard.tsx`)
+
 ```typescript
 interface ModelManagementWizardProps {
   availableModels: AIModelProvider[];
@@ -163,24 +177,26 @@ frontend/src/pages/relaycore/
 ## API Integration Requirements
 
 ### Expected Endpoints (to be created/verified)
+
 ```typescript
 // RelayCore API endpoints
-GET /api/relaycore/status          // System status and health
-GET /api/relaycore/metrics         // Real-time metrics
-GET /api/relaycore/models          // Available AI models
-GET /api/relaycore/routing-rules   // Current routing rules
-POST /api/relaycore/routing-rules  // Create/update rules
-GET /api/relaycore/cost-analytics  // Cost data and analytics
-WebSocket /ws/relaycore/live       // Real-time updates
+GET / api / relaycore / status; // System status and health
+GET / api / relaycore / metrics; // Real-time metrics
+GET / api / relaycore / models; // Available AI models
+GET / api / relaycore / routing - rules; // Current routing rules
+POST / api / relaycore / routing - rules; // Create/update rules
+GET / api / relaycore / cost - analytics; // Cost data and analytics
+WebSocket / ws / relaycore / live; // Real-time updates
 ```
 
 ### Type Definitions Needed
+
 ```typescript
 interface AIModel {
   id: string;
   provider: string;
   name: string;
-  status: 'active' | 'inactive' | 'error';
+  status: "active" | "inactive" | "error";
   costPerToken: number;
   avgResponseTime: number;
   successRate: number;
@@ -206,30 +222,35 @@ interface CostMetrics {
 ## Implementation Strategy
 
 ### Phase 1: Foundation Setup (1 hour)
+
 1. Create file structure and basic components
 2. Set up TypeScript interfaces and types
 3. Establish API client integration patterns
 4. Configure WebSocket connection management
 
 ### Phase 2: Core Components (3-4 hours)
+
 1. Build RelayCoreDashboard layout with shared components
 2. Implement AIRoutingMetrics with real-time data
 3. Create CostAnalytics with chart integration
 4. Develop basic SteeringRulesBuilder interface
 
 ### Phase 3: Advanced Features (2-3 hours)
+
 1. Complete ModelManagementWizard with multi-step flow
 2. Implement WebSocket real-time updates
 3. Add responsive design and mobile optimization
 4. Integrate with existing authentication system
 
 ### Phase 4: Testing & Polish (1 hour)
+
 1. Write comprehensive unit tests
 2. Test WebSocket connections and error handling
 3. Validate responsive design across screen sizes
 4. Performance optimization and bundle size check
 
 ## Success Criteria
+
 ✅ Functional admin interface with live data display
 ✅ Real-time metrics updating every 5 seconds via WebSocket
 ✅ Cost analytics with interactive charts and budget tracking
@@ -241,6 +262,7 @@ interface CostMetrics {
 ✅ TypeScript compliance with zero 'any' types
 
 ## Quality Gates
+
 - **TypeScript**: Strict typing with proper interfaces
 - **Performance**: <2s load time, <100ms interaction response
 - **Accessibility**: ARIA labels, keyboard navigation, screen reader support
@@ -248,6 +270,7 @@ interface CostMetrics {
 - **Responsive**: Mobile-first design with breakpoint testing
 
 ## Dependencies
+
 - **Blocking**: TASK-001 (TypeScript compliance) must be complete
 - **Shared Components**: StatusIndicator, MetricCard, SystemBadge
 - **API Client**: Unified API client from frontend/src/api/
@@ -255,6 +278,7 @@ interface CostMetrics {
 - **Charts**: Recharts or similar for data visualization
 
 ## Context Files to Reference
+
 - `shared/components/` - Foundation components to use
 - `frontend/src/api/` - Existing API patterns
 - `frontend/src/types/` - Existing type definitions
@@ -262,7 +286,9 @@ interface CostMetrics {
 - `frontend/src/pages/` - Existing page layout patterns
 
 ## Handback Criteria
+
 Task is complete when:
+
 1. All components render without errors
 2. WebSocket connections establish and update data
 3. Cost analytics display accurate data with charts

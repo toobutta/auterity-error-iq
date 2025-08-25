@@ -34,4 +34,3 @@ import { useErrorHandler } from "../shared/hooks";
 3. Document complex utilities and components
 4. Write tests for shared code
 5. Keep dependencies minimal
-

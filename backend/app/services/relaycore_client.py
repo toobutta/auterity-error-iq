@@ -8,7 +8,6 @@ from typing import Any, Dict, List, Optional
 
 import aiohttp
 from aiohttp import ClientTimeout
-
 from app.exceptions import AIServiceError
 
 logger = logging.getLogger(__name__)

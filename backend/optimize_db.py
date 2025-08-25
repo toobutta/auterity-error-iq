@@ -2,9 +2,8 @@
 
 import asyncio
 
-from sqlalchemy import text
-
 from app.database import engine
+from sqlalchemy import text
 
 
 async def optimize_database():

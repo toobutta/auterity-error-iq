@@ -69,7 +69,7 @@ CREATE INDEX IF NOT EXISTS idx_system_metrics_system_name ON shared.system_metri
 CREATE INDEX IF NOT EXISTS idx_system_metrics_recorded_at ON shared.system_metrics(recorded_at);
 
 -- Insert default admin user (password: admin123)
-INSERT INTO shared.users (username, email, hashed_password) 
+INSERT INTO shared.users (username, email, hashed_password)
 VALUES ('admin', 'admin@autmatrix.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj3L3jzjvG4e')
 ON CONFLICT (username) DO NOTHING;
 

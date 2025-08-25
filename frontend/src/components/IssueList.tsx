@@ -1,15 +1,15 @@
-import React, { useState, useMemo } from 'react';
-import { formatRelativeTime, getSeverityStyles } from '../lib/utils';
+import React, { useState, useMemo } from "react";
+import { formatRelativeTime, getSeverityStyles } from "../lib/utils";
 
 export interface Issue {
   id: string;
   title: string;
-  severity: 'critical' | 'high' | 'medium' | 'low';
-  status: 'open' | 'investigating' | 'resolved' | 'closed';
+  severity: "critical" | "high" | "medium" | "low";
+  status: "open" | "investigating" | "resolved" | "closed";
   timestamp: Date;
   affectedUsers: number;
   service: string;
-  environment: 'production' | 'staging' | 'development';
+  environment: "production" | "staging" | "development";
   assignee?: {
     name: string;
     avatar?: string;
@@ -35,12 +35,34 @@ interface IssueListProps {
   showFilters?: boolean;
 }
 
-const SeverityBadge: React.FC<{ severity: Issue['severity'] }> = ({ severity }) => {
+const SeverityBadge: React.FC<{ severity: Issue["severity"] }> = ({
+  severity,
+}) => {
   const severityConfig = {
-    critical: { label: 'Critical', bg: 'bg-red-100', text: 'text-red-800', dot: 'bg-red-500' },
-    high: { label: 'High', bg: 'bg-orange-100', text: 'text-orange-800', dot: 'bg-orange-500' },
-    medium: { label: 'Medium', bg: 'bg-yellow-100', text: 'text-yellow-800', dot: 'bg-yellow-500' },
-    low: { label: 'Low', bg: 'bg-green-100', text: 'text-green-800', dot: 'bg-green-500' },
+    critical: {
+      label: "Critical",
+      bg: "bg-red-100",
+      text: "text-red-800",
+      dot: "bg-red-500",
+    },
+    high: {
+      label: "High",
+      bg: "bg-orange-100",
+      text: "text-orange-800",
+      dot: "bg-orange-500",
+    },
+    medium: {
+      label: "Medium",
+      bg: "bg-yellow-100",
+      text: "text-yellow-800",
+      dot: "bg-yellow-500",
+    },
+    low: {
+      label: "Low",
+      bg: "bg-green-100",
+      text: "text-green-800",
+      dot: "bg-green-500",
+    },
   };
 
   const config = severityConfig[severity];
@@ -55,12 +77,16 @@ const SeverityBadge: React.FC<{ severity: Issue['severity'] }> = ({ severity }) 
   );
 };
 
-const StatusBadge: React.FC<{ status: Issue['status'] }> = ({ status }) => {
+const StatusBadge: React.FC<{ status: Issue["status"] }> = ({ status }) => {
   const statusConfig = {
-    open: { label: 'Open', bg: 'bg-red-100', text: 'text-red-800' },
-    investigating: { label: 'Investigating', bg: 'bg-blue-100', text: 'text-blue-800' },
-    resolved: { label: 'Resolved', bg: 'bg-green-100', text: 'text-green-800' },
-    closed: { label: 'Closed', bg: 'bg-gray-100', text: 'text-gray-800' },
+    open: { label: "Open", bg: "bg-red-100", text: "text-red-800" },
+    investigating: {
+      label: "Investigating",
+      bg: "bg-blue-100",
+      text: "text-blue-800",
+    },
+    resolved: { label: "Resolved", bg: "bg-green-100", text: "text-green-800" },
+    closed: { label: "Closed", bg: "bg-gray-100", text: "text-gray-800" },
   };
 
   const config = statusConfig[status];
@@ -74,24 +100,32 @@ const StatusBadge: React.FC<{ status: Issue['status'] }> = ({ status }) => {
   );
 };
 
-const IssueRow: React.FC<{ issue: Issue; onClick?: () => void }> = ({ issue, onClick }) => {
+const IssueRow: React.FC<{ issue: Issue; onClick?: () => void }> = ({
+  issue,
+  onClick,
+}) => {
   return (
-    <tr className="hover:bg-gray-50 cursor-pointer border-b border-gray-200" onClick={onClick}>
+    <tr
+      className="hover:bg-gray-50 cursor-pointer border-b border-gray-200"
+      onClick={onClick}
+    >
       <td className="px-6 py-4">
         <div className="flex items-start space-x-3">
           <SeverityBadge severity={issue.severity} />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-gray-900 truncate">{issue.title}</p>
+            <p className="text-sm font-medium text-gray-900 truncate">
+              {issue.title}
+            </p>
             <div className="flex items-center space-x-2 mt-1">
               <span className="text-xs text-gray-500">{issue.service}</span>
               <span className="text-xs text-gray-300">•</span>
               <span
                 className={`text-xs px-1.5 py-0.5 rounded ${
-                  issue.environment === 'production'
-                    ? 'bg-red-100 text-red-700'
-                    : issue.environment === 'staging'
-                      ? 'bg-yellow-100 text-yellow-700'
-                      : 'bg-green-100 text-green-700'
+                  issue.environment === "production"
+                    ? "bg-red-100 text-red-700"
+                    : issue.environment === "staging"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-green-100 text-green-700"
                 }`}
               >
                 {issue.environment}
@@ -112,7 +146,9 @@ const IssueRow: React.FC<{ issue: Issue; onClick?: () => void }> = ({ issue, onC
       <td className="px-6 py-4 text-sm text-gray-500">
         <div>
           <div>{formatRelativeTime(issue.lastOccurrence)}</div>
-          <div className="text-xs text-gray-400">{issue.occurrenceCount} occurrences</div>
+          <div className="text-xs text-gray-400">
+            {issue.occurrenceCount} occurrences
+          </div>
         </div>
       </td>
 
@@ -148,13 +184,15 @@ const FilterBar: React.FC<{
               type="text"
               placeholder="Search issues..."
               value={filters.search}
-              onChange={(e) => onFilterChange({ ...filters, search: e.target.value })}
+              onChange={(e) =>
+                onFilterChange({ ...filters, search: e.target.value })
+              }
               className="block w-64 px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
             />
           </div>
 
           <select
-            value={filters.severity[0] || ''}
+            value={filters.severity[0] || ""}
             onChange={(e) =>
               onFilterChange({
                 ...filters,
@@ -171,7 +209,7 @@ const FilterBar: React.FC<{
           </select>
 
           <select
-            value={filters.status[0] || ''}
+            value={filters.status[0] || ""}
             onChange={(e) =>
               onFilterChange({
                 ...filters,
@@ -242,18 +280,24 @@ export const IssueList: React.FC<IssueListProps> = ({
     status: [],
     service: [],
     environment: [],
-    search: '',
+    search: "",
   });
 
   const filteredIssues = useMemo(() => {
     return issues.filter((issue) => {
       // Search filter
-      if (filters.search && !issue.title.toLowerCase().includes(filters.search.toLowerCase())) {
+      if (
+        filters.search &&
+        !issue.title.toLowerCase().includes(filters.search.toLowerCase())
+      ) {
         return false;
       }
 
       // Severity filter
-      if (filters.severity.length > 0 && !filters.severity.includes(issue.severity)) {
+      if (
+        filters.severity.length > 0 &&
+        !filters.severity.includes(issue.severity)
+      ) {
         return false;
       }
 
@@ -307,11 +351,18 @@ export const IssueList: React.FC<IssueListProps> = ({
               <LoadingSkeleton />
             ) : filteredIssues.length > 0 ? (
               filteredIssues.map((issue) => (
-                <IssueRow key={issue.id} issue={issue} onClick={() => onIssueClick?.(issue)} />
+                <IssueRow
+                  key={issue.id}
+                  issue={issue}
+                  onClick={() => onIssueClick?.(issue)}
+                />
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                <td
+                  colSpan={5}
+                  className="px-6 py-12 text-center text-gray-500"
+                >
                   <div className="flex flex-col items-center">
                     <svg
                       className="w-12 h-12 text-gray-400 mb-4"
@@ -327,7 +378,9 @@ export const IssueList: React.FC<IssueListProps> = ({
                       />
                     </svg>
                     <p className="text-lg font-medium">No issues found</p>
-                    <p className="text-sm">Try adjusting your filters or check back later.</p>
+                    <p className="text-sm">
+                      Try adjusting your filters or check back later.
+                    </p>
                   </div>
                 </td>
               </tr>

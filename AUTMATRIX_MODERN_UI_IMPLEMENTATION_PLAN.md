@@ -2,32 +2,33 @@
 
 ## 🎯 Project Overview
 
-**Platform**: AutoMatrix AI Hub - Automotive Dealership Workflow Automation  
-**Current Stack**: React 18.2.0 + TypeScript 5.2.2 + Vite 7.0.6 + TailwindCSS 3.3.5  
-**Core Features**: Drag-and-drop workflow builder, automotive-specific nodes, template system, real-time monitoring  
+**Platform**: AutoMatrix AI Hub - Automotive Dealership Workflow Automation
+**Current Stack**: React 18.2.0 + TypeScript 5.2.2 + Vite 7.0.6 + TailwindCSS 3.3.5
+**Core Features**: Drag-and-drop workflow builder, automotive-specific nodes, template system, real-time monitoring
 
 ## 🎨 Modern Design System Foundation
 
 ### **1. Automotive-Themed Color Palette**
+
 ```css
 :root {
   /* Primary Automotive Colors */
-  --automotive-blue: #1e40af;      /* Professional Blue */
-  --automotive-silver: #64748b;    /* Metallic Silver */
-  --automotive-gold: #f59e0b;      /* Accent Gold */
-  --automotive-red: #dc2626;       /* Alert Red */
-  --automotive-green: #059669;     /* Success Green */
-  
+  --automotive-blue: #1e40af; /* Professional Blue */
+  --automotive-silver: #64748b; /* Metallic Silver */
+  --automotive-gold: #f59e0b; /* Accent Gold */
+  --automotive-red: #dc2626; /* Alert Red */
+  --automotive-green: #059669; /* Success Green */
+
   /* Glassmorphism */
   --glass-bg: rgba(255, 255, 255, 0.12);
   --glass-border: rgba(255, 255, 255, 0.18);
   --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  
+
   /* Gradients */
   --gradient-primary: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
   --gradient-accent: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
   --gradient-success: linear-gradient(135deg, #059669 0%, #10b981 100%);
-  
+
   /* Dark Mode Support */
   --dark-bg: #0f172a;
   --dark-surface: #1e293b;
@@ -36,28 +37,61 @@
 ```
 
 ### **2. Typography System**
+
 ```css
 /* Inter Font Family for Modern Feel */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 .font-automotive {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
 
 /* Typography Scale */
-.text-display { font-size: 2.5rem; font-weight: 700; line-height: 1.2; }
-.text-heading-1 { font-size: 2rem; font-weight: 600; line-height: 1.3; }
-.text-heading-2 { font-size: 1.5rem; font-weight: 600; line-height: 1.4; }
-.text-body-large { font-size: 1.125rem; font-weight: 400; line-height: 1.6; }
-.text-body { font-size: 1rem; font-weight: 400; line-height: 1.6; }
-.text-caption { font-size: 0.875rem; font-weight: 400; line-height: 1.5; }
+.text-display {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.text-heading-1 {
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.text-heading-2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.text-body-large {
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+.text-body {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+.text-caption {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
 ```
 
 ### **3. Modern Animation System**
+
 ```css
 /* Micro-interactions */
 .hover-lift {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 .hover-lift:hover {
   transform: translateY(-2px);
@@ -65,13 +99,24 @@
 }
 
 /* Smooth transitions */
-.transition-smooth { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-.transition-bounce { transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.transition-bounce {
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
 
 /* Loading animations */
 @keyframes pulse-automotive {
-  0%, 100% { opacity: 1; background-color: var(--automotive-blue); }
-  50% { opacity: 0.7; background-color: var(--automotive-silver); }
+  0%,
+  100% {
+    opacity: 1;
+    background-color: var(--automotive-blue);
+  }
+  50% {
+    opacity: 0.7;
+    background-color: var(--automotive-silver);
+  }
 }
 ```
 
@@ -80,49 +125,51 @@
 ### **Phase 1: Core Infrastructure (Week 1)**
 
 #### **1.1 Modern Design System Setup**
+
 ```typescript
 // frontend/src/lib/design-tokens.ts
 export const automotiveDesignTokens = {
   colors: {
     primary: {
-      50: '#eff6ff',
-      500: '#1e40af',
-      900: '#1e3a8a'
+      50: "#eff6ff",
+      500: "#1e40af",
+      900: "#1e3a8a",
     },
     automotive: {
-      blue: '#1e40af',
-      silver: '#64748b',
-      gold: '#f59e0b',
-      red: '#dc2626',
-      green: '#059669'
+      blue: "#1e40af",
+      silver: "#64748b",
+      gold: "#f59e0b",
+      red: "#dc2626",
+      green: "#059669",
     },
     semantic: {
-      dealership: '#1e40af',
-      inventory: '#059669',
-      customer: '#f59e0b',
-      service: '#8b5cf6',
-      finance: '#06b6d4'
-    }
+      dealership: "#1e40af",
+      inventory: "#059669",
+      customer: "#f59e0b",
+      service: "#8b5cf6",
+      finance: "#06b6d4",
+    },
   },
   spacing: {
     automotive: {
-      compact: '4px',
-      comfortable: '8px',
-      spacious: '16px',
-      dashboard: '24px'
-    }
+      compact: "4px",
+      comfortable: "8px",
+      spacious: "16px",
+      dashboard: "24px",
+    },
   },
   shadows: {
     automotive: {
-      card: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-      elevated: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-      floating: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
-    }
-  }
+      card: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+      elevated: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+      floating: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
+    },
+  },
 };
 ```
 
 #### **1.2 Enhanced Utility Classes**
+
 ```css
 /* frontend/src/styles/automotive-utilities.css */
 @layer utilities {
@@ -133,23 +180,37 @@ export const automotiveDesignTokens = {
     border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 16px;
   }
-  
+
   /* Automotive Gradients */
-  .bg-automotive-primary { background: var(--gradient-primary); }
-  .bg-automotive-accent { background: var(--gradient-accent); }
-  .bg-automotive-success { background: var(--gradient-success); }
-  
+  .bg-automotive-primary {
+    background: var(--gradient-primary);
+  }
+  .bg-automotive-accent {
+    background: var(--gradient-accent);
+  }
+  .bg-automotive-success {
+    background: var(--gradient-success);
+  }
+
   /* Node Type Colors */
-  .node-customer { @apply bg-yellow-50 border-yellow-200 text-yellow-800; }
-  .node-inventory { @apply bg-green-50 border-green-200 text-green-800; }
-  .node-service { @apply bg-purple-50 border-purple-200 text-purple-800; }
-  .node-finance { @apply bg-cyan-50 border-cyan-200 text-cyan-800; }
-  
+  .node-customer {
+    @apply bg-yellow-50 border-yellow-200 text-yellow-800;
+  }
+  .node-inventory {
+    @apply bg-green-50 border-green-200 text-green-800;
+  }
+  .node-service {
+    @apply bg-purple-50 border-purple-200 text-purple-800;
+  }
+  .node-finance {
+    @apply bg-cyan-50 border-cyan-200 text-cyan-800;
+  }
+
   /* Interactive States */
   .interactive-hover {
     @apply transition-all duration-200 hover:scale-105 hover:shadow-lg;
   }
-  
+
   /* Dashboard Metrics */
   .metric-card {
     @apply glass-card p-6 hover-lift transition-smooth;
@@ -160,6 +221,7 @@ export const automotiveDesignTokens = {
 ### **Phase 2: Navigation & Layout (Week 1-2)**
 
 #### **2.1 Modern Layout.tsx Enhancement**
+
 ```typescript
 // frontend/src/components/Layout.tsx - Enhanced Version
 import React, { useState } from 'react';
@@ -186,7 +248,7 @@ const ModernLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
             )}
           </div>
         </div>
-        
+
         <nav className="mt-8 space-y-2 px-4">
           <NavItem icon={<DashboardIcon />} label="Dashboard" href="/dashboard" collapsed={sidebarCollapsed} />
           <NavItem icon={<WorkflowIcon />} label="Workflows" href="/workflows" collapsed={sidebarCollapsed} />
@@ -199,13 +261,13 @@ const ModernLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       <main className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
         {/* Top Bar */}
         <header className="h-16 glass-card flex items-center justify-between px-6">
-          <button 
+          <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="p-2 rounded-lg hover:bg-white/10 transition-colors"
           >
             ☰
           </button>
-          
+
           <div className="flex items-center space-x-4">
             <button
               onClick={toggleTheme}
@@ -228,6 +290,7 @@ const ModernLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 ```
 
 #### **2.2 Enhanced Navigation Component**
+
 ```typescript
 // frontend/src/components/NavItem.tsx
 import React from 'react';
@@ -248,8 +311,8 @@ const NavItem: React.FC<NavItemProps> = ({ icon, label, href, collapsed }) => {
     <Link
       to={href}
       className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 group ${
-        isActive 
-          ? 'bg-automotive-primary text-white shadow-lg' 
+        isActive
+          ? 'bg-automotive-primary text-white shadow-lg'
           : 'text-gray-600 hover:bg-white/10 hover:text-automotive-blue'
       }`}
     >
@@ -267,12 +330,13 @@ const NavItem: React.FC<NavItemProps> = ({ icon, label, href, collapsed }) => {
 ### **Phase 3: Workflow Builder Modernization (Week 2-3)**
 
 #### **3.1 Enhanced Workflow Builder UI**
+
 ```typescript
 // frontend/src/components/workflow-builder/ModernWorkflowBuilder.tsx
 import React, { useState, useCallback } from 'react';
-import ReactFlow, { 
-  Background, 
-  Controls, 
+import ReactFlow, {
+  Background,
+  Controls,
   MiniMap,
   useNodesState,
   useEdgesState,
@@ -297,7 +361,7 @@ const ModernWorkflowBuilder: React.FC = () => {
   return (
     <div className="h-screen flex bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Modern Node Palette */}
-      <ModernNodePalette 
+      <ModernNodePalette
         onNodeSelect={setSelectedNodeType}
         selectedNodeType={selectedNodeType}
       />
@@ -305,7 +369,7 @@ const ModernWorkflowBuilder: React.FC = () => {
       {/* Canvas Area */}
       <div className="flex-1 relative">
         {/* Toolbar */}
-        <WorkflowToolbar 
+        <WorkflowToolbar
           onSave={() => {}}
           onTest={() => {}}
           onDeploy={() => {}}
@@ -327,19 +391,19 @@ const ModernWorkflowBuilder: React.FC = () => {
               financeApproval: FinanceApprovalNode,
             }}
           >
-            <Background 
-              color="#64748b" 
-              gap={20} 
+            <Background
+              color="#64748b"
+              gap={20}
               size={1}
               style={{ opacity: 0.1 }}
             />
-            <Controls 
+            <Controls
               className="glass-card"
               showZoom={true}
               showFitView={true}
               showInteractive={true}
             />
-            <MiniMap 
+            <MiniMap
               className="glass-card"
               nodeColor="#1e40af"
               maskColor="rgba(255, 255, 255, 0.2)"
@@ -353,6 +417,7 @@ const ModernWorkflowBuilder: React.FC = () => {
 ```
 
 #### **3.2 Modern Node Palette**
+
 ```typescript
 // frontend/src/components/workflow-builder/ModernNodePalette.tsx
 import React from 'react';
@@ -406,9 +471,9 @@ const automotiveNodeCategories = [
   }
 ];
 
-export const ModernNodePalette: React.FC<NodePaletteProps> = ({ 
-  onNodeSelect, 
-  selectedNodeType 
+export const ModernNodePalette: React.FC<NodePaletteProps> = ({
+  onNodeSelect,
+  selectedNodeType
 }) => {
   return (
     <div className="w-80 glass-card m-4 overflow-y-auto">
@@ -426,7 +491,7 @@ export const ModernNodePalette: React.FC<NodePaletteProps> = ({
               <span className="text-lg">{category.icon}</span>
               <span>{category.name}</span>
             </div>
-            
+
             <div className="space-y-2">
               {category.nodes.map((node) => (
                 <DraggableNode
@@ -466,8 +531,8 @@ const DraggableNode: React.FC<{
       className={`p-3 rounded-lg border cursor-move transition-all duration-200 hover-lift ${
         categoryColor
       } ${
-        isSelected 
-          ? 'ring-2 ring-automotive-blue shadow-lg' 
+        isSelected
+          ? 'ring-2 ring-automotive-blue shadow-lg'
           : 'hover:shadow-md'
       } ${
         isDragging ? 'opacity-50' : ''
@@ -488,6 +553,7 @@ const DraggableNode: React.FC<{
 ### **Phase 4: Dashboard Modernization (Week 3)**
 
 #### **4.1 Modern Dashboard Page**
+
 ```typescript
 // frontend/src/pages/ModernDashboard.tsx
 import React, { Suspense } from 'react';
@@ -568,6 +634,7 @@ const ModernDashboard: React.FC = () => {
 ```
 
 #### **4.2 Modern Metric Card Component**
+
 ```typescript
 // frontend/src/components/MetricCard.tsx
 import React from 'react';
@@ -610,12 +677,12 @@ export const MetricCard: React.FC<MetricCardProps> = ({
             </p>
           )}
         </div>
-        
+
         <div className={`p-3 rounded-lg ${gradient} text-white text-2xl transition-transform duration-200 group-hover:scale-110`}>
           {icon}
         </div>
       </div>
-      
+
       {/* Subtle bottom border animation */}
       <div className="absolute bottom-0 left-0 w-0 h-1 bg-automotive-blue transition-all duration-300 group-hover:w-full rounded-full"></div>
     </div>
@@ -626,6 +693,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 ### **Phase 5: Authentication & Forms (Week 4)**
 
 #### **5.1 Modern Login Form**
+
 ```typescript
 // frontend/src/components/auth/ModernLoginForm.tsx
 import React, { useState } from 'react';
@@ -636,7 +704,7 @@ const ModernLoginForm: React.FC = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -740,6 +808,7 @@ const ModernLoginForm: React.FC = () => {
 ## 🎨 Advanced Features Implementation
 
 ### **1. Dark Mode System**
+
 ```typescript
 // frontend/src/hooks/useTheme.ts
 import { useState, useEffect, createContext, useContext } from 'react';
@@ -799,6 +868,7 @@ export const useTheme = () => {
 ```
 
 ### **2. Advanced Animation System**
+
 ```css
 /* frontend/src/styles/animations.css */
 @keyframes slideInUp {
@@ -843,12 +913,18 @@ export const useTheme = () => {
 
 .animate-shimmer {
   animation: shimmer 2s infinite linear;
-  background: linear-gradient(110deg, transparent 40%, rgba(255, 255, 255, 0.5) 50%, transparent 60%);
+  background: linear-gradient(
+    110deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 60%
+  );
   background-size: 200px 100%;
 }
 ```
 
 ### **3. Responsive Grid System**
+
 ```css
 /* frontend/src/styles/grid.css */
 .automotive-grid {
@@ -881,24 +957,28 @@ export const useTheme = () => {
 ## 📊 Implementation Timeline
 
 ### **Week 1: Foundation**
+
 - [ ] Design system setup
 - [ ] Modern utilities and animations
 - [ ] Enhanced Layout and Navigation
 - [ ] Theme system implementation
 
 ### **Week 2: Core Components**
+
 - [ ] Workflow Builder modernization
 - [ ] Node Palette enhancement
 - [ ] Canvas and toolbar updates
 - [ ] Drag-and-drop improvements
 
 ### **Week 3: Dashboard & Templates**
+
 - [ ] Dashboard page modernization
 - [ ] Metric cards and charts
 - [ ] Template library enhancement
 - [ ] Template preview modernization
 
 ### **Week 4: Authentication & Polish**
+
 - [ ] Modern login/registration forms
 - [ ] User management interface
 - [ ] Settings and preferences
@@ -907,18 +987,21 @@ export const useTheme = () => {
 ## 🚀 Success Metrics
 
 ### **Performance Targets**
+
 - [ ] Lighthouse Performance Score: 90+
 - [ ] First Contentful Paint: <1.5s
 - [ ] Cumulative Layout Shift: <0.1
 - [ ] Bundle size reduction: 20%
 
 ### **User Experience Goals**
+
 - [ ] 40% reduction in task completion time
 - [ ] 90% user satisfaction score
 - [ ] Mobile responsiveness: 100%
 - [ ] Accessibility score: WCAG 2.2 AA
 
 ### **Technical Excellence**
+
 - [ ] Component library: 100% TypeScript
 - [ ] Test coverage: 85%+
 - [ ] Storybook documentation: Complete

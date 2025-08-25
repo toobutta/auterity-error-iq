@@ -1,6 +1,7 @@
 # Technology Stack & Build System
 
 ## Backend Stack
+
 - **Framework**: FastAPI with Python 3.11+
 - **Database**: PostgreSQL 15 with SQLAlchemy ORM
 - **AI Integration**: OpenAI API for GPT-powered workflows
@@ -8,6 +9,7 @@
 - **Migration**: Alembic for database migrations
 
 ## Frontend Stack
+
 - **Framework**: React 18 with TypeScript
 - **Build Tool**: Vite for fast development and building
 - **Styling**: Tailwind CSS for utility-first styling
@@ -20,11 +22,13 @@
 - **State Management**: React Context API with custom hooks
 
 ## Development Environment
+
 - **Containerization**: Docker and Docker Compose
 - **Database**: PostgreSQL container for local development
 - **Hot Reload**: Both backend (uvicorn) and frontend (Vite) support hot reload
 
 ## Code Quality & Standards
+
 - **Python**: Black formatter (88 char line length), Flake8 linter, isort for imports
 - **TypeScript**: ESLint with TypeScript rules, Prettier for formatting
 - **Testing**: pytest for backend, Vitest for frontend
@@ -33,6 +37,7 @@
 ## Common Commands
 
 ### Development Setup
+
 ```bash
 # Start full development environment
 docker-compose up -d
@@ -42,6 +47,7 @@ cp .env.example .env
 ```
 
 ### Backend Development
+
 ```bash
 cd backend
 pip install -r requirements.txt
@@ -53,6 +59,7 @@ alembic upgrade head            # Run migrations
 ```
 
 ### Frontend Development
+
 ```bash
 cd frontend
 npm install
@@ -63,6 +70,7 @@ npm run build                  # Production build
 ```
 
 ### Database Operations
+
 ```bash
 # Access PostgreSQL container
 docker-compose exec postgres psql -U postgres -d workflow_engine
@@ -72,5 +80,6 @@ cd backend && alembic revision --autogenerate -m "description"
 ```
 
 ## API Documentation
+
 - Automatic OpenAPI docs available at `http://localhost:8000/docs`
 - ReDoc format at `http://localhost:8000/redoc`

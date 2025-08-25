@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 import pandas as pd
+from app.config.settings import get_settings
 from evidently import ColumnMapping
 from evidently.metrics import (
     DataDriftMetric,
@@ -16,8 +17,6 @@ from evidently.tests import (
     TestNumberOfColumnsWithMissingValues,
     TestShareOfMissingValues,
 )
-
-from app.config.settings import get_settings
 
 
 class MLMonitoringService:

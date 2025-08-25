@@ -87,7 +87,7 @@ mkdir -p src/components/charts/optimized
 cat > src/components/charts/optimized/LazyLineChart.tsx << 'EOF'
 import { lazy } from 'react';
 
-export const LazyLineChart = lazy(() => 
+export const LazyLineChart = lazy(() =>
   import('../LineChart').then(module => ({
     default: module.LineChart
   }))
@@ -97,7 +97,7 @@ EOF
 cat > src/components/charts/optimized/LazyBarChart.tsx << 'EOF'
 import { lazy } from 'react';
 
-export const LazyBarChart = lazy(() => 
+export const LazyBarChart = lazy(() =>
   import('../BarChart').then(module => ({
     default: module.BarChart
   }))
@@ -128,10 +128,10 @@ async def optimize_database():
             CREATE INDEX IF NOT EXISTS idx_executions_status ON workflow_executions(status);
             CREATE INDEX IF NOT EXISTS idx_templates_category ON templates(category);
         """))
-        
+
         # Update table statistics
         await conn.execute(text("ANALYZE;"))
-        
+
     print("Database optimizations completed")
 
 if __name__ == "__main__":
@@ -151,16 +151,16 @@ performance:
     - memory_usage
     - cpu_usage
     - database_queries
-  
+
   thresholds:
     response_time_ms: 2000
     memory_usage_percent: 85
     cpu_usage_percent: 80
-    
+
   alerts:
     email: true
     slack: false
-    
+
   retention_days: 30
 EOF
 

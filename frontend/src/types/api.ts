@@ -32,13 +32,13 @@ export interface SystemMetrics {
     bytes_received: number;
   };
   alerts: Alert[];
-  status: 'healthy' | 'warning' | 'error';
+  status: "healthy" | "warning" | "error";
 }
 
 export interface Alert {
   id: string;
-  type: 'cpu' | 'memory' | 'disk' | 'network' | 'custom';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  type: "cpu" | "memory" | "disk" | "network" | "custom";
+  severity: "low" | "medium" | "high" | "critical";
   message: string;
   timestamp: Date;
   resolved: boolean;
@@ -48,7 +48,7 @@ export interface Alert {
 export interface AlertSettings {
   id: string;
   name: string;
-  type: Alert['type'];
+  type: Alert["type"];
   threshold: number;
   enabled: boolean;
   notifications: {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   LineChart as RechartsLine,
   Line,
@@ -8,38 +8,38 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from 'recharts';
-import { PerformanceMetrics } from '../../types/performance';
+} from "recharts";
+import { PerformanceMetrics } from "../../types/performance";
 
 interface LineChartProps {
   data: PerformanceMetrics[];
-  type: 'execution-time' | 'success-rate' | 'resource-usage';
-  'aria-label'?: string;
+  type: "execution-time" | "success-rate" | "resource-usage";
+  "aria-label"?: string;
   className?: string;
 }
 
 export const LineChart: React.FC<LineChartProps> = ({
   data,
   type,
-  'aria-label': ariaLabel,
-  className = '',
+  "aria-label": ariaLabel,
+  className = "",
 }) => {
   const getLineColor = () => {
     switch (type) {
-      case 'execution-time':
-        return '#3B82F6'; // Blue
-      case 'success-rate':
-        return '#10B981'; // Green
+      case "execution-time":
+        return "#3B82F6"; // Blue
+      case "success-rate":
+        return "#10B981"; // Green
       default:
-        return '#6B7280'; // Gray
+        return "#6B7280"; // Gray
     }
   };
 
   const formatTooltipValue = (value: number) => {
     switch (type) {
-      case 'execution-time':
+      case "execution-time":
         return value < 1000 ? `${value}ms` : `${(value / 1000).toFixed(2)}s`;
-      case 'success-rate':
+      case "success-rate":
         return `${(value * 100).toFixed(1)}%`;
       default:
         return `${value}`;
@@ -48,48 +48,55 @@ export const LineChart: React.FC<LineChartProps> = ({
 
   const getYAxisLabel = () => {
     switch (type) {
-      case 'execution-time':
-        return 'Time (ms)';
-      case 'success-rate':
-        return 'Success Rate (%)';
-      case 'resource-usage':
-        return 'Usage (%)';
+      case "execution-time":
+        return "Time (ms)";
+      case "success-rate":
+        return "Success Rate (%)";
+      case "resource-usage":
+        return "Usage (%)";
       default:
-        return 'Value';
+        return "Value";
     }
   };
 
   const getDataKey = () => {
     switch (type) {
-      case 'execution-time':
-        return 'executionTime';
-      case 'success-rate':
-        return 'successRate';
-      case 'resource-usage':
-        return 'resourceUsage.cpu';
+      case "execution-time":
+        return "executionTime";
+      case "success-rate":
+        return "successRate";
+      case "resource-usage":
+        return "resourceUsage.cpu";
       default:
-        return 'executionTime';
+        return "executionTime";
     }
   };
 
   const formatXAxisValue = (value: string | Date): string => {
     const date = new Date(value);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const chartData = data.map((item) => ({
     ...item,
-    timestamp: item.timestamp instanceof Date ? item.timestamp.toISOString() : item.timestamp,
+    timestamp:
+      item.timestamp instanceof Date
+        ? item.timestamp.toISOString()
+        : item.timestamp,
     successRate: item.successRate ? item.successRate * 100 : 0, // Convert to percentage for display
   }));
 
   return (
-    <div className={`w-full h-80 ${className}`} role="img" aria-label={ariaLabel}>
+    <div
+      className={`w-full h-80 ${className}`}
+      role="img"
+      aria-label={ariaLabel}
+    >
       <ResponsiveContainer width="100%" height="100%">
         <RechartsLine
           data={chartData}
@@ -113,17 +120,22 @@ export const LineChart: React.FC<LineChartProps> = ({
             label={{
               value: getYAxisLabel(),
               angle: -90,
-              position: 'insideLeft',
+              position: "insideLeft",
             }}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: '#F9FAFB',
-              border: '1px solid #E5E7EB',
-              borderRadius: '6px',
+              backgroundColor: "#F9FAFB",
+              border: "1px solid #E5E7EB",
+              borderRadius: "6px",
             }}
-            formatter={(value: number) => [formatTooltipValue(value), getYAxisLabel()]}
-            labelFormatter={(label: string) => `Time: ${formatXAxisValue(label)}`}
+            formatter={(value: number) => [
+              formatTooltipValue(value),
+              getYAxisLabel(),
+            ]}
+            labelFormatter={(label: string) =>
+              `Time: ${formatXAxisValue(label)}`
+            }
           />
           <Legend />
           <Line

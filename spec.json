@@ -125,11 +125,6 @@
       "override_rate": "<= 15%",
       "user_satisfaction": ">= 80%"
     },
-    "tools": [
-      "Grafana",
-      "Postgres",
-      "Audit Trail DB",
-      "Surveys"
-    ]
+    "tools": ["Grafana", "Postgres", "Audit Trail DB", "Surveys"]
   }
 }

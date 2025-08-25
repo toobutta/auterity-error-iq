@@ -1,4 +1,4 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator } from "@playwright/test";
 
 export class LoginPage {
   readonly page: Page;
@@ -16,32 +16,34 @@ export class LoginPage {
     this.passwordInput = page.locator('[data-testid="password-input"]');
     this.loginButton = page.locator('[data-testid="login-button"]');
     this.registerLink = page.locator('[data-testid="register-link"]');
-    this.forgotPasswordLink = page.locator('[data-testid="forgot-password-link"]');
+    this.forgotPasswordLink = page.locator(
+      '[data-testid="forgot-password-link"]',
+    );
     this.errorMessage = page.locator('[data-testid="error-message"]');
     this.successMessage = page.locator('[data-testid="success-message"]');
   }
 
   async goto() {
-    await this.page.goto('/login');
-    await this.page.waitForLoadState('networkidle');
+    await this.page.goto("/login");
+    await this.page.waitForLoadState("networkidle");
   }
 
   async login(email: string, password: string) {
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
     await this.loginButton.click();
-    
+
     // Wait for either success (redirect) or error message
     await Promise.race([
-      this.page.waitForURL('**/dashboard'),
-      this.errorMessage.waitFor({ state: 'visible' })
+      this.page.waitForURL("**/dashboard"),
+      this.errorMessage.waitFor({ state: "visible" }),
     ]);
   }
 
   async isLoggedIn() {
     try {
-      await this.page.goto('/dashboard');
-      return this.page.url().includes('/dashboard');
+      await this.page.goto("/dashboard");
+      return this.page.url().includes("/dashboard");
     } catch {
       return false;
     }
@@ -51,7 +53,7 @@ export class LoginPage {
     const logoutButton = this.page.locator('[data-testid="logout-button"]');
     if (await logoutButton.isVisible()) {
       await logoutButton.click();
-      await this.page.waitForURL('**/login');
+      await this.page.waitForURL("**/login");
     }
   }
 

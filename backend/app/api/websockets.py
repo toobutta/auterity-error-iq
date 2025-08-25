@@ -6,11 +6,10 @@ import logging
 from typing import Dict, Set
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, status
-from sqlalchemy.orm import Session
-
 from app.database import get_db
 from app.models.execution import ExecutionLog, WorkflowExecution
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, status
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

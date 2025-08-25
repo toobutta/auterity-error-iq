@@ -1,6 +1,5 @@
-from fastapi import APIRouter
-
 from app.services.registry import service_registry
+from fastapi import APIRouter
 
 router = APIRouter()
 

@@ -3,7 +3,6 @@
 from datetime import datetime
 
 import pytest
-
 from app.services.step_executors.ai_executor import AIStepExecutor
 from app.services.step_executors.base_executor import StepType
 from app.services.step_executors.factory import StepExecutorFactory

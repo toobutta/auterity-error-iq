@@ -10,10 +10,10 @@ from typing import Dict, List
 from uuid import UUID
 
 import httpx
-from sqlalchemy.orm import Session
 
 # Import the models from the migration we created
 from app.models.mcp_server import MCPServer, MCPServerStatus
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

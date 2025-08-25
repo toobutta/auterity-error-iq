@@ -42,25 +42,25 @@ SSL_DIR="./nginx/ssl"
 
 setup_ssl_directories() {
     log_info "Setting up SSL directories..."
-    
+
     for domain in "${DOMAINS[@]}"; do
         mkdir -p "$SSL_DIR/$domain"
     done
-    
+
     log_success "SSL directories created"
 }
 
 generate_self_signed_certificates() {
     log_info "Generating self-signed certificates for development..."
-    
+
     for domain in "${DOMAINS[@]}"; do
         log_info "Generating certificate for $domain..."
-        
+
         openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
             -keyout "$SSL_DIR/$domain/privkey.pem" \
             -out "$SSL_DIR/$domain/fullchain.pem" \
             -subj "/C=US/ST=State/L=City/O=AutoMatrix/CN=$domain"
-        
+
         log_success "Self-signed certificate generated for $domain"
     done
 }
@@ -74,9 +74,9 @@ main() {
     echo "2. Skip SSL setup (use HTTP only)"
     echo
     read -p "Enter your choice (1 or 2): " choice
-    
+
     setup_ssl_directories
-    
+
     case $choice in
         1)
             generate_self_signed_certificates
@@ -91,7 +91,7 @@ main() {
             exit 1
             ;;
     esac
-    
+
     echo
     log_success "SSL setup completed! You can now start the production deployment."
 }

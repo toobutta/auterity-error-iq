@@ -9,6 +9,7 @@ This guide provides step-by-step instructions for integrating with Auterity's in
 ### 1. Message Queue Integration
 
 #### Basic Setup
+
 ```python
 # app/services/workflow_service.py
 from app.services.message_queue import get_message_queue
@@ -16,7 +17,7 @@ from app.services.message_queue import get_message_queue
 class WorkflowService:
     def __init__(self):
         self.message_queue = get_message_queue()
-    
+
     async def execute_workflow_async(self, workflow_id: str, input_data: dict):
         # Queue workflow for background processing
         message_id = self.message_queue.enqueue(
@@ -33,6 +34,7 @@ class WorkflowService:
 ```
 
 #### Worker Implementation
+
 ```python
 # app/workers/workflow_worker.py
 import asyncio
@@ -43,7 +45,7 @@ class WorkflowWorker:
     def __init__(self):
         self.message_queue = get_message_queue()
         self.workflow_engine = WorkflowEngine()
-    
+
     async def process_workflows(self):
         while True:
             message = self.message_queue.dequeue("workflow_execution", timeout=30)
@@ -62,6 +64,7 @@ class WorkflowWorker:
 ### 2. Storage Service Integration
 
 #### File Upload Handling
+
 ```python
 # app/api/endpoints/files.py
 from fastapi import APIRouter, UploadFile, File
@@ -79,13 +82,13 @@ async def upload_file(file: UploadFile = File(...)):
         file_data=file.file,
         content_type=file.content_type
     )
-    
+
     # Generate shareable URL
     download_url = storage.get_presigned_url(
         "user-uploads",
         f"uploads/{file.filename}"
     )
-    
+
     return {
         "file_path": file_path,
         "download_url": download_url,
@@ -99,6 +102,7 @@ async def download_file(file_id: str):
 ```
 
 #### Workflow Artifact Storage
+
 ```python
 # app/services/workflow_execution_service.py
 from app.services.storage_service import get_storage_service
@@ -106,7 +110,7 @@ from app.services.storage_service import get_storage_service
 class WorkflowExecutionService:
     def __init__(self):
         self.storage = get_storage_service()
-    
+
     async def save_execution_result(self, execution_id: str, result_data: dict):
         # Store execution result as JSON
         result_json = json.dumps(result_data, indent=2)
@@ -115,7 +119,7 @@ class WorkflowExecutionService:
             object_name=f"executions/{execution_id}/result.json",
             text=result_json
         )
-        
+
         # Store any generated files
         if "output_files" in result_data:
             for file_info in result_data["output_files"]:
@@ -125,13 +129,14 @@ class WorkflowExecutionService:
                     file_data=file_info["content"],
                     content_type=file_info["type"]
                 )
-        
+
         return file_path
 ```
 
 ### 3. Vector Database Integration
 
 #### Semantic Search Implementation
+
 ```python
 # app/services/workflow_search_service.py
 from app.services.vector_service import get_vector_service
@@ -139,11 +144,11 @@ from app.services.vector_service import get_vector_service
 class WorkflowSearchService:
     def __init__(self):
         self.vector_db = get_vector_service()
-    
+
     async def index_workflow(self, workflow: dict):
         # Create searchable text from workflow
         searchable_text = f"{workflow['name']} {workflow['description']}"
-        
+
         # Store with metadata
         vector_id = self.vector_db.store_vector(
             collection_name="workflows",
@@ -156,9 +161,9 @@ class WorkflowSearchService:
                 "category": workflow.get("category", "general")
             }
         )
-        
+
         return vector_id
-    
+
     async def find_similar_workflows(self, query: str, limit: int = 5):
         results = self.vector_db.search_similar(
             collection_name="workflows",
@@ -166,7 +171,7 @@ class WorkflowSearchService:
             limit=limit,
             score_threshold=0.7
         )
-        
+
         return [
             {
                 "workflow_id": result["metadata"]["workflow_id"],
@@ -179,6 +184,7 @@ class WorkflowSearchService:
 ```
 
 #### Context-Aware Recommendations
+
 ```python
 # app/services/recommendation_service.py
 from app.services.vector_service import get_vector_service
@@ -186,11 +192,11 @@ from app.services.vector_service import get_vector_service
 class RecommendationService:
     def __init__(self):
         self.vector_db = get_vector_service()
-    
+
     async def get_workflow_recommendations(self, user_context: dict):
         # Build context query from user's recent activities
         context_text = f"User interested in {' '.join(user_context.get('interests', []))}"
-        
+
         # Find similar workflows
         similar_workflows = self.vector_db.search_similar(
             collection_name="workflows",
@@ -198,19 +204,20 @@ class RecommendationService:
             limit=10,
             score_threshold=0.6
         )
-        
+
         # Filter by user's skill level and preferences
         filtered_recommendations = []
         for workflow in similar_workflows:
             if self._matches_user_preferences(workflow["metadata"], user_context):
                 filtered_recommendations.append(workflow)
-        
+
         return filtered_recommendations[:5]
 ```
 
 ### 4. Search Service Integration
 
 #### Application Search
+
 ```python
 # app/api/endpoints/search.py
 from fastapi import APIRouter, Query
@@ -230,7 +237,7 @@ async def search_workflows(
         tags=tags if tags else None,
         limit=limit
     )
-    
+
     return {
         "query": q,
         "total": len(results),
@@ -247,17 +254,18 @@ async def search_executions(
     date_range = None
     if date_from and date_to:
         date_range = {"from": date_from, "to": date_to}
-    
+
     results = search.search_executions(
         workflow_id=workflow_id,
         status=status,
         date_range=date_range
     )
-    
+
     return {"results": results}
 ```
 
 #### Automated Indexing
+
 ```python
 # app/services/indexing_service.py
 from app.services.search_service import get_search_service
@@ -265,7 +273,7 @@ from app.services.search_service import get_search_service
 class IndexingService:
     def __init__(self):
         self.search = get_search_service()
-    
+
     async def index_workflow_execution(self, execution: dict):
         # Index execution for search
         indexed = self.search.index_execution(
@@ -280,7 +288,7 @@ class IndexingService:
                 "output_data": execution.get("output_data", {})
             }
         )
-        
+
         # Also index any logs generated
         if "logs" in execution:
             for log_entry in execution["logs"]:
@@ -291,7 +299,7 @@ class IndexingService:
                     "service": "workflow_engine",
                     "execution_id": execution["id"]
                 })
-        
+
         return indexed
 ```
 
@@ -310,7 +318,7 @@ class WorkflowEventHandler:
         self.message_queue = get_message_queue()
         self.search = get_search_service()
         self.vector_db = get_vector_service()
-    
+
     async def handle_workflow_created(self, workflow: dict):
         # Queue for indexing
         self.message_queue.enqueue(
@@ -320,7 +328,7 @@ class WorkflowEventHandler:
                 "workflow": workflow
             }
         )
-        
+
         # Queue for vector embedding
         self.message_queue.enqueue(
             queue_name="vector_tasks",
@@ -329,11 +337,11 @@ class WorkflowEventHandler:
                 "workflow": workflow
             }
         )
-    
+
     async def handle_execution_completed(self, execution: dict):
         # Index execution results
         self.search.index_execution(execution["id"], execution)
-        
+
         # Update workflow usage statistics
         self.message_queue.enqueue(
             queue_name="analytics_tasks",
@@ -358,14 +366,14 @@ class CacheService:
         # Use Redis from message queue service for caching
         self.redis_client = get_message_queue().redis_client
         self.default_ttl = 3600  # 1 hour
-    
+
     async def get(self, key: str) -> Optional[Any]:
         try:
             value = self.redis_client.get(f"cache:{key}")
             return json.loads(value) if value else None
         except Exception:
             return None
-    
+
     async def set(self, key: str, value: Any, ttl: int = None) -> bool:
         try:
             ttl = ttl or self.default_ttl
@@ -377,7 +385,7 @@ class CacheService:
             return True
         except Exception:
             return False
-    
+
     async def delete(self, key: str) -> bool:
         try:
             self.redis_client.delete(f"cache:{key}")
@@ -390,19 +398,19 @@ class WorkflowService:
     def __init__(self):
         self.cache = CacheService()
         self.search = get_search_service()
-    
+
     async def get_workflow_with_cache(self, workflow_id: str):
         # Try cache first
         cached = await self.cache.get(f"workflow:{workflow_id}")
         if cached:
             return cached
-        
+
         # Fetch from database/search
         workflow = await self.fetch_workflow(workflow_id)
-        
+
         # Cache for future requests
         await self.cache.set(f"workflow:{workflow_id}", workflow, ttl=1800)
-        
+
         return workflow
 ```
 
@@ -423,10 +431,10 @@ class HealthService:
             "vector_db": get_vector_service(),
             "search": get_search_service()
         }
-    
+
     async def check_all_services(self) -> dict:
         health_status = {}
-        
+
         for service_name, service in self.services.items():
             try:
                 health = service.health_check()
@@ -436,12 +444,12 @@ class HealthService:
                     "status": "unhealthy",
                     "error": str(e)
                 }
-        
+
         overall_status = "healthy" if all(
-            status.get("status") == "healthy" 
+            status.get("status") == "healthy"
             for status in health_status.values()
         ) else "degraded"
-        
+
         return {
             "overall_status": overall_status,
             "services": health_status,
@@ -477,14 +485,14 @@ class CircuitBreaker:
         self.failure_count = 0
         self.last_failure_time = None
         self.state = CircuitState.CLOSED
-    
+
     async def call(self, func: Callable, *args, **kwargs) -> Any:
         if self.state == CircuitState.OPEN:
             if time.time() - self.last_failure_time > self.timeout:
                 self.state = CircuitState.HALF_OPEN
             else:
                 raise Exception("Circuit breaker is OPEN")
-        
+
         try:
             result = await func(*args, **kwargs)
             self._on_success()
@@ -492,15 +500,15 @@ class CircuitBreaker:
         except Exception as e:
             self._on_failure()
             raise e
-    
+
     def _on_success(self):
         self.failure_count = 0
         self.state = CircuitState.CLOSED
-    
+
     def _on_failure(self):
         self.failure_count += 1
         self.last_failure_time = time.time()
-        
+
         if self.failure_count >= self.failure_threshold:
             self.state = CircuitState.OPEN
 
@@ -511,7 +519,7 @@ class ResilientWorkflowService:
         self.vector_circuit = CircuitBreaker(failure_threshold=3, timeout=30)
         self.search = get_search_service()
         self.vector_db = get_vector_service()
-    
+
     async def search_workflows_resilient(self, query: str):
         try:
             return await self.search_circuit.call(
@@ -540,32 +548,32 @@ async def retry_with_backoff(
     jitter: bool = True
 ) -> Any:
     last_exception = None
-    
+
     for attempt in range(max_retries + 1):
         try:
             return await func()
         except Exception as e:
             last_exception = e
-            
+
             if attempt == max_retries:
                 break
-            
+
             # Calculate delay with exponential backoff
             delay = min(base_delay * (backoff_factor ** attempt), max_delay)
-            
+
             # Add jitter to prevent thundering herd
             if jitter:
                 delay *= (0.5 + random.random() * 0.5)
-            
+
             await asyncio.sleep(delay)
-    
+
     raise last_exception
 
 # Usage in services
 class RobustStorageService:
     def __init__(self):
         self.storage = get_storage_service()
-    
+
     async def upload_with_retry(self, bucket: str, key: str, data: bytes):
         return await retry_with_backoff(
             lambda: self.storage.upload_file(bucket, key, data),
@@ -619,13 +627,13 @@ from app.services.workflow_service import WorkflowService
 async def test_workflow_execution_with_services():
     # This test requires actual services running
     workflow_service = WorkflowService()
-    
+
     # Test workflow execution with message queue
     result = await workflow_service.execute_workflow_async(
         workflow_id="test-workflow",
         input_data={"test": "data"}
     )
-    
+
     assert result["status"] == "queued"
     assert "message_id" in result
 
@@ -634,17 +642,17 @@ async def test_file_upload_and_search():
     # Test file upload and indexing
     from app.services.storage_service import get_storage_service
     from app.services.search_service import get_search_service
-    
+
     storage = get_storage_service()
     search = get_search_service()
-    
+
     # Upload test file
     file_path = storage.upload_text(
         "test-bucket",
         "test-file.txt",
         "This is test content for search"
     )
-    
+
     # Index for search
     indexed = search.index_log({
         "timestamp": "2024-01-01T00:00:00Z",
@@ -653,9 +661,9 @@ async def test_file_upload_and_search():
         "service": "test",
         "file_path": file_path
     })
-    
+
     assert indexed
-    
+
     # Search for the log
     results = search.search_logs(query="Test file uploaded")
     assert len(results) > 0

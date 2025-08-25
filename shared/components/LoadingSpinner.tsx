@@ -1,54 +1,54 @@
-import React from 'react';
+import React from "react";
 
 interface LoadingSpinnerProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-  color?: 'primary' | 'secondary' | 'white' | 'gray';
+  size?: "sm" | "md" | "lg" | "xl";
+  color?: "primary" | "secondary" | "white" | "gray";
   text?: string;
   className?: string;
 }
 
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
-  size = 'md',
-  color = 'primary',
+  size = "md",
+  color = "primary",
   text,
-  className = ''
+  className = "",
 }) => {
   const getSizeClasses = () => {
     switch (size) {
-      case 'sm':
-        return 'h-4 w-4';
-      case 'lg':
-        return 'h-8 w-8';
-      case 'xl':
-        return 'h-12 w-12';
+      case "sm":
+        return "h-4 w-4";
+      case "lg":
+        return "h-8 w-8";
+      case "xl":
+        return "h-12 w-12";
       default:
-        return 'h-6 w-6';
+        return "h-6 w-6";
     }
   };
 
   const getColorClasses = () => {
     switch (color) {
-      case 'secondary':
-        return 'text-gray-600';
-      case 'white':
-        return 'text-white';
-      case 'gray':
-        return 'text-gray-400';
+      case "secondary":
+        return "text-gray-600";
+      case "white":
+        return "text-white";
+      case "gray":
+        return "text-gray-400";
       default:
-        return 'text-indigo-600';
+        return "text-indigo-600";
     }
   };
 
   const getTextSize = () => {
     switch (size) {
-      case 'sm':
-        return 'text-sm';
-      case 'lg':
-        return 'text-lg';
-      case 'xl':
-        return 'text-xl';
+      case "sm":
+        return "text-sm";
+      case "lg":
+        return "text-lg";
+      case "xl":
+        return "text-xl";
       default:
-        return 'text-base';
+        return "text-base";
     }
   };
 

@@ -1,12 +1,11 @@
 from typing import Any, Dict
 
-from fastapi import APIRouter, Depends
-from redis import Redis
-from sqlalchemy.orm import Session
-
 from app.db.session import get_db
 from app.services.redis_service import get_redis
 from app.services.search_service import get_search_service
+from fastapi import APIRouter, Depends
+from redis import Redis
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/health", tags=["health"])
 

@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription } from '../ui/card';
-import { Button } from '../ui/button';
-import { MetricCard } from '../MetricCard';
+import React, { useState, useEffect } from "react";
+import { Card, CardHeader, CardTitle, CardDescription } from "../ui/card";
+import { Button } from "../ui/button";
+import { MetricCard } from "../MetricCard";
 
 interface TriageRule {
   id: string;
   name: string;
-  rule_type: 'ml' | 'rule_based' | 'hybrid';
+  rule_type: "ml" | "rule_based" | "hybrid";
   confidence_threshold: number;
   priority: number;
   is_active: boolean;
@@ -38,9 +38,9 @@ const SmartTriageDashboard: React.FC = () => {
   const [recentResults, setRecentResults] = useState<TriageResult[]>([]);
   const [metrics, setMetrics] = useState<TriageMetrics | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'rules' | 'results' | 'analytics'>(
-    'overview'
-  );
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "rules" | "results" | "analytics"
+  >("overview");
 
   useEffect(() => {
     // TODO: Replace with actual API calls
@@ -53,45 +53,45 @@ const SmartTriageDashboard: React.FC = () => {
       // Mock data for now - replace with actual API calls
       const mockRules: TriageRule[] = [
         {
-          id: '1',
-          name: 'High Priority Support',
-          rule_type: 'hybrid',
+          id: "1",
+          name: "High Priority Support",
+          rule_type: "hybrid",
           confidence_threshold: 0.85,
           priority: 1,
           is_active: true,
-          created_at: '2025-01-27T10:00:00Z',
-          conditions: { category: 'support', urgency: 'high' },
-          routing_logic: { route_to: 'senior_support', escalation: true },
+          created_at: "2025-01-27T10:00:00Z",
+          conditions: { category: "support", urgency: "high" },
+          routing_logic: { route_to: "senior_support", escalation: true },
         },
         {
-          id: '2',
-          name: 'Technical Issues',
-          rule_type: 'ml',
+          id: "2",
+          name: "Technical Issues",
+          rule_type: "ml",
           confidence_threshold: 0.75,
           priority: 2,
           is_active: true,
-          created_at: '2025-01-27T09:00:00Z',
-          conditions: { category: 'technical', complexity: 'medium' },
-          routing_logic: { route_to: 'tech_support', auto_assign: true },
+          created_at: "2025-01-27T09:00:00Z",
+          conditions: { category: "technical", complexity: "medium" },
+          routing_logic: { route_to: "tech_support", auto_assign: true },
         },
       ];
 
       const mockResults: TriageResult[] = [
         {
-          id: '1',
-          input_content: 'Urgent support needed for critical system failure',
-          predicted_routing: 'senior_support',
+          id: "1",
+          input_content: "Urgent support needed for critical system failure",
+          predicted_routing: "senior_support",
           confidence_score: 0.92,
           processing_time_ms: 150,
-          created_at: '2025-01-27T10:30:00Z',
+          created_at: "2025-01-27T10:30:00Z",
         },
         {
-          id: '2',
-          input_content: 'General inquiry about product features',
-          predicted_routing: 'general_support',
+          id: "2",
+          input_content: "General inquiry about product features",
+          predicted_routing: "general_support",
           confidence_score: 0.78,
           processing_time_ms: 120,
-          created_at: '2025-01-27T10:25:00Z',
+          created_at: "2025-01-27T10:25:00Z",
         },
       ];
 
@@ -107,7 +107,7 @@ const SmartTriageDashboard: React.FC = () => {
       setRecentResults(mockResults);
       setMetrics(mockMetrics);
     } catch (error) {
-      console.error('Failed to fetch triage data:', error);
+      console.error("Failed to fetch triage data:", error);
     } finally {
       setLoading(false);
     }
@@ -115,21 +115,21 @@ const SmartTriageDashboard: React.FC = () => {
 
   const getRuleTypeColor = (type: string) => {
     switch (type) {
-      case 'ml':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'rule_based':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'hybrid':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
+      case "ml":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+      case "rule_based":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "hybrid":
+        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200";
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
   };
 
   const getConfidenceColor = (score: number) => {
-    if (score >= 0.9) return 'text-green-600 dark:text-green-400';
-    if (score >= 0.7) return 'text-yellow-600 dark:text-yellow-400';
-    return 'text-red-600 dark:text-red-400';
+    if (score >= 0.9) return "text-green-600 dark:text-green-400";
+    if (score >= 0.7) return "text-yellow-600 dark:text-yellow-400";
+    return "text-red-600 dark:text-red-400";
   };
 
   if (loading) {
@@ -158,7 +158,12 @@ const SmartTriageDashboard: React.FC = () => {
             size="lg"
             onClick={fetchTriageData}
             leftIcon={
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -176,18 +181,22 @@ const SmartTriageDashboard: React.FC = () => {
       {/* Navigation Tabs */}
       <div className="flex space-x-1 bg-white dark:bg-neutral-800 rounded-lg p-1 shadow-sm">
         {[
-          { id: 'overview', label: 'Overview', icon: '📊' },
-          { id: 'rules', label: 'Triage Rules', icon: '⚙️' },
-          { id: 'results', label: 'Recent Results', icon: '📋' },
-          { id: 'analytics', label: 'Analytics', icon: '📈' },
+          { id: "overview", label: "Overview", icon: "📊" },
+          { id: "rules", label: "Triage Rules", icon: "⚙️" },
+          { id: "results", label: "Recent Results", icon: "📋" },
+          { id: "analytics", label: "Analytics", icon: "📈" },
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as 'overview' | 'rules' | 'results' | 'analytics')}
+            onClick={() =>
+              setActiveTab(
+                tab.id as "overview" | "rules" | "results" | "analytics",
+              )
+            }
             className={`flex-1 flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
               activeTab === tab.id
-                ? 'bg-automotive-primary text-white shadow-md'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-neutral-700'
+                ? "bg-automotive-primary text-white shadow-md"
+                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-neutral-700"
             }`}
           >
             <span className="mr-2">{tab.icon}</span>
@@ -197,13 +206,13 @@ const SmartTriageDashboard: React.FC = () => {
       </div>
 
       {/* Content based on active tab */}
-      {activeTab === 'overview' && (
+      {activeTab === "overview" && (
         <div className="space-y-6">
           {/* Metrics Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <MetricCard
               title="Total Requests"
-              value={metrics?.total_requests.toLocaleString() || '0'}
+              value={metrics?.total_requests.toLocaleString() || "0"}
               change="+12%"
               changeType="positive"
               icon="📨"
@@ -239,7 +248,10 @@ const SmartTriageDashboard: React.FC = () => {
             </CardHeader>
             <div className="p-6 pt-0">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button variant="outline" className="h-20 flex-col justify-center">
+                <Button
+                  variant="outline"
+                  className="h-20 flex-col justify-center"
+                >
                   <svg
                     className="w-8 h-8 mb-2 text-automotive-primary"
                     fill="none"
@@ -255,7 +267,10 @@ const SmartTriageDashboard: React.FC = () => {
                   </svg>
                   Create New Rule
                 </Button>
-                <Button variant="outline" className="h-20 flex-col justify-center">
+                <Button
+                  variant="outline"
+                  className="h-20 flex-col justify-center"
+                >
                   <svg
                     className="w-8 h-8 mb-2 text-automotive-primary"
                     fill="none"
@@ -271,7 +286,10 @@ const SmartTriageDashboard: React.FC = () => {
                   </svg>
                   View Analytics
                 </Button>
-                <Button variant="outline" className="h-20 flex-col justify-center">
+                <Button
+                  variant="outline"
+                  className="h-20 flex-col justify-center"
+                >
                   <svg
                     className="w-8 h-8 mb-2 text-automotive-primary"
                     fill="none"
@@ -299,14 +317,19 @@ const SmartTriageDashboard: React.FC = () => {
         </div>
       )}
 
-      {activeTab === 'rules' && (
+      {activeTab === "rules" && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
               Triage Rules
             </h2>
             <Button variant="default" size="lg">
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -336,17 +359,21 @@ const SmartTriageDashboard: React.FC = () => {
                         <span
                           className={`px-2 py-1 text-xs font-medium rounded-full ${
                             rule.is_active
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                              : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+                              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                              : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
                           }`}
                         >
-                          {rule.is_active ? 'Active' : 'Inactive'}
+                          {rule.is_active ? "Active" : "Inactive"}
                         </span>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400">
                         <div>
-                          <span className="font-medium">Confidence Threshold:</span>
-                          <span className={`ml-2 ${getConfidenceColor(rule.confidence_threshold)}`}>
+                          <span className="font-medium">
+                            Confidence Threshold:
+                          </span>
+                          <span
+                            className={`ml-2 ${getConfidenceColor(rule.confidence_threshold)}`}
+                          >
                             {(rule.confidence_threshold * 100).toFixed(0)}%
                           </span>
                         </div>
@@ -381,7 +408,7 @@ const SmartTriageDashboard: React.FC = () => {
         </div>
       )}
 
-      {activeTab === 'results' && (
+      {activeTab === "results" && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
@@ -408,13 +435,17 @@ const SmartTriageDashboard: React.FC = () => {
                         </div>
                         <div>
                           <span className="font-medium">Confidence:</span>
-                          <span className={`ml-2 ${getConfidenceColor(result.confidence_score)}`}>
+                          <span
+                            className={`ml-2 ${getConfidenceColor(result.confidence_score)}`}
+                          >
                             {(result.confidence_score * 100).toFixed(1)}%
                           </span>
                         </div>
                         <div>
                           <span className="font-medium">Processing Time:</span>
-                          <span className="ml-2">{result.processing_time_ms}ms</span>
+                          <span className="ml-2">
+                            {result.processing_time_ms}ms
+                          </span>
                         </div>
                         <div>
                           <span className="font-medium">Created:</span>
@@ -440,7 +471,7 @@ const SmartTriageDashboard: React.FC = () => {
         </div>
       )}
 
-      {activeTab === 'analytics' && (
+      {activeTab === "analytics" && (
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
             Triage Analytics
@@ -457,13 +488,41 @@ const SmartTriageDashboard: React.FC = () => {
               <div className="p-6 pt-0">
                 <div className="space-y-3">
                   {[
-                    { range: '90-100%', count: 45, percentage: 36, color: 'bg-green-500' },
-                    { range: '80-89%', count: 38, percentage: 30, color: 'bg-blue-500' },
-                    { range: '70-79%', count: 25, percentage: 20, color: 'bg-yellow-500' },
-                    { range: '60-69%', count: 12, percentage: 10, color: 'bg-orange-500' },
-                    { range: 'Below 60%', count: 5, percentage: 4, color: 'bg-red-500' },
+                    {
+                      range: "90-100%",
+                      count: 45,
+                      percentage: 36,
+                      color: "bg-green-500",
+                    },
+                    {
+                      range: "80-89%",
+                      count: 38,
+                      percentage: 30,
+                      color: "bg-blue-500",
+                    },
+                    {
+                      range: "70-79%",
+                      count: 25,
+                      percentage: 20,
+                      color: "bg-yellow-500",
+                    },
+                    {
+                      range: "60-69%",
+                      count: 12,
+                      percentage: 10,
+                      color: "bg-orange-500",
+                    },
+                    {
+                      range: "Below 60%",
+                      count: 5,
+                      percentage: 4,
+                      color: "bg-red-500",
+                    },
                   ].map((item) => (
-                    <div key={item.range} className="flex items-center space-x-3">
+                    <div
+                      key={item.range}
+                      className="flex items-center space-x-3"
+                    >
                       <div className="w-20 text-sm text-gray-600 dark:text-gray-400">
                         {item.range}
                       </div>
@@ -485,32 +544,43 @@ const SmartTriageDashboard: React.FC = () => {
             <Card variant="glass">
               <CardHeader>
                 <CardTitle>Processing Time Trends</CardTitle>
-                <CardDescription>Average processing time over the last 7 days</CardDescription>
+                <CardDescription>
+                  Average processing time over the last 7 days
+                </CardDescription>
               </CardHeader>
               <div className="p-6 pt-0">
                 <div className="space-y-3">
                   {[
-                    { day: 'Mon', time: 120, trend: 'down' },
-                    { day: 'Tue', time: 135, trend: 'up' },
-                    { day: 'Wed', time: 110, trend: 'down' },
-                    { day: 'Thu', time: 145, trend: 'up' },
-                    { day: 'Fri', time: 125, trend: 'down' },
-                    { day: 'Sat', time: 130, trend: 'up' },
-                    { day: 'Sun', time: 115, trend: 'down' },
+                    { day: "Mon", time: 120, trend: "down" },
+                    { day: "Tue", time: 135, trend: "up" },
+                    { day: "Wed", time: 110, trend: "down" },
+                    { day: "Thu", time: 145, trend: "up" },
+                    { day: "Fri", time: 125, trend: "down" },
+                    { day: "Sat", time: 130, trend: "up" },
+                    { day: "Sun", time: 115, trend: "down" },
                   ].map((item) => (
-                    <div key={item.day} className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">{item.day}</span>
+                    <div
+                      key={item.day}
+                      className="flex items-center justify-between"
+                    >
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {item.day}
+                      </span>
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium">{item.time}ms</span>
+                        <span className="text-sm font-medium">
+                          {item.time}ms
+                        </span>
                         <svg
                           className={`w-4 h-4 ${
-                            item.trend === 'down' ? 'text-green-500' : 'text-red-500'
+                            item.trend === "down"
+                              ? "text-green-500"
+                              : "text-red-500"
                           }`}
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
                         >
-                          {item.trend === 'down' ? (
+                          {item.trend === "down" ? (
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"

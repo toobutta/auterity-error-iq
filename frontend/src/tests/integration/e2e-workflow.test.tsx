@@ -3,17 +3,17 @@
  * End-to-end integration tests for frontend workflow functionality
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi, describe, it, expect, beforeEach, afterEach, Mock } from 'vitest';
-import { AuthProvider } from '../../contexts/AuthContext';
-import { ErrorProvider } from '../../contexts/ErrorContext';
-import App from '../../App';
-import * as workflowsApi from '../../api/workflows';
-import * as templatesApi from '../../api/templates';
-import * as authApi from '../../api/auth';
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { vi, describe, it, expect, beforeEach, afterEach, Mock } from "vitest";
+import { AuthProvider } from "../../contexts/AuthContext";
+import { ErrorProvider } from "../../contexts/ErrorContext";
+import App from "../../App";
+import * as workflowsApi from "../../api/workflows";
+import * as templatesApi from "../../api/templates";
+import * as authApi from "../../api/auth";
 
 // Mock API modules with complete exports
-vi.mock('../../api/workflows', () => ({
+vi.mock("../../api/workflows", () => ({
   getWorkflows: vi.fn(),
   getWorkflow: vi.fn(),
   createWorkflow: vi.fn(),
@@ -29,14 +29,14 @@ vi.mock('../../api/workflows', () => ({
   getDashboardMetrics: vi.fn(),
 }));
 
-vi.mock('../../api/templates', () => ({
+vi.mock("../../api/templates", () => ({
   getTemplates: vi.fn(),
   getTemplate: vi.fn(),
   getTemplateCategories: vi.fn(),
   instantiateTemplate: vi.fn(),
 }));
 
-vi.mock('../../api/auth', () => ({
+vi.mock("../../api/auth", () => ({
   AuthApi: {
     login: vi.fn(),
     register: vi.fn(),
@@ -46,7 +46,7 @@ vi.mock('../../api/auth', () => ({
 }));
 
 // Mock React Flow to avoid canvas issues in tests
-vi.mock('reactflow', () => ({
+vi.mock("reactflow", () => ({
   ReactFlow: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="react-flow">{children}</div>
   ),
@@ -66,88 +66,88 @@ vi.mock('reactflow', () => ({
 
 // Mock the useAuth hook directly to avoid complex auth setup
 const mockUseAuth = vi.fn();
-vi.mock('../../contexts/AuthContext', () => ({
-  AuthProvider: ({ children }: { children: React.ReactNode }) => <div data-testid="auth-provider">{children}</div>,
+vi.mock("../../contexts/AuthContext", () => ({
+  AuthProvider: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="auth-provider">{children}</div>
+  ),
   useAuth: () => mockUseAuth(),
 }));
 
 // Test wrapper component - App provides its own BrowserRouter
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <ErrorProvider>
-    <AuthProvider>
-      {children}
-    </AuthProvider>
+    <AuthProvider>{children}</AuthProvider>
   </ErrorProvider>
 );
 
-describe('End-to-End Workflow Integration Tests', () => {
+describe("End-to-End Workflow Integration Tests", () => {
   const mockUser = {
-    id: 'user-123',
-    email: 'test@example.com',
-    name: 'Test User',
+    id: "user-123",
+    email: "test@example.com",
+    name: "Test User",
   };
 
   const mockWorkflow = {
-    id: 'workflow-123',
-    name: 'Test Workflow',
-    description: 'A test workflow',
+    id: "workflow-123",
+    name: "Test Workflow",
+    description: "A test workflow",
     definition: {
       nodes: [
         {
-          id: 'start-1',
-          type: 'start',
+          id: "start-1",
+          type: "start",
           position: { x: 100, y: 100 },
-          data: { label: 'Start' },
+          data: { label: "Start" },
         },
       ],
       edges: [],
     },
-    user_id: 'user-123',
-    created_at: '2025-07-30T10:00:00Z',
-    updated_at: '2025-07-30T10:00:00Z',
+    user_id: "user-123",
+    created_at: "2025-07-30T10:00:00Z",
+    updated_at: "2025-07-30T10:00:00Z",
     is_active: true,
   };
 
   const mockExecution = {
-    id: 'execution-123',
-    workflow_id: 'workflow-123',
-    status: 'completed' as const,
-    input_data: { input: 'Test input' },
-    output_data: { result: 'Test output' },
-    started_at: '2025-07-30T10:00:00Z',
-    completed_at: '2025-07-30T10:01:00Z',
+    id: "execution-123",
+    workflow_id: "workflow-123",
+    status: "completed" as const,
+    input_data: { input: "Test input" },
+    output_data: { result: "Test output" },
+    started_at: "2025-07-30T10:00:00Z",
+    completed_at: "2025-07-30T10:01:00Z",
     duration: 60000,
     error_message: null,
   };
 
   const mockTemplate = {
-    id: 'template-123',
-    name: 'Customer Service Template',
-    description: 'Template for customer service workflows',
-    category: 'Customer Service',
+    id: "template-123",
+    name: "Customer Service Template",
+    description: "Template for customer service workflows",
+    category: "Customer Service",
     definition: {
       nodes: [
         {
-          id: 'start-1',
-          type: 'start',
+          id: "start-1",
+          type: "start",
           position: { x: 100, y: 100 },
-          data: { label: 'Start' },
+          data: { label: "Start" },
         },
       ],
       edges: [],
     },
     parameters: [
       {
-        name: 'inquiry_type',
-        type: 'select',
-        label: 'Inquiry Type',
-        description: 'Type of customer inquiry',
+        name: "inquiry_type",
+        type: "select",
+        label: "Inquiry Type",
+        description: "Type of customer inquiry",
         isRequired: true,
-        options: ['billing', 'technical', 'general'],
-        defaultValue: 'general',
+        options: ["billing", "technical", "general"],
+        defaultValue: "general",
       },
     ],
-    created_at: '2025-07-30T10:00:00Z',
+    created_at: "2025-07-30T10:00:00Z",
   };
 
   beforeEach(() => {
@@ -157,8 +157,8 @@ describe('End-to-End Workflow Integration Tests', () => {
     // Setup default auth mock - use AuthApi class methods
     (authApi.AuthApi.getCurrentUser as Mock).mockResolvedValue(mockUser);
     (authApi.AuthApi.login as Mock).mockResolvedValue({
-      access_token: 'mock-token',
-      token_type: 'bearer',
+      access_token: "mock-token",
+      token_type: "bearer",
       user: mockUser,
     });
 
@@ -186,33 +186,40 @@ describe('End-to-End Workflow Integration Tests', () => {
     vi.clearAllMocks();
   });
 
-  describe('Complete Workflow Creation and Execution Flow', () => {
-    it('should allow user to create, execute, and monitor a workflow', async () => {
+  describe("Complete Workflow Creation and Execution Flow", () => {
+    it("should allow user to create, execute, and monitor a workflow", async () => {
       render(
         <TestWrapper>
           <App />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Wait for initial load and authentication
-      await waitFor(() => {
-        expect(screen.getByText('Dashboard')).toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText("Dashboard")).toBeInTheDocument();
+        },
+        { timeout: 3000 },
+      );
 
       // Navigate to workflow builder
-      const workflowBuilderLink = screen.getByText('Workflow Builder');
+      const workflowBuilderLink = screen.getByText("Workflow Builder");
       fireEvent.click(workflowBuilderLink);
 
       await waitFor(() => {
-        expect(screen.getByText('Workflow Builder')).toBeInTheDocument();
+        expect(screen.getByText("Workflow Builder")).toBeInTheDocument();
       });
 
       // Create a new workflow
       const workflowNameInput = screen.getByLabelText(/workflow name/i);
       const workflowDescInput = screen.getByLabelText(/description/i);
 
-      fireEvent.change(workflowNameInput, { target: { value: 'E2E Test Workflow' } });
-      fireEvent.change(workflowDescInput, { target: { value: 'End-to-end test workflow' } });
+      fireEvent.change(workflowNameInput, {
+        target: { value: "E2E Test Workflow" },
+      });
+      fireEvent.change(workflowDescInput, {
+        target: { value: "End-to-end test workflow" },
+      });
 
       // Save the workflow
       const saveButton = screen.getByText(/save workflow/i);
@@ -221,18 +228,18 @@ describe('End-to-End Workflow Integration Tests', () => {
       await waitFor(() => {
         expect(workflowsApi.createWorkflow).toHaveBeenCalledWith(
           expect.objectContaining({
-            name: 'E2E Test Workflow',
-            description: 'End-to-end test workflow',
-          })
+            name: "E2E Test Workflow",
+            description: "End-to-end test workflow",
+          }),
         );
       });
 
       // Navigate to workflows page to execute
-      const workflowsLink = screen.getByText('Workflows');
+      const workflowsLink = screen.getByText("Workflows");
       fireEvent.click(workflowsLink);
 
       await waitFor(() => {
-        expect(screen.getByText('Test Workflow')).toBeInTheDocument();
+        expect(screen.getByText("Test Workflow")).toBeInTheDocument();
       });
 
       // Execute the workflow
@@ -241,17 +248,19 @@ describe('End-to-End Workflow Integration Tests', () => {
 
       // Fill in execution form
       const inputField = screen.getByLabelText(/input/i);
-      fireEvent.change(inputField, { target: { value: 'Test execution input' } });
+      fireEvent.change(inputField, {
+        target: { value: "Test execution input" },
+      });
 
       const runButton = screen.getByText(/run workflow/i);
       fireEvent.click(runButton);
 
       await waitFor(() => {
         expect(workflowsApi.executeWorkflow).toHaveBeenCalledWith(
-          'workflow-123',
+          "workflow-123",
           expect.objectContaining({
-            input: 'Test execution input',
-          })
+            input: "Test execution input",
+          }),
         );
       });
 
@@ -261,28 +270,28 @@ describe('End-to-End Workflow Integration Tests', () => {
       });
     });
 
-    it('should handle workflow execution errors gracefully', async () => {
+    it("should handle workflow execution errors gracefully", async () => {
       // Mock API to return error
       (workflowsApi.executeWorkflow as Mock).mockRejectedValue(
-        new Error('Workflow execution failed')
+        new Error("Workflow execution failed"),
       );
 
       render(
         <TestWrapper>
           <App />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Navigate to workflows and try to execute
       await waitFor(() => {
-        expect(screen.getByText('Dashboard')).toBeInTheDocument();
+        expect(screen.getByText("Dashboard")).toBeInTheDocument();
       });
 
-      const workflowsLink = screen.getByText('Workflows');
+      const workflowsLink = screen.getByText("Workflows");
       fireEvent.click(workflowsLink);
 
       await waitFor(() => {
-        expect(screen.getByText('Test Workflow')).toBeInTheDocument();
+        expect(screen.getByText("Test Workflow")).toBeInTheDocument();
       });
 
       const executeButton = screen.getByText(/execute/i);
@@ -293,30 +302,34 @@ describe('End-to-End Workflow Integration Tests', () => {
 
       // Verify error is displayed
       await waitFor(() => {
-        expect(screen.getByText(/workflow execution failed/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/workflow execution failed/i),
+        ).toBeInTheDocument();
       });
     });
   });
 
-  describe('Template Integration Flow', () => {
-    it('should allow user to browse, preview, and instantiate templates', async () => {
+  describe("Template Integration Flow", () => {
+    it("should allow user to browse, preview, and instantiate templates", async () => {
       render(
         <TestWrapper>
           <App />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Navigate to templates page
       await waitFor(() => {
-        expect(screen.getByText('Dashboard')).toBeInTheDocument();
+        expect(screen.getByText("Dashboard")).toBeInTheDocument();
       });
 
-      const templatesLink = screen.getByText('Templates');
+      const templatesLink = screen.getByText("Templates");
       fireEvent.click(templatesLink);
 
       await waitFor(() => {
-        expect(screen.getByText('Template Library')).toBeInTheDocument();
-        expect(screen.getByText('Customer Service Template')).toBeInTheDocument();
+        expect(screen.getByText("Template Library")).toBeInTheDocument();
+        expect(
+          screen.getByText("Customer Service Template"),
+        ).toBeInTheDocument();
       });
 
       // Preview template
@@ -333,44 +346,48 @@ describe('End-to-End Workflow Integration Tests', () => {
 
       // Fill in template parameters
       const inquiryTypeSelect = screen.getByLabelText(/inquiry type/i);
-      fireEvent.change(inquiryTypeSelect, { target: { value: 'billing' } });
+      fireEvent.change(inquiryTypeSelect, { target: { value: "billing" } });
 
       const workflowNameInput = screen.getByLabelText(/workflow name/i);
-      fireEvent.change(workflowNameInput, { target: { value: 'My Customer Service Workflow' } });
+      fireEvent.change(workflowNameInput, {
+        target: { value: "My Customer Service Workflow" },
+      });
 
       const createButton = screen.getByText(/create workflow/i);
       fireEvent.click(createButton);
 
       await waitFor(() => {
         expect(templatesApi.instantiateTemplate).toHaveBeenCalledWith(
-          'template-123',
+          "template-123",
           expect.objectContaining({
-            name: 'My Customer Service Workflow',
+            name: "My Customer Service Workflow",
             parameters: expect.objectContaining({
-              inquiry_type: 'billing',
+              inquiry_type: "billing",
             }),
-          })
+          }),
         );
       });
     });
 
-    it('should validate template parameters before instantiation', async () => {
+    it("should validate template parameters before instantiation", async () => {
       render(
         <TestWrapper>
           <App />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Navigate to templates and try to instantiate without required params
       await waitFor(() => {
-        expect(screen.getByText('Dashboard')).toBeInTheDocument();
+        expect(screen.getByText("Dashboard")).toBeInTheDocument();
       });
 
-      const templatesLink = screen.getByText('Templates');
+      const templatesLink = screen.getByText("Templates");
       fireEvent.click(templatesLink);
 
       await waitFor(() => {
-        expect(screen.getByText('Customer Service Template')).toBeInTheDocument();
+        expect(
+          screen.getByText("Customer Service Template"),
+        ).toBeInTheDocument();
       });
 
       const previewButton = screen.getByText(/preview/i);
@@ -390,15 +407,17 @@ describe('End-to-End Workflow Integration Tests', () => {
     });
   });
 
-  describe('Authentication Integration', () => {
-    it('should redirect unauthenticated users to login', async () => {
+  describe("Authentication Integration", () => {
+    it("should redirect unauthenticated users to login", async () => {
       // Mock auth to return no user
-      (authApi.AuthApi.getCurrentUser as Mock).mockRejectedValue(new Error('Not authenticated'));
+      (authApi.AuthApi.getCurrentUser as Mock).mockRejectedValue(
+        new Error("Not authenticated"),
+      );
 
       render(
         <TestWrapper>
           <App />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Should show login form
@@ -407,14 +426,16 @@ describe('End-to-End Workflow Integration Tests', () => {
       });
     });
 
-    it('should allow user to login and access protected routes', async () => {
+    it("should allow user to login and access protected routes", async () => {
       // Start with no user
-      (authApi.AuthApi.getCurrentUser as Mock).mockRejectedValue(new Error('Not authenticated'));
+      (authApi.AuthApi.getCurrentUser as Mock).mockRejectedValue(
+        new Error("Not authenticated"),
+      );
 
       render(
         <TestWrapper>
           <App />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Should show login form
@@ -426,29 +447,29 @@ describe('End-to-End Workflow Integration Tests', () => {
       const emailInput = screen.getByLabelText(/email/i);
       const passwordInput = screen.getByLabelText(/password/i);
 
-      fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-      fireEvent.change(passwordInput, { target: { value: 'password123' } });
+      fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+      fireEvent.change(passwordInput, { target: { value: "password123" } });
 
       // Submit login
-      const loginButton = screen.getByRole('button', { name: /sign in/i });
+      const loginButton = screen.getByRole("button", { name: /sign in/i });
       fireEvent.click(loginButton);
 
       await waitFor(() => {
         expect(authApi.AuthApi.login).toHaveBeenCalledWith({
-          email: 'test@example.com',
-          password: 'password123',
+          email: "test@example.com",
+          password: "password123",
         });
       });
 
       // After successful login, should redirect to dashboard
       await waitFor(() => {
-        expect(screen.getByText('Dashboard')).toBeInTheDocument();
+        expect(screen.getByText("Dashboard")).toBeInTheDocument();
       });
     });
   });
 
-  describe('Performance and Load Testing', () => {
-    it('should handle multiple concurrent workflow executions', async () => {
+  describe("Performance and Load Testing", () => {
+    it("should handle multiple concurrent workflow executions", async () => {
       // Mock multiple executions
       const executions = Array.from({ length: 5 }, (_, i) => ({
         ...mockExecution,
@@ -457,25 +478,27 @@ describe('End-to-End Workflow Integration Tests', () => {
       }));
 
       (workflowsApi.executeWorkflow as Mock).mockImplementation(() =>
-        Promise.resolve(executions[Math.floor(Math.random() * executions.length)])
+        Promise.resolve(
+          executions[Math.floor(Math.random() * executions.length)],
+        ),
       );
 
       render(
         <TestWrapper>
           <App />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Navigate to workflows
       await waitFor(() => {
-        expect(screen.getByText('Dashboard')).toBeInTheDocument();
+        expect(screen.getByText("Dashboard")).toBeInTheDocument();
       });
 
-      const workflowsLink = screen.getByText('Workflows');
+      const workflowsLink = screen.getByText("Workflows");
       fireEvent.click(workflowsLink);
 
       await waitFor(() => {
-        expect(screen.getByText('Test Workflow')).toBeInTheDocument();
+        expect(screen.getByText("Test Workflow")).toBeInTheDocument();
       });
 
       // Execute workflow multiple times rapidly
@@ -497,7 +520,7 @@ describe('End-to-End Workflow Integration Tests', () => {
       });
     });
 
-    it('should render large workflow lists efficiently', async () => {
+    it("should render large workflow lists efficiently", async () => {
       // Mock large number of workflows
       const manyWorkflows = Array.from({ length: 50 }, (_, i) => ({
         ...mockWorkflow,
@@ -513,21 +536,21 @@ describe('End-to-End Workflow Integration Tests', () => {
       render(
         <TestWrapper>
           <App />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Navigate to workflows
       await waitFor(() => {
-        expect(screen.getByText('Dashboard')).toBeInTheDocument();
+        expect(screen.getByText("Dashboard")).toBeInTheDocument();
       });
 
-      const workflowsLink = screen.getByText('Workflows');
+      const workflowsLink = screen.getByText("Workflows");
       fireEvent.click(workflowsLink);
 
       // Wait for all workflows to render
       await waitFor(() => {
-        expect(screen.getByText('Test Workflow 0')).toBeInTheDocument();
-        expect(screen.getByText('Test Workflow 49')).toBeInTheDocument();
+        expect(screen.getByText("Test Workflow 0")).toBeInTheDocument();
+        expect(screen.getByText("Test Workflow 49")).toBeInTheDocument();
       });
 
       const endTime = performance.now();
@@ -538,14 +561,14 @@ describe('End-to-End Workflow Integration Tests', () => {
     });
   });
 
-  describe('Error Handling and Recovery', () => {
-    it('should handle API errors gracefully and allow retry', async () => {
+  describe("Error Handling and Recovery", () => {
+    it("should handle API errors gracefully and allow retry", async () => {
       // Mock API to fail first, then succeed
       let callCount = 0;
       (workflowsApi.getWorkflows as Mock).mockImplementation(() => {
         callCount++;
         if (callCount === 1) {
-          return Promise.reject(new Error('Network error'));
+          return Promise.reject(new Error("Network error"));
         }
         return Promise.resolve([mockWorkflow]);
       });
@@ -553,15 +576,15 @@ describe('End-to-End Workflow Integration Tests', () => {
       render(
         <TestWrapper>
           <App />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Navigate to workflows
       await waitFor(() => {
-        expect(screen.getByText('Dashboard')).toBeInTheDocument();
+        expect(screen.getByText("Dashboard")).toBeInTheDocument();
       });
 
-      const workflowsLink = screen.getByText('Workflows');
+      const workflowsLink = screen.getByText("Workflows");
       fireEvent.click(workflowsLink);
 
       // Should show error message
@@ -575,24 +598,24 @@ describe('End-to-End Workflow Integration Tests', () => {
 
       // Should now show workflows
       await waitFor(() => {
-        expect(screen.getByText('Test Workflow')).toBeInTheDocument();
+        expect(screen.getByText("Test Workflow")).toBeInTheDocument();
       });
     });
 
-    it('should maintain application state during navigation errors', async () => {
+    it("should maintain application state during navigation errors", async () => {
       render(
         <TestWrapper>
           <App />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Start at dashboard
       await waitFor(() => {
-        expect(screen.getByText('Dashboard')).toBeInTheDocument();
+        expect(screen.getByText("Dashboard")).toBeInTheDocument();
       });
 
       // Try to navigate to non-existent route
-      window.history.pushState({}, '', '/non-existent-route');
+      window.history.pushState({}, "", "/non-existent-route");
 
       // Should show 404 or redirect to dashboard
       await waitFor(() => {
@@ -601,11 +624,11 @@ describe('End-to-End Workflow Integration Tests', () => {
       });
 
       // Should be able to navigate back to valid routes
-      const dashboardLink = screen.getByText('Dashboard');
+      const dashboardLink = screen.getByText("Dashboard");
       fireEvent.click(dashboardLink);
 
       await waitFor(() => {
-        expect(screen.getByText('Dashboard')).toBeInTheDocument();
+        expect(screen.getByText("Dashboard")).toBeInTheDocument();
       });
     });
   });

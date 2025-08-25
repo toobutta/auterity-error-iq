@@ -5,12 +5,11 @@ import uuid
 from unittest.mock import patch
 
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
-
 from app.main import app
 from app.models import Template, TemplateParameter, User
 from app.services.template_engine import TemplateEngine
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
 
 
 class TestTemplateEngine:

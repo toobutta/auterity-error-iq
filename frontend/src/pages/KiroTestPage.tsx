@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
-import Layout from '../components/Layout';
-import { testKiroIntegration } from '../kiro/test-integration';
-import { useKiroIntegration } from '../hooks/useKiroIntegration';
-import { createAppError } from '../utils/errorUtils';
+import React, { useState } from "react";
+import Layout from "../components/Layout";
+import { testKiroIntegration } from "../kiro/test-integration";
+import { useKiroIntegration } from "../hooks/useKiroIntegration";
+import { createAppError } from "../utils/errorUtils";
 
 const KiroTestPage: React.FC = () => {
-  const [testResults, setTestResults] = useState<Record<string, unknown> | null>(null);
+  const [testResults, setTestResults] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { triggerKiroHook, getErrorRoute, hasPermission } = useKiroIntegration('admin');
+  const { triggerKiroHook, getErrorRoute, hasPermission } =
+    useKiroIntegration("admin");
 
   const runIntegrationTest = async () => {
     setIsLoading(true);
@@ -15,7 +19,7 @@ const KiroTestPage: React.FC = () => {
       const results = await testKiroIntegration();
       setTestResults(results);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
+      const message = error instanceof Error ? error.message : "Unknown error";
       setTestResults({ success: false, error: message });
     } finally {
       setIsLoading(false);
@@ -23,19 +27,25 @@ const KiroTestPage: React.FC = () => {
   };
 
   const testErrorHook = async () => {
-    const mockError = createAppError('TEST_ERROR', 'This is a test error for Kiro integration', {
-      component: 'KiroTestPage',
-    });
+    const mockError = createAppError(
+      "TEST_ERROR",
+      "This is a test error for Kiro integration",
+      {
+        component: "KiroTestPage",
+      },
+    );
 
-    await triggerKiroHook('test-workflow-123', mockError);
-    alert('Kiro hook triggered! Check browser console and backend logs.');
+    await triggerKiroHook("test-workflow-123", mockError);
+    alert("Kiro hook triggered! Check browser console and backend logs.");
   };
 
   return (
     <Layout>
       <div className="px-4 py-6">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Kiro Integration Test Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">
+            Kiro Integration Test Dashboard
+          </h1>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Integration Test */}
@@ -46,7 +56,7 @@ const KiroTestPage: React.FC = () => {
                 disabled={isLoading}
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
               >
-                {isLoading ? 'Testing...' : 'Run Integration Test'}
+                {isLoading ? "Testing..." : "Run Integration Test"}
               </button>
 
               {testResults && (
@@ -76,9 +86,18 @@ const KiroTestPage: React.FC = () => {
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold mb-4">Permissions Test</h2>
               <div className="space-y-2 text-sm">
-                <div>Dashboard Access: {hasPermission('error_dashboard') ? '✅' : '❌'}</div>
-                <div>Stack Trace Access: {hasPermission('stack_trace') ? '✅' : '❌'}</div>
-                <div>Error Summary Access: {hasPermission('error_summary') ? '✅' : '❌'}</div>
+                <div>
+                  Dashboard Access:{" "}
+                  {hasPermission("error_dashboard") ? "✅" : "❌"}
+                </div>
+                <div>
+                  Stack Trace Access:{" "}
+                  {hasPermission("stack_trace") ? "✅" : "❌"}
+                </div>
+                <div>
+                  Error Summary Access:{" "}
+                  {hasPermission("error_summary") ? "✅" : "❌"}
+                </div>
               </div>
             </div>
 
@@ -87,10 +106,17 @@ const KiroTestPage: React.FC = () => {
               <h2 className="text-lg font-semibold mb-4">Steering Test</h2>
               <div className="space-y-2 text-sm">
                 <div>
-                  Validation Error → {getErrorRoute(createAppError('VALIDATION_ERROR', 'Test'))}
+                  Validation Error →{" "}
+                  {getErrorRoute(createAppError("VALIDATION_ERROR", "Test"))}
                 </div>
-                <div>System Error → {getErrorRoute(createAppError('SYSTEM_ERROR', 'Test'))}</div>
-                <div>AI Error → {getErrorRoute(createAppError('AI_SERVICE_ERROR', 'Test'))}</div>
+                <div>
+                  System Error →{" "}
+                  {getErrorRoute(createAppError("SYSTEM_ERROR", "Test"))}
+                </div>
+                <div>
+                  AI Error →{" "}
+                  {getErrorRoute(createAppError("AI_SERVICE_ERROR", "Test"))}
+                </div>
               </div>
             </div>
           </div>

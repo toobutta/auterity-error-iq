@@ -6,7 +6,7 @@ Parameters:
     Type: String
     Default: production
     AllowedValues: [development, staging, production]
-  
+
   DomainName:
     Type: String
     Description: Domain name for Cognito hosted UI
@@ -91,13 +91,13 @@ Outputs:
     Value: !Ref CognitoUserPool
     Export:
       Name: !Sub '${AWS::StackName}-UserPoolId'
-  
+
   UserPoolClientId:
     Description: Cognito User Pool Client ID
     Value: !Ref CognitoUserPoolClient
     Export:
       Name: !Sub '${AWS::StackName}-ClientId'
-  
+
   UserPoolDomain:
     Description: Cognito User Pool Domain
     Value: !Sub '${DomainName}-${Environment}.auth.${AWS::Region}.amazoncognito.com'

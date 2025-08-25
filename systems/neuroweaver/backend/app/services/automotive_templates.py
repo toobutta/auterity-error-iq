@@ -4,19 +4,20 @@ Manages automotive-specific prompt templates and datasets
 """
 
 import json
-import yaml
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from app.core.logging import logger
+import yaml
 from app.core.config import settings
+from app.core.logging import logger
 
 
 @dataclass
 class AutomotiveTemplate:
     """Automotive template data structure"""
+
     id: str
     name: str
     description: str
@@ -35,6 +36,7 @@ class AutomotiveTemplate:
 @dataclass
 class AutomotiveDataset:
     """Automotive dataset metadata"""
+
     id: str
     name: str
     description: str
@@ -53,12 +55,8 @@ class AutomotiveTemplateService:
     """Service for managing automotive templates and datasets"""
 
     def __init__(self):
-        self.templates_dir = (
-            Path(settings.DATA_DIR) / "automotive" / "templates"
-        )
-        self.datasets_dir = (
-            Path(settings.DATA_DIR) / "automotive" / "datasets"
-        )
+        self.templates_dir = Path(settings.DATA_DIR) / "automotive" / "templates"
+        self.datasets_dir = Path(settings.DATA_DIR) / "automotive" / "datasets"
         self.templates_dir.mkdir(parents=True, exist_ok=True)
         self.datasets_dir.mkdir(parents=True, exist_ok=True)
 
@@ -94,7 +92,7 @@ class AutomotiveTemplateService:
                         "year": "2020",
                         "mileage": "45000",
                         "last_service_date": "6 months ago",
-                        "customer_concern": "Strange noise when braking"
+                        "customer_concern": "Strange noise when braking",
                     }
                 ],
                 "expected_outputs": [
@@ -104,11 +102,7 @@ class AutomotiveTemplateService:
                         "inspection..."
                     )
                 ],
-                "parameters": {
-                    "max_tokens": 500,
-                    "temperature": 0.7,
-                    "top_p": 0.9
-                }
+                "parameters": {"max_tokens": 500, "temperature": 0.7, "top_p": 0.9},
             },
             {
                 "id": "automotive_sales_assistant",
@@ -127,7 +121,7 @@ class AutomotiveTemplateService:
                         "primary_use": "Family transportation",
                         "family_size": "4",
                         "fuel_preference": "Hybrid preferred",
-                        "special_requirements": "Good safety ratings"
+                        "special_requirements": "Good safety ratings",
                     }
                 ],
                 "expected_outputs": [
@@ -136,11 +130,7 @@ class AutomotiveTemplateService:
                         "hybrid efficiency and strong safety ratings..."
                     )
                 ],
-                "parameters": {
-                    "max_tokens": 600,
-                    "temperature": 0.8,
-                    "top_p": 0.9
-                }
+                "parameters": {"max_tokens": 600, "temperature": 0.8, "top_p": 0.9},
             },
             {
                 "id": "parts_inventory_assistant",
@@ -160,7 +150,7 @@ class AutomotiveTemplateService:
                         "vin": "1HGBH41JXMN109186",
                         "part_description": "Front brake pads",
                         "quantity": "1 set",
-                        "urgency": "Needed today"
+                        "urgency": "Needed today",
                     }
                 ],
                 "expected_outputs": [
@@ -170,18 +160,13 @@ class AutomotiveTemplateService:
                         "number..."
                     )
                 ],
-                "parameters": {
-                    "max_tokens": 400,
-                    "temperature": 0.6,
-                    "top_p": 0.8
-                }
+                "parameters": {"max_tokens": 400, "temperature": 0.6, "top_p": 0.8},
             },
             {
                 "id": "finance_advisor_assistant",
                 "name": "Finance Advisor Assistant",
                 "description": (
-                    "Template for automotive finance and insurance "
-                    "discussions"
+                    "Template for automotive finance and insurance " "discussions"
                 ),
                 "category": "finance",
                 "specialization": "finance_advisor",
@@ -193,7 +178,7 @@ class AutomotiveTemplateService:
                         "credit_score": "720-750",
                         "loan_term": "60 months",
                         "trade_value": "$8,000",
-                        "special_offers": "0.9% APR promotion"
+                        "special_offers": "0.9% APR promotion",
                     }
                 ],
                 "expected_outputs": [
@@ -203,19 +188,15 @@ class AutomotiveTemplateService:
                         "financing options..."
                     )
                 ],
-                "parameters": {
-                    "max_tokens": 500,
-                    "temperature": 0.7,
-                    "top_p": 0.9
-                }
-            }
+                "parameters": {"max_tokens": 500, "temperature": 0.7, "top_p": 0.9},
+            },
         ]
 
         for template_data in templates:
             template = AutomotiveTemplate(
                 **template_data,
                 created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+                updated_at=datetime.utcnow(),
             )
             self._save_template(template)
 
@@ -231,21 +212,21 @@ class AutomotiveTemplateService:
                 "category": "general",
                 "format": "jsonl",
                 "specializations": [
-                    "service_advisor", "sales_assistant",
-                    "parts_inventory", "finance_advisor"
+                    "service_advisor",
+                    "sales_assistant",
+                    "parts_inventory",
+                    "finance_advisor",
                 ],
-                "sample_count": 2500
+                "sample_count": 2500,
             },
             {
                 "id": "vehicle_specifications_2024",
                 "name": "2024 Vehicle Specifications Database",
-                "description": (
-                    "Complete vehicle specifications for 2024 model year"
-                ),
+                "description": ("Complete vehicle specifications for 2024 model year"),
                 "category": "specifications",
                 "format": "csv",
                 "specializations": ["sales_assistant", "parts_inventory"],
-                "sample_count": 1500
+                "sample_count": 1500,
             },
             {
                 "id": "service_procedures_manual",
@@ -254,8 +235,8 @@ class AutomotiveTemplateService:
                 "category": "service",
                 "format": "jsonl",
                 "specializations": ["service_advisor"],
-                "sample_count": 800
-            }
+                "sample_count": 800,
+            },
         ]
 
         for dataset_data in datasets:
@@ -269,9 +250,10 @@ class AutomotiveTemplateService:
                 file_path=str(file_path),
                 size_mb=(
                     file_path.stat().st_size / (1024 * 1024)
-                    if file_path.exists() else 0.0
+                    if file_path.exists()
+                    else 0.0
                 ),
-                created_at=datetime.utcnow()
+                created_at=datetime.utcnow(),
             )
 
             self._save_dataset_metadata(dataset)
@@ -291,7 +273,7 @@ class AutomotiveTemplateService:
             qa_samples = [
                 {
                     "question": "What should I do if my check engine light "
-                               "comes on?",
+                    "comes on?",
                     "answer": (
                         "If your check engine light comes on, you should "
                         "schedule a diagnostic appointment as soon as "
@@ -299,7 +281,7 @@ class AutomotiveTemplateService:
                         "the light indicates an issue that needs attention."
                     ),
                     "category": "service",
-                    "specialization": "service_advisor"
+                    "specialization": "service_advisor",
                 },
                 {
                     "question": "How often should I change my oil?",
@@ -309,8 +291,8 @@ class AutomotiveTemplateService:
                         "oil changes every 5,000-10,000 miles or 6-12 months."
                     ),
                     "category": "service",
-                    "specialization": "service_advisor"
-                }
+                    "specialization": "service_advisor",
+                },
             ]
 
             for i in range(min(dataset_info["sample_count"], 100)):
@@ -320,9 +302,9 @@ class AutomotiveTemplateService:
                 sample["timestamp"] = datetime.utcnow().isoformat()
                 sample_data.append(sample)
 
-        with open(file_path, 'w') as f:
+        with open(file_path, "w") as f:
             for sample in sample_data:
-                f.write(json.dumps(sample) + '\n')
+                f.write(json.dumps(sample) + "\n")
 
     def _generate_csv_dataset(self, file_path: Path, dataset_info: Dict):
         """Generate CSV format dataset"""
@@ -337,31 +319,29 @@ class AutomotiveTemplateService:
                 "Toyota,Camry,2024,LE,2.5L I4,8-Speed Automatic,FWD,"
                 "28,39,203,184,5,15.1,1500,27190",
                 "Honda,Accord,2024,LX,1.5L Turbo I4,CVT,FWD,"
-                "30,38,192,192,5,16.7,1000,28390"
+                "30,38,192,192,5,16.7,1000,28390",
             ]
 
-            with open(file_path, 'w') as f:
-                f.write(header + '\n')
+            with open(file_path, "w") as f:
+                f.write(header + "\n")
                 for i in range(min(dataset_info["sample_count"], 100)):
                     sample = sample_data[i % len(sample_data)]
-                    f.write(sample + '\n')
+                    f.write(sample + "\n")
 
     def _save_template(self, template: AutomotiveTemplate):
         """Save template to file"""
         template_file = self.templates_dir / f"{template.id}.yaml"
-        with open(template_file, 'w') as f:
+        with open(template_file, "w") as f:
             yaml.dump(asdict(template), f, default_flow_style=False)
 
     def _save_dataset_metadata(self, dataset: AutomotiveDataset):
         """Save dataset metadata"""
         metadata_file = self.datasets_dir / f"{dataset.id}_metadata.yaml"
-        with open(metadata_file, 'w') as f:
+        with open(metadata_file, "w") as f:
             yaml.dump(asdict(dataset), f, default_flow_style=False)
 
     async def get_templates(
-        self,
-        category: Optional[str] = None,
-        specialization: Optional[str] = None
+        self, category: Optional[str] = None, specialization: Optional[str] = None
     ) -> List[AutomotiveTemplate]:
         """Get automotive templates with optional filtering"""
         templates = []
@@ -371,7 +351,7 @@ class AutomotiveTemplateService:
                 continue
 
             try:
-                with open(template_file, 'r') as f:
+                with open(template_file, "r") as f:
                     template_data = yaml.safe_load(f)
 
                 template = AutomotiveTemplate(**template_data)
@@ -396,7 +376,7 @@ class AutomotiveTemplateService:
             return None
 
         try:
-            with open(template_file, 'r') as f:
+            with open(template_file, "r") as f:
                 template_data = yaml.safe_load(f)
 
             return AutomotiveTemplate(**template_data)
@@ -410,9 +390,7 @@ class AutomotiveTemplateService:
     ) -> AutomotiveTemplate:
         """Create a custom automotive template"""
         template = AutomotiveTemplate(
-            **template_data,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            **template_data, created_at=datetime.utcnow(), updated_at=datetime.utcnow()
         )
 
         self._save_template(template)

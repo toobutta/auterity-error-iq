@@ -3,11 +3,11 @@
  * Implements intelligent rate limiting with per-provider, per-user, and global limits
  */
 
-import rateLimit from 'express-rate-limit';
-import slowDown from 'express-slow-down';
-import { Request, Response, NextFunction } from 'express';
-import { logger } from '../utils/logger';
-import { CacheManager } from '../services/cache-manager';
+import rateLimit from "express-rate-limit";
+import slowDown from "express-slow-down";
+import { Request, Response, NextFunction } from "express";
+import { logger } from "../utils/logger";
+import { CacheManager } from "../services/cache-manager";
 
 export interface RateLimitConfig {
   global: {
@@ -15,11 +15,14 @@ export interface RateLimitConfig {
     window: number;
     burst: number;
   };
-  perProvider: Record<string, {
-    requests: number;
-    window: number;
-    burst: number;
-  }>;
+  perProvider: Record<
+    string,
+    {
+      requests: number;
+      window: number;
+      burst: number;
+    }
+  >;
   perUser: {
     requests: number;
     window: number;
@@ -46,7 +49,7 @@ export class IntelligentRateLimiter {
   constructor(config: RateLimitConfig, cacheManager: CacheManager) {
     this.config = config;
     this.cacheManager = cacheManager;
-    
+
     // Monitor system load for emergency mode
     this.monitorSystemLoad();
   }
@@ -57,7 +60,7 @@ export class IntelligentRateLimiter {
   async checkRateLimit(req: Request): Promise<RateLimitResult> {
     const userId = this.getUserId(req);
     const provider = this.getProvider(req);
-    const ip = req.ip || '127.0.0.1';
+    const ip = req.ip || "127.0.0.1";
 
     // Check global rate limit
     const globalLimit = await this.checkGlobalLimit(ip);
@@ -75,7 +78,10 @@ export class IntelligentRateLimiter {
 
     // Check per-provider rate limit
     if (provider) {
-      const providerLimit = await this.checkProviderLimit(provider, userId || ip);
+      const providerLimit = await this.checkProviderLimit(
+        provider,
+        userId || ip,
+      );
       if (!providerLimit.allowed) {
         return providerLimit;
       }
@@ -89,9 +95,9 @@ export class IntelligentRateLimiter {
    */
   private async checkGlobalLimit(ip: string): Promise<RateLimitResult> {
     const key = `rate_limit:global:${ip}`;
-    const limit = this.emergencyMode ? 
-      Math.floor(this.config.global.requests * 0.5) : 
-      this.config.global.requests;
+    const limit = this.emergencyMode
+      ? Math.floor(this.config.global.requests * 0.5)
+      : this.config.global.requests;
 
     return this.performRateLimitCheck(key, limit, this.config.global.window);
   }
@@ -102,16 +108,19 @@ export class IntelligentRateLimiter {
   private async checkUserLimit(userId: string): Promise<RateLimitResult> {
     const key = `rate_limit:user:${userId}`;
     return this.performRateLimitCheck(
-      key, 
-      this.config.perUser.requests, 
-      this.config.perUser.window
+      key,
+      this.config.perUser.requests,
+      this.config.perUser.window,
     );
   }
 
   /**
    * Check per-provider rate limit
    */
-  private async checkProviderLimit(provider: string, identifier: string): Promise<RateLimitResult> {
+  private async checkProviderLimit(
+    provider: string,
+    identifier: string,
+  ): Promise<RateLimitResult> {
     const providerConfig = this.config.perProvider[provider];
     if (!providerConfig) {
       return { allowed: true, limit: 0, remaining: 0, resetTime: 0 };
@@ -119,9 +128,9 @@ export class IntelligentRateLimiter {
 
     const key = `rate_limit:provider:${provider}:${identifier}`;
     return this.performRateLimitCheck(
-      key, 
-      providerConfig.requests, 
-      providerConfig.window
+      key,
+      providerConfig.requests,
+      providerConfig.window,
     );
   }
 
@@ -129,9 +138,9 @@ export class IntelligentRateLimiter {
    * Perform token bucket algorithm rate limit check
    */
   private async performRateLimitCheck(
-    key: string, 
-    limit: number, 
-    windowMs: number
+    key: string,
+    limit: number,
+    windowMs: number,
   ): Promise<RateLimitResult> {
     try {
       const now = Date.now();
@@ -139,7 +148,7 @@ export class IntelligentRateLimiter {
       const cacheKey = `${key}:${window}`;
 
       // Get current count from cache
-      let count = await this.cacheManager.get(cacheKey) as number;
+      let count = (await this.cacheManager.get(cacheKey)) as number;
       if (!count) {
         count = 0;
       }
@@ -147,29 +156,32 @@ export class IntelligentRateLimiter {
       if (count >= limit) {
         const resetTime = (window + 1) * windowMs;
         const retryAfter = Math.ceil((resetTime - now) / 1000);
-        
+
         return {
           allowed: false,
           limit,
           remaining: 0,
           resetTime,
-          retryAfter
+          retryAfter,
         };
       }
 
       // Increment counter
       const newCount = count + 1;
-      await this.cacheManager.set(cacheKey, newCount, Math.ceil(windowMs / 1000));
+      await this.cacheManager.set(
+        cacheKey,
+        newCount,
+        Math.ceil(windowMs / 1000),
+      );
 
       return {
         allowed: true,
         limit,
         remaining: limit - newCount,
-        resetTime: (window + 1) * windowMs
+        resetTime: (window + 1) * windowMs,
       };
-
     } catch (error) {
-      logger.error('Rate limit check failed:', error);
+      logger.error("Rate limit check failed:", error);
       // Fail open - allow request if rate limiting fails
       return { allowed: true, limit: 0, remaining: 0, resetTime: 0 };
     }
@@ -188,11 +200,16 @@ export class IntelligentRateLimiter {
       if (memPercentage > this.config.emergency.threshold) {
         if (!this.emergencyMode) {
           this.emergencyMode = true;
-          logger.warn(`Emergency mode activated: Memory usage ${memPercentage.toFixed(1)}%`);
+          logger.warn(
+            `Emergency mode activated: Memory usage ${memPercentage.toFixed(1)}%`,
+          );
         }
-      } else if (this.emergencyMode && memPercentage < this.config.emergency.threshold * 0.8) {
+      } else if (
+        this.emergencyMode &&
+        memPercentage < this.config.emergency.threshold * 0.8
+      ) {
         this.emergencyMode = false;
-        logger.info('Emergency mode deactivated');
+        logger.info("Emergency mode deactivated");
       }
     }, 10000); // Check every 10 seconds
   }
@@ -211,7 +228,7 @@ export class IntelligentRateLimiter {
     // Extract from URL path or request body
     const pathMatch = req.path.match(/\/api\/v1\/ai\/(\w+)/);
     if (pathMatch) return pathMatch[1];
-    
+
     return req.body?.provider || null;
   }
 }
@@ -221,7 +238,7 @@ export class IntelligentRateLimiter {
  */
 export function createRateLimitMiddleware(
   config: RateLimitConfig,
-  cacheManager: CacheManager
+  cacheManager: CacheManager,
 ) {
   const rateLimiter = new IntelligentRateLimiter(config, cacheManager);
 
@@ -231,29 +248,29 @@ export function createRateLimitMiddleware(
 
       // Set rate limit headers
       res.set({
-        'X-RateLimit-Limit': result.limit.toString(),
-        'X-RateLimit-Remaining': result.remaining.toString(),
-        'X-RateLimit-Reset': result.resetTime.toString()
+        "X-RateLimit-Limit": result.limit.toString(),
+        "X-RateLimit-Remaining": result.remaining.toString(),
+        "X-RateLimit-Reset": result.resetTime.toString(),
       });
 
       if (!result.allowed) {
         if (result.retryAfter) {
-          res.set('Retry-After', result.retryAfter.toString());
+          res.set("Retry-After", result.retryAfter.toString());
         }
 
         return res.status(429).json({
           success: false,
           error: {
-            message: 'Too many requests, please try again later',
-            code: 'RATE_LIMIT_EXCEEDED',
-            retryAfter: result.retryAfter
-          }
+            message: "Too many requests, please try again later",
+            code: "RATE_LIMIT_EXCEEDED",
+            retryAfter: result.retryAfter,
+          },
         });
       }
 
       next();
     } catch (error) {
-      logger.error('Rate limit middleware error:', error);
+      logger.error("Rate limit middleware error:", error);
       // Fail open - continue processing if rate limiting fails
       next();
     }
@@ -263,14 +280,17 @@ export function createRateLimitMiddleware(
 /**
  * Create speed limiting middleware for gradual slowdown
  */
-export function createSpeedLimitMiddleware(windowMs: number = 60000, delayAfter: number = 50) {
+export function createSpeedLimitMiddleware(
+  windowMs: number = 60000,
+  delayAfter: number = 50,
+) {
   return slowDown({
     windowMs,
     delayAfter,
     delayMs: (hits) => hits * 100, // Increase delay by 100ms for each request after delayAfter
     maxDelayMs: 5000, // Maximum delay of 5 seconds
     skipSuccessfulRequests: true,
-    skipFailedRequests: true
+    skipFailedRequests: true,
   });
 }
 
@@ -281,31 +301,31 @@ export const defaultRateLimitConfig: RateLimitConfig = {
   global: {
     requests: 1000,
     window: 60000, // 1 minute
-    burst: 50
+    burst: 50,
   },
   perProvider: {
-    'openai': {
+    openai: {
       requests: 100,
       window: 60000,
-      burst: 10
+      burst: 10,
     },
-    'anthropic': {
+    anthropic: {
       requests: 80,
       window: 60000,
-      burst: 8
+      burst: 8,
     },
-    'neuroweaver': {
+    neuroweaver: {
       requests: 200,
       window: 60000,
-      burst: 20
-    }
+      burst: 20,
+    },
   },
   perUser: {
     requests: 500,
-    window: 60000
+    window: 60000,
   },
   emergency: {
     enabled: true,
-    threshold: 85 // Activate when memory usage > 85%
-  }
+    threshold: 85, // Activate when memory usage > 85%
+  },
 };

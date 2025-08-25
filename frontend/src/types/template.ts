@@ -3,9 +3,14 @@ export interface TemplateParameter {
   templateId: string;
   name: string;
   description?: string;
-  parameterType: 'string' | 'number' | 'boolean' | 'array' | 'object';
+  parameterType: "string" | "number" | "boolean" | "array" | "object";
   isRequired: boolean;
-  defaultValue?: string | number | boolean | unknown[] | Record<string, unknown>;
+  defaultValue?:
+    | string
+    | number
+    | boolean
+    | unknown[]
+    | Record<string, unknown>;
   validationRules?: Record<string, string | number | boolean>;
 }
 
@@ -13,7 +18,7 @@ export interface Template {
   id: string;
   name: string;
   description?: string;
-  category: 'sales' | 'service' | 'parts' | 'general';
+  category: "sales" | "service" | "parts" | "general";
   definition: Record<string, unknown>;
   isActive: boolean;
   createdAt: string;
@@ -35,7 +40,12 @@ export interface TemplateInstantiateRequest {
 }
 
 export interface FormData {
-  [key: string]: string | number | boolean | Record<string, unknown> | unknown[];
+  [key: string]:
+    | string
+    | number
+    | boolean
+    | Record<string, unknown>
+    | unknown[];
 }
 
 export interface TemplateSearchParams {
@@ -43,6 +53,6 @@ export interface TemplateSearchParams {
   page?: number;
   pageSize?: number;
   search?: string;
-  sortBy?: 'name' | 'created_at' | 'updated_at';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: "name" | "created_at" | "updated_at";
+  sortOrder?: "asc" | "desc";
 }

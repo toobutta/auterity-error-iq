@@ -1,6 +1,6 @@
-import * as amqp from 'amqplib';
-import { EventEmitter } from 'events';
-import { v4 as uuidv4 } from 'uuid';
+import * as amqp from "amqplib";
+import { EventEmitter } from "events";
+import { v4 as uuidv4 } from "uuid";
 
 export interface Message {
   id: string;
@@ -25,38 +25,39 @@ export class MessageBus extends EventEmitter {
   private queues = new Set<string>();
 
   constructor(
-    private url: string = process.env.RABBITMQ_URL || 'amqp://localhost:5672',
-    private exchange: string = 'auterity.integration'
+    private url: string = process.env.RABBITMQ_URL || "amqp://localhost:5672",
+    private exchange: string = "auterity.integration",
   ) {
     super();
   }
 
   async initialize(): Promise<void> {
     try {
-      this.connection = await amqp.connect(this.url) as any;
+      this.connection = (await amqp.connect(this.url)) as any;
       this.channel = await (this.connection as any).createChannel();
 
       // Create exchange
-      await (this.channel as any).assertExchange(this.exchange, 'topic', { durable: true });
+      await (this.channel as any).assertExchange(this.exchange, "topic", {
+        durable: true,
+      });
 
       this.isConnected = true;
-      console.log('Message bus initialized successfully');
+      console.log("Message bus initialized successfully");
 
       // Setup error handling
-      (this.connection as any).on('error', (error: any) => {
-        console.error('RabbitMQ connection error:', error);
+      (this.connection as any).on("error", (error: any) => {
+        console.error("RabbitMQ connection error:", error);
         this.isConnected = false;
-        this.emit('connection-error', error);
+        this.emit("connection-error", error);
       });
 
-      (this.connection as any).on('close', () => {
-        console.log('RabbitMQ connection closed');
+      (this.connection as any).on("close", () => {
+        console.log("RabbitMQ connection closed");
         this.isConnected = false;
-        this.emit('connection-closed');
+        this.emit("connection-closed");
       });
-
     } catch (error) {
-      console.error('Failed to initialize message bus:', error);
+      console.error("Failed to initialize message bus:", error);
       throw error;
     }
   }
@@ -70,9 +71,9 @@ export class MessageBus extends EventEmitter {
         await (this.connection as any).close();
       }
       this.isConnected = false;
-      console.log('Message bus disconnected');
+      console.log("Message bus disconnected");
     } catch (error) {
-      console.error('Error disconnecting message bus:', error);
+      console.error("Error disconnecting message bus:", error);
     }
   }
 
@@ -80,40 +81,40 @@ export class MessageBus extends EventEmitter {
     routingKey: string,
     message: any,
     source: string,
-    headers?: Record<string, any>
+    headers?: Record<string, any>,
   ): Promise<void> {
     if (!this.isConnected || !this.channel) {
-      throw new Error('Message bus not connected');
+      throw new Error("Message bus not connected");
     }
 
     const fullMessage: Message = {
       id: uuidv4(),
       type: routingKey,
       source,
-      destination: '*',
+      destination: "*",
       payload: message,
       timestamp: new Date().toISOString(),
-      headers
+      headers,
     };
 
     const messageBuffer = Buffer.from(JSON.stringify(fullMessage));
 
     await this.channel.publish(this.exchange, routingKey, messageBuffer, {
       persistent: true,
-      headers
+      headers,
     });
 
     console.log(`Published message: ${routingKey} from ${source}`);
-    this.emit('message-published', fullMessage);
+    this.emit("message-published", fullMessage);
   }
 
   async subscribe(
     routingKey: string,
     handler: MessageHandler,
-    queueName?: string
+    queueName?: string,
   ): Promise<void> {
     if (!this.isConnected || !this.channel) {
-      throw new Error('Message bus not connected');
+      throw new Error("Message bus not connected");
     }
 
     const queue = queueName || `queue.${routingKey}.${Date.now()}`;
@@ -138,12 +139,11 @@ export class MessageBus extends EventEmitter {
           await handler(routingKey, message);
 
           this.channel!.ack(msg);
-          this.emit('message-processed', message);
-
+          this.emit("message-processed", message);
         } catch (error) {
-          console.error('Error processing message:', error);
+          console.error("Error processing message:", error);
           this.channel!.nack(msg, false, false); // Don't requeue
-          this.emit('message-error', { message: msg, error });
+          this.emit("message-error", { message: msg, error });
         }
       }
     });
@@ -162,7 +162,7 @@ export class MessageBus extends EventEmitter {
     routingKey: string,
     payload: any,
     source: string,
-    timeout: number = 30000
+    timeout: number = 30000,
   ): Promise<any> {
     return new Promise((resolve, reject) => {
       const correlationId = uuidv4();
@@ -183,18 +183,24 @@ export class MessageBus extends EventEmitter {
       };
 
       // Setup reply handler
-      this.subscribe(replyQueue, (routingKey: string, message: Message) => {
-        if (message.correlationId === correlationId) {
-          cleanup();
-          resolve(message.payload);
-        }
-      }, replyQueue).then(() => {
-        // Publish request
-        this.publish(routingKey, payload, source, {
-          correlationId,
-          replyTo: replyQueue
-        });
-      }).catch(reject);
+      this.subscribe(
+        replyQueue,
+        (routingKey: string, message: Message) => {
+          if (message.correlationId === correlationId) {
+            cleanup();
+            resolve(message.payload);
+          }
+        },
+        replyQueue,
+      )
+        .then(() => {
+          // Publish request
+          this.publish(routingKey, payload, source, {
+            correlationId,
+            replyTo: replyQueue,
+          });
+        })
+        .catch(reject);
     });
   }
 
@@ -202,30 +208,30 @@ export class MessageBus extends EventEmitter {
     routingKey: string,
     message: any,
     source: string,
-    excludeSelf: boolean = false
+    excludeSelf: boolean = false,
   ): Promise<void> {
     if (!this.isConnected || !this.channel) {
-      throw new Error('Message bus not connected');
+      throw new Error("Message bus not connected");
     }
 
     const fullMessage: Message = {
       id: uuidv4(),
       type: routingKey,
       source,
-      destination: 'broadcast',
+      destination: "broadcast",
       payload: message,
       timestamp: new Date().toISOString(),
-      headers: { broadcast: true, excludeSelf }
+      headers: { broadcast: true, excludeSelf },
     };
 
     const messageBuffer = Buffer.from(JSON.stringify(fullMessage));
 
     await this.channel.publish(this.exchange, routingKey, messageBuffer, {
-      persistent: false
+      persistent: false,
     });
 
     console.log(`Broadcast message: ${routingKey} from ${source}`);
-    this.emit('message-broadcast', fullMessage);
+    this.emit("message-broadcast", fullMessage);
   }
 
   get isHealthy(): boolean {
@@ -233,7 +239,7 @@ export class MessageBus extends EventEmitter {
   }
 
   get connectionStatus(): string {
-    return this.isConnected ? 'connected' : 'disconnected';
+    return this.isConnected ? "connected" : "disconnected";
   }
 
   async getQueueInfo(): Promise<any> {
@@ -244,16 +250,18 @@ export class MessageBus extends EventEmitter {
       const queueInfo: any = {};
 
       for (const queue of queues) {
-        const result = await (this.channel as any).assertQueue(queue, { passive: true });
+        const result = await (this.channel as any).assertQueue(queue, {
+          passive: true,
+        });
         queueInfo[queue] = {
           messageCount: result.messageCount,
-          consumerCount: result.consumerCount
+          consumerCount: result.consumerCount,
         };
       }
 
       return queueInfo;
     } catch (error) {
-      console.error('Error getting queue info:', error);
+      console.error("Error getting queue info:", error);
       return {};
     }
   }
@@ -261,17 +269,21 @@ export class MessageBus extends EventEmitter {
   // Add missing methods for integration
   async getStatus(): Promise<any> {
     return {
-      status: this.isConnected ? 'healthy' : 'disconnected',
+      status: this.isConnected ? "healthy" : "disconnected",
       connection: this.connectionStatus,
       queues: this.queues.size,
       handlers: this.handlers.size,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 
-  async sendMessage(target: string, message: any, metadata?: any): Promise<string> {
+  async sendMessage(
+    target: string,
+    message: any,
+    metadata?: any,
+  ): Promise<string> {
     const messageId = uuidv4();
-    await this.publish(target, message, 'integration', metadata);
+    await this.publish(target, message, "integration", metadata);
     return messageId;
   }
 }

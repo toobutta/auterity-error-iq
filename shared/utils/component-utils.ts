@@ -8,7 +8,7 @@ export interface ComponentVariant {
 
 export const getComponentClasses = (variant: ComponentVariant): string => {
   const classes: string[] = [];
-  
+
   // Size classes
   switch (variant.size) {
     case "sm":
@@ -20,7 +20,7 @@ export const getComponentClasses = (variant: ComponentVariant): string => {
     default:
       classes.push("text-base", "px-3", "py-1.5");
   }
-  
+
   // Variant classes
   switch (variant.variant) {
     case "outlined":
@@ -32,40 +32,49 @@ export const getComponentClasses = (variant: ComponentVariant): string => {
     default:
       classes.push("border-0");
   }
-  
+
   return classes.join(" ");
 };
 
-export const getSystemColorClasses = (system: "autmatrix" | "neuroweaver" | "relaycore"): string => {
+export const getSystemColorClasses = (
+  system: "autmatrix" | "neuroweaver" | "relaycore",
+): string => {
   const color = AuterityDesignTokens.colors.primary[system];
   const hexColor = color.replace("#", "");
-  
+
   return `text-${hexColor} border-${hexColor} bg-${hexColor}`;
 };
 
 export const getDepartmentColorClasses = (department: string): string => {
   const departmentColors = AuterityDesignTokens.colors.departments;
-  const color = departmentColors[department as keyof typeof departmentColors] || departmentColors.sales;
+  const color =
+    departmentColors[department as keyof typeof departmentColors] ||
+    departmentColors.sales;
   const hexColor = color.replace("#", "");
-  
+
   return `text-${hexColor} border-${hexColor} bg-${hexColor}`;
 };
 
 export const getStatusColorClasses = (status: string): string => {
   const statusColors = AuterityDesignTokens.colors.status;
-  const color = statusColors[status as keyof typeof statusColors] || statusColors.pending;
+  const color =
+    statusColors[status as keyof typeof statusColors] || statusColors.pending;
   const hexColor = color.replace("#", "");
-  
+
   return `text-${hexColor} border-${hexColor} bg-${hexColor}`;
 };
 
-export const getTypographyClasses = (scale: keyof typeof AuterityDesignTokens.typography.scale): string => {
+export const getTypographyClasses = (
+  scale: keyof typeof AuterityDesignTokens.typography.scale,
+): string => {
   // This would typically integrate with Tailwind's font size utilities
   // For now, we'll return classes that can be used with Tailwind
   return `text-${scale}`;
 };
 
-export const getSpacingClasses = (spacingKey: keyof typeof AuterityDesignTokens.spacing): string => {
+export const getSpacingClasses = (
+  spacingKey: keyof typeof AuterityDesignTokens.spacing,
+): string => {
   // Return Tailwind spacing classes
   const spacing = AuterityDesignTokens.spacing[spacingKey];
   // Convert spacing values to Tailwind classes (this is a simplified approach)
@@ -87,7 +96,9 @@ export const getShadowClasses = (level: "sm" | "md" | "lg" | "xl"): string => {
 };
 
 // Utility for creating consistent border radius
-export const getRoundedClasses = (size: "sm" | "md" | "lg" | "full"): string => {
+export const getRoundedClasses = (
+  size: "sm" | "md" | "lg" | "full",
+): string => {
   switch (size) {
     case "sm":
       return "rounded-sm";
@@ -101,9 +112,11 @@ export const getRoundedClasses = (size: "sm" | "md" | "lg" | "full"): string => 
 };
 
 // Utility for creating consistent hover effects
-export const getHoverClasses = (system: "autmatrix" | "neuroweaver" | "relaycore"): string => {
+export const getHoverClasses = (
+  system: "autmatrix" | "neuroweaver" | "relaycore",
+): string => {
   const color = AuterityDesignTokens.colors.primary[system];
   const hexColor = color.replace("#", "");
-  
+
   return `hover:bg-${hexColor} hover:bg-opacity-10`;
 };

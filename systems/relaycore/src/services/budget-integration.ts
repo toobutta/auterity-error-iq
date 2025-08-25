@@ -3,10 +3,10 @@
  * Integrates budget tracking with AI request processing
  */
 
-import { logger } from '../utils/logger';
-import { BudgetTracker } from './budget-tracker';
-import { BudgetRegistry } from './budget-registry';
-import { BudgetConstraintCheck, ScopeType } from '../types/budget';
+import { logger } from "../utils/logger";
+import { BudgetTracker } from "./budget-tracker";
+import { BudgetRegistry } from "./budget-registry";
+import { BudgetConstraintCheck, ScopeType } from "../types/budget";
 
 export class BudgetIntegration {
   private budgetTracker: BudgetTracker;
@@ -24,7 +24,7 @@ export class BudgetIntegration {
     userId: string,
     teamId?: string,
     projectId?: string,
-    estimatedCost: number = 0
+    estimatedCost: number = 0,
   ): Promise<{
     canProceed: boolean;
     reason?: string;
@@ -37,14 +37,17 @@ export class BudgetIntegration {
 
       // Check user budget
       const userBudgets = await this.budgetRegistry.listBudgets({
-        scopeType: 'user',
-        scopeId: userId
+        scopeType: "user",
+        scopeId: userId,
       });
 
       for (const budget of userBudgets) {
-        const check = await this.budgetTracker.checkBudgetConstraints(budget.id, estimatedCost);
+        const check = await this.budgetTracker.checkBudgetConstraints(
+          budget.id,
+          estimatedCost,
+        );
         budgetChecks.push(check);
-        
+
         if (!check.canProceed) {
           canProceed = false;
           blockingReason = check.reason;
@@ -55,14 +58,17 @@ export class BudgetIntegration {
       // Check team budget if provided and user budget allows
       if (canProceed && teamId) {
         const teamBudgets = await this.budgetRegistry.listBudgets({
-          scopeType: 'team',
-          scopeId: teamId
+          scopeType: "team",
+          scopeId: teamId,
         });
 
         for (const budget of teamBudgets) {
-          const check = await this.budgetTracker.checkBudgetConstraints(budget.id, estimatedCost);
+          const check = await this.budgetTracker.checkBudgetConstraints(
+            budget.id,
+            estimatedCost,
+          );
           budgetChecks.push(check);
-          
+
           if (!check.canProceed) {
             canProceed = false;
             blockingReason = check.reason;
@@ -74,14 +80,17 @@ export class BudgetIntegration {
       // Check project budget if provided and previous budgets allow
       if (canProceed && projectId) {
         const projectBudgets = await this.budgetRegistry.listBudgets({
-          scopeType: 'project',
-          scopeId: projectId
+          scopeType: "project",
+          scopeId: projectId,
         });
 
         for (const budget of projectBudgets) {
-          const check = await this.budgetTracker.checkBudgetConstraints(budget.id, estimatedCost);
+          const check = await this.budgetTracker.checkBudgetConstraints(
+            budget.id,
+            estimatedCost,
+          );
           budgetChecks.push(check);
-          
+
           if (!check.canProceed) {
             canProceed = false;
             blockingReason = check.reason;
@@ -93,16 +102,15 @@ export class BudgetIntegration {
       return {
         canProceed,
         reason: blockingReason,
-        budgetChecks
+        budgetChecks,
       };
-
     } catch (error) {
-      logger.error('Error checking request constraints:', error);
+      logger.error("Error checking request constraints:", error);
       // In case of error, allow the request to proceed but log the issue
       return {
         canProceed: true,
-        reason: 'Budget check failed - allowing request',
-        budgetChecks: []
+        reason: "Budget check failed - allowing request",
+        budgetChecks: [],
       };
     }
   }
@@ -117,8 +125,8 @@ export class BudgetIntegration {
     projectId: string | undefined,
     modelId: string,
     cost: number,
-    currency: string = 'USD',
-    timestamp?: string
+    currency: string = "USD",
+    timestamp?: string,
   ): Promise<void> {
     try {
       const usageMetadata = {
@@ -128,24 +136,24 @@ export class BudgetIntegration {
         teamId,
         projectId,
         tags: {
-          source: 'ai-request',
-          model: modelId
-        }
+          source: "ai-request",
+          model: modelId,
+        },
       };
 
       const usageRequest = {
         amount: cost,
         currency,
         timestamp,
-        source: 'relaycore' as const,
+        source: "relaycore" as const,
         description: `AI request using ${modelId}`,
-        metadata: usageMetadata
+        metadata: usageMetadata,
       };
 
       // Record usage against user budgets
       const userBudgets = await this.budgetRegistry.listBudgets({
-        scopeType: 'user',
-        scopeId: userId
+        scopeType: "user",
+        scopeId: userId,
       });
 
       for (const budget of userBudgets) {
@@ -153,15 +161,18 @@ export class BudgetIntegration {
           await this.budgetTracker.recordUsage(budget.id, usageRequest);
           logger.debug(`Recorded usage for user budget: ${budget.id}`);
         } catch (error) {
-          logger.error(`Failed to record usage for user budget ${budget.id}:`, error);
+          logger.error(
+            `Failed to record usage for user budget ${budget.id}:`,
+            error,
+          );
         }
       }
 
       // Record usage against team budgets
       if (teamId) {
         const teamBudgets = await this.budgetRegistry.listBudgets({
-          scopeType: 'team',
-          scopeId: teamId
+          scopeType: "team",
+          scopeId: teamId,
         });
 
         for (const budget of teamBudgets) {
@@ -169,7 +180,10 @@ export class BudgetIntegration {
             await this.budgetTracker.recordUsage(budget.id, usageRequest);
             logger.debug(`Recorded usage for team budget: ${budget.id}`);
           } catch (error) {
-            logger.error(`Failed to record usage for team budget ${budget.id}:`, error);
+            logger.error(
+              `Failed to record usage for team budget ${budget.id}:`,
+              error,
+            );
           }
         }
       }
@@ -177,8 +191,8 @@ export class BudgetIntegration {
       // Record usage against project budgets
       if (projectId) {
         const projectBudgets = await this.budgetRegistry.listBudgets({
-          scopeType: 'project',
-          scopeId: projectId
+          scopeType: "project",
+          scopeId: projectId,
         });
 
         for (const budget of projectBudgets) {
@@ -186,15 +200,19 @@ export class BudgetIntegration {
             await this.budgetTracker.recordUsage(budget.id, usageRequest);
             logger.debug(`Recorded usage for project budget: ${budget.id}`);
           } catch (error) {
-            logger.error(`Failed to record usage for project budget ${budget.id}:`, error);
+            logger.error(
+              `Failed to record usage for project budget ${budget.id}:`,
+              error,
+            );
           }
         }
       }
 
-      logger.info(`Usage recorded for request ${requestId}: ${cost} ${currency}`);
-
+      logger.info(
+        `Usage recorded for request ${requestId}: ${cost} ${currency}`,
+      );
     } catch (error) {
-      logger.error('Error recording request usage:', error);
+      logger.error("Error recording request usage:", error);
       // Don't throw error to avoid breaking the AI request flow
     }
   }
@@ -202,7 +220,10 @@ export class BudgetIntegration {
   /**
    * Get budget summary for a user/team/project
    */
-  async getBudgetSummary(scopeType: ScopeType, scopeId: string): Promise<{
+  async getBudgetSummary(
+    scopeType: ScopeType,
+    scopeId: string,
+  ): Promise<{
     budgets: Array<{
       id: string;
       name: string;
@@ -217,29 +238,31 @@ export class BudgetIntegration {
     try {
       const budgets = await this.budgetRegistry.listBudgets({
         scopeType,
-        scopeId
+        scopeId,
       });
 
       let totalSpent = 0;
       let totalLimit = 0;
-      let currency = 'USD';
-      
+      let currency = "USD";
+
       const budgetSummaries = [];
 
       for (const budget of budgets) {
         const status = await this.budgetTracker.getBudgetStatus(budget.id);
-        const utilization = await this.budgetTracker.calculateUtilization(budget.id);
+        const utilization = await this.budgetTracker.calculateUtilization(
+          budget.id,
+        );
 
         if (status) {
           totalSpent += status.currentAmount;
           totalLimit += status.limit;
           currency = status.currency; // Assume all budgets use same currency
-          
+
           budgetSummaries.push({
             id: budget.id,
             name: budget.name,
             status,
-            utilization
+            utilization,
           });
         }
       }
@@ -249,11 +272,10 @@ export class BudgetIntegration {
         totalBudgets: budgets.length,
         totalSpent,
         totalLimit,
-        currency
+        currency,
       };
-
     } catch (error) {
-      logger.error('Error getting budget summary:', error);
+      logger.error("Error getting budget summary:", error);
       throw error;
     }
   }
@@ -265,25 +287,27 @@ export class BudgetIntegration {
     try {
       // This would be called periodically to check for budget threshold violations
       // For now, we'll implement a basic version that logs alerts
-      
+
       const allBudgets = await this.budgetRegistry.listBudgets({});
-      
+
       for (const budget of allBudgets) {
         const status = await this.budgetTracker.getBudgetStatus(budget.id);
-        
+
         if (!status) continue;
-        
+
         // Check each alert threshold
         for (const alert of budget.alerts) {
           if (status.percentUsed >= alert.threshold) {
             // Check if this alert was already triggered recently
             const existingAlert = status.activeAlerts.find(
-              a => a.threshold === alert.threshold && !a.acknowledged
+              (a) => a.threshold === alert.threshold && !a.acknowledged,
             );
-            
+
             if (!existingAlert) {
-              logger.warn(`Budget alert triggered for ${budget.name}: ${status.percentUsed}% used (threshold: ${alert.threshold}%)`);
-              
+              logger.warn(
+                `Budget alert triggered for ${budget.name}: ${status.percentUsed}% used (threshold: ${alert.threshold}%)`,
+              );
+
               // In a full implementation, you would:
               // 1. Insert into budget_alert_history
               // 2. Send notifications via configured channels
@@ -292,9 +316,8 @@ export class BudgetIntegration {
           }
         }
       }
-      
     } catch (error) {
-      logger.error('Error checking and triggering alerts:', error);
+      logger.error("Error checking and triggering alerts:", error);
     }
   }
 }

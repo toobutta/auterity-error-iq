@@ -3,10 +3,9 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from app.config.settings import get_settings
 from twilio.rest import Client
 from twilio.twiml import VoiceResponse
-
-from app.config.settings import get_settings
 
 
 class TwilioService:

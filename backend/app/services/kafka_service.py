@@ -2,9 +2,8 @@ import json
 import os
 from typing import Any, Dict
 
-from kafka import KafkaProducer
-
 from app.exceptions import ServiceError
+from kafka import KafkaProducer
 
 
 class KafkaService:

@@ -1,9 +1,9 @@
 # AMAZON-Q-TASK: Backend Code Quality Analysis & Resolution
 
-**Task ID:** AMAZON-Q-BACKEND-ANALYSIS  
-**Priority:** 🔴 CRITICAL - Execute in parallel with security fixes  
-**Tool:** Amazon Q Developer (Claude 3.7)  
-**Estimated Time:** 2-3 hours  
+**Task ID:** AMAZON-Q-BACKEND-ANALYSIS
+**Priority:** 🔴 CRITICAL - Execute in parallel with security fixes
+**Tool:** Amazon Q Developer (Claude 3.7)
+**Estimated Time:** 2-3 hours
 **Complexity:** Medium-High - Systematic analysis and resolution
 
 ---
@@ -15,13 +15,14 @@ Analyze and resolve the backend code quality crisis affecting 500+ linting viola
 ## 🚨 CRITICAL ISSUES TO RESOLVE
 
 ### Backend Linting Crisis (500+ Violations)
+
 ```bash
 Current Status: CRITICAL - Blocks production deployment
 Impact: Codebase unmaintainable, unreliable development workflow
 
 Violation Breakdown:
 - 100+ unused imports (F401) - Dead code cleanup needed
-- 200+ whitespace violations (W293, W291) - Formatting inconsistencies  
+- 200+ whitespace violations (W293, W291) - Formatting inconsistencies
 - 50+ import organization issues (E402) - Imports not at top of file
 - 50+ line length violations (E501) - Lines >88 characters
 - Multiple undefined name references (F821) - FUNCTIONALITY BREAKING
@@ -31,18 +32,21 @@ Violation Breakdown:
 ## 🔍 ANALYSIS REQUIREMENTS
 
 ### 1. Pattern Recognition & Root Cause Analysis
+
 - **Identify Systematic Issues**: Analyze patterns in violations across files
 - **Root Cause Determination**: Why do these issues exist and how to prevent recurrence
 - **Impact Assessment**: Which violations are functionality-breaking vs cosmetic
 - **Fix Strategy Development**: Systematic approach to resolution
 
 ### 2. Functionality Preservation Analysis
+
 - **Critical Path Identification**: Which files/functions are essential for core functionality
 - **Dependency Mapping**: How imports and references connect across the codebase
 - **Risk Assessment**: Which fixes could potentially break existing functionality
 - **Testing Strategy**: How to validate fixes don't introduce regressions
 
 ### 3. Automated Fix Strategy
+
 - **Tool Selection**: Which automated tools (black, isort, autoflake) to use in what order
 - **Manual Fix Requirements**: Which violations require human intervention
 - **Validation Approach**: How to verify each fix preserves functionality
@@ -51,6 +55,7 @@ Violation Breakdown:
 ## 🛠️ IMPLEMENTATION APPROACH
 
 ### Phase 1: Comprehensive Analysis (30 minutes)
+
 ```bash
 # Analyze current state
 cd backend
@@ -66,6 +71,7 @@ python -m flake8 . --select=E722 --count  # Bare except
 ```
 
 ### Phase 2: Systematic Resolution Strategy (60 minutes)
+
 ```bash
 # Step 1: Fix undefined names (CRITICAL - functionality breaking)
 # Manual analysis and fixes for F821 violations
@@ -86,6 +92,7 @@ python -m black .  # Apply formatting
 ```
 
 ### Phase 3: Validation & Testing (60 minutes)
+
 ```bash
 # Verify no functionality broken
 python -m pytest tests/ --tb=short  # All tests must still pass
@@ -105,6 +112,7 @@ echo "Improvement: X% reduction in violations"
 ## 📊 SUCCESS CRITERIA
 
 ### Critical Success Metrics
+
 - ✅ **Undefined Name References (F821)**: 0 violations (currently multiple)
 - ✅ **Unused Imports (F401)**: <10 violations (currently 100+)
 - ✅ **Whitespace Issues (W293, W291)**: 0 violations (currently 200+)
@@ -113,12 +121,14 @@ echo "Improvement: X% reduction in violations"
 - ✅ **Overall Violations**: <50 total (currently 500+)
 
 ### Functionality Preservation
+
 - ✅ **All Tests Pass**: No regression in test suite
 - ✅ **Application Starts**: Backend starts without import errors
 - ✅ **API Endpoints Work**: Core functionality preserved
 - ✅ **Database Connections**: No connection or model issues
 
 ### Code Quality Improvements
+
 - ✅ **Maintainability**: Code follows consistent patterns
 - ✅ **Readability**: Proper formatting and organization
 - ✅ **Standards Compliance**: Follows Python PEP 8 standards
@@ -127,6 +137,7 @@ echo "Improvement: X% reduction in violations"
 ## 🔧 TECHNICAL SPECIFICATIONS
 
 ### File Scope
+
 ```bash
 backend/
 ├── app/
@@ -140,6 +151,7 @@ backend/
 ```
 
 ### Tools Configuration
+
 ```bash
 # Black configuration (pyproject.toml)
 [tool.black]
@@ -163,18 +175,21 @@ exclude = alembic/versions/
 ## ⚠️ RISK MITIGATION
 
 ### High-Risk Areas
+
 1. **Database Models**: Changes could break database connections
 2. **API Endpoints**: Import changes could break route registration
 3. **Service Dependencies**: Circular imports or missing dependencies
 4. **Alembic Migrations**: Don't modify migration files
 
 ### Mitigation Strategies
+
 1. **Incremental Approach**: Fix one category at a time
 2. **Continuous Testing**: Run tests after each major change
 3. **Git Branching**: Create backup branch before starting
 4. **Functionality Validation**: Test core workflows manually
 
 ### Rollback Plan
+
 ```bash
 # If issues occur, rollback strategy:
 git checkout -b backend-quality-fixes  # Create branch first
@@ -187,12 +202,14 @@ git branch -D backend-quality-fixes  # Remove problematic branch
 ## 📈 EXPECTED OUTCOMES
 
 ### Immediate Benefits
+
 - **90%+ Reduction** in linting violations (500+ → <50)
 - **Zero Functionality Breaking** violations (F821 fixed)
 - **Consistent Code Formatting** across entire backend
 - **Improved Import Organization** for better maintainability
 
 ### Long-term Benefits
+
 - **Maintainable Codebase** for future development
 - **Reliable Development Workflow** with consistent standards
 - **Production Readiness** with professional code quality
@@ -201,11 +218,13 @@ git branch -D backend-quality-fixes  # Remove problematic branch
 ## 🔗 INTEGRATION WITH OTHER TASKS
 
 ### Dependencies
+
 - **Can Run in Parallel** with CLINE-TASK-SECURITY (different codebases)
 - **Must Complete Before** test infrastructure fixes (affects test imports)
 - **Enables** reliable CI/CD pipeline setup
 
 ### Handoff to Next Tasks
+
 - **Clean Backend** enables reliable test execution
 - **Consistent Patterns** make future development easier
 - **Quality Standards** established for ongoing development
@@ -215,6 +234,7 @@ git branch -D backend-quality-fixes  # Remove problematic branch
 ## 💡 AMAZON Q SPECIFIC ADVANTAGES
 
 ### Why Amazon Q is Ideal for This Task
+
 1. **Pattern Recognition**: Excellent at identifying systematic issues across large codebases
 2. **Root Cause Analysis**: Deep understanding of why quality issues occur
 3. **Multi-file Analysis**: Can analyze relationships across entire codebase
@@ -222,6 +242,7 @@ git branch -D backend-quality-fixes  # Remove problematic branch
 5. **Risk Assessment**: Strong at identifying which changes could break functionality
 
 ### Leveraging Amazon Q's Strengths
+
 - **Comprehensive Analysis**: Use Amazon Q's ability to analyze entire codebase patterns
 - **Systematic Approach**: Leverage methodical problem-solving capabilities
 - **Risk Mitigation**: Use advanced reasoning to identify potential breaking changes

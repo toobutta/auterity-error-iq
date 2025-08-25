@@ -1,12 +1,13 @@
 # Integration Architecture Preparation
 
-**Role**: KIRO Architecture Coordination  
-**Phase**: Pre-Integration Planning  
-**Timeline**: Parallel to Amazon Q/Cline execution  
+**Role**: KIRO Architecture Coordination
+**Phase**: Pre-Integration Planning
+**Timeline**: Parallel to Amazon Q/Cline execution
 
 ## UNIFIED PLATFORM ARCHITECTURE
 
 ### System Integration Strategy
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Production Architecture                   │
@@ -45,6 +46,7 @@
 ```
 
 ### API Gateway Configuration
+
 ```nginx
 # nginx/unified-gateway.conf
 upstream autmatrix_backend {
@@ -104,14 +106,15 @@ server {
 ## UNIFIED AUTHENTICATION SYSTEM
 
 ### JWT Token Strategy
+
 ```typescript
 // shared/auth/unified-auth.ts
 interface UnifiedAuthToken {
   // Standard JWT claims
-  sub: string;           // User ID
-  iat: number;          // Issued at
-  exp: number;          // Expires at
-  
+  sub: string; // User ID
+  iat: number; // Issued at
+  exp: number; // Expires at
+
   // Custom claims for cross-system access
   systems: SystemAccess[];
   roles: UserRole[];
@@ -119,9 +122,9 @@ interface UnifiedAuthToken {
 }
 
 interface SystemAccess {
-  system: 'autmatrix' | 'relaycore' | 'neuroweaver';
-  level: 'read' | 'write' | 'admin';
-  resources: string[];   // Specific resource access
+  system: "autmatrix" | "relaycore" | "neuroweaver";
+  level: "read" | "write" | "admin";
+  resources: string[]; // Specific resource access
 }
 
 interface UserRole {
@@ -134,36 +137,42 @@ interface UserRole {
 export class UnifiedAuthService {
   async validateToken(token: string): Promise<UnifiedAuthToken | null> {
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as UnifiedAuthToken;
-      
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET!,
+      ) as UnifiedAuthToken;
+
       // Validate token hasn't been revoked
-      const isRevoked = await this.redis.get(`revoked:${decoded.sub}:${decoded.iat}`);
+      const isRevoked = await this.redis.get(
+        `revoked:${decoded.sub}:${decoded.iat}`,
+      );
       if (isRevoked) return null;
-      
+
       return decoded;
     } catch (error) {
       return null;
     }
   }
-  
+
   async hasSystemAccess(
-    token: UnifiedAuthToken, 
-    system: string, 
-    level: 'read' | 'write' | 'admin'
+    token: UnifiedAuthToken,
+    system: string,
+    level: "read" | "write" | "admin",
   ): Promise<boolean> {
-    const systemAccess = token.systems.find(s => s.system === system);
+    const systemAccess = token.systems.find((s) => s.system === system);
     if (!systemAccess) return false;
-    
-    const levels = ['read', 'write', 'admin'];
+
+    const levels = ["read", "write", "admin"];
     const requiredIndex = levels.indexOf(level);
     const userIndex = levels.indexOf(systemAccess.level);
-    
+
     return userIndex >= requiredIndex;
   }
 }
 ```
 
 ### Cross-System Middleware
+
 ```python
 # backend/app/middleware/unified_auth.py
 from fastapi import Request, HTTPException, status
@@ -175,10 +184,10 @@ class UnifiedAuthMiddleware:
     def __init__(self, redis_client: redis.Redis):
         self.redis = redis_client
         self.security = HTTPBearer()
-    
+
     async def verify_system_access(
-        self, 
-        request: Request, 
+        self,
+        request: Request,
         required_system: str,
         required_level: str = "read"
     ):
@@ -186,40 +195,40 @@ class UnifiedAuthMiddleware:
         try:
             credentials: HTTPAuthorizationCredentials = await self.security(request)
             token = credentials.credentials
-            
+
             # Decode and validate JWT
             payload = jwt.decode(
-                token, 
-                os.getenv("JWT_SECRET"), 
+                token,
+                os.getenv("JWT_SECRET"),
                 algorithms=["HS256"]
             )
-            
+
             # Check system access
             systems = payload.get("systems", [])
             system_access = next(
-                (s for s in systems if s["system"] == required_system), 
+                (s for s in systems if s["system"] == required_system),
                 None
             )
-            
+
             if not system_access:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail=f"No access to {required_system} system"
                 )
-            
+
             # Check access level
             levels = ["read", "write", "admin"]
             required_index = levels.index(required_level)
             user_index = levels.index(system_access["level"])
-            
+
             if user_index < required_index:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail=f"Insufficient access level for {required_system}"
                 )
-            
+
             return payload
-            
+
         except jwt.InvalidTokenError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -230,6 +239,7 @@ class UnifiedAuthMiddleware:
 ## UNIFIED DATABASE SCHEMA
 
 ### Cross-System Data Model
+
 ```sql
 -- scripts/unified-schema.sql
 
@@ -334,6 +344,7 @@ CREATE INDEX idx_error_correlations_created ON error_correlations(created_at);
 ## MONITORING AND OBSERVABILITY
 
 ### Unified Metrics Collection
+
 ```yaml
 # monitoring/prometheus/unified-config.yml
 global:
@@ -345,49 +356,50 @@ rule_files:
 
 scrape_configs:
   # AutoMatrix Backend
-  - job_name: 'autmatrix-backend'
+  - job_name: "autmatrix-backend"
     static_configs:
-      - targets: ['autmatrix-backend:8000']
-    metrics_path: '/metrics'
+      - targets: ["autmatrix-backend:8000"]
+    metrics_path: "/metrics"
     scrape_interval: 10s
 
   # RelayCore Service
-  - job_name: 'relaycore'
+  - job_name: "relaycore"
     static_configs:
-      - targets: ['relaycore:8001']
-    metrics_path: '/metrics'
+      - targets: ["relaycore:8001"]
+    metrics_path: "/metrics"
     scrape_interval: 10s
 
   # NeuroWeaver Backend
-  - job_name: 'neuroweaver-backend'
+  - job_name: "neuroweaver-backend"
     static_configs:
-      - targets: ['neuroweaver-backend:8002']
-    metrics_path: '/metrics'
+      - targets: ["neuroweaver-backend:8002"]
+    metrics_path: "/metrics"
     scrape_interval: 10s
 
   # Database Monitoring
-  - job_name: 'postgres'
+  - job_name: "postgres"
     static_configs:
-      - targets: ['postgres-exporter:9187']
+      - targets: ["postgres-exporter:9187"]
 
   # Redis Monitoring
-  - job_name: 'redis'
+  - job_name: "redis"
     static_configs:
-      - targets: ['redis-exporter:9121']
+      - targets: ["redis-exporter:9121"]
 
   # Nginx Gateway
-  - job_name: 'nginx'
+  - job_name: "nginx"
     static_configs:
-      - targets: ['nginx-exporter:9113']
+      - targets: ["nginx-exporter:9113"]
 
 alertmanager:
   alertmanagers:
     - static_configs:
         - targets:
-          - alertmanager:9093
+            - alertmanager:9093
 ```
 
 ### Cross-System Alert Rules
+
 ```yaml
 # monitoring/prometheus/alert_rules.yml
 groups:
@@ -406,7 +418,7 @@ groups:
       # Cross-System Performance
       - alert: HighCrossSystemLatency
         expr: |
-          histogram_quantile(0.95, 
+          histogram_quantile(0.95,
             rate(http_request_duration_seconds_bucket{job=~"autmatrix-backend|relaycore|neuroweaver-backend"}[5m])
           ) > 2
         for: 5m
@@ -441,7 +453,7 @@ groups:
       - alert: DatabaseConnectionExhaustion
         expr: |
           (
-            postgres_stat_database_numbackends / 
+            postgres_stat_database_numbackends /
             postgres_settings_max_connections
           ) > 0.8
         for: 5m
@@ -455,9 +467,10 @@ groups:
 ## DEPLOYMENT ORCHESTRATION
 
 ### Production Docker Compose
+
 ```yaml
 # docker-compose.prod.yml
-version: '3.8'
+version: "3.8"
 
 services:
   # API Gateway
@@ -477,7 +490,7 @@ services:
 
   # AutoMatrix System
   autmatrix-frontend:
-    build: 
+    build:
       context: ./frontend
       dockerfile: Dockerfile.prod
     environment:
@@ -486,7 +499,7 @@ services:
     restart: unless-stopped
 
   autmatrix-backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile.prod
     environment:
@@ -505,7 +518,7 @@ services:
 
   # RelayCore System
   relaycore:
-    build: 
+    build:
       context: ./systems/relaycore
       dockerfile: Dockerfile.prod
     environment:
@@ -519,7 +532,7 @@ services:
 
   # NeuroWeaver System
   neuroweaver-frontend:
-    build: 
+    build:
       context: ./systems/neuroweaver/frontend
       dockerfile: Dockerfile.prod
     environment:
@@ -527,7 +540,7 @@ services:
     restart: unless-stopped
 
   neuroweaver-backend:
-    build: 
+    build:
       context: ./systems/neuroweaver/backend
       dockerfile: Dockerfile.prod
     environment:
@@ -576,10 +589,10 @@ services:
       - ./monitoring/prometheus:/etc/prometheus
       - prometheus_data:/prometheus
     command:
-      - '--config.file=/etc/prometheus/unified-config.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
+      - "--config.file=/etc/prometheus/unified-config.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
     restart: unless-stopped
 
   grafana:

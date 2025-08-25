@@ -80,6 +80,7 @@ We use ESLint with TypeScript support to enforce consistent code style in JavaSc
 ### Configuration
 
 ESLint is configured with the following plugins:
+
 - eslint-plugin-react
 - eslint-plugin-react-hooks
 - @typescript-eslint/eslint-plugin

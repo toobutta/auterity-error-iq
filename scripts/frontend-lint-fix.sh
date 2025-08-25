@@ -69,13 +69,13 @@ if [ $ERRORS -gt 0 ]; then
   echo "=== TypeScript Type Suggestions ==="
   echo "Files with 'any' type usage:"
   grep -l "no-explicit-any" lint-report.txt | sort
-  
+
   echo ""
   echo "Suggested approach for fixing 'any' types:"
   echo "1. Create proper interfaces for API responses"
   echo "2. Use 'unknown' type where appropriate"
   echo "3. Use utility types like Partial<T>, Pick<T, K>, etc."
-  
+
   # Example interface suggestion
   echo ""
   echo "Example interface for workflow data:"

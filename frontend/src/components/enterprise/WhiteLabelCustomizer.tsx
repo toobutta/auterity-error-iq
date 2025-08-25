@@ -2,11 +2,11 @@
  * White-Label Theme Customization Component
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Alert, AlertDescription } from '../ui/alert';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import { Alert, AlertDescription } from "../ui/alert";
 
 interface ThemeConfig {
   id: string;
@@ -41,9 +41,9 @@ export const WhiteLabelCustomizer: React.FC = () => {
   const [themes, setThemes] = useState<ThemeConfig[]>([]);
   const [selectedTheme, setSelectedTheme] = useState<ThemeConfig | null>(null);
   const [brandAssets, setBrandAssets] = useState<BrandAssets>({
-    logo: { light: '', dark: '', favicon: '' },
-    companyName: '',
-    supportEmail: '',
+    logo: { light: "", dark: "", favicon: "" },
+    companyName: "",
+    supportEmail: "",
   });
   const [previewMode, setPreviewMode] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -59,54 +59,54 @@ export const WhiteLabelCustomizer: React.FC = () => {
       // Mock predefined themes
       const mockThemes: ThemeConfig[] = [
         {
-          id: 'corporate-blue',
-          name: 'Corporate Blue',
-          description: 'Professional blue theme for corporate environments',
+          id: "corporate-blue",
+          name: "Corporate Blue",
+          description: "Professional blue theme for corporate environments",
           colors: {
-            primary: '#1e40af',
-            secondary: '#64748b',
-            accent: '#3b82f6',
-            background: '#ffffff',
-            surface: '#f8fafc',
-            text: '#1e293b',
-            textSecondary: '#64748b',
-            border: '#e2e8f0',
+            primary: "#1e40af",
+            secondary: "#64748b",
+            accent: "#3b82f6",
+            background: "#ffffff",
+            surface: "#f8fafc",
+            text: "#1e293b",
+            textSecondary: "#64748b",
+            border: "#e2e8f0",
           },
           typography: {
             fontFamily: '"Inter", sans-serif',
           },
         },
         {
-          id: 'modern-dark',
-          name: 'Modern Dark',
-          description: 'Sleek dark theme for modern applications',
+          id: "modern-dark",
+          name: "Modern Dark",
+          description: "Sleek dark theme for modern applications",
           colors: {
-            primary: '#8b5cf6',
-            secondary: '#6b7280',
-            accent: '#a855f7',
-            background: '#111827',
-            surface: '#1f2937',
-            text: '#f9fafb',
-            textSecondary: '#d1d5db',
-            border: '#374151',
+            primary: "#8b5cf6",
+            secondary: "#6b7280",
+            accent: "#a855f7",
+            background: "#111827",
+            surface: "#1f2937",
+            text: "#f9fafb",
+            textSecondary: "#d1d5db",
+            border: "#374151",
           },
           typography: {
             fontFamily: '"Poppins", sans-serif',
           },
         },
         {
-          id: 'emerald-green',
-          name: 'Emerald Green',
-          description: 'Fresh green theme for eco-friendly brands',
+          id: "emerald-green",
+          name: "Emerald Green",
+          description: "Fresh green theme for eco-friendly brands",
           colors: {
-            primary: '#10b981',
-            secondary: '#6b7280',
-            accent: '#34d399',
-            background: '#ffffff',
-            surface: '#f0fdf4',
-            text: '#1f2937',
-            textSecondary: '#6b7280',
-            border: '#d1fae5',
+            primary: "#10b981",
+            secondary: "#6b7280",
+            accent: "#34d399",
+            background: "#ffffff",
+            surface: "#f0fdf4",
+            text: "#1f2937",
+            textSecondary: "#6b7280",
+            border: "#d1fae5",
           },
           typography: {
             fontFamily: '"Roboto", sans-serif',
@@ -117,7 +117,7 @@ export const WhiteLabelCustomizer: React.FC = () => {
       setThemes(mockThemes);
       setSelectedTheme(mockThemes[0]);
     } catch (error) {
-      console.error('Error loading themes:', error);
+      console.error("Error loading themes:", error);
     } finally {
       setLoading(false);
     }
@@ -125,7 +125,7 @@ export const WhiteLabelCustomizer: React.FC = () => {
 
   const loadBrandAssets = () => {
     // Load saved brand assets from localStorage or API
-    const saved = localStorage.getItem('brandAssets');
+    const saved = localStorage.getItem("brandAssets");
     if (saved) {
       setBrandAssets(JSON.parse(saved));
     }
@@ -141,18 +141,25 @@ export const WhiteLabelCustomizer: React.FC = () => {
 
     const root = document.documentElement;
     Object.entries(theme.colors).forEach(([key, value]) => {
-      root.style.setProperty(`--color-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`, value);
+      root.style.setProperty(
+        `--color-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`,
+        value,
+      );
     });
-    root.style.setProperty('--font-family', theme.typography.fontFamily);
+    root.style.setProperty("--font-family", theme.typography.fontFamily);
   };
 
-  const handleBrandAssetChange = (field: string, value: string, subField?: string) => {
-    setBrandAssets(prev => {
+  const handleBrandAssetChange = (
+    field: string,
+    value: string,
+    subField?: string,
+  ) => {
+    setBrandAssets((prev) => {
       if (subField) {
         return {
           ...prev,
           [field]: {
-            ...prev[field as keyof BrandAssets] as any,
+            ...(prev[field as keyof BrandAssets] as any),
             [subField]: value,
           },
         };
@@ -164,7 +171,11 @@ export const WhiteLabelCustomizer: React.FC = () => {
     });
   };
 
-  const handleFileUpload = (field: string, subField: string, event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (
+    field: string,
+    subField: string,
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -179,7 +190,7 @@ export const WhiteLabelCustomizer: React.FC = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
-      
+
       const configuration = {
         theme: selectedTheme,
         assets: brandAssets,
@@ -187,18 +198,18 @@ export const WhiteLabelCustomizer: React.FC = () => {
       };
 
       // Save to localStorage (in production, save to API)
-      localStorage.setItem('whiteLabelConfig', JSON.stringify(configuration));
-      localStorage.setItem('brandAssets', JSON.stringify(brandAssets));
+      localStorage.setItem("whiteLabelConfig", JSON.stringify(configuration));
+      localStorage.setItem("brandAssets", JSON.stringify(brandAssets));
 
       // Apply theme permanently
       if (selectedTheme) {
         applyThemePreview(selectedTheme);
       }
 
-      alert('White-label configuration saved successfully!');
+      alert("White-label configuration saved successfully!");
     } catch (error) {
-      console.error('Error saving configuration:', error);
-      alert('Error saving configuration. Please try again.');
+      console.error("Error saving configuration:", error);
+      alert("Error saving configuration. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -222,12 +233,12 @@ export const WhiteLabelCustomizer: React.FC = () => {
     };
 
     const blob = new Blob([JSON.stringify(configuration, null, 2)], {
-      type: 'application/json',
+      type: "application/json",
     });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `whitelabel-config-${selectedTheme?.id || 'custom'}.json`;
+    a.download = `whitelabel-config-${selectedTheme?.id || "custom"}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -246,16 +257,18 @@ export const WhiteLabelCustomizer: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">White-Label Customization</h1>
+        <h1 className="text-3xl font-bold text-gray-900">
+          White-Label Customization
+        </h1>
         <div className="flex space-x-2">
           <Button variant="outline" onClick={togglePreview}>
-            {previewMode ? 'Exit Preview' : 'Preview Mode'}
+            {previewMode ? "Exit Preview" : "Preview Mode"}
           </Button>
           <Button variant="outline" onClick={exportConfiguration}>
             Export Config
           </Button>
           <Button onClick={handleSave} disabled={saving}>
-            {saving ? 'Saving...' : 'Save Changes'}
+            {saving ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </div>
@@ -263,7 +276,8 @@ export const WhiteLabelCustomizer: React.FC = () => {
       {previewMode && (
         <Alert>
           <AlertDescription>
-            Preview mode is active. Changes are applied temporarily. Click "Save Changes" to make them permanent.
+            Preview mode is active. Changes are applied temporarily. Click "Save
+            Changes" to make them permanent.
           </AlertDescription>
         </Alert>
       )}
@@ -281,29 +295,35 @@ export const WhiteLabelCustomizer: React.FC = () => {
                   key={theme.id}
                   className={`p-4 border rounded-lg cursor-pointer transition-all ${
                     selectedTheme?.id === theme.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
                   }`}
                   onClick={() => handleThemeSelect(theme)}
                 >
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-medium">{theme.name}</h3>
-                      <p className="text-sm text-gray-500">{theme.description}</p>
+                      <p className="text-sm text-gray-500">
+                        {theme.description}
+                      </p>
                     </div>
                     {selectedTheme?.id === theme.id && (
-                      <Badge className="bg-blue-100 text-blue-800">Selected</Badge>
+                      <Badge className="bg-blue-100 text-blue-800">
+                        Selected
+                      </Badge>
                     )}
                   </div>
                   <div className="flex space-x-2 mt-3">
-                    {Object.entries(theme.colors).slice(0, 6).map(([key, color]) => (
-                      <div
-                        key={key}
-                        className="w-6 h-6 rounded-full border border-gray-300"
-                        style={{ backgroundColor: color }}
-                        title={key}
-                      />
-                    ))}
+                    {Object.entries(theme.colors)
+                      .slice(0, 6)
+                      .map(([key, color]) => (
+                        <div
+                          key={key}
+                          className="w-6 h-6 rounded-full border border-gray-300"
+                          style={{ backgroundColor: color }}
+                          title={key}
+                        />
+                      ))}
                   </div>
                 </div>
               ))}
@@ -325,7 +345,9 @@ export const WhiteLabelCustomizer: React.FC = () => {
                 <input
                   type="text"
                   value={brandAssets.companyName}
-                  onChange={(e) => handleBrandAssetChange('companyName', e.target.value)}
+                  onChange={(e) =>
+                    handleBrandAssetChange("companyName", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter company name"
                 />
@@ -338,7 +360,9 @@ export const WhiteLabelCustomizer: React.FC = () => {
                 <input
                   type="email"
                   value={brandAssets.supportEmail}
-                  onChange={(e) => handleBrandAssetChange('supportEmail', e.target.value)}
+                  onChange={(e) =>
+                    handleBrandAssetChange("supportEmail", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="support@company.com"
                 />
@@ -351,7 +375,7 @@ export const WhiteLabelCustomizer: React.FC = () => {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleFileUpload('logo', 'light', e)}
+                  onChange={(e) => handleFileUpload("logo", "light", e)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {brandAssets.logo.light && (
@@ -370,7 +394,7 @@ export const WhiteLabelCustomizer: React.FC = () => {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleFileUpload('logo', 'dark', e)}
+                  onChange={(e) => handleFileUpload("logo", "dark", e)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {brandAssets.logo.dark && (
@@ -389,7 +413,7 @@ export const WhiteLabelCustomizer: React.FC = () => {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleFileUpload('logo', 'favicon', e)}
+                  onChange={(e) => handleFileUpload("logo", "favicon", e)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {brandAssets.logo.favicon && (
@@ -416,7 +440,7 @@ export const WhiteLabelCustomizer: React.FC = () => {
               {Object.entries(selectedTheme.colors).map(([key, color]) => (
                 <div key={key} className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700 capitalize">
-                    {key.replace(/([A-Z])/g, ' $1')}
+                    {key.replace(/([A-Z])/g, " $1")}
                   </label>
                   <div className="flex items-center space-x-2">
                     <input

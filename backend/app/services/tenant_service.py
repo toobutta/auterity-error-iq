@@ -3,12 +3,11 @@
 from typing import Dict, List, Optional
 from uuid import UUID
 
-from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
-
 from app.models.tenant import SSOConfiguration, Tenant, TenantStatus
 from app.models.user import User
 from app.services.audit_service import AuditService
+from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
 
 
 class TenantService:

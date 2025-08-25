@@ -22,7 +22,7 @@ This guide outlines the code quality standards and best practices for the Auteri
 ```typescript
 // ❌ Bad
 const fetchData = async (): Promise<any> => {
-  const response = await api.get('/data');
+  const response = await api.get("/data");
   return response.data;
 };
 
@@ -34,7 +34,7 @@ interface DataResponse {
 }
 
 const fetchData = async (): Promise<DataResponse[]> => {
-  const response = await api.get<ApiResponse<DataResponse[]>>('/data');
+  const response = await api.get<ApiResponse<DataResponse[]>>("/data");
   return response.data;
 };
 ```
@@ -50,7 +50,7 @@ const fetchData = async (): Promise<DataResponse[]> => {
 // ❌ Bad
 const Component = (props) => {
   const [data, setData] = useState();
-  
+
   useEffect(() => {
     const fetchData = async () => {
       const result = await api.get('/data');
@@ -58,7 +58,7 @@ const Component = (props) => {
     };
     fetchData();
   }, []); // Missing dependency
-  
+
   return <div>{data}</div>;
 };
 
@@ -70,7 +70,7 @@ interface ComponentProps {
 
 const Component: React.FC<ComponentProps> = ({ id, onDataLoad }) => {
   const [data, setData] = useState<DataType[]>([]);
-  
+
   useEffect(() => {
     const fetchData = async () => {
       const result = await api.get<ApiResponse<DataType[]>>(`/data/${id}`);
@@ -81,7 +81,7 @@ const Component: React.FC<ComponentProps> = ({ id, onDataLoad }) => {
     };
     fetchData();
   }, [id, onDataLoad]); // All dependencies listed
-  
+
   return <div>{data.map(item => <Item key={item.id} data={item} />)}</div>;
 };
 ```
@@ -115,7 +115,7 @@ def process_data(data):
     """Process the data"""
     result = {}
     for item in data:
-        result[item['id']] = item['value']    
+        result[item['id']] = item['value']
     return result
 
 # ✅ Good
@@ -132,10 +132,10 @@ from app.models import User
 def process_data(data: List[Dict[str, str]]) -> Dict[str, str]:
     """
     Process the input data and return a dictionary of id-value pairs.
-    
+
     Args:
         data: A list of dictionaries containing 'id' and 'value' keys
-        
+
     Returns:
         A dictionary mapping ids to values
     """
@@ -220,7 +220,7 @@ pre-commit run --all-files
 
 ```typescript
 // Instead of:
-const data: any = { name: 'John', age: 30 };
+const data: any = { name: "John", age: 30 };
 
 // Use:
 interface Person {
@@ -228,7 +228,7 @@ interface Person {
   age: number;
 }
 
-const data: Person = { name: 'John', age: 30 };
+const data: Person = { name: "John", age: 30 };
 ```
 
 ### React: react-hooks/exhaustive-deps

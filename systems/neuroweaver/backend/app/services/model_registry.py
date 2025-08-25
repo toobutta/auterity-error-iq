@@ -5,18 +5,21 @@ Handles model registration, metadata management, and versioning
 
 import logging
 import re
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import List, Optional, Dict, Any
-from dataclasses import dataclass, asdict
+from typing import Any, Dict, List, Optional
 
 try:
     import semver
-    from sqlalchemy import select, update, and_, or_, func
+    from sqlalchemy import and_, func, or_, select, update
+
     DB_AVAILABLE = True
 except ImportError:
     DB_AVAILABLE = False
     logger = logging.getLogger(__name__)
-    logger.warning("Database libraries not available. Registry functionality will be limited.")
+    logger.warning(
+        "Database libraries not available. Registry functionality will be limited."
+    )
 
 from app.core.database import AsyncSessionLocal, ModelRecord
 
@@ -26,6 +29,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ModelInfo:
     """Model information data class"""
+
     id: str
     name: str
     description: str
@@ -59,7 +63,7 @@ class ModelRegistry:
         """Register a new model in the registry"""
         if not DB_AVAILABLE:
             raise RuntimeError("Database not available")
-        
+
         async with self.session_factory() as session:
             try:
                 model_record = ModelRecord(
@@ -75,7 +79,7 @@ class ModelRegistry:
                     performance_metrics=model_info.performance_metrics,
                     deployment_info=model_info.deployment_info,
                     is_active=model_info.is_active,
-                    auto_deploy=model_info.auto_deploy
+                    auto_deploy=model_info.auto_deploy,
                 )
 
                 session.add(model_record)
@@ -95,8 +99,7 @@ class ModelRegistry:
         async with self.session_factory() as session:
             try:
                 stmt = select(ModelRecord).where(
-                    ModelRecord.id == model_id,
-                    ModelRecord.is_active.is_(True)
+                    ModelRecord.id == model_id, ModelRecord.is_active.is_(True)
                 )
                 result = await session.execute(stmt)
                 model_record = result.scalar_one_or_none()
@@ -113,33 +116,24 @@ class ModelRegistry:
         self,
         specialization: Optional[str] = None,
         status: Optional[str] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> List[ModelInfo]:
         """List models with optional filtering"""
         async with self.session_factory() as session:
             try:
-                stmt = select(ModelRecord).where(
-                    ModelRecord.is_active.is_(True)
-                )
+                stmt = select(ModelRecord).where(ModelRecord.is_active.is_(True))
 
                 if specialization:
-                    stmt = stmt.where(
-                        ModelRecord.specialization == specialization
-                    )
+                    stmt = stmt.where(ModelRecord.specialization == specialization)
                 if status:
                     stmt = stmt.where(ModelRecord.status == status)
 
-                stmt = stmt.limit(limit).order_by(
-                    ModelRecord.created_at.desc()
-                )
+                stmt = stmt.limit(limit).order_by(ModelRecord.created_at.desc())
 
                 result = await session.execute(stmt)
                 model_records = result.scalars().all()
 
-                return [
-                    self._record_to_model_info(record)
-                    for record in model_records
-                ]
+                return [self._record_to_model_info(record) for record in model_records]
 
             except Exception as e:
                 logger.error(f"Failed to list models: {e}")
@@ -151,19 +145,21 @@ class ModelRegistry:
             try:
                 model_info.updated_at = datetime.utcnow()
 
-                stmt = update(ModelRecord).where(
-                    ModelRecord.id == model_info.id
-                ).values(
-                    name=model_info.name,
-                    description=model_info.description,
-                    status=model_info.status,
-                    version=model_info.version,
-                    updated_at=model_info.updated_at,
-                    training_config=model_info.training_config,
-                    performance_metrics=model_info.performance_metrics,
-                    deployment_info=model_info.deployment_info,
-                    is_active=model_info.is_active,
-                    auto_deploy=model_info.auto_deploy
+                stmt = (
+                    update(ModelRecord)
+                    .where(ModelRecord.id == model_info.id)
+                    .values(
+                        name=model_info.name,
+                        description=model_info.description,
+                        status=model_info.status,
+                        version=model_info.version,
+                        updated_at=model_info.updated_at,
+                        training_config=model_info.training_config,
+                        performance_metrics=model_info.performance_metrics,
+                        deployment_info=model_info.deployment_info,
+                        is_active=model_info.is_active,
+                        auto_deploy=model_info.auto_deploy,
+                    )
                 )
 
                 await session.execute(stmt)
@@ -181,11 +177,10 @@ class ModelRegistry:
         """Soft delete a model (mark as inactive)"""
         async with self.session_factory() as session:
             try:
-                stmt = update(ModelRecord).where(
-                    ModelRecord.id == model_id
-                ).values(
-                    is_active=False,
-                    updated_at=datetime.utcnow()
+                stmt = (
+                    update(ModelRecord)
+                    .where(ModelRecord.id == model_id)
+                    .values(is_active=False, updated_at=datetime.utcnow())
                 )
 
                 result = await session.execute(stmt)
@@ -207,53 +202,44 @@ class ModelRegistry:
         self, specialization: str
     ) -> List[ModelInfo]:
         """Get all active models for a specific specialization"""
-        return await self.list_models(
-            specialization=specialization, status="deployed"
-        )
+        return await self.list_models(specialization=specialization, status="deployed")
 
     async def get_model_versions(self, model_name: str) -> List[ModelInfo]:
         """Get all versions of a model"""
         async with self.session_factory() as session:
             try:
-                stmt = select(ModelRecord).where(
-                    ModelRecord.name == model_name,
-                    ModelRecord.is_active.is_(True)
-                ).order_by(ModelRecord.version.desc())
+                stmt = (
+                    select(ModelRecord)
+                    .where(
+                        ModelRecord.name == model_name, ModelRecord.is_active.is_(True)
+                    )
+                    .order_by(ModelRecord.version.desc())
+                )
 
                 result = await session.execute(stmt)
                 model_records = result.scalars().all()
 
-                return [
-                    self._record_to_model_info(record)
-                    for record in model_records
-                ]
+                return [self._record_to_model_info(record) for record in model_records]
 
             except Exception as e:
-                logger.error(
-                    f"Failed to get versions for model {model_name}: {e}"
-                )
+                logger.error(f"Failed to get versions for model {model_name}: {e}")
                 raise
 
-    async def update_performance_metrics(
-        self, model_id: str, metrics: Dict
-    ) -> bool:
+    async def update_performance_metrics(self, model_id: str, metrics: Dict) -> bool:
         """Update performance metrics for a model"""
         async with self.session_factory() as session:
             try:
-                stmt = update(ModelRecord).where(
-                    ModelRecord.id == model_id
-                ).values(
-                    performance_metrics=metrics,
-                    updated_at=datetime.utcnow()
+                stmt = (
+                    update(ModelRecord)
+                    .where(ModelRecord.id == model_id)
+                    .values(performance_metrics=metrics, updated_at=datetime.utcnow())
                 )
 
                 result = await session.execute(stmt)
                 await session.commit()
 
                 if result.rowcount > 0:
-                    logger.info(
-                        f"Performance metrics updated for model {model_id}"
-                    )
+                    logger.info(f"Performance metrics updated for model {model_id}")
                     return True
                 return False
 
@@ -270,7 +256,7 @@ class ModelRegistry:
         base_model_id: str,
         new_version: str,
         changes: Dict[str, Any],
-        created_by: str
+        created_by: str,
     ) -> ModelInfo:
         """Create a new version of an existing model"""
         async with self.session_factory() as session:
@@ -287,10 +273,13 @@ class ModelRegistry:
                 # Check if version already exists
                 existing_versions = await self.get_model_versions(base_model.name)
                 if any(v.version == new_version for v in existing_versions):
-                    raise ValueError(f"Version {new_version} already exists for model {base_model.name}")
+                    raise ValueError(
+                        f"Version {new_version} already exists for model {base_model.name}"
+                    )
 
                 # Generate new model ID
                 import uuid
+
                 new_model_id = str(uuid.uuid4())
 
                 # Create new model info
@@ -303,11 +292,13 @@ class ModelRegistry:
                     status="registered",
                     version=new_version,
                     created_by=created_by,
-                    training_config=changes.get("training_config", base_model.training_config),
+                    training_config=changes.get(
+                        "training_config", base_model.training_config
+                    ),
                     performance_metrics=base_model.performance_metrics,
                     deployment_info=None,  # New versions start undeployed
                     is_active=True,
-                    auto_deploy=base_model.auto_deploy
+                    auto_deploy=base_model.auto_deploy,
                 )
 
                 # Register new version
@@ -318,10 +309,7 @@ class ModelRegistry:
                 raise
 
     async def bump_model_version(
-        self,
-        model_id: str,
-        bump_type: str,
-        created_by: str
+        self, model_id: str, bump_type: str, created_by: str
     ) -> ModelInfo:
         """Automatically bump model version (major, minor, patch)"""
         try:
@@ -332,7 +320,9 @@ class ModelRegistry:
             # Calculate new version
             current_version = model.version
             if not self._is_valid_semver(current_version):
-                raise ValueError(f"Current version {current_version} is not valid semver")
+                raise ValueError(
+                    f"Current version {current_version} is not valid semver"
+                )
 
             if bump_type == "major":
                 new_version = semver.bump_major(current_version)
@@ -348,18 +338,14 @@ class ModelRegistry:
                 model_id,
                 new_version,
                 {"description": f"Auto-bumped {bump_type} version"},
-                created_by
+                created_by,
             )
 
         except Exception as e:
             logger.error(f"Failed to bump model version: {e}")
             raise
 
-    async def compare_models(
-        self,
-        model_id_1: str,
-        model_id_2: str
-    ) -> Dict[str, Any]:
+    async def compare_models(self, model_id_1: str, model_id_2: str) -> Dict[str, Any]:
         """Compare two model versions"""
         try:
             model1 = await self.get_model(model_id_1)
@@ -374,21 +360,26 @@ class ModelRegistry:
                     "name": model1.name,
                     "version": model1.version,
                     "status": model1.status,
-                    "created_at": model1.created_at.isoformat() if model1.created_at else None
+                    "created_at": model1.created_at.isoformat()
+                    if model1.created_at
+                    else None,
                 },
                 "model_2": {
                     "id": model2.id,
                     "name": model2.name,
                     "version": model2.version,
                     "status": model2.status,
-                    "created_at": model2.created_at.isoformat() if model2.created_at else None
+                    "created_at": model2.created_at.isoformat()
+                    if model2.created_at
+                    else None,
                 },
-                "version_comparison": self._compare_versions(model1.version, model2.version),
-                "performance_comparison": self._compare_performance(
-                    model1.performance_metrics or {},
-                    model2.performance_metrics or {}
+                "version_comparison": self._compare_versions(
+                    model1.version, model2.version
                 ),
-                "recommendation": self._get_comparison_recommendation(model1, model2)
+                "performance_comparison": self._compare_performance(
+                    model1.performance_metrics or {}, model2.performance_metrics or {}
+                ),
+                "recommendation": self._get_comparison_recommendation(model1, model2),
             }
 
             return comparison
@@ -398,17 +389,18 @@ class ModelRegistry:
             raise
 
     async def rollback_to_version(
-        self,
-        model_name: str,
-        target_version: str,
-        created_by: str
+        self, model_name: str, target_version: str, created_by: str
     ) -> ModelInfo:
         """Rollback to a specific version"""
         try:
             # Get target version
-            target_model = await self._get_model_by_name_and_version(model_name, target_version)
+            target_model = await self._get_model_by_name_and_version(
+                model_name, target_version
+            )
             if not target_model:
-                raise ValueError(f"Model {model_name} version {target_version} not found")
+                raise ValueError(
+                    f"Model {model_name} version {target_version} not found"
+                )
 
             # Create new version based on target
             new_version = await self._get_next_rollback_version(model_name)
@@ -418,9 +410,9 @@ class ModelRegistry:
                 new_version,
                 {
                     "description": f"Rollback to version {target_version}",
-                    "training_config": target_model.training_config
+                    "training_config": target_model.training_config,
                 },
-                created_by
+                created_by,
             )
 
         except Exception as e:
@@ -428,9 +420,7 @@ class ModelRegistry:
             raise
 
     async def get_version_history(
-        self,
-        model_name: str,
-        limit: int = 50
+        self, model_name: str, limit: int = 50
     ) -> List[Dict[str, Any]]:
         """Get version history for a model"""
         try:
@@ -439,16 +429,20 @@ class ModelRegistry:
 
             history = []
             for version in versions:
-                history.append({
-                    "version": version.version,
-                    "id": version.id,
-                    "status": version.status,
-                    "created_at": version.created_at.isoformat() if version.created_at else None,
-                    "created_by": version.created_by,
-                    "performance_metrics": version.performance_metrics,
-                    "deployment_info": version.deployment_info,
-                    "description": version.description
-                })
+                history.append(
+                    {
+                        "version": version.version,
+                        "id": version.id,
+                        "status": version.status,
+                        "created_at": version.created_at.isoformat()
+                        if version.created_at
+                        else None,
+                        "created_by": version.created_by,
+                        "performance_metrics": version.performance_metrics,
+                        "deployment_info": version.deployment_info,
+                        "description": version.description,
+                    }
+                )
 
             return history
 
@@ -490,9 +484,15 @@ class ModelRegistry:
             return {
                 "version_1": version1,
                 "version_2": version2,
-                "relationship": "newer" if comparison > 0 else "older" if comparison < 0 else "equal",
+                "relationship": "newer"
+                if comparison > 0
+                else "older"
+                if comparison < 0
+                else "equal",
                 "difference": abs(comparison),
-                "is_compatible": semver.satisfies(version2, f"^{version1}") if comparison >= 0 else False
+                "is_compatible": semver.satisfies(version2, f"^{version1}")
+                if comparison >= 0
+                else False,
             }
 
         except Exception as e:
@@ -501,13 +501,11 @@ class ModelRegistry:
                 "version_1": version1,
                 "version_2": version2,
                 "relationship": "unknown",
-                "error": str(e)
+                "error": str(e),
             }
 
     def _compare_performance(
-        self,
-        metrics1: Dict[str, Any],
-        metrics2: Dict[str, Any]
+        self, metrics1: Dict[str, Any], metrics2: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Compare performance metrics between two models"""
         comparison = {}
@@ -520,7 +518,7 @@ class ModelRegistry:
                 "model_1": acc1,
                 "model_2": acc2,
                 "improvement": acc2 - acc1,
-                "percent_change": ((acc2 - acc1) / acc1 * 100) if acc1 > 0 else 0
+                "percent_change": ((acc2 - acc1) / acc1 * 100) if acc1 > 0 else 0,
             }
 
         # Compare latency
@@ -531,7 +529,7 @@ class ModelRegistry:
                 "model_1": lat1,
                 "model_2": lat2,
                 "improvement": lat1 - lat2,  # Lower is better
-                "percent_change": ((lat2 - lat1) / lat1 * 100) if lat1 > 0 else 0
+                "percent_change": ((lat2 - lat1) / lat1 * 100) if lat1 > 0 else 0,
             }
 
         # Compare training time
@@ -542,15 +540,13 @@ class ModelRegistry:
                 "model_1": time1,
                 "model_2": time2,
                 "improvement": time1 - time2,
-                "percent_change": ((time2 - time1) / time1 * 100) if time1 > 0 else 0
+                "percent_change": ((time2 - time1) / time1 * 100) if time1 > 0 else 0,
             }
 
         return comparison
 
     def _get_comparison_recommendation(
-        self,
-        model1: ModelInfo,
-        model2: ModelInfo
+        self, model1: ModelInfo, model2: ModelInfo
     ) -> str:
         """Generate recommendation based on model comparison"""
         try:
@@ -560,12 +556,14 @@ class ModelRegistry:
             # Simple recommendation logic
             acc1 = metrics1.get("accuracy", 0)
             acc2 = metrics2.get("accuracy", 0)
-            lat1 = metrics1.get("latency_ms", float('inf'))
-            lat2 = metrics2.get("latency_ms", float('inf'))
+            lat1 = metrics1.get("latency_ms", float("inf"))
+            lat2 = metrics2.get("latency_ms", float("inf"))
 
             if acc2 > acc1 and lat2 <= lat1 * 1.1:  # Accuracy improved, latency similar
                 return f"Recommend {model2.name} v{model2.version} - better accuracy with similar performance"
-            elif lat2 < lat1 and acc2 >= acc1 * 0.95:  # Latency improved, accuracy maintained
+            elif (
+                lat2 < lat1 and acc2 >= acc1 * 0.95
+            ):  # Latency improved, accuracy maintained
                 return f"Recommend {model2.name} v{model2.version} - better performance with maintained accuracy"
             elif acc2 > acc1:  # Accuracy significantly better
                 return f"Recommend {model2.name} v{model2.version} - significantly better accuracy"
@@ -577,9 +575,7 @@ class ModelRegistry:
             return "Unable to generate recommendation due to insufficient data"
 
     async def _get_model_by_name_and_version(
-        self,
-        model_name: str,
-        version: str
+        self, model_name: str, version: str
     ) -> Optional[ModelInfo]:
         """Get specific model by name and version"""
         async with self.session_factory() as session:
@@ -588,7 +584,7 @@ class ModelRegistry:
                     and_(
                         ModelRecord.name == model_name,
                         ModelRecord.version == version,
-                        ModelRecord.is_active.is_(True)
+                        ModelRecord.is_active.is_(True),
                     )
                 )
                 result = await session.execute(stmt)
@@ -612,7 +608,9 @@ class ModelRegistry:
 
             # Generate rollback version (increment patch)
             current = semver.parse(latest.version)
-            rollback_version = f"{current['major']}.{current['minor']}.{current['patch'] + 1}-rollback"
+            rollback_version = (
+                f"{current['major']}.{current['minor']}.{current['patch'] + 1}-rollback"
+            )
 
             return rollback_version
 
@@ -637,5 +635,5 @@ class ModelRegistry:
             performance_metrics=record.performance_metrics,
             deployment_info=record.deployment_info,
             is_active=record.is_active,
-            auto_deploy=record.auto_deploy
+            auto_deploy=record.auto_deploy,
         )

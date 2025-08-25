@@ -7,13 +7,12 @@ from typing import Dict, Optional
 from urllib.parse import urlencode
 
 import httpx
-from fastapi import HTTPException, status
-from jose import jwt
-from sqlalchemy.orm import Session
-
 from app.auth import create_access_token
 from app.models.tenant import SSOConfiguration, Tenant
 from app.models.user import Role, User
+from fastapi import HTTPException, status
+from jose import jwt
+from sqlalchemy.orm import Session
 
 
 class SSOService:

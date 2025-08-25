@@ -30,11 +30,11 @@ jobs:
       frontend-cache-key: ${{ steps.frontend-cache-key.outputs.key }}
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Generate backend cache key
         id: backend-cache-key
         run: echo "key=backend-${{ hashFiles('backend/requirements.txt') }}-$(date +'%Y-%m')" >> $GITHUB_OUTPUT
-      
+
       - name: Generate frontend cache key
         id: frontend-cache-key
         run: echo "key=frontend-${{ hashFiles('frontend/package-lock.json') }}-$(date +'%Y-%m')" >> $GITHUB_OUTPUT
@@ -44,14 +44,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.12'
         cache: 'pip'
         cache-dependency-path: backend/requirements.txt
-    
+
     - name: Cache Python dependencies
       uses: actions/cache@v3
       with:
@@ -60,17 +60,17 @@ jobs:
         restore-keys: |
           backend-${{ hashFiles('backend/requirements.txt') }}
           backend-
-    
+
     - name: Install dependencies
       run: |
         cd backend
         pip install -r requirements.txt
-    
+
     - name: Run tests
       run: |
         cd backend
         python -m pytest tests/ -v --junitxml=test-results.xml
-    
+
     - name: Upload test results
       uses: actions/upload-artifact@v3
       with:
@@ -83,14 +83,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '18'
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
-    
+
     - name: Cache node modules
       uses: actions/cache@v3
       with:
@@ -99,28 +99,28 @@ jobs:
         restore-keys: |
           frontend-${{ hashFiles('frontend/package-lock.json') }}
           frontend-
-    
+
     - name: Install dependencies
       run: |
         cd frontend
         npm ci
-    
+
     - name: Run tests
       run: |
         cd frontend
         npm test -- --coverage --watchAll=false --maxWorkers=2
-    
+
     - name: Build
       run: |
         cd frontend
         npm run build
-    
+
     - name: Cache build output
       uses: actions/cache@v3
       with:
         path: frontend/build
         key: frontend-build-${{ github.sha }}
-    
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:

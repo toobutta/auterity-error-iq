@@ -8,9 +8,6 @@ from dataclasses import asdict
 from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-
 from app.api.dependencies import get_db
 from app.schemas.agent import Agent, AgentCreate
 from app.schemas.mcp_server import MCPServerCreate
@@ -24,6 +21,8 @@ from app.services.execution_manager import (
 from app.services.mcp_server_manager import MCPServerManager
 from app.services.protocol_manager import ProtocolManager
 from app.services.tool_registry import Tool, ToolRegistry, ToolStatus, ToolType
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

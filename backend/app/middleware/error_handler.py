@@ -4,14 +4,13 @@ import json
 import logging
 from typing import Callable
 
+from app.exceptions import BaseAppException, DatabaseError, SystemError
+from app.exceptions import ValidationError as AppValidationError
 from fastapi import Request, Response, status
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 from starlette.middleware.base import BaseHTTPMiddleware
-
-from app.exceptions import BaseAppException, DatabaseError, SystemError
-from app.exceptions import ValidationError as AppValidationError
 
 logger = logging.getLogger(__name__)
 

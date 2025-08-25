@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient } from "./client";
 
 export interface LoginRequest {
   email: string;
@@ -28,21 +28,21 @@ export interface RegisterRequest {
 export class AuthApi {
   static async login(credentials: LoginRequest): Promise<LoginResponse> {
     const formData = new FormData();
-    formData.append('username', credentials.email);
-    formData.append('password', credentials.password);
+    formData.append("username", credentials.email);
+    formData.append("password", credentials.password);
 
-    return apiClient.post('/api/auth/login', formData);
+    return apiClient.post("/api/auth/login", formData);
   }
 
   static async register(userData: RegisterRequest): Promise<LoginResponse> {
-    return apiClient.post('/api/auth/register', userData);
+    return apiClient.post("/api/auth/register", userData);
   }
 
   static async getCurrentUser(): Promise<User> {
-    return apiClient.get('/api/auth/me');
+    return apiClient.get("/api/auth/me");
   }
 
   static async logout(): Promise<void> {
-    return apiClient.post('/api/auth/logout');
+    return apiClient.post("/api/auth/logout");
   }
 }

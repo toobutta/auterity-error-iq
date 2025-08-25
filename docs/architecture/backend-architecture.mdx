@@ -136,7 +136,7 @@ class Workflow(BaseModel):
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     status = Column(Enum(WorkflowStatus), default=WorkflowStatus.DRAFT)
     definition = Column(JSON, nullable=False)
-    
+
     # Relationships
     user = relationship("User", back_populates="workflows")
     executions = relationship("WorkflowExecution", back_populates="workflow")
@@ -164,12 +164,12 @@ class WorkflowEngine:
         self.ai_service = ai_service
 
     async def execute_workflow(
-        self, 
-        workflow_id: str, 
+        self,
+        workflow_id: str,
         input_data: Dict[str, Any]
     ) -> str:
         """Execute a workflow and return execution ID."""
-        
+
         # Get workflow
         workflow = await self._get_workflow(workflow_id)
         if not workflow:
@@ -230,20 +230,20 @@ def cache_result(expiration: int = 300):
         async def wrapper(*args, **kwargs):
             # Generate cache key
             cache_key = f"{func.__name__}:{hash(str(args) + str(kwargs))}"
-            
+
             # Try to get from cache
             cached_result = redis_client.get(cache_key)
             if cached_result:
                 return json.loads(cached_result)
-            
+
             # Execute function and cache result
             result = await func(*args, **kwargs)
             redis_client.setex(
-                cache_key, 
-                expiration, 
+                cache_key,
+                expiration,
                 json.dumps(result, default=str)
             )
-            
+
             return result
         return wrapper
     return decorator
@@ -257,7 +257,7 @@ def cache_result(expiration: int = 300):
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: $(date)  
-**Architecture Review**: Monthly backend architecture assessment  
+**Document Version**: 1.0
+**Last Updated**: $(date)
+**Architecture Review**: Monthly backend architecture assessment
 **Maintained By**: Auterity Backend Team

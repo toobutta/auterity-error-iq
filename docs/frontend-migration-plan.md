@@ -11,6 +11,7 @@
 ## Current State Assessment
 
 ### ✅ Strong Foundation
+
 - React 18 + TypeScript + Vite already configured
 - Basic Tailwind CSS setup
 - Existing shared components (Button, Modal) with good API design
@@ -18,6 +19,7 @@
 - Lazy loading implemented for routes
 
 ### ⚠️ Immediate Needs
+
 - Install shadcn/ui dependencies: `@radix-ui/react-*`, `class-variance-authority`, `clsx`, `tailwind-merge`
 - Fix TypeScript configuration issues
 - Implement design token system
@@ -26,6 +28,7 @@
 ## Phase 1: Foundation & Tokens (Weeks 1-2)
 
 ### Week 1: Dependencies & Configuration
+
 ```bash
 # Add required dependencies
 npm install @radix-ui/react-slot @radix-ui/react-dialog @radix-ui/react-select
@@ -36,13 +39,16 @@ npm install @headlessui/react # as fallback for some components
 ```
 
 ### Week 1: Design System Setup
+
 1. **Fix TypeScript configuration** - resolve React type issues
 2. **Implement design tokens** - complete the `tokens.ts` system
 3. **Update Tailwind config** - integrate custom color palette
 4. **Create utility functions** - enhance `utils.ts` with proper dependencies
 
 ### Week 2: Core UI Primitives
+
 Build shadcn/ui-style components:
+
 - ✅ Button (enhance existing)
 - 🔄 Input (form fields with validation states)
 - 🔄 Select (dropdown with search capability)
@@ -53,6 +59,7 @@ Build shadcn/ui-style components:
 - 🔄 Toast (notifications)
 
 ### Deliverables Phase 1
+
 - `src/components/ui/` directory with 8 primitive components
 - `src/styles/tokens.ts` design system
 - Updated `tailwind.config.js` with custom theme
@@ -64,6 +71,7 @@ Build shadcn/ui-style components:
 ## Phase 2: Error-IQ Components (Weeks 3-4)
 
 ### Week 3: Core Error-IQ Components
+
 1. **KPIHeader** ✅ (created, needs integration)
    - Real-time metrics display
    - Trend indicators with severity colors
@@ -82,6 +90,7 @@ Build shadcn/ui-style components:
    - Icon + text combinations
 
 ### Week 4: Issue Detail & Navigation
+
 1. **IssueDetail** ✅ (created, needs polish)
    - Tabbed interface (Overview, Timeline, Stack Trace)
    - Interactive stack trace with code context
@@ -95,6 +104,7 @@ Build shadcn/ui-style components:
    - Notification center integration
 
 ### Deliverables Phase 2
+
 - 4 major Error-IQ specific components
 - Enhanced Layout with proper navigation
 - Integration with existing Dashboard page
@@ -105,10 +115,12 @@ Build shadcn/ui-style components:
 ## Phase 3: Performance & Polish (Weeks 5-6)
 
 ### Week 5: Performance Optimization
+
 1. **List Virtualization**
+
    ```tsx
    // Implement TanStack Virtual for IssueList
-   import { useVirtualizer } from '@tanstack/react-virtual'
+   import { useVirtualizer } from "@tanstack/react-virtual";
    ```
 
 2. **Chart Optimization**
@@ -122,6 +134,7 @@ Build shadcn/ui-style components:
    - Tree-shake unused dependencies
 
 ### Week 6: Accessibility & Dark Mode
+
 1. **WCAG 2.2 Compliance**
    - Audit with axe-core
    - Fix color contrast issues
@@ -134,6 +147,7 @@ Build shadcn/ui-style components:
    - Test all components in both modes
 
 ### Deliverables Phase 3
+
 - Web Vitals monitoring integrated
 - Lighthouse score ≥ 90 on key pages
 - Full accessibility audit report
@@ -144,10 +158,13 @@ Build shadcn/ui-style components:
 ## Phase 4: Testing & Documentation (Weeks 7-8)
 
 ### Week 7: Storybook & Component Documentation
+
 1. **Storybook Setup**
+
    ```bash
    npx storybook@latest init
    ```
+
    - Stories for all UI primitives
    - Error-IQ component examples
    - Accessibility addon integration
@@ -159,6 +176,7 @@ Build shadcn/ui-style components:
    - Design system guidelines
 
 ### Week 8: E2E Testing & Deployment
+
 1. **Critical Path Testing** (Playwright)
    - Error triage workflow
    - Issue detail navigation
@@ -171,6 +189,7 @@ Build shadcn/ui-style components:
    - Load testing for large datasets
 
 ### Deliverables Phase 4
+
 - Complete Storybook with all components
 - E2E test suite covering critical paths
 - Performance benchmark baselines
@@ -181,6 +200,7 @@ Build shadcn/ui-style components:
 ## Risk Mitigation
 
 ### Technical Risks
+
 1. **TypeScript Configuration Issues**
    - **Risk**: Current type errors prevent compilation
    - **Mitigation**: Fix in Week 1, create proper type definitions
@@ -194,6 +214,7 @@ Build shadcn/ui-style components:
    - **Mitigation**: Use Radix primitives, test with screen readers
 
 ### Implementation Risks
+
 1. **Design System Adoption**
    - **Risk**: Team resistance to new component patterns
    - **Mitigation**: Provide clear migration guide, maintain backward compatibility
@@ -207,16 +228,19 @@ Build shadcn/ui-style components:
 ## Success Metrics
 
 ### Performance Targets
+
 - **Core Web Vitals**: INP < 200ms, LCP < 2.5s, CLS < 0.1
 - **Bundle Size**: < 500KB compressed for initial load
 - **Lighthouse Score**: ≥ 90 for Performance, Accessibility, Best Practices
 
 ### UX Targets
+
 - **Error Triage Time**: Reduce by 40% through better filtering/search
 - **Issue Resolution Speed**: Improve visibility into critical issues
 - **User Satisfaction**: Conduct usability testing post-implementation
 
 ### Development Targets
+
 - **Component Reusability**: 90% of UI built from design system
 - **Type Safety**: Zero TypeScript errors in production builds
 - **Test Coverage**: ≥ 80% for critical components

@@ -5,6 +5,7 @@
 ### **Agent Development Lifecycle** 🔄
 
 #### Phase 1: Planning & Design (Pre-Development)
+
 ```
 1. Requirements Analysis
    - Define agent scope and boundaries
@@ -26,6 +27,7 @@
 ```
 
 #### Phase 2: Implementation (Active Development)
+
 ```
 1. Foundation Setup
    - Create basic project structure
@@ -47,6 +49,7 @@
 ```
 
 #### Phase 3: Integration & Validation (Post-Development)
+
 ```
 1. Agent Integration
    - Connect with dependent agents
@@ -72,6 +75,7 @@
 ### **Agent Code Quality Standards** 📊
 
 #### **Code Structure Requirements**
+
 ```python
 # Standard agent directory structure
 agent_name/
@@ -90,6 +94,7 @@ agent_name/
 ```
 
 #### **Coding Standards**
+
 - **Type Hints**: All functions must have proper type annotations
 - **Documentation**: Comprehensive docstrings for all public methods
 - **Error Handling**: Explicit exception handling with proper logging
@@ -97,6 +102,7 @@ agent_name/
 - **Logging**: Structured logging with correlation IDs
 
 #### **Testing Requirements**
+
 - **Unit Tests**: 90%+ code coverage required
 - **Integration Tests**: All external dependencies mocked
 - **Performance Tests**: Baseline performance metrics
@@ -107,6 +113,7 @@ agent_name/
 ### **Agent Communication Patterns** 🔗
 
 #### **Synchronous Communication**
+
 ```python
 # Direct method calls for immediate responses
 response = await agent_registry.get_agent_by_id(agent_id)
@@ -116,6 +123,7 @@ response = await api_client.post("/agents", data=agent_data)
 ```
 
 #### **Asynchronous Communication**
+
 ```python
 # Message queue for fire-and-forget operations
 await message_queue.enqueue("agent_health_check", {"agent_id": agent_id})
@@ -129,6 +137,7 @@ await event_bus.publish("agent_status_changed", {
 ```
 
 #### **Reactive Communication**
+
 ```python
 # WebSocket for real-time updates
 @websocket_handler("/agents/{agent_id}/status")
@@ -142,18 +151,21 @@ async def agent_status_stream(websocket, agent_id):
 ### **Agent Security Best Practices** 🔒
 
 #### **Authentication & Authorization**
+
 - **Service-to-Service Auth**: JWT tokens for inter-agent communication
 - **User Context**: Proper user context propagation across agents
 - **Role-Based Access**: Fine-grained permissions for agent operations
 - **Audit Logging**: Complete audit trail for all agent interactions
 
 #### **Data Protection**
+
 - **Input Validation**: Comprehensive validation of all inputs
 - **Output Sanitization**: Sanitize all outputs to prevent injection attacks
 - **Encryption**: Encrypt sensitive data in transit and at rest
 - **Secrets Management**: Secure storage and rotation of credentials
 
 #### **Network Security**
+
 - **TLS/SSL**: All inter-agent communication over encrypted channels
 - **Rate Limiting**: Protect against abuse and DoS attacks
 - **IP Whitelisting**: Restrict access to known trusted sources
@@ -164,6 +176,7 @@ async def agent_status_stream(websocket, agent_id):
 ### **Agent Performance Optimization** ⚡
 
 #### **Resource Management**
+
 ```python
 # Connection pooling for database access
 @asynccontextmanager
@@ -178,6 +191,7 @@ async def get_agent_capabilities(agent_id: str):
 ```
 
 #### **Async/Await Patterns**
+
 ```python
 # Concurrent execution for independent operations
 async def process_multiple_agents(agent_ids: List[str]):
@@ -187,6 +201,7 @@ async def process_multiple_agents(agent_ids: List[str]):
 ```
 
 #### **Memory Management**
+
 ```python
 # Efficient data structures for large datasets
 from collections import deque
@@ -203,6 +218,7 @@ async def stream_agent_data() -> AsyncIterator[Agent]:
 ### **Agent Monitoring & Observability** 📈
 
 #### **Metrics Collection**
+
 ```python
 from prometheus_client import Counter, Histogram, Gauge
 
@@ -222,6 +238,7 @@ async def process_request():
 ```
 
 #### **Distributed Tracing**
+
 ```python
 from opentelemetry import trace
 
@@ -237,6 +254,7 @@ async def agent_operation(agent_id: str):
 ```
 
 #### **Health Checks**
+
 ```python
 from fastapi import FastAPI
 from starlette.responses import JSONResponse
@@ -250,7 +268,7 @@ async def health_check():
         "redis": await check_redis_health(),
         "dependencies": await check_dependency_health()
     }
-    
+
     if all(checks.values()):
         return JSONResponse({"status": "healthy", "checks": checks})
     else:
@@ -265,6 +283,7 @@ async def health_check():
 ### **Agent Error Handling Strategies** 🛡️
 
 #### **Error Categories & Responses**
+
 ```python
 class AgentError(Exception):
     """Base exception for all agent errors."""
@@ -284,6 +303,7 @@ class ResourceError(AgentError):
 ```
 
 #### **Retry Mechanisms**
+
 ```python
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -297,6 +317,7 @@ async def resilient_operation():
 ```
 
 #### **Circuit Breaker Pattern**
+
 ```python
 from circuit_breaker import CircuitBreaker
 
@@ -317,6 +338,7 @@ async def database_operation():
 ### **Agent Testing Strategies** 🧪
 
 #### **Test Pyramid Structure**
+
 ```
          /\
         /  \
@@ -331,6 +353,7 @@ async def database_operation():
 ```
 
 #### **Mock External Dependencies**
+
 ```python
 import pytest
 from unittest.mock import AsyncMock, patch
@@ -350,19 +373,20 @@ async def test_agent_operation(mock_agent_registry):
 ```
 
 #### **Integration Test Framework**
+
 ```python
 @pytest.mark.integration
 async def test_agent_workflow():
     # Setup test environment
     agent = await create_test_agent()
-    
+
     # Execute workflow
     result = await execute_agent_workflow(agent.id)
-    
+
     # Verify results
     assert result.status == "completed"
     assert result.output is not None
-    
+
     # Cleanup
     await cleanup_test_agent(agent.id)
 ```

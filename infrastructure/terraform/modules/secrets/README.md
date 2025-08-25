@@ -18,13 +18,13 @@ module "secrets" {
   aws_region     = "us-west-2"
   environment    = "production"
   project_name   = "auterity"
-  
+
   initial_secret_values = {
     OPENAI_API_KEY    = var.openai_api_key,
     ANTHROPIC_API_KEY = var.anthropic_api_key,
     DATABASE_PASSWORD = var.database_password
   }
-  
+
   enable_rotation = true
   rotation_days   = 30
   eks_role_name   = module.eks.node_role_name
@@ -33,31 +33,31 @@ module "secrets" {
 
 ## Requirements
 
-| Name | Version |
-|------|---------|
+| Name      | Version  |
+| --------- | -------- |
 | terraform | >= 1.0.0 |
-| aws | >= 4.0.0 |
+| aws       | >= 4.0.0 |
 
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| aws_region | The AWS region to deploy resources | `string` | `"us-west-2"` | no |
-| environment | Environment name (e.g., development, staging, production) | `string` | n/a | yes |
-| project_name | Project name for resource naming and tagging | `string` | `"auterity"` | no |
-| initial_secret_values | Initial values for the secret (will be JSON encoded) | `map(string)` | `{}` | no |
-| enable_rotation | Whether to enable automatic secret rotation | `bool` | `false` | no |
-| rotation_days | Number of days between automatic rotations | `number` | `30` | no |
-| eks_role_name | Name of the EKS role that needs access to the secrets | `string` | `""` | no |
+| Name                  | Description                                               | Type          | Default       | Required |
+| --------------------- | --------------------------------------------------------- | ------------- | ------------- | :------: |
+| aws_region            | The AWS region to deploy resources                        | `string`      | `"us-west-2"` |    no    |
+| environment           | Environment name (e.g., development, staging, production) | `string`      | n/a           |   yes    |
+| project_name          | Project name for resource naming and tagging              | `string`      | `"auterity"`  |    no    |
+| initial_secret_values | Initial values for the secret (will be JSON encoded)      | `map(string)` | `{}`          |    no    |
+| enable_rotation       | Whether to enable automatic secret rotation               | `bool`        | `false`       |    no    |
+| rotation_days         | Number of days between automatic rotations                | `number`      | `30`          |    no    |
+| eks_role_name         | Name of the EKS role that needs access to the secrets     | `string`      | `""`          |    no    |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| secret_arn | ARN of the created secret |
-| secret_name | Name of the created secret |
-| eks_policy_arn | ARN of the IAM policy for EKS to access secrets |
-| rotation_lambda_arn | ARN of the Lambda function for secret rotation |
+| Name                | Description                                     |
+| ------------------- | ----------------------------------------------- |
+| secret_arn          | ARN of the created secret                       |
+| secret_name         | Name of the created secret                      |
+| eks_policy_arn      | ARN of the IAM policy for EKS to access secrets |
+| rotation_lambda_arn | ARN of the Lambda function for secret rotation  |
 
 ## Implementation Notes
 

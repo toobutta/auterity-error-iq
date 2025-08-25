@@ -1,6 +1,6 @@
-import '@testing-library/jest-dom';
-import { vi } from 'vitest';
-import { cleanup } from '@testing-library/react';
+import "@testing-library/jest-dom";
+import { vi } from "vitest";
+import { cleanup } from "@testing-library/react";
 
 // Global test setup
 beforeEach(() => {
@@ -19,12 +19,12 @@ afterEach(() => {
 Object.assign(navigator, {
   clipboard: {
     writeText: vi.fn(() => Promise.resolve()),
-    readText: vi.fn(() => Promise.resolve('')),
+    readText: vi.fn(() => Promise.resolve("")),
   },
 });
 
 // Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: vi.fn().mockImplementation((query) => ({
     matches: false,

@@ -5,6 +5,7 @@ This directory contains automated hooks to streamline development while maintain
 ## Available Hooks
 
 ### Automatic (On File Save)
+
 - **format-on-save**: Auto-formats Python code with Black and isort
 - **test-on-save**: Runs relevant tests when backend files are saved
 - **migration-check**: Alerts when model changes might need migrations
@@ -13,6 +14,7 @@ This directory contains automated hooks to streamline development while maintain
 - **frontend-lint**: Lints and type-checks TypeScript files
 
 ### Manual (On-Demand)
+
 - **security-check**: Comprehensive security vulnerability scan
 - **deployment-check**: Pre-deployment validation checklist
 
@@ -39,6 +41,7 @@ For maximum efficiency with minimal interruption:
 ## Customization
 
 Edit any hook file to:
+
 - Change file patterns that trigger the hook
 - Modify the commands that run
 - Add additional validation steps

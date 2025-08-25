@@ -36,24 +36,24 @@ log_error() {
 
 check_prerequisites() {
     log_info "Checking prerequisites..."
-    
+
     # Check if Docker is installed and running
     if ! command -v docker &> /dev/null; then
         log_error "Docker is not installed. Please install Docker first."
         exit 1
     fi
-    
+
     if ! docker info &> /dev/null; then
         log_error "Docker is not running. Please start Docker first."
         exit 1
     fi
-    
+
     # Check if Docker Compose is available
     if ! command -v docker-compose &> /dev/null; then
         log_error "Docker Compose is not installed. Please install Docker Compose first."
         exit 1
     fi
-    
+
     log_success "Prerequisites check passed"
 }
 

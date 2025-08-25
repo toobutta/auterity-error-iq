@@ -10,6 +10,7 @@
 **Return Conditions:** When all security vulnerabilities are resolved and components tested
 
 **Files Involved:**
+
 - frontend/package.json
 - frontend/src/components/LazyCodeHighlighter.tsx
 - All components using react-syntax-highlighter
@@ -20,11 +21,13 @@
 ## Task Specification
 
 ### Objective
+
 Fix all moderate and high security vulnerabilities in the frontend dependencies while maintaining full functionality of syntax highlighting components.
 
 ### Current Security Issues
 
 #### 1. PrismJS DOM Clobbering Vulnerability
+
 - **Package**: prismjs <1.30.0
 - **Severity**: Moderate
 - **Advisory**: GHSA-x7hr-w5r2-h6wg
@@ -32,6 +35,7 @@ Fix all moderate and high security vulnerabilities in the frontend dependencies 
 - **Issue**: DOM Clobbering vulnerability in PrismJS versions before 1.30.0
 
 #### 2. Esbuild Vulnerability (RESOLVED)
+
 - **Package**: esbuild ≤0.24.2
 - **Status**: ✅ RESOLVED - vite@7.0.6 already installed
 - **Verification Required**: Confirm no esbuild vulnerabilities remain
@@ -39,6 +43,7 @@ Fix all moderate and high security vulnerabilities in the frontend dependencies 
 ### Technical Analysis Required
 
 #### Dependency Chain Analysis
+
 ```
 react-syntax-highlighter@15.6.1
 ├── prismjs@1.30.0 (direct dependency - SAFE)
@@ -47,28 +52,34 @@ react-syntax-highlighter@15.6.1
 ```
 
 #### Root Cause
+
 The issue is that `refractor@3.6.0` depends on an older version of `prismjs@1.27.0` which has the DOM Clobbering vulnerability, even though `react-syntax-highlighter` also has a direct dependency on the safe `prismjs@1.30.0`.
 
 ### Required Actions
 
 #### 1. Dependency Resolution Strategy
+
 - **Option A**: Force update refractor to latest version that uses prismjs@1.30.0+
 - **Option B**: Use npm overrides to force prismjs@1.30.0+ throughout dependency tree
 - **Option C**: Find alternative syntax highlighting solution if breaking changes are too severe
 
 #### 2. Component Impact Assessment
+
 Analyze all components using react-syntax-highlighter:
+
 - `frontend/src/components/LazyCodeHighlighter.tsx`
 - `frontend/src/components/ExecutionLogViewer.tsx`
 - Any other components importing react-syntax-highlighter
 
 #### 3. Breaking Change Analysis
+
 - Test all syntax highlighting functionality after updates
 - Verify language support remains intact
 - Check theme compatibility
 - Validate performance impact
 
 #### 4. Testing Requirements
+
 - Run full test suite after dependency updates
 - Manual testing of syntax highlighting components
 - Verify no runtime errors in browser console
@@ -77,17 +88,20 @@ Analyze all components using react-syntax-highlighter:
 ### Success Criteria
 
 #### Security Requirements
+
 - [ ] Zero moderate or high security vulnerabilities in `npm audit`
 - [ ] All dependency chains use secure versions
 - [ ] No new vulnerabilities introduced
 
 #### Functionality Requirements
+
 - [ ] All syntax highlighting components work correctly
 - [ ] No breaking changes in component APIs
 - [ ] All existing tests pass
 - [ ] No runtime errors or console warnings
 
 #### Performance Requirements
+
 - [ ] Bundle size impact < 10% increase
 - [ ] Syntax highlighting performance maintained
 - [ ] No memory leaks introduced
@@ -95,18 +109,21 @@ Analyze all components using react-syntax-highlighter:
 ### Implementation Steps
 
 #### Phase 1: Analysis
+
 1. Run detailed vulnerability analysis with `npm audit --json`
 2. Analyze dependency tree with `npm ls prismjs`
 3. Research latest versions of refractor and react-syntax-highlighter
 4. Identify safest upgrade path
 
 #### Phase 2: Resolution
+
 1. Implement chosen dependency resolution strategy
 2. Update package.json with secure versions
 3. Test for breaking changes in syntax highlighting
 4. Update component code if necessary
 
 #### Phase 3: Validation
+
 1. Run `npm audit` to verify zero vulnerabilities
 2. Execute full test suite
 3. Manual testing of all syntax highlighting features
@@ -115,12 +132,14 @@ Analyze all components using react-syntax-highlighter:
 ### Handback Conditions
 
 #### Ready for Return to Development
+
 - All security vulnerabilities resolved (npm audit clean)
 - All tests passing
 - All syntax highlighting components functional
 - Documentation updated if breaking changes occurred
 
 #### Escalation Triggers
+
 - Breaking changes require architectural decisions
 - Alternative solutions needed (different syntax highlighting library)
 - Performance impact exceeds acceptable thresholds
@@ -129,17 +148,20 @@ Analyze all components using react-syntax-highlighter:
 ### Context for Amazon Q
 
 #### Project Background
+
 - React 18 + TypeScript frontend with Vite build system
 - Syntax highlighting used for code display in workflow execution logs
 - Critical path: Security fixes must complete before other development work
 
 #### Code Patterns
+
 - Components use lazy loading for performance
 - TypeScript strict mode enabled
 - Tailwind CSS for styling
 - Vitest for testing
 
 #### Quality Standards
+
 - Zero tolerance for security vulnerabilities
 - Maintain 90%+ test coverage
 - No breaking changes without explicit approval

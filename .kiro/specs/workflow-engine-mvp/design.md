@@ -17,28 +17,28 @@ graph TB
         WB[Workflow Builder]
         DB[Dashboard]
     end
-    
+
     subgraph "API Layer"
         API[FastAPI Backend]
         AUTH[JWT Auth]
         VALID[Request Validation]
     end
-    
+
     subgraph "Core Services"
         WE[Workflow Engine]
         TE[Template Engine]
         AI[AI Service]
     end
-    
+
     subgraph "Data Layer"
         PG[(PostgreSQL)]
         LOGS[Execution Logs]
     end
-    
+
     subgraph "External"
         OPENAI[OpenAI API]
     end
-    
+
     UI --> API
     WB --> API
     DB --> API
@@ -69,6 +69,7 @@ graph TB
 ### Frontend Components
 
 #### Workflow Builder
+
 - **Purpose**: Visual drag-and-drop interface for creating workflows
 - **Key Features**:
   - Canvas-based workflow designer using React Flow
@@ -78,6 +79,7 @@ graph TB
 - **Interface**: Communicates with backend via REST API for CRUD operations
 
 #### Dashboard
+
 - **Purpose**: Monitoring and analytics interface for workflow executions
 - **Key Features**:
   - Execution history table with filtering
@@ -87,6 +89,7 @@ graph TB
 - **Interface**: Polls backend API for execution data and metrics
 
 #### Template Library
+
 - **Purpose**: Pre-built workflow templates for common use cases
 - **Key Features**:
   - Template browsing and preview
@@ -97,13 +100,14 @@ graph TB
 ### Backend Services
 
 #### Workflow Engine
+
 - **Purpose**: Core workflow execution and orchestration
 - **Key Features**:
   - Sequential workflow execution
   - Step-by-step logging and error handling
   - AI model integration for processing steps
   - Execution state management
-- **Interface**: 
+- **Interface**:
   ```python
   class WorkflowEngine:
       async def execute_workflow(self, workflow_id: str, input_data: dict) -> ExecutionResult
@@ -112,6 +116,7 @@ graph TB
   ```
 
 #### AI Service
+
 - **Purpose**: Abstraction layer for AI model interactions
 - **Key Features**:
   - OpenAI GPT integration
@@ -126,6 +131,7 @@ graph TB
   ```
 
 #### Template Engine
+
 - **Purpose**: Management of workflow templates and instantiation
 - **Key Features**:
   - Template storage and retrieval
@@ -141,6 +147,7 @@ graph TB
 ### API Endpoints
 
 #### Workflow Management
+
 - `POST /api/workflows` - Create new workflow
 - `GET /api/workflows` - List user workflows
 - `GET /api/workflows/{id}` - Get workflow details
@@ -148,17 +155,20 @@ graph TB
 - `DELETE /api/workflows/{id}` - Delete workflow
 
 #### Workflow Execution
+
 - `POST /api/workflows/{id}/execute` - Start workflow execution
 - `GET /api/executions/{id}` - Get execution status
 - `GET /api/executions/{id}/logs` - Get execution logs
 - `POST /api/executions/{id}/cancel` - Cancel execution
 
 #### Templates
+
 - `GET /api/templates` - List available templates
 - `GET /api/templates/{id}` - Get template details
 - `POST /api/templates/{id}/instantiate` - Create workflow from template
 
 #### Authentication
+
 - `POST /api/auth/login` - User login
 - `POST /api/auth/logout` - User logout
 - `GET /api/auth/me` - Get current user info
@@ -168,6 +178,7 @@ graph TB
 ### Core Entities
 
 #### User
+
 ```python
 class User(BaseModel):
     id: UUID
@@ -178,6 +189,7 @@ class User(BaseModel):
 ```
 
 #### Workflow
+
 ```python
 class Workflow(BaseModel):
     id: UUID
@@ -191,6 +203,7 @@ class Workflow(BaseModel):
 ```
 
 #### WorkflowExecution
+
 ```python
 class WorkflowExecution(BaseModel):
     id: UUID
@@ -204,6 +217,7 @@ class WorkflowExecution(BaseModel):
 ```
 
 #### ExecutionLog
+
 ```python
 class ExecutionLog(BaseModel):
     id: UUID
@@ -218,6 +232,7 @@ class ExecutionLog(BaseModel):
 ```
 
 #### Template
+
 ```python
 class Template(BaseModel):
     id: UUID
@@ -243,18 +258,21 @@ The PostgreSQL database will use the following table structure:
 ## Error Handling
 
 ### Frontend Error Handling
+
 - Global error boundary for React components
 - Toast notifications for user-facing errors
 - Form validation with real-time feedback
 - Network error handling with retry mechanisms
 
 ### Backend Error Handling
+
 - Structured exception hierarchy with custom exception types
 - Automatic error logging with correlation IDs
 - Graceful degradation for AI service failures
 - Input validation with detailed error messages
 
 ### Workflow Execution Error Handling
+
 - Step-level error capture and logging
 - Workflow execution rollback on critical failures
 - Retry mechanisms for transient failures
@@ -263,23 +281,27 @@ The PostgreSQL database will use the following table structure:
 ## Testing Strategy
 
 ### Unit Testing
+
 - **Backend**: pytest with async support for all service classes
 - **Frontend**: Jest and React Testing Library for component testing
 - **Coverage Target**: 80% code coverage minimum
 
 ### Integration Testing
+
 - API endpoint testing with test database
 - Workflow execution end-to-end testing
 - AI service integration testing with mocked responses
 - Database migration testing
 
 ### Manual Testing
+
 - User acceptance testing for workflow builder
 - Cross-browser compatibility testing
 - Performance testing for workflow execution
 - Security testing for authentication flows
 
 ### Test Data Management
+
 - Seed data for development and testing environments
 - Test workflow templates for common scenarios
 - Mock AI responses for consistent testing

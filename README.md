@@ -19,6 +19,7 @@ docker-compose -f docker-compose.unified.yml up -d
 ```
 
 **Access Points:**
+
 - **Application**: http://localhost:3000
 - **API Gateway**: http://localhost:8000
 - **Admin Dashboard**: http://localhost:8001
@@ -28,29 +29,34 @@ docker-compose -f docker-compose.unified.yml up -d
 ## 🏗️ Service Architecture
 
 ### **Core Services** (Production Ready)
+
 - **Authentication**: JWT, OAuth2, SSO integration
 - **Database**: PostgreSQL with clustering
-- **Cache**: Redis with persistence  
+- **Cache**: Redis with persistence
 - **Queue**: RabbitMQ + Celery workers
 
 ### **Communication Services** (Production Ready)
+
 - **Twilio**: SMS, voice, campaigns, IVR
 - **WhatsApp**: Business API, templates, interactive messages
 - **Email**: SMTP integration with MailHog development server
 - **Notifications**: Multi-channel (Email, Slack, SMS, WhatsApp, webhooks)
 
 ### **Automation Services** (Production Ready)
+
 - **Playwright**: Web scraping, form automation, testing
 - **Puppeteer**: Browser automation, PDF generation, screenshots
 - **Workflow Engine**: Visual workflow builder with AI integration
 
-### **AI/ML Services** (Production Ready)  
+### **AI/ML Services** (Production Ready)
+
 - **Vector Databases**: Pinecone, Weaviate integration
 - **LLM Providers**: OpenAI, Anthropic, Azure OpenAI
 - **MLflow**: Experiment tracking, model registry
 - **Embeddings**: Automated text embedding generation
 
 ### **Infrastructure Services** (Production Ready)
+
 - **API Gateway**: Kong with rate limiting, CORS
 - **Load Balancer**: Nginx with SSL termination
 - **Monitoring**: Prometheus, Grafana, Jaeger tracing, Alertmanager
@@ -62,37 +68,38 @@ docker-compose -f docker-compose.unified.yml up -d
 
 ## 📊 Complete Service List (26 Services)
 
-| Service | Type | Status | Port | Description |
-|---------|------|--------|------|-------------|
-| **kong** | Gateway | ✅ Production | 8000, 8001 | API Gateway & Admin |
-| **nginx** | Load Balancer | ✅ Production | 80, 443 | Load Balancer & SSL |
-| **backend** | API | ✅ Production | 8080 | FastAPI Backend |
-| **frontend** | Web | ✅ Production | 3000 | React Frontend |
-| **postgres** | Database | ✅ Production | 5432 | Primary Database |
-| **redis** | Cache | ✅ Production | 6379 | Cache & Sessions |
-| **rabbitmq** | Queue | ✅ Production | 5672, 15672 | Message Queue |
-| **kafka** | Streaming | ✅ Production | 9092 | Event Streaming |
-| **zookeeper** | Coordination | ✅ Production | 2181 | Kafka Dependency |
-| **vault** | Secrets | ✅ Production | 8200 | Secrets Management |
-| **mlflow** | ML | ✅ Production | 5000 | ML Experiment Tracking |
-| **weaviate** | Vector DB | ✅ Production | 8081 | Vector Database |
-| **puppeteer** | Automation | ✅ Production | 3000 | Browser Automation |
-| **mailhog** | Email | ✅ Development | 1025, 8025 | SMTP Development |
-| **celery-worker** | Workers | ✅ Production | - | Task Processing |
-| **prometheus** | Metrics | ✅ Production | 9090 | Metrics Collection |
-| **grafana** | Monitoring | ✅ Production | 3001 | Monitoring Dashboard |
-| **alertmanager** | Alerts | ✅ Production | 9093 | Alert Management |
-| **jaeger** | Tracing | ✅ Production | 16686 | Distributed Tracing |
-| **loki** | Logging | ✅ Production | 3100 | Log Aggregation |
-| **promtail** | Logs | ✅ Production | 9080 | Log Collection |
-| **node-exporter** | Metrics | ✅ Production | 9100 | System Metrics |
-| **redis-exporter** | Metrics | ✅ Production | 9121 | Redis Metrics |
-| **postgres-exporter** | Metrics | ✅ Production | 9187 | Postgres Metrics |
-| **minio** | Storage | ✅ Production | 9000, 9001 | Object Storage |
+| Service               | Type          | Status         | Port        | Description            |
+| --------------------- | ------------- | -------------- | ----------- | ---------------------- |
+| **kong**              | Gateway       | ✅ Production  | 8000, 8001  | API Gateway & Admin    |
+| **nginx**             | Load Balancer | ✅ Production  | 80, 443     | Load Balancer & SSL    |
+| **backend**           | API           | ✅ Production  | 8080        | FastAPI Backend        |
+| **frontend**          | Web           | ✅ Production  | 3000        | React Frontend         |
+| **postgres**          | Database      | ✅ Production  | 5432        | Primary Database       |
+| **redis**             | Cache         | ✅ Production  | 6379        | Cache & Sessions       |
+| **rabbitmq**          | Queue         | ✅ Production  | 5672, 15672 | Message Queue          |
+| **kafka**             | Streaming     | ✅ Production  | 9092        | Event Streaming        |
+| **zookeeper**         | Coordination  | ✅ Production  | 2181        | Kafka Dependency       |
+| **vault**             | Secrets       | ✅ Production  | 8200        | Secrets Management     |
+| **mlflow**            | ML            | ✅ Production  | 5000        | ML Experiment Tracking |
+| **weaviate**          | Vector DB     | ✅ Production  | 8081        | Vector Database        |
+| **puppeteer**         | Automation    | ✅ Production  | 3000        | Browser Automation     |
+| **mailhog**           | Email         | ✅ Development | 1025, 8025  | SMTP Development       |
+| **celery-worker**     | Workers       | ✅ Production  | -           | Task Processing        |
+| **prometheus**        | Metrics       | ✅ Production  | 9090        | Metrics Collection     |
+| **grafana**           | Monitoring    | ✅ Production  | 3001        | Monitoring Dashboard   |
+| **alertmanager**      | Alerts        | ✅ Production  | 9093        | Alert Management       |
+| **jaeger**            | Tracing       | ✅ Production  | 16686       | Distributed Tracing    |
+| **loki**              | Logging       | ✅ Production  | 3100        | Log Aggregation        |
+| **promtail**          | Logs          | ✅ Production  | 9080        | Log Collection         |
+| **node-exporter**     | Metrics       | ✅ Production  | 9100        | System Metrics         |
+| **redis-exporter**    | Metrics       | ✅ Production  | 9121        | Redis Metrics          |
+| **postgres-exporter** | Metrics       | ✅ Production  | 9187        | Postgres Metrics       |
+| **minio**             | Storage       | ✅ Production  | 9000, 9001  | Object Storage         |
 
 ## 🔧 Configuration
 
 ### Environment Variables
+
 ```bash
 # Core Services
 POSTGRES_PASSWORD=your_secure_password
@@ -114,6 +121,7 @@ KAFKA_BOOTSTRAP_SERVERS=kafka:9092
 ```
 
 ### Service Health Checks
+
 ```bash
 # Check all services
 curl http://localhost:8001/status
@@ -128,17 +136,20 @@ curl http://localhost:8200/v1/sys/health (Vault)
 ## 🚀 Deployment Options
 
 ### **Development**
+
 ```bash
 docker-compose -f docker-compose.unified.yml up -d
 ```
 
 ### **Production**
+
 ```bash
 # With load balancing and clustering
 docker-compose -f docker-compose.unified.yml -f docker-compose.production.yml up -d
 ```
 
 ### **Kubernetes**
+
 ```bash
 kubectl apply -f kubernetes/
 ```

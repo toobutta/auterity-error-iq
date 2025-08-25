@@ -3,16 +3,21 @@
  * Created for CURSOR-TASK-001: TypeScript Compliance Cleanup
  */
 
-import { ReactNode } from 'react';
-import { Workflow, WorkflowExecution, WorkflowNode, WorkflowEdge } from './workflow-core';
-import { SystemMetrics, Alert, AlertSettings } from './api';
+import { ReactNode } from "react";
+import {
+  Workflow,
+  WorkflowExecution,
+  WorkflowNode,
+  WorkflowEdge,
+} from "./workflow-core";
+import { SystemMetrics, Alert, AlertSettings } from "./api";
 
 // Base component props
 export interface BaseComponentProps {
   className?: string;
   children?: ReactNode;
   id?: string;
-  'data-testid'?: string;
+  "data-testid"?: string;
 }
 
 // Workflow Builder component props
@@ -34,7 +39,10 @@ export interface NodeEditorProps extends BaseComponentProps {
 }
 
 export interface NodePaletteProps extends BaseComponentProps {
-  onNodeDragStart: (nodeType: string, nodeData: Record<string, unknown>) => void;
+  onNodeDragStart: (
+    nodeType: string,
+    nodeData: Record<string, unknown>,
+  ) => void;
   categories?: NodeCategory[];
   searchable?: boolean;
 }
@@ -120,18 +128,25 @@ export interface BudgetConfig {
 export interface ProviderConfig {
   id: string;
   name: string;
-  type: 'openai' | 'anthropic' | 'google' | 'custom';
+  type: "openai" | "anthropic" | "google" | "custom";
   cost_per_token: number;
   rate_limit: number;
   enabled: boolean;
-  health_status: 'healthy' | 'degraded' | 'down';
+  health_status: "healthy" | "degraded" | "down";
 }
 
 // Form component props
 export interface FormFieldProps extends BaseComponentProps {
   label: string;
   name: string;
-  type?: 'text' | 'number' | 'email' | 'password' | 'textarea' | 'select' | 'checkbox';
+  type?:
+    | "text"
+    | "number"
+    | "email"
+    | "password"
+    | "textarea"
+    | "select"
+    | "checkbox";
   value: unknown;
   onChange: (value: unknown) => void;
   error?: string;
@@ -151,19 +166,19 @@ export interface ModalProps extends BaseComponentProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: "sm" | "md" | "lg" | "xl";
   showCloseButton?: boolean;
   closeOnOverlayClick?: boolean;
 }
 
 // Button component props
 export interface ButtonProps extends BaseComponentProps {
-  variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'warning';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "primary" | "secondary" | "danger" | "success" | "warning";
+  size?: "sm" | "md" | "lg";
   disabled?: boolean;
   loading?: boolean;
   onClick?: () => void;
-  type?: 'button' | 'submit' | 'reset';
+  type?: "button" | "submit" | "reset";
 }
 
 // Event handler types

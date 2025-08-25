@@ -9,13 +9,9 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import openai
-from openai import AsyncOpenAI
-
 from app.exceptions import AIServiceError
-from app.services.relaycore_client import (
-    RelayCoreChatClient,
-    get_relaycore_client,
-)
+from app.services.relaycore_client import RelayCoreChatClient, get_relaycore_client
+from openai import AsyncOpenAI
 
 logger = logging.getLogger(__name__)
 

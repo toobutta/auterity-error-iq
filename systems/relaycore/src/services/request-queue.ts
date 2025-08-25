@@ -3,16 +3,16 @@
  * Implements intelligent request queuing with priority levels and processing strategies
  */
 
-import { EventEmitter } from 'events';
-import { logger } from '../utils/logger';
-import { CacheManager } from './cache-manager';
+import { EventEmitter } from "events";
+import { logger } from "../utils/logger";
+import { CacheManager } from "./cache-manager";
 
 export enum Priority {
   CRITICAL = 1,
   HIGH = 2,
   NORMAL = 3,
   LOW = 4,
-  BACKGROUND = 5
+  BACKGROUND = 5,
 }
 
 export interface QueuedRequest {
@@ -33,7 +33,7 @@ export interface QueuedRequest {
 export interface QueueConfig {
   maxSize: number;
   concurrency: Record<string, number>; // Per-provider concurrency limits
-  processingStrategy: 'priority' | 'round-robin' | 'least-loaded' | 'adaptive';
+  processingStrategy: "priority" | "round-robin" | "least-loaded" | "adaptive";
   timeoutMs: number;
   retryDelayMs: number;
   enableMetrics: boolean;
@@ -62,14 +62,16 @@ export class PriorityRequestQueue extends EventEmitter {
     this.config = config;
     this.cacheManager = cacheManager;
     this.metrics = this.initializeMetrics();
-    
+
     // Initialize active requests tracking for each provider
-    Object.keys(this.config.concurrency).forEach(provider => {
+    Object.keys(this.config.concurrency).forEach((provider) => {
       this.activeRequests.set(provider, new Set());
     });
-    
+
     this.startProcessing();
-    logger.info(`Priority request queue initialized with max size: ${this.config.maxSize}`);
+    logger.info(
+      `Priority request queue initialized with max size: ${this.config.maxSize}`,
+    );
   }
 
   /**
@@ -83,10 +85,10 @@ export class PriorityRequestQueue extends EventEmitter {
       userId?: string;
       timeoutMs?: number;
       maxRetries?: number;
-    } = {}
+    } = {},
   ): Promise<any> {
     if (this.queue.length >= this.config.maxSize) {
-      throw new Error('Queue is full, request rejected');
+      throw new Error("Queue is full, request rejected");
     }
 
     return new Promise((resolve, reject) => {
@@ -104,14 +106,16 @@ export class PriorityRequestQueue extends EventEmitter {
           timestamp: Date.now(),
           timeoutMs: options.timeoutMs || this.config.timeoutMs,
           retryCount: 0,
-          maxRetries: options.maxRetries || 3
-        }
+          maxRetries: options.maxRetries || 3,
+        },
       };
 
       this.addToQueue(request);
-      this.emit('request-queued', request);
-      
-      logger.debug(`Request ${request.id} queued for ${provider} with priority ${priority}`);
+      this.emit("request-queued", request);
+
+      logger.debug(
+        `Request ${request.id} queued for ${provider} with priority ${priority}`,
+      );
     });
   }
 
@@ -128,7 +132,7 @@ export class PriorityRequestQueue extends EventEmitter {
       }
       insertIndex = i + 1;
     }
-    
+
     this.queue.splice(insertIndex, 0, request);
     this.updateMetrics();
   }
@@ -159,13 +163,13 @@ export class PriorityRequestQueue extends EventEmitter {
     // Check if provider has available capacity
     const activeCount = this.activeRequests.get(request.provider)?.size || 0;
     const maxConcurrency = this.config.concurrency[request.provider] || 1;
-    
+
     if (activeCount >= maxConcurrency) {
       return; // Provider at capacity, try again later
     }
 
     // Remove from queue and start processing
-    const queueIndex = this.queue.findIndex(r => r.id === request.id);
+    const queueIndex = this.queue.findIndex((r) => r.id === request.id);
     if (queueIndex !== -1) {
       this.queue.splice(queueIndex, 1);
       this.processRequest(request);
@@ -181,18 +185,18 @@ export class PriorityRequestQueue extends EventEmitter {
     }
 
     switch (this.config.processingStrategy) {
-      case 'priority':
+      case "priority":
         return this.getHighestPriorityRequest();
-      
-      case 'round-robin':
+
+      case "round-robin":
         return this.getRoundRobinRequest();
-      
-      case 'least-loaded':
+
+      case "least-loaded":
         return this.getLeastLoadedRequest();
-      
-      case 'adaptive':
+
+      case "adaptive":
         return this.getAdaptiveRequest();
-      
+
       default:
         return this.queue[0];
     }
@@ -205,7 +209,7 @@ export class PriorityRequestQueue extends EventEmitter {
     for (const request of this.queue) {
       const activeCount = this.activeRequests.get(request.provider)?.size || 0;
       const maxConcurrency = this.config.concurrency[request.provider] || 1;
-      
+
       if (activeCount < maxConcurrency) {
         return request;
       }
@@ -219,7 +223,7 @@ export class PriorityRequestQueue extends EventEmitter {
   private getRoundRobinRequest(): QueuedRequest | null {
     // Simple round-robin: find provider with least recent processing
     const providerLastUsed = new Map<string, number>();
-    
+
     // Track when each provider was last used
     this.activeRequests.forEach((activeSet, provider) => {
       providerLastUsed.set(provider, activeSet.size > 0 ? Date.now() : 0);
@@ -232,7 +236,7 @@ export class PriorityRequestQueue extends EventEmitter {
       const activeCount = this.activeRequests.get(request.provider)?.size || 0;
       const maxConcurrency = this.config.concurrency[request.provider] || 1;
       const lastUsed = providerLastUsed.get(request.provider) || 0;
-      
+
       if (activeCount < maxConcurrency && lastUsed < oldestProviderTime) {
         selectedRequest = request;
         oldestProviderTime = lastUsed;
@@ -252,7 +256,7 @@ export class PriorityRequestQueue extends EventEmitter {
     for (const request of this.queue) {
       const activeCount = this.activeRequests.get(request.provider)?.size || 0;
       const maxConcurrency = this.config.concurrency[request.provider] || 1;
-      
+
       if (activeCount < maxConcurrency && activeCount < lowestLoad) {
         selectedRequest = request;
         lowestLoad = activeCount;
@@ -272,18 +276,22 @@ export class PriorityRequestQueue extends EventEmitter {
     for (const request of this.queue) {
       const activeCount = this.activeRequests.get(request.provider)?.size || 0;
       const maxConcurrency = this.config.concurrency[request.provider] || 1;
-      
+
       if (activeCount >= maxConcurrency) {
         continue; // Provider at capacity
       }
 
       // Calculate composite score
       const priorityScore = (6 - request.priority) / 5; // Higher priority = higher score
-      const loadScore = 1 - (activeCount / maxConcurrency); // Lower load = higher score
-      const waitScore = Math.min((Date.now() - request.metadata.timestamp) / 10000, 1); // Longer wait = higher score
-      
-      const compositeScore = (priorityScore * 0.5) + (loadScore * 0.3) + (waitScore * 0.2);
-      
+      const loadScore = 1 - activeCount / maxConcurrency; // Lower load = higher score
+      const waitScore = Math.min(
+        (Date.now() - request.metadata.timestamp) / 10000,
+        1,
+      ); // Longer wait = higher score
+
+      const compositeScore =
+        priorityScore * 0.5 + loadScore * 0.3 + waitScore * 0.2;
+
       if (compositeScore > bestScore) {
         bestScore = compositeScore;
         bestRequest = request;
@@ -298,7 +306,7 @@ export class PriorityRequestQueue extends EventEmitter {
    */
   private async processRequest(request: QueuedRequest): Promise<void> {
     const startTime = Date.now();
-    
+
     // Track active request
     if (!this.activeRequests.has(request.provider)) {
       this.activeRequests.set(request.provider, new Set());
@@ -311,23 +319,24 @@ export class PriorityRequestQueue extends EventEmitter {
     }, request.metadata.timeoutMs);
 
     try {
-      this.emit('request-processing', request);
-      
+      this.emit("request-processing", request);
+
       // Process the actual request (this would integrate with your AI providers)
       const result = await this.executeRequest(request);
-      
+
       clearTimeout(timeoutHandle);
-      
+
       // Calculate wait time
       const waitTime = startTime - request.metadata.timestamp;
       this.updateWaitTimeMetrics(waitTime);
-      
+
       request.callback(null, result);
       this.metrics.totalProcessed++;
-      
-      this.emit('request-completed', request, result);
-      logger.debug(`Request ${request.id} completed in ${Date.now() - startTime}ms`);
-      
+
+      this.emit("request-completed", request, result);
+      logger.debug(
+        `Request ${request.id} completed in ${Date.now() - startTime}ms`,
+      );
     } catch (error) {
       clearTimeout(timeoutHandle);
       await this.handleRequestError(request, error as Error);
@@ -343,22 +352,26 @@ export class PriorityRequestQueue extends EventEmitter {
    */
   private async executeRequest(request: QueuedRequest): Promise<any> {
     if (this.config.executionHandler) {
-      return await this.config.executionHandler(request.provider, request.payload);
+      return await this.config.executionHandler(
+        request.provider,
+        request.payload,
+      );
     }
-    
+
     // Default simulation (for testing)
     const processingTime = Math.random() * 1000 + 500; // 500-1500ms
-    
+
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (Math.random() > 0.1) { // 90% success rate
+        if (Math.random() > 0.1) {
+          // 90% success rate
           resolve({
             provider: request.provider,
             result: `Processed request ${request.id}`,
-            processingTime
+            processingTime,
           });
         } else {
-          reject(new Error('Simulated provider error'));
+          reject(new Error("Simulated provider error"));
         }
       }, processingTime);
     });
@@ -368,35 +381,40 @@ export class PriorityRequestQueue extends EventEmitter {
    * Handle request timeout
    */
   private handleRequestTimeout(request: QueuedRequest): void {
-    logger.warn(`Request ${request.id} timed out after ${request.metadata.timeoutMs}ms`);
-    
+    logger.warn(
+      `Request ${request.id} timed out after ${request.metadata.timeoutMs}ms`,
+    );
+
     this.activeRequests.get(request.provider)?.delete(request.id);
-    
+
     if (request.metadata.retryCount < request.metadata.maxRetries) {
       this.retryRequest(request);
     } else {
-      request.callback(new Error('Request timeout'));
+      request.callback(new Error("Request timeout"));
       this.metrics.totalFailed++;
     }
-    
+
     this.updateMetrics();
   }
 
   /**
    * Handle request errors with retry logic
    */
-  private async handleRequestError(request: QueuedRequest, error: Error): Promise<void> {
+  private async handleRequestError(
+    request: QueuedRequest,
+    error: Error,
+  ): Promise<void> {
     logger.error(`Request ${request.id} failed:`, error.message);
-    
+
     this.activeRequests.get(request.provider)?.delete(request.id);
-    
+
     if (request.metadata.retryCount < request.metadata.maxRetries) {
       this.retryRequest(request);
     } else {
       request.callback(error);
       this.metrics.totalFailed++;
     }
-    
+
     this.updateMetrics();
   }
 
@@ -406,14 +424,19 @@ export class PriorityRequestQueue extends EventEmitter {
   private retryRequest(request: QueuedRequest): void {
     request.metadata.retryCount++;
     request.metadata.timestamp = Date.now() + this.config.retryDelayMs;
-    
+
     // Add back to queue with exponential backoff delay
-    setTimeout(() => {
-      this.addToQueue(request);
-      this.emit('request-retried', request);
-    }, this.config.retryDelayMs * Math.pow(2, request.metadata.retryCount - 1));
-    
-    logger.debug(`Request ${request.id} scheduled for retry ${request.metadata.retryCount}`);
+    setTimeout(
+      () => {
+        this.addToQueue(request);
+        this.emit("request-retried", request);
+      },
+      this.config.retryDelayMs * Math.pow(2, request.metadata.retryCount - 1),
+    );
+
+    logger.debug(
+      `Request ${request.id} scheduled for retry ${request.metadata.retryCount}`,
+    );
   }
 
   /**
@@ -437,9 +460,9 @@ export class PriorityRequestQueue extends EventEmitter {
         [Priority.HIGH]: 0,
         [Priority.NORMAL]: 0,
         [Priority.LOW]: 0,
-        [Priority.BACKGROUND]: 0
+        [Priority.BACKGROUND]: 0,
       },
-      activeByProvider: {}
+      activeByProvider: {},
     };
   }
 
@@ -448,19 +471,19 @@ export class PriorityRequestQueue extends EventEmitter {
    */
   private updateMetrics(): void {
     this.metrics.totalQueued = this.queue.length;
-    
+
     // Reset priority counts
-    Object.values(Priority).forEach(priority => {
-      if (typeof priority === 'number') {
+    Object.values(Priority).forEach((priority) => {
+      if (typeof priority === "number") {
         this.metrics.queueSizeByPriority[priority] = 0;
       }
     });
-    
+
     // Count by priority
-    this.queue.forEach(request => {
+    this.queue.forEach((request) => {
       this.metrics.queueSizeByPriority[request.priority]++;
     });
-    
+
     // Count active by provider
     this.activeRequests.forEach((activeSet, provider) => {
       this.metrics.activeByProvider[provider] = activeSet.size;
@@ -473,7 +496,7 @@ export class PriorityRequestQueue extends EventEmitter {
   private updateWaitTimeMetrics(waitTime: number): void {
     // Simple moving average
     const alpha = 0.1;
-    this.metrics.averageWaitTime = 
+    this.metrics.averageWaitTime =
       (1 - alpha) * this.metrics.averageWaitTime + alpha * waitTime;
   }
 
@@ -493,9 +516,11 @@ export class PriorityRequestQueue extends EventEmitter {
     activeRequests: number;
     availableCapacity: Record<string, number>;
   } {
-    const activeRequests = Array.from(this.activeRequests.values())
-      .reduce((sum, set) => sum + set.size, 0);
-    
+    const activeRequests = Array.from(this.activeRequests.values()).reduce(
+      (sum, set) => sum + set.size,
+      0,
+    );
+
     const availableCapacity: Record<string, number> = {};
     Object.entries(this.config.concurrency).forEach(([provider, max]) => {
       const active = this.activeRequests.get(provider)?.size || 0;
@@ -505,7 +530,7 @@ export class PriorityRequestQueue extends EventEmitter {
     return {
       queueSize: this.queue.length,
       activeRequests,
-      availableCapacity
+      availableCapacity,
     };
   }
 
@@ -516,7 +541,7 @@ export class PriorityRequestQueue extends EventEmitter {
     if (this.processingInterval) {
       clearInterval(this.processingInterval);
       this.processingInterval = null;
-      logger.info('Queue processing paused');
+      logger.info("Queue processing paused");
     }
   }
 
@@ -526,7 +551,7 @@ export class PriorityRequestQueue extends EventEmitter {
   resume(): void {
     if (!this.processingInterval) {
       this.startProcessing();
-      logger.info('Queue processing resumed');
+      logger.info("Queue processing resumed");
     }
   }
 
@@ -535,8 +560,8 @@ export class PriorityRequestQueue extends EventEmitter {
    */
   clear(): void {
     const clearedCount = this.queue.length;
-    this.queue.forEach(request => {
-      request.callback(new Error('Queue cleared'));
+    this.queue.forEach((request) => {
+      request.callback(new Error("Queue cleared"));
     });
     this.queue = [];
     this.updateMetrics();
@@ -549,7 +574,7 @@ export class PriorityRequestQueue extends EventEmitter {
   shutdown(): void {
     this.pause();
     this.clear();
-    logger.info('Priority request queue shutdown');
+    logger.info("Priority request queue shutdown");
   }
 }
 
@@ -561,10 +586,10 @@ export const defaultQueueConfig: QueueConfig = {
   concurrency: {
     openai: 10,
     anthropic: 5,
-    neuroweaver: 3
+    neuroweaver: 3,
   },
-  processingStrategy: 'priority',
+  processingStrategy: "priority",
   timeoutMs: 30000, // 30 seconds
   retryDelayMs: 1000, // 1 second
-  enableMetrics: true
+  enableMetrics: true,
 };

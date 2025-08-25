@@ -36,6 +36,7 @@ Auterity's infrastructure stack provides a comprehensive foundation for multi-ag
 **Port**: 6379
 
 #### Features
+
 - **At-least-once delivery** through acknowledgment system
 - **Automatic retry** with exponential backoff (max 3 retries)
 - **Dead letter queue** for permanently failed messages
@@ -44,6 +45,7 @@ Auterity's infrastructure stack provides a comprehensive foundation for multi-ag
 - **Message persistence** with configurable TTL
 
 #### Usage
+
 ```python
 from app.services.message_queue import get_message_queue
 
@@ -69,13 +71,14 @@ if message:
 ```
 
 #### Configuration
+
 ```yaml
 # Environment Variables
 REDIS_URL: redis://redis:6379/0
 
 # Queue Settings
-DEFAULT_TTL: 86400  # 24 hours
-PROCESSING_TIMEOUT: 300  # 5 minutes
+DEFAULT_TTL: 86400 # 24 hours
+PROCESSING_TIMEOUT: 300 # 5 minutes
 MAX_RETRIES: 3
 ```
 
@@ -86,6 +89,7 @@ MAX_RETRIES: 3
 **Ports**: 9000 (API), 9001 (Console)
 
 #### Features
+
 - **S3-compatible API** for seamless integration
 - **Presigned URLs** for secure file sharing
 - **Bucket management** with automatic creation
@@ -93,6 +97,7 @@ MAX_RETRIES: 3
 - **Web console** for administration
 
 #### Usage
+
 ```python
 from app.services.storage_service import get_storage_service
 
@@ -112,6 +117,7 @@ files = storage.list_files("workflows", prefix="2024/")
 ```
 
 #### Configuration
+
 ```yaml
 # Environment Variables
 MINIO_ENDPOINT: minio:9000
@@ -131,6 +137,7 @@ MINIO_SECRET_KEY: minioadmin123
 **Port**: 6333
 
 #### Features
+
 - **Semantic search** with cosine similarity
 - **Automatic embeddings** using SentenceTransformers
 - **Collection management** with custom schemas
@@ -138,6 +145,7 @@ MINIO_SECRET_KEY: minioadmin123
 - **Real-time indexing** and updates
 
 #### Usage
+
 ```python
 from app.services.vector_service import get_vector_service
 
@@ -160,6 +168,7 @@ similar = vector_db.search_similar(
 ```
 
 #### Configuration
+
 ```yaml
 # Environment Variables
 QDRANT_HOST: qdrant
@@ -178,6 +187,7 @@ DISTANCE_METRIC: cosine
 **Ports**: 9200 (Elasticsearch), 5601 (Kibana)
 
 #### Features
+
 - **Full-text search** across workflows, executions, and logs
 - **Advanced analytics** with aggregations and visualizations
 - **Real-time indexing** of application data
@@ -185,6 +195,7 @@ DISTANCE_METRIC: cosine
 - **Log correlation** and error tracking
 
 #### Usage
+
 ```python
 from app.services.search_service import get_search_service
 
@@ -214,6 +225,7 @@ logs = search.search_logs(
 ```
 
 #### Indices
+
 ```yaml
 # Automatic Index Creation
 workflows:
@@ -244,6 +256,7 @@ logs:
 **Port**: 11434
 
 #### Features
+
 - **Local model hosting** without API costs
 - **Multiple model support** (Llama, Mistral, CodeLlama)
 - **REST API** compatible with OpenAI format
@@ -251,6 +264,7 @@ logs:
 - **GPU acceleration** support
 
 #### Usage
+
 ```bash
 # Pull and run models
 curl -X POST http://localhost:11434/api/pull -d '{"name": "llama2"}'
@@ -261,6 +275,7 @@ curl -X POST http://localhost:11434/api/generate \
 ```
 
 #### Model Management
+
 ```bash
 # List available models
 ollama list
@@ -280,12 +295,14 @@ ollama rm llama2
 **Ports**: 9090 (Prometheus), 3003 (Grafana)
 
 #### Metrics Collected
+
 - **Application metrics**: Request rates, response times, error rates
 - **Infrastructure metrics**: CPU, memory, disk, network
 - **Service metrics**: Queue depths, cache hit rates, database connections
 - **Business metrics**: Workflow executions, success rates, processing times
 
 #### Dashboards
+
 - **System Overview**: Infrastructure health and performance
 - **Application Performance**: API metrics and service health
 - **Workflow Analytics**: Execution statistics and trends
@@ -297,6 +314,7 @@ ollama rm llama2
 **Port**: 16686
 
 #### Features
+
 - **Request tracing** across microservices
 - **Performance bottleneck** identification
 - **Error correlation** with traces
@@ -308,6 +326,7 @@ ollama rm llama2
 **Port**: 9093
 
 #### Alert Rules
+
 - **High error rates** (>5% for 5 minutes)
 - **Service downtime** (health check failures)
 - **Resource exhaustion** (>90% CPU/memory for 10 minutes)
@@ -315,20 +334,21 @@ ollama rm llama2
 
 ## Service Access Points
 
-| Service | URL | Credentials |
-|---------|-----|-------------|
-| MinIO Console | http://localhost:9001 | minioadmin/minioadmin123 |
-| Qdrant Dashboard | http://localhost:6333/dashboard | None |
-| Elasticsearch API | http://localhost:9200 | None |
-| Kibana | http://localhost:5601 | None |
-| Grafana | http://localhost:3003 | admin/admin123 |
-| Prometheus | http://localhost:9090 | None |
-| Jaeger UI | http://localhost:16686 | None |
-| Ollama API | http://localhost:11434 | None |
+| Service           | URL                             | Credentials              |
+| ----------------- | ------------------------------- | ------------------------ |
+| MinIO Console     | http://localhost:9001           | minioadmin/minioadmin123 |
+| Qdrant Dashboard  | http://localhost:6333/dashboard | None                     |
+| Elasticsearch API | http://localhost:9200           | None                     |
+| Kibana            | http://localhost:5601           | None                     |
+| Grafana           | http://localhost:3003           | admin/admin123           |
+| Prometheus        | http://localhost:9090           | None                     |
+| Jaeger UI         | http://localhost:16686          | None                     |
+| Ollama API        | http://localhost:11434          | None                     |
 
 ## Deployment Commands
 
 ### Start All Services
+
 ```bash
 # Full stack
 docker-compose up
@@ -341,6 +361,7 @@ docker-compose up -d && docker-compose logs -f
 ```
 
 ### Health Checks
+
 ```bash
 # Check all services
 docker-compose ps
@@ -357,18 +378,19 @@ All services use Docker volumes for data persistence:
 
 ```yaml
 volumes:
-  postgres_data:      # Database data
-  redis_data:         # Cache and queue data
-  minio_data:         # Object storage
-  qdrant_data:        # Vector embeddings
+  postgres_data: # Database data
+  redis_data: # Cache and queue data
+  minio_data: # Object storage
+  qdrant_data: # Vector embeddings
   elasticsearch_data: # Search indices
-  grafana_data:       # Dashboards and config
-  prometheus_data:    # Metrics history
+  grafana_data: # Dashboards and config
+  prometheus_data: # Metrics history
 ```
 
 ## Performance Tuning
 
 ### Resource Allocation
+
 ```yaml
 # Production recommendations
 elasticsearch:
@@ -376,7 +398,7 @@ elasticsearch:
     resources:
       limits:
         memory: 2G
-        cpus: '1.0'
+        cpus: "1.0"
       reservations:
         memory: 1G
 
@@ -385,10 +407,11 @@ qdrant:
     resources:
       limits:
         memory: 1G
-        cpus: '0.5'
+        cpus: "0.5"
 ```
 
 ### Optimization Settings
+
 ```yaml
 # Elasticsearch
 ES_JAVA_OPTS: "-Xms1g -Xmx1g"
@@ -405,22 +428,24 @@ effective_cache_size: 1GB
 ## Security Configuration
 
 ### Network Security
+
 ```yaml
 # Internal network isolation
 networks:
   ai-platform:
     driver: bridge
-    internal: false  # Set to true for production
+    internal: false # Set to true for production
 ```
 
 ### Access Control
+
 ```yaml
 # Service authentication
 elasticsearch:
   environment:
-    xpack.security.enabled: true  # Enable in production
-    
-vault:  # Future implementation
+    xpack.security.enabled: true # Enable in production
+
+vault: # Future implementation
   environment:
     VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_TOKEN}
 ```
@@ -428,6 +453,7 @@ vault:  # Future implementation
 ## Backup and Recovery
 
 ### Automated Backups
+
 ```bash
 # Database backup
 docker exec postgres pg_dump -U postgres workflow_engine > backup.sql
@@ -440,6 +466,7 @@ curl -X PUT "localhost:9200/_snapshot/backup_repo/snapshot_1"
 ```
 
 ### Recovery Procedures
+
 ```bash
 # Restore database
 docker exec -i postgres psql -U postgres workflow_engine < backup.sql
@@ -456,6 +483,7 @@ curl -X POST "localhost:9200/_snapshot/backup_repo/snapshot_1/_restore"
 ### Common Issues
 
 #### Service Won't Start
+
 ```bash
 # Check logs
 docker-compose logs service_name
@@ -468,6 +496,7 @@ docker-compose restart service_name
 ```
 
 #### Performance Issues
+
 ```bash
 # Monitor resource usage
 docker exec service_name top
@@ -479,6 +508,7 @@ curl http://localhost:port/health
 ```
 
 #### Data Issues
+
 ```bash
 # Check data volumes
 docker volume ls
@@ -491,6 +521,7 @@ docker exec service_name service_specific_check
 ## Development Workflow
 
 ### Local Development
+
 ```bash
 # Start development stack
 docker-compose up postgres redis minio
@@ -501,6 +532,7 @@ cd frontend && npm run dev
 ```
 
 ### Testing
+
 ```bash
 # Integration tests with services
 docker-compose -f docker-compose.test.yml up
@@ -511,6 +543,7 @@ pytest tests/services/test_storage_service.py
 ```
 
 ### Production Deployment
+
 ```bash
 # Production configuration
 docker-compose -f docker-compose.prod.yml up -d

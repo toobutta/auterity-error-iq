@@ -25,11 +25,7 @@
     "groups": [
       {
         "group": "Get Started",
-        "pages": [
-          "docs/introduction",
-          "docs/quickstart",
-          "docs/project-status"
-        ]
+        "pages": ["docs/introduction", "docs/quickstart", "docs/project-status"]
       },
       {
         "group": "API Reference",
@@ -72,9 +68,7 @@
       },
       {
         "group": "Business",
-        "pages": [
-          "docs/business/product-overview"
-        ]
+        "pages": ["docs/business/product-overview"]
       }
     ]
   },

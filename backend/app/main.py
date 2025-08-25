@@ -1,9 +1,6 @@
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
 from app.api import (
     agents,
     auterity_expansion,
@@ -34,9 +31,18 @@ from app.middleware.error_handler import (
 from app.middleware.logging import StructuredLoggingMiddleware
 from app.middleware.otel_middleware import setup_opentelemetry
 from app.middleware.prometheus import prometheus_middleware
+from app.middleware.tenant_middleware import (
+    AuditLoggingMiddleware,
+    TenantIsolationMiddleware,
+)
 from app.middleware.tracing import setup_tracing
-from app.middleware.tenant_middleware import AuditLoggingMiddleware, TenantIsolationMiddleware
-from app.startup.ai_ecosystem_startup import ecosystem_manager, startup_event, shutdown_event
+from app.startup.ai_ecosystem_startup import (
+    ecosystem_manager,
+    shutdown_event,
+    startup_event,
+)
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 # Environment configuration
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")

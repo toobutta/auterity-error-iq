@@ -1,6 +1,6 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AppError, ErrorSeverity } from '../types/error';
-import { createAppError } from '../utils/errorUtils';
+import React, { Component, ErrorInfo, ReactNode } from "react";
+import { AppError, ErrorSeverity } from "../types/error";
+import { createAppError } from "../utils/errorUtils";
 
 interface Props {
   children: ReactNode;
@@ -29,11 +29,11 @@ export class ErrorBoundary extends Component<Props, State> {
 
   static getDerivedStateFromError(error: Error): Partial<State> {
     const appError = createAppError(
-      'REACT_ERROR_BOUNDARY',
+      "REACT_ERROR_BOUNDARY",
       error.message,
-      { component: 'ErrorBoundary' },
+      { component: "ErrorBoundary" },
       error.stack,
-      error.stack
+      error.stack,
     );
 
     return {
@@ -43,17 +43,17 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
 
     const appError = createAppError(
-      'REACT_ERROR_BOUNDARY',
+      "REACT_ERROR_BOUNDARY",
       error.message,
       {
-        component: this.props.component || 'Unknown',
-        action: 'render',
+        component: this.props.component || "Unknown",
+        action: "render",
       },
       `${error.stack}\n\nComponent Stack:\n${errorInfo.componentStack}`,
-      error.stack
+      error.stack,
     );
 
     this.setState({ errorInfo });
@@ -68,7 +68,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (!this.props.enableReporting || !this.state.error) return;
 
     // TODO: Implement error reporting
-    console.log('Reporting error:', this.state.error);
+    console.log("Reporting error:", this.state.error);
   };
 
   toggleDetails = () => {
@@ -89,7 +89,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="max-w-2xl w-full bg-white shadow-lg rounded-lg overflow-hidden">
             {/* Header */}
             <div
-              className={`px-6 py-4 ${isCritical ? 'bg-red-50 border-b border-red-200' : 'bg-yellow-50 border-b border-yellow-200'}`}
+              className={`px-6 py-4 ${isCritical ? "bg-red-50 border-b border-red-200" : "bg-yellow-50 border-b border-yellow-200"}`}
             >
               <div className="flex items-center">
                 <div className="flex-shrink-0">
@@ -125,11 +125,13 @@ export class ErrorBoundary extends Component<Props, State> {
                 </div>
                 <div className="ml-3">
                   <h3
-                    className={`text-lg font-medium ${isCritical ? 'text-red-800' : 'text-yellow-800'}`}
+                    className={`text-lg font-medium ${isCritical ? "text-red-800" : "text-yellow-800"}`}
                   >
-                    {isCritical ? 'Critical Error' : 'Application Error'}
+                    {isCritical ? "Critical Error" : "Application Error"}
                   </h3>
-                  <p className={`text-sm ${isCritical ? 'text-red-600' : 'text-yellow-600'}`}>
+                  <p
+                    className={`text-sm ${isCritical ? "text-red-600" : "text-yellow-600"}`}
+                  >
                     {error.userFriendlyMessage}
                   </p>
                 </div>
@@ -146,7 +148,7 @@ export class ErrorBoundary extends Component<Props, State> {
                     className="text-sm text-gray-500 hover:text-gray-700 flex items-center"
                   >
                     <svg
-                      className={`h-4 w-4 mr-1 transform transition-transform ${this.state.showDetails ? 'rotate-90' : ''}`}
+                      className={`h-4 w-4 mr-1 transform transition-transform ${this.state.showDetails ? "rotate-90" : ""}`}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -158,7 +160,7 @@ export class ErrorBoundary extends Component<Props, State> {
                         d="M9 5l7 7-7 7"
                       />
                     </svg>
-                    {this.state.showDetails ? 'Hide' : 'Show'} Technical Details
+                    {this.state.showDetails ? "Hide" : "Show"} Technical Details
                   </button>
 
                   {this.state.showDetails && (
@@ -175,11 +177,13 @@ export class ErrorBoundary extends Component<Props, State> {
                         </div>
                         {error.correlationId && (
                           <div>
-                            <strong>Correlation ID:</strong> {error.correlationId}
+                            <strong>Correlation ID:</strong>{" "}
+                            {error.correlationId}
                           </div>
                         )}
                         <div>
-                          <strong>Timestamp:</strong> {error.context.timestamp.toISOString()}
+                          <strong>Timestamp:</strong>{" "}
+                          {error.context.timestamp.toISOString()}
                         </div>
                         {error.details && (
                           <div>
@@ -196,19 +200,23 @@ export class ErrorBoundary extends Component<Props, State> {
               )}
 
               {/* Suggested Actions */}
-              {error.actionable && error.suggestedActions && error.suggestedActions.length > 0 && (
-                <div className="mb-4">
-                  <h4 className="text-sm font-medium text-gray-800 mb-2">Suggested Actions:</h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    {error.suggestedActions.map((action, index) => (
-                      <li key={index} className="flex items-start">
-                        <span className="text-gray-400 mr-2">•</span>
-                        {action}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              {error.actionable &&
+                error.suggestedActions &&
+                error.suggestedActions.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium text-gray-800 mb-2">
+                      Suggested Actions:
+                    </h4>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      {error.suggestedActions.map((action, index) => (
+                        <li key={index} className="flex items-start">
+                          <span className="text-gray-400 mr-2">•</span>
+                          {action}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3">

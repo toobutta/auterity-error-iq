@@ -1,6 +1,7 @@
 # Performance Visualization Pre-Development Analysis
 
 ## Chart Library Recommendations
+
 - **Onboarding (ApexCharts):**
   - Used for simple, visually appealing performance metrics
   - Benefits from built-in themes and straightforward configuration
@@ -9,7 +10,9 @@
   - Plotly.js for advanced interactive/3D performance analytics
 
 ## API Design Specification
+
 - Add `/api/performance` endpoints:
+
   ```ts
   // frontend/src/api/workflows.ts
   export interface PerformanceMetrics {
@@ -19,20 +22,28 @@
     timestamp: Date;
   }
 
-  export const getWorkflowPerformance = (workflowId: string): Promise<PerformanceMetrics[]> => {
+  export const getWorkflowPerformance = (
+    workflowId: string,
+  ): Promise<PerformanceMetrics[]> => {
     return client.get(`/workflows/${workflowId}/performance`);
   };
   ```
 
 ## Component Architecture
+
 - Create `PerformanceDashboard` container component:
+
   ```tsx
   // frontend/src/components/PerformanceDashboard.tsx
-  import React, { useEffect, useState } from 'react';
-  import { getWorkflowPerformance } from '../api/workflows';
-  import { LineChart, BarChart } from './charts';
+  import React, { useEffect, useState } from "react";
+  import { getWorkflowPerformance } from "../api/workflows";
+  import { LineChart, BarChart } from "./charts";
 
-  export const PerformanceDashboard = ({ workflowId }: { workflowId: string }) => {
+  export const PerformanceDashboard = ({
+    workflowId,
+  }: {
+    workflowId: string;
+  }) => {
     const [metrics, setMetrics] = useState<PerformanceMetrics[]>([]);
 
     useEffect(() => {
@@ -50,9 +61,11 @@
     );
   };
   ```
+
 - Implement library-specific chart components in `frontend/src/components/charts/`
 
 ## Accessibility Requirements
+
 - Add ARIA attributes to all chart components
 - Implement color contrast adjustments for:
   - ApexCharts: Use `stroke` and `fill` props with accessible palettes
@@ -60,6 +73,7 @@
   - Plotly.js: Enable `accessible` mode in config
 
 ## Testing Strategy
+
 - Add test cases to:
   1. `frontend/src/components/__tests__/PerformanceDashboard.test.tsx`
   2. `frontend/src/components/charts/__tests__/LineChart.test.tsx`

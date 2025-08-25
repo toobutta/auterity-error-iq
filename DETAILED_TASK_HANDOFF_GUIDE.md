@@ -1,7 +1,7 @@
 # 🔧 DETAILED TASK HANDOFF GUIDE FOR CODING AGENTS
 
-**Generated:** February 1, 2025  
-**Purpose:** Comprehensive task specifications for autonomous AI coding agent execution  
+**Generated:** February 1, 2025
+**Purpose:** Comprehensive task specifications for autonomous AI coding agent execution
 **Target Agents:** Amazon Q, Cursor IDE, Cline, and other coding assistants
 
 ---
@@ -9,7 +9,9 @@
 ## 📋 **HANDOFF PROTOCOL**
 
 ### **Task Assignment Format**
+
 Each task includes:
+
 - **Detailed technical specifications**
 - **Exact file paths and code locations**
 - **Step-by-step implementation instructions**
@@ -17,6 +19,7 @@ Each task includes:
 - **Error handling and rollback procedures**
 
 ### **Quality Standards**
+
 - **Zero tolerance** for security vulnerabilities
 - **TypeScript strict mode** compliance required
 - **Test coverage** minimum 90% for new code
@@ -30,6 +33,7 @@ Each task includes:
 ### **ASSIGNMENT: CURSOR IDE**
 
 #### **Task Overview**
+
 ```markdown
 **Objective**: Eliminate 108 TypeScript linting errors blocking frontend development
 **Priority**: CRITICAL - Blocking all frontend expansion
@@ -40,6 +44,7 @@ Each task includes:
 #### **Technical Specifications**
 
 ##### **Primary Target Files**
+
 ```bash
 # High-priority files with error counts:
 frontend/src/components/__tests__/WorkflowErrorDisplay.test.tsx     # 19 errors
@@ -49,6 +54,7 @@ frontend/src/utils/retryUtils.ts                                      # 1 error
 ```
 
 ##### **Error Categories to Fix**
+
 1. **Explicit 'any' type usage** (16 instances)
 2. **Unused variables** (workflowsApi and others)
 3. **Missing type definitions** for test mocks
@@ -57,6 +63,7 @@ frontend/src/utils/retryUtils.ts                                      # 1 error
 #### **Step-by-Step Implementation**
 
 ##### **Step 1: Environment Setup**
+
 ```bash
 cd frontend
 npm install
@@ -65,14 +72,15 @@ npm run lint > lint-errors.txt  # Capture remaining errors
 ```
 
 ##### **Step 2: Fix WorkflowErrorDisplay.test.tsx (19 errors)**
+
 ```typescript
 // Current problematic code patterns to fix:
 // 1. Replace 'any' types with proper interfaces
 
 // BEFORE (problematic):
 const mockWorkflow: any = {
-  id: '123',
-  name: 'Test Workflow'
+  id: "123",
+  name: "Test Workflow",
 };
 
 // AFTER (correct):
@@ -84,8 +92,8 @@ interface MockWorkflow {
 }
 
 const mockWorkflow: MockWorkflow = {
-  id: '123',
-  name: 'Test Workflow'
+  id: "123",
+  name: "Test Workflow",
 };
 
 // 2. Fix mock function types
@@ -93,7 +101,10 @@ const mockWorkflow: MockWorkflow = {
 const mockExecuteWorkflow = jest.fn();
 
 // AFTER:
-const mockExecuteWorkflow = jest.fn<Promise<WorkflowResult>, [WorkflowRequest]>();
+const mockExecuteWorkflow = jest.fn<
+  Promise<WorkflowResult>,
+  [WorkflowRequest]
+>();
 
 // 3. Add proper error type definitions
 interface WorkflowError {
@@ -104,6 +115,7 @@ interface WorkflowError {
 ```
 
 ##### **Step 3: Fix WorkflowExecutionInterface.test.tsx (16 errors)**
+
 ```typescript
 // Fix React component prop types
 interface WorkflowExecutionProps {
@@ -122,7 +134,7 @@ const renderComponent = (props: Partial<WorkflowExecutionProps> = {}) => {
     isLoading: false,
     ...props
   };
-  
+
   return render(<WorkflowExecutionInterface {...defaultProps} />);
 };
 
@@ -130,10 +142,10 @@ const renderComponent = (props: Partial<WorkflowExecutionProps> = {}) => {
 test('should handle workflow execution', async () => {
   const mockOnExecute = jest.fn<Promise<void>, [string]>();
   renderComponent({ onExecute: mockOnExecute });
-  
+
   const executeButton = screen.getByRole('button', { name: /execute/i });
   fireEvent.click(executeButton);
-  
+
   await waitFor(() => {
     expect(mockOnExecute).toHaveBeenCalledWith(mockWorkflow.id);
   });
@@ -141,12 +153,13 @@ test('should handle workflow execution', async () => {
 ```
 
 ##### **Step 4: Fix WorkflowExecutionResults.test.tsx (4 errors)**
+
 ```typescript
 // Add proper result type definitions
 interface WorkflowExecutionResult {
   id: string;
   workflowId: string;
-  status: 'success' | 'error' | 'pending';
+  status: "success" | "error" | "pending";
   startTime: Date;
   endTime?: Date;
   output?: Record<string, unknown>;
@@ -155,22 +168,24 @@ interface WorkflowExecutionResult {
 
 // Fix mock data structures
 const mockExecutionResult: WorkflowExecutionResult = {
-  id: 'exec-123',
-  workflowId: 'workflow-456',
-  status: 'success',
-  startTime: new Date('2025-01-01T10:00:00Z'),
-  endTime: new Date('2025-01-01T10:05:00Z'),
-  output: { result: 'completed successfully' }
+  id: "exec-123",
+  workflowId: "workflow-456",
+  status: "success",
+  startTime: new Date("2025-01-01T10:00:00Z"),
+  endTime: new Date("2025-01-01T10:05:00Z"),
+  output: { result: "completed successfully" },
 };
 ```
 
 ##### **Step 5: Fix retryUtils.ts (1 error)**
+
 ```typescript
 // Current problematic code:
 export const retryWithBackoff = async (
-  fn: () => Promise<any>,  // ❌ 'any' type
-  maxRetries: number = 3
-): Promise<any> => {  // ❌ 'any' return type
+  fn: () => Promise<any>, // ❌ 'any' type
+  maxRetries: number = 3,
+): Promise<any> => {
+  // ❌ 'any' return type
   // implementation
 };
 
@@ -178,30 +193,31 @@ export const retryWithBackoff = async (
 export const retryWithBackoff = async <T>(
   fn: () => Promise<T>,
   maxRetries: number = 3,
-  backoffMs: number = 1000
+  backoffMs: number = 1000,
 ): Promise<T> => {
   let lastError: Error;
-  
+
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       return await fn();
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
-      
+
       if (attempt === maxRetries) {
         throw lastError;
       }
-      
+
       const delay = backoffMs * Math.pow(2, attempt);
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
-  
+
   throw lastError!;
 };
 ```
 
 ##### **Step 6: Create Missing Type Definitions**
+
 ```typescript
 // Create frontend/src/types/testing.ts
 export interface MockApiResponse<T = unknown> {
@@ -213,14 +229,16 @@ export interface MockApiResponse<T = unknown> {
 
 export interface MockWorkflowApi {
   getWorkflows: jest.MockedFunction<() => Promise<Workflow[]>>;
-  executeWorkflow: jest.MockedFunction<(id: string) => Promise<WorkflowExecutionResult>>;
+  executeWorkflow: jest.MockedFunction<
+    (id: string) => Promise<WorkflowExecutionResult>
+  >;
   cancelWorkflow: jest.MockedFunction<(id: string) => Promise<void>>;
 }
 
 // Update frontend/src/types/workflow.ts with missing interfaces
 export interface WorkflowStep {
   id: string;
-  type: 'action' | 'decision' | 'ai' | 'start' | 'end';
+  type: "action" | "decision" | "ai" | "start" | "end";
   name: string;
   config: Record<string, unknown>;
   position: { x: number; y: number };
@@ -230,11 +248,12 @@ export interface WorkflowValidationError {
   stepId: string;
   field: string;
   message: string;
-  severity: 'error' | 'warning';
+  severity: "error" | "warning";
 }
 ```
 
 #### **Validation Commands**
+
 ```bash
 # After each file fix, run:
 npm run lint -- --max-warnings 0
@@ -248,6 +267,7 @@ npm run build  # Should complete without errors
 ```
 
 #### **Success Criteria Checklist**
+
 - [ ] Zero TypeScript linting errors (`npm run lint` passes)
 - [ ] All test files have proper type definitions
 - [ ] No 'any' types in production code
@@ -256,6 +276,7 @@ npm run build  # Should complete without errors
 - [ ] New type definitions are exported properly
 
 #### **Rollback Procedure**
+
 ```bash
 # If issues arise, rollback using:
 git stash push -m "TypeScript compliance work in progress"
@@ -270,6 +291,7 @@ git stash pop  # Only if you want to recover partial work
 ### **ASSIGNMENT: AMAZON Q**
 
 #### **Task Overview**
+
 ```markdown
 **Objective**: Fix 22 vitest module resolution errors preventing all test execution
 **Priority**: CRITICAL - Blocking all quality validation
@@ -280,16 +302,18 @@ git stash pop  # Only if you want to recover partial work
 #### **Technical Specifications**
 
 ##### **Primary Issue Analysis**
+
 ```bash
 # Current error pattern:
 Error: Cannot find module 'pretty-format/build/index.js'
   at @vitest/snapshot/dist/index.js
-  
+
 # Dependency chain analysis needed:
 frontend/package.json -> vitest -> @vitest/snapshot -> pretty-format
 ```
 
 ##### **Diagnostic Commands**
+
 ```bash
 cd frontend
 
@@ -310,6 +334,7 @@ cat package.json | jq '.devDependencies | with_entries(select(.key | contains("v
 #### **Step-by-Step Implementation**
 
 ##### **Step 1: Dependency Analysis**
+
 ```bash
 # Check current versions and conflicts
 npm ls --depth=0 | grep -E "(vitest|@vitest|pretty-format)"
@@ -323,6 +348,7 @@ ls -la node_modules/pretty-format/build/
 ```
 
 ##### **Step 2: Version Compatibility Fix**
+
 ```bash
 # Option A: Update vitest to latest compatible version
 npm install --save-dev vitest@latest @vitest/ui@latest
@@ -340,44 +366,46 @@ npm install --save-dev vitest@0.34.6 @vitest/ui@0.34.6
 ```
 
 ##### **Step 3: Module Resolution Fix**
+
 ```typescript
 // Update vitest.config.ts with proper module resolution
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/setupTests.ts'],
+    environment: "jsdom",
+    setupFiles: ["./src/setupTests.ts"],
     // Add module resolution fixes
     deps: {
-      inline: ['pretty-format', '@vitest/snapshot']
+      inline: ["pretty-format", "@vitest/snapshot"],
     },
     // Fix memory issues
-    pool: 'threads',
+    pool: "threads",
     poolOptions: {
       threads: {
         singleThread: true,
         maxThreads: 1,
-        minThreads: 1
-      }
+        minThreads: 1,
+      },
     },
     // Increase memory limit
     testTimeout: 30000,
-    hookTimeout: 30000
+    hookTimeout: 30000,
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
 });
 ```
 
 ##### **Step 4: Memory Issue Resolution**
+
 ```bash
 # Update package.json test scripts with memory fixes
 {
@@ -394,6 +422,7 @@ npm test
 ```
 
 ##### **Step 5: Coverage Configuration Fix**
+
 ```bash
 # Install compatible coverage provider
 npm install --save-dev @vitest/coverage-v8@latest
@@ -417,6 +446,7 @@ export default defineConfig({
 ```
 
 ##### **Step 6: Clean Installation**
+
 ```bash
 # Complete dependency reset if needed
 rm -rf node_modules package-lock.json
@@ -429,6 +459,7 @@ npm test -- --version
 ```
 
 #### **Validation Commands**
+
 ```bash
 # Progressive validation
 npm test -- --run --reporter=verbose  # Should show test discovery
@@ -444,6 +475,7 @@ npm run test:coverage  # Coverage generation
 ```
 
 #### **Success Criteria Checklist**
+
 - [ ] All 250+ tests are discoverable by vitest
 - [ ] Zero module resolution errors
 - [ ] Memory issues resolved (no heap out of memory)
@@ -452,6 +484,7 @@ npm run test:coverage  # Coverage generation
 - [ ] Test execution time reasonable (<5 minutes for full suite)
 
 #### **Rollback Procedure**
+
 ```bash
 # If complete failure, rollback to last known working state
 git checkout HEAD -- frontend/package.json frontend/vitest.config.ts
@@ -466,6 +499,7 @@ cd frontend && npm install
 ### **ASSIGNMENT: CURSOR IDE**
 
 #### **Task Overview**
+
 ```markdown
 **Objective**: Build comprehensive RelayCore admin interface using shared foundation
 **Priority**: HIGH - New strategic feature
@@ -476,6 +510,7 @@ cd frontend && npm install
 #### **Technical Specifications**
 
 ##### **Project Structure**
+
 ```bash
 # Create new directory structure
 frontend/src/pages/relaycore/
@@ -499,13 +534,14 @@ frontend/src/pages/relaycore/
 #### **Step-by-Step Implementation**
 
 ##### **Step 1: Type Definitions**
+
 ```typescript
 // frontend/src/types/relaycore.ts
 export interface AIModel {
   id: string;
   name: string;
-  provider: 'openai' | 'anthropic' | 'google' | 'azure';
-  status: 'active' | 'inactive' | 'error';
+  provider: "openai" | "anthropic" | "google" | "azure";
+  status: "active" | "inactive" | "error";
   costPerToken: number;
   averageLatency: number;
   successRate: number;
@@ -557,65 +593,98 @@ export interface SteeringRule {
 }
 
 export interface RuleCondition {
-  field: 'requestType' | 'userRole' | 'costLimit' | 'responseTime';
-  operator: 'equals' | 'contains' | 'greaterThan' | 'lessThan';
+  field: "requestType" | "userRole" | "costLimit" | "responseTime";
+  operator: "equals" | "contains" | "greaterThan" | "lessThan";
   value: string | number;
 }
 
 export interface RuleAction {
-  type: 'routeToModel' | 'setCostLimit' | 'setRetryCount' | 'blockRequest';
+  type: "routeToModel" | "setCostLimit" | "setRetryCount" | "blockRequest";
   parameters: Record<string, unknown>;
 }
 ```
 
 ##### **Step 2: API Client Implementation**
+
 ```typescript
 // frontend/src/api/relaycoreClient.ts
-import { createApiClient } from '../shared/api/apiClient';
-import type { AIModel, RoutingMetrics, CostAnalytics, SteeringRule } from '../types/relaycore';
+import { createApiClient } from "../shared/api/apiClient";
+import type {
+  AIModel,
+  RoutingMetrics,
+  CostAnalytics,
+  SteeringRule,
+} from "../types/relaycore";
 
 const relaycoreApi = createApiClient({
-  baseURL: process.env.REACT_APP_RELAYCORE_API_URL || 'http://localhost:3001',
+  baseURL: process.env.REACT_APP_RELAYCORE_API_URL || "http://localhost:3001",
   timeout: 10000,
 });
 
 export const relaycoreClient = {
   // AI Model Management
   async getModels(): Promise<AIModel[]> {
-    const response = await relaycoreApi.get<AIModel[]>('/api/models');
+    const response = await relaycoreApi.get<AIModel[]>("/api/models");
     return response.data;
   },
 
-  async updateModelConfiguration(modelId: string, config: Partial<ModelConfiguration>): Promise<AIModel> {
-    const response = await relaycoreApi.patch<AIModel>(`/api/models/${modelId}`, config);
+  async updateModelConfiguration(
+    modelId: string,
+    config: Partial<ModelConfiguration>,
+  ): Promise<AIModel> {
+    const response = await relaycoreApi.patch<AIModel>(
+      `/api/models/${modelId}`,
+      config,
+    );
     return response.data;
   },
 
   // Routing Metrics
-  async getRoutingMetrics(timeframe: '1h' | '24h' | '7d' | '30d'): Promise<RoutingMetrics[]> {
-    const response = await relaycoreApi.get<RoutingMetrics[]>(`/api/metrics/routing?timeframe=${timeframe}`);
+  async getRoutingMetrics(
+    timeframe: "1h" | "24h" | "7d" | "30d",
+  ): Promise<RoutingMetrics[]> {
+    const response = await relaycoreApi.get<RoutingMetrics[]>(
+      `/api/metrics/routing?timeframe=${timeframe}`,
+    );
     return response.data;
   },
 
   // Cost Analytics
-  async getCostAnalytics(timeframe: '7d' | '30d' | '90d'): Promise<CostAnalytics> {
-    const response = await relaycoreApi.get<CostAnalytics>(`/api/analytics/cost?timeframe=${timeframe}`);
+  async getCostAnalytics(
+    timeframe: "7d" | "30d" | "90d",
+  ): Promise<CostAnalytics> {
+    const response = await relaycoreApi.get<CostAnalytics>(
+      `/api/analytics/cost?timeframe=${timeframe}`,
+    );
     return response.data;
   },
 
   // Steering Rules
   async getSteeringRules(): Promise<SteeringRule[]> {
-    const response = await relaycoreApi.get<SteeringRule[]>('/api/steering-rules');
+    const response = await relaycoreApi.get<SteeringRule[]>(
+      "/api/steering-rules",
+    );
     return response.data;
   },
 
-  async createSteeringRule(rule: Omit<SteeringRule, 'id' | 'createdAt' | 'updatedAt'>): Promise<SteeringRule> {
-    const response = await relaycoreApi.post<SteeringRule>('/api/steering-rules', rule);
+  async createSteeringRule(
+    rule: Omit<SteeringRule, "id" | "createdAt" | "updatedAt">,
+  ): Promise<SteeringRule> {
+    const response = await relaycoreApi.post<SteeringRule>(
+      "/api/steering-rules",
+      rule,
+    );
     return response.data;
   },
 
-  async updateSteeringRule(ruleId: string, updates: Partial<SteeringRule>): Promise<SteeringRule> {
-    const response = await relaycoreApi.patch<SteeringRule>(`/api/steering-rules/${ruleId}`, updates);
+  async updateSteeringRule(
+    ruleId: string,
+    updates: Partial<SteeringRule>,
+  ): Promise<SteeringRule> {
+    const response = await relaycoreApi.patch<SteeringRule>(
+      `/api/steering-rules/${ruleId}`,
+      updates,
+    );
     return response.data;
   },
 
@@ -624,34 +693,42 @@ export const relaycoreClient = {
   },
 
   // WebSocket connection for real-time updates
-  createWebSocketConnection(onMessage: (data: RoutingMetrics) => void): WebSocket {
-    const wsUrl = process.env.REACT_APP_RELAYCORE_WS_URL || 'ws://localhost:3001/ws';
+  createWebSocketConnection(
+    onMessage: (data: RoutingMetrics) => void,
+  ): WebSocket {
+    const wsUrl =
+      process.env.REACT_APP_RELAYCORE_WS_URL || "ws://localhost:3001/ws";
     const ws = new WebSocket(wsUrl);
-    
+
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
         onMessage(data);
       } catch (error) {
-        console.error('Failed to parse WebSocket message:', error);
+        console.error("Failed to parse WebSocket message:", error);
       }
     };
-    
+
     return ws;
-  }
+  },
 };
 ```
 
 ##### **Step 3: Real-Time Metrics Hook**
+
 ```typescript
 // frontend/src/hooks/useRealtimeMetrics.ts
-import { useState, useEffect, useCallback } from 'react';
-import { relaycoreClient } from '../api/relaycoreClient';
-import type { RoutingMetrics } from '../types/relaycore';
+import { useState, useEffect, useCallback } from "react";
+import { relaycoreClient } from "../api/relaycoreClient";
+import type { RoutingMetrics } from "../types/relaycore";
 
-export const useRealtimeMetrics = (timeframe: '1h' | '24h' | '7d' | '30d' = '1h') => {
+export const useRealtimeMetrics = (
+  timeframe: "1h" | "24h" | "7d" | "30d" = "1h",
+) => {
   const [metrics, setMetrics] = useState<RoutingMetrics[]>([]);
-  const [currentMetrics, setCurrentMetrics] = useState<RoutingMetrics | null>(null);
+  const [currentMetrics, setCurrentMetrics] = useState<RoutingMetrics | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -664,7 +741,7 @@ export const useRealtimeMetrics = (timeframe: '1h' | '24h' | '7d' | '30d' = '1h'
       setMetrics(data);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch metrics');
+      setError(err instanceof Error ? err.message : "Failed to fetch metrics");
     } finally {
       setIsLoading(false);
     }
@@ -676,30 +753,32 @@ export const useRealtimeMetrics = (timeframe: '1h' | '24h' | '7d' | '30d' = '1h'
 
     const connectWebSocket = () => {
       try {
-        ws = relaycoreClient.createWebSocketConnection((data: RoutingMetrics) => {
-          setCurrentMetrics(data);
-          setMetrics(prev => [...prev.slice(-99), data]); // Keep last 100 data points
-        });
+        ws = relaycoreClient.createWebSocketConnection(
+          (data: RoutingMetrics) => {
+            setCurrentMetrics(data);
+            setMetrics((prev) => [...prev.slice(-99), data]); // Keep last 100 data points
+          },
+        );
 
         ws.onopen = () => {
           setIsConnected(true);
-          console.log('WebSocket connected to RelayCore');
+          console.log("WebSocket connected to RelayCore");
         };
 
         ws.onclose = () => {
           setIsConnected(false);
-          console.log('WebSocket disconnected from RelayCore');
+          console.log("WebSocket disconnected from RelayCore");
           // Attempt to reconnect after 5 seconds
           setTimeout(connectWebSocket, 5000);
         };
 
         ws.onerror = (error) => {
-          console.error('WebSocket error:', error);
+          console.error("WebSocket error:", error);
           setIsConnected(false);
         };
       } catch (error) {
-        console.error('Failed to create WebSocket connection:', error);
-        setError('Failed to establish real-time connection');
+        console.error("Failed to create WebSocket connection:", error);
+        setError("Failed to establish real-time connection");
       }
     };
 
@@ -719,12 +798,13 @@ export const useRealtimeMetrics = (timeframe: '1h' | '24h' | '7d' | '30d' = '1h'
     isLoading,
     error,
     isConnected,
-    refetch: fetchMetrics
+    refetch: fetchMetrics,
   };
 };
 ```
 
 ##### **Step 4: AI Routing Dashboard Component**
+
 ```typescript
 // frontend/src/pages/relaycore/components/AIRoutingDashboard.tsx
 import React from 'react';
@@ -760,8 +840,8 @@ export const AIRoutingDashboard: React.FC = () => {
       {/* Connection Status */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">AI Routing Dashboard</h2>
-        <StatusIndicator 
-          status={isConnected ? 'healthy' : 'error'} 
+        <StatusIndicator
+          status={isConnected ? 'healthy' : 'error'}
           label={isConnected ? 'Real-time Connected' : 'Connection Lost'}
         />
       </div>
@@ -771,17 +851,17 @@ export const AIRoutingDashboard: React.FC = () => {
         <MetricCard
           title="Total Requests"
           value={latestMetrics?.totalRequests || 0}
-          trend={metrics.length > 1 ? 
+          trend={metrics.length > 1 ?
             ((latestMetrics?.totalRequests || 0) - metrics[metrics.length - 2].totalRequests) : 0
           }
           format="number"
         />
         <MetricCard
           title="Success Rate"
-          value={latestMetrics ? 
+          value={latestMetrics ?
             ((latestMetrics.successfulRequests / latestMetrics.totalRequests) * 100) : 0
           }
-          trend={metrics.length > 1 ? 
+          trend={metrics.length > 1 ?
             (((latestMetrics?.successfulRequests || 0) / (latestMetrics?.totalRequests || 1)) * 100) -
             ((metrics[metrics.length - 2].successfulRequests / metrics[metrics.length - 2].totalRequests) * 100) : 0
           }
@@ -790,7 +870,7 @@ export const AIRoutingDashboard: React.FC = () => {
         <MetricCard
           title="Avg Response Time"
           value={latestMetrics?.averageResponseTime || 0}
-          trend={metrics.length > 1 ? 
+          trend={metrics.length > 1 ?
             (latestMetrics?.averageResponseTime || 0) - metrics[metrics.length - 2].averageResponseTime : 0
           }
           format="duration"
@@ -798,7 +878,7 @@ export const AIRoutingDashboard: React.FC = () => {
         <MetricCard
           title="Error Rate"
           value={latestMetrics?.errorRate || 0}
-          trend={metrics.length > 1 ? 
+          trend={metrics.length > 1 ?
             (latestMetrics?.errorRate || 0) - metrics[metrics.length - 2].errorRate : 0
           }
           format="percentage"
@@ -814,19 +894,19 @@ export const AIRoutingDashboard: React.FC = () => {
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={metrics}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="timestamp" 
+              <XAxis
+                dataKey="timestamp"
                 tickFormatter={(value) => new Date(value).toLocaleTimeString()}
               />
               <YAxis />
-              <Tooltip 
+              <Tooltip
                 labelFormatter={(value) => new Date(value).toLocaleString()}
                 formatter={(value: number) => [`${value}ms`, 'Response Time']}
               />
-              <Line 
-                type="monotone" 
-                dataKey="averageResponseTime" 
-                stroke="#8884d8" 
+              <Line
+                type="monotone"
+                dataKey="averageResponseTime"
+                stroke="#8884d8"
                 strokeWidth={2}
                 dot={false}
               />
@@ -888,6 +968,7 @@ export const AIRoutingDashboard: React.FC = () => {
 ```
 
 ##### **Step 5: Main Admin Dashboard**
+
 ```typescript
 // frontend/src/pages/relaycore/AdminDashboard.tsx
 import React, { useState } from 'react';
@@ -971,6 +1052,7 @@ export const AdminDashboard: React.FC = () => {
 ```
 
 #### **Validation Commands**
+
 ```bash
 # After implementation:
 cd frontend
@@ -987,6 +1069,7 @@ npm start  # Start dev server
 ```
 
 #### **Success Criteria Checklist**
+
 - [ ] All 5 dashboard sections implemented and functional
 - [ ] Real-time WebSocket connection established
 - [ ] Shared foundation components properly integrated
@@ -997,6 +1080,7 @@ npm start  # Start dev server
 - [ ] Automotive theming applied consistently
 
 #### **Performance Requirements**
+
 - Bundle size increase <500KB
 - Initial page load <3 seconds
 - Real-time updates <100ms latency
@@ -1008,6 +1092,7 @@ npm start  # Start dev server
 ## 📊 **QUALITY ASSURANCE CHECKLIST**
 
 ### **Pre-Deployment Validation**
+
 ```bash
 # Security scan
 npm audit --audit-level moderate
@@ -1031,6 +1116,7 @@ npm run lint -- --max-warnings 0
 ```
 
 ### **Integration Testing**
+
 ```bash
 # API integration
 curl -X GET http://localhost:3001/api/models
@@ -1046,6 +1132,7 @@ curl -X GET http://localhost:3001/api/models
 ```
 
 ### **Performance Validation**
+
 ```bash
 # Lighthouse audit
 npx lighthouse http://localhost:3000/relaycore/admin --output=json
@@ -1063,6 +1150,7 @@ npx webpack-bundle-analyzer build/static/js/*.js
 ### **Common Issues & Solutions**
 
 #### **TypeScript Compilation Errors**
+
 ```bash
 # Clear TypeScript cache
 rm -rf frontend/node_modules/.cache
@@ -1075,6 +1163,7 @@ npm run type-check
 ```
 
 #### **Test Infrastructure Failures**
+
 ```bash
 # Reset test environment
 rm -rf frontend/node_modules frontend/package-lock.json
@@ -1086,6 +1175,7 @@ npm install --save-dev vitest@0.34.6 @vitest/ui@0.34.6
 ```
 
 #### **WebSocket Connection Issues**
+
 ```bash
 # Check RelayCore service status
 curl -I http://localhost:3001/health
@@ -1098,6 +1188,7 @@ wscat -c ws://localhost:3001/ws
 ```
 
 ### **Emergency Rollback**
+
 ```bash
 # Complete rollback to last stable state
 git stash push -m "Work in progress - emergency rollback"
@@ -1112,6 +1203,7 @@ npm test
 ## 📈 **SUCCESS METRICS TRACKING**
 
 ### **Task Completion Metrics**
+
 - **TypeScript Errors**: 108 → 0 (100% reduction)
 - **Test Execution**: 0% → 100% capability
 - **New Features**: RelayCore admin interface operational
@@ -1119,6 +1211,7 @@ npm test
 - **Quality**: Zero regressions introduced
 
 ### **Business Value Delivered**
+
 - **AI Routing Optimization**: Real-time visibility and control
 - **Cost Management**: Comprehensive analytics and budgeting
 - **Operational Excellence**: Live monitoring and alerting

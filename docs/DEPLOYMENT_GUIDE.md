@@ -1,12 +1,14 @@
 # Deployment Guide
 
 ## Prerequisites
+
 - Docker 20.10+
 - Docker Compose 2.0+
 - 8GB RAM minimum
 - 20GB disk space
 
 ## Quick Deploy
+
 ```bash
 git clone https://github.com/toobutta/auterity-error-iq.git
 cd auterity-error-iq
@@ -16,6 +18,7 @@ docker-compose up -d
 ```
 
 ## Environment Setup
+
 1. Copy `.env.example` to `.env`
 2. Set required API keys:
    - `OPENAI_API_KEY`
@@ -23,6 +26,7 @@ docker-compose up -d
    - `SECRET_KEY`
 
 ## Service Verification
+
 ```bash
 # Check all services
 docker-compose ps
@@ -37,6 +41,7 @@ curl http://localhost:5000  # MLflow
 ```
 
 ## Production Considerations
+
 - Use external PostgreSQL
 - Configure SSL certificates
 - Set up backup strategies
@@ -44,6 +49,7 @@ curl http://localhost:5000  # MLflow
 - Scale worker containers
 
 ## Scaling
+
 ```bash
 # Scale Celery workers
 docker-compose up -d --scale celery-worker=3

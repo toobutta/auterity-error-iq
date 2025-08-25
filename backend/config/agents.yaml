@@ -13,14 +13,14 @@ rag_engine:
   chunk_overlap: 50
   similarity_threshold: 0.7
   max_results: 10
-  
+
   # Vector store configuration
   pinecone:
     api_key: "${PINECONE_API_KEY}"
     environment: "${PINECONE_ENVIRONMENT}"
     index_name: "auterity-docs"
     dimension: 1536
-  
+
   # LLM configuration for embeddings
   embeddings:
     provider: "openai"
@@ -33,7 +33,7 @@ compliance_layer:
   enable_data_anonymization: true
   enable_consent_tracking: true
   enable_breach_notification: true
-  
+
   # Data classification settings
   auto_classify_data: true
   default_classification: "internal"
@@ -45,16 +45,16 @@ security_manager:
   jwt_secret: "${JWT_SECRET}"
   jwt_expiration_hours: 24
   jwt_algorithm: "HS256"
-  
+
   # Encryption configuration
   encryption_password: "${ENCRYPTION_PASSWORD}"
   encryption_salt: "${ENCRYPTION_SALT}"
-  
+
   # Rate limiting
   rate_limit_window_minutes: 10
   rate_limit_max_requests: 100
   rate_limit_block_threshold: 200
-  
+
   # Threat detection
   enable_threat_detection: true
   block_suspicious_ips: true
@@ -66,12 +66,12 @@ integrations:
     enabled: true
     agent_type: "autmatrix"
     default_tools: ["inventory", "crm", "sales"]
-    
+
   relaycore:
     enabled: true
     agent_type: "relaycore"
     default_tools: ["communication", "data_relay", "api_gateway"]
-    
+
   neuroweaver:
     enabled: true
     agent_type: "neuroweaver"

@@ -5,7 +5,7 @@
 backend/ @toobutta
 *.py @toobutta
 
-# Frontend specific  
+# Frontend specific
 frontend/ @toobutta
 *.tsx @toobutta
 *.ts @toobutta

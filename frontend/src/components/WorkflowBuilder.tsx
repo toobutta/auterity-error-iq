@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useCallback, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import {
   ReactFlow,
   Background,
@@ -13,20 +13,20 @@ import {
   NodeTypes,
   MiniMap,
   Panel,
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 
-import { StartNode } from './nodes/StartNode';
-import { AIProcessNode } from './nodes/AIProcessNode';
-import { EndNode } from './nodes/EndNode';
+import { StartNode } from "./nodes/StartNode";
+import { AIProcessNode } from "./nodes/AIProcessNode";
+import { EndNode } from "./nodes/EndNode";
 import {
   WorkflowDefinition,
   WorkflowValidationError,
   NodeData,
   WorkflowStep,
-} from '../types/workflow';
-import { validateWorkflow, validateStep } from '../utils/workflowValidation';
-import { createWorkflow, updateWorkflow, getWorkflow } from '../api/workflows';
+} from "../types/workflow";
+import { validateWorkflow, validateStep } from "../utils/workflowValidation";
+import { createWorkflow, updateWorkflow, getWorkflow } from "../api/workflows";
 
 const nodeTypes: NodeTypes = {
   start: StartNode,
@@ -37,7 +37,10 @@ const nodeTypes: NodeTypes = {
 interface WorkflowBuilderProps {
   workflowId?: string;
   onSave?: (workflow: WorkflowDefinition) => void;
-  onValidationChange?: (isValid: boolean, errors: WorkflowValidationError[]) => void;
+  onValidationChange?: (
+    isValid: boolean,
+    errors: WorkflowValidationError[],
+  ) => void;
 }
 
 const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
@@ -49,9 +52,11 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
   const workflowId = propWorkflowId || routeWorkflowId;
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [workflowName, setWorkflowName] = useState('New Workflow');
-  const [workflowDescription, setWorkflowDescription] = useState('');
-  const [validationErrors, setValidationErrors] = useState<WorkflowValidationError[]>([]);
+  const [workflowName, setWorkflowName] = useState("New Workflow");
+  const [workflowDescription, setWorkflowDescription] = useState("");
+  const [validationErrors, setValidationErrors] = useState<
+    WorkflowValidationError[]
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -61,7 +66,7 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
       try {
         const workflow = await getWorkflow(id);
         setWorkflowName(workflow.name);
-        setWorkflowDescription(workflow.description || '');
+        setWorkflowDescription(workflow.description || "");
 
         // Convert workflow steps to React Flow nodes
         const flowNodes: Node<NodeData>[] = workflow.steps.map((step) => ({
@@ -89,35 +94,35 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
         setNodes(flowNodes);
         setEdges(flowEdges);
       } catch (error: unknown) {
-        console.error('Failed to load workflow:', error);
+        console.error("Failed to load workflow:", error);
       } finally {
         setIsLoading(false);
       }
     },
-    [setNodes, setEdges]
+    [setNodes, setEdges],
   );
 
   const initializeDefaultWorkflow = useCallback(() => {
     const startNode: Node<NodeData> = {
-      id: 'start-1',
-      type: 'start',
+      id: "start-1",
+      type: "start",
       position: { x: 250, y: 50 },
       data: {
-        label: 'Start',
-        description: 'Workflow entry point',
-        type: 'start',
+        label: "Start",
+        description: "Workflow entry point",
+        type: "start",
         config: {},
       },
     };
 
     const endNode: Node<NodeData> = {
-      id: 'end-1',
-      type: 'end',
+      id: "end-1",
+      type: "end",
       position: { x: 250, y: 300 },
       data: {
-        label: 'End',
-        description: 'Workflow completion',
-        type: 'end',
+        label: "End",
+        description: "Workflow completion",
+        type: "end",
         config: {},
       },
     };
@@ -181,7 +186,14 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
     }
 
     onValidationChange?.(errors.length === 0, errors);
-  }, [nodes, edges, workflowName, workflowDescription, onValidationChange, setNodes]);
+  }, [
+    nodes,
+    edges,
+    workflowName,
+    workflowDescription,
+    onValidationChange,
+    setNodes,
+  ]);
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -192,30 +204,33 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
       };
       setEdges((eds) => addEdge(newEdge, eds));
     },
-    [setEdges]
+    [setEdges],
   );
 
-  const addNode = (type: WorkflowStep['type']) => {
+  const addNode = (type: WorkflowStep["type"]) => {
     const nodeId = `${type}-${Date.now()}`;
-    const position = { x: Math.random() * 400 + 100, y: Math.random() * 300 + 100 };
+    const position = {
+      x: Math.random() * 400 + 100,
+      y: Math.random() * 300 + 100,
+    };
 
-    let label = '';
-    let description = '';
+    let label = "";
+    let description = "";
     let config = {};
 
     switch (type) {
-      case 'start':
-        label = 'Start';
-        description = 'Workflow entry point';
+      case "start":
+        label = "Start";
+        description = "Workflow entry point";
         break;
-      case 'ai_process':
-        label = 'AI Process';
-        description = 'AI-powered processing step';
-        config = { prompt: '' };
+      case "ai_process":
+        label = "AI Process";
+        description = "AI-powered processing step";
+        config = { prompt: "" };
         break;
-      case 'end':
-        label = 'End';
-        description = 'Workflow completion';
+      case "end":
+        label = "End";
+        description = "Workflow completion";
         break;
     }
 
@@ -251,7 +266,7 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
 
   const saveWorkflow = async () => {
     if (validationErrors.length > 0) {
-      alert('Please fix validation errors before saving');
+      alert("Please fix validation errors before saving");
       return;
     }
 
@@ -272,7 +287,7 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
           id: edge.id,
           source: edge.source,
           target: edge.target,
-          label: typeof edge.label === 'string' ? edge.label : undefined,
+          label: typeof edge.label === "string" ? edge.label : undefined,
         })),
       };
 
@@ -284,10 +299,10 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
       }
 
       onSave?.(savedWorkflow);
-      alert('Workflow saved successfully!');
+      alert("Workflow saved successfully!");
     } catch (error: unknown) {
-      console.error('Failed to save workflow:', error);
-      alert('Failed to save workflow. Please try again.');
+      console.error("Failed to save workflow:", error);
+      alert("Failed to save workflow. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -324,7 +339,8 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
         <div className="flex items-center space-x-2">
           {validationErrors.length > 0 && (
             <span className="text-red-500 text-sm">
-              {validationErrors.length} error{validationErrors.length > 1 ? 's' : ''}
+              {validationErrors.length} error
+              {validationErrors.length > 1 ? "s" : ""}
             </span>
           )}
           <button
@@ -332,7 +348,7 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
             disabled={isSaving || validationErrors.length > 0}
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
-            {isSaving ? 'Saving...' : 'Save Workflow'}
+            {isSaving ? "Saving..." : "Save Workflow"}
           </button>
         </div>
       </div>
@@ -344,21 +360,21 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
           <h3 className="font-bold mb-4">Add Nodes</h3>
           <div className="space-y-2">
             <button
-              onClick={() => addNode('start')}
+              onClick={() => addNode("start")}
               className="w-full p-2 bg-green-100 border border-green-300 rounded hover:bg-green-200 text-left"
             >
               <div className="font-medium">Start Node</div>
               <div className="text-xs text-gray-600">Workflow entry point</div>
             </button>
             <button
-              onClick={() => addNode('ai_process')}
+              onClick={() => addNode("ai_process")}
               className="w-full p-2 bg-blue-100 border border-blue-300 rounded hover:bg-blue-200 text-left"
             >
               <div className="font-medium">AI Process</div>
               <div className="text-xs text-gray-600">AI-powered processing</div>
             </button>
             <button
-              onClick={() => addNode('end')}
+              onClick={() => addNode("end")}
               className="w-full p-2 bg-red-100 border border-red-300 rounded hover:bg-red-200 text-left"
             >
               <div className="font-medium">End Node</div>
@@ -369,10 +385,15 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
           {/* Validation errors */}
           {validationErrors.length > 0 && (
             <div className="mt-6">
-              <h4 className="font-medium text-red-600 mb-2">Validation Errors</h4>
+              <h4 className="font-medium text-red-600 mb-2">
+                Validation Errors
+              </h4>
               <div className="space-y-1">
                 {validationErrors.map((error, index) => (
-                  <div key={index} className="text-xs text-red-600 bg-red-50 p-2 rounded">
+                  <div
+                    key={index}
+                    className="text-xs text-red-600 bg-red-50 p-2 rounded"
+                  >
                     {error.message}
                   </div>
                 ))}

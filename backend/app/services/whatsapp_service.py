@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import requests
-
 from app.config.settings import get_settings
 
 

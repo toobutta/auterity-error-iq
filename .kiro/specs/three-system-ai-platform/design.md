@@ -48,16 +48,18 @@ This design implements a unified AI platform integrating AutoMatrix, RelayCore, 
 **Purpose**: Modify AutoMatrix to route all AI calls through RelayCore
 
 **Components**:
+
 - `RelayCore HTTP Client` - Handles all AI API calls
 - `Steering Rule Processor` - Interprets RelayCore routing rules
 - `Fallback Handler` - Direct OpenAI calls when RelayCore unavailable
 
 **API Interface**:
+
 ```typescript
 interface RelayCoreCaller {
-  routeAICall(prompt: string, context: WorkflowContext): Promise<AIResponse>
-  applySteeringRules(request: AIRequest): RoutingDecision
-  handleFailover(error: RelayError): Promise<AIResponse>
+  routeAICall(prompt: string, context: WorkflowContext): Promise<AIResponse>;
+  applySteeringRules(request: AIRequest): RoutingDecision;
+  handleFailover(error: RelayError): Promise<AIResponse>;
 }
 ```
 
@@ -66,18 +68,20 @@ interface RelayCoreCaller {
 **Purpose**: Route AI requests optimally between providers and NeuroWeaver models
 
 **Components**:
+
 - `HTTP Proxy Server` - Entry point for all AI requests
 - `Model Registry` - Catalog of available models including NeuroWeaver
 - `Cost Optimizer` - Automatic model switching based on budget
 - `Analytics Collector` - Usage metrics for all systems
 
 **API Interface**:
+
 ```typescript
 interface RelayCore {
-  proxyRequest(request: AIRequest): Promise<AIResponse>
-  registerModel(model: ModelDefinition): void
-  optimizeCosts(budget: Budget): RoutingStrategy
-  collectMetrics(usage: UsageData): void
+  proxyRequest(request: AIRequest): Promise<AIResponse>;
+  registerModel(model: ModelDefinition): void;
+  optimizeCosts(budget: Budget): RoutingStrategy;
+  collectMetrics(usage: UsageData): void;
 }
 ```
 
@@ -86,18 +90,20 @@ interface RelayCore {
 **Purpose**: Provide specialized automotive AI models to RelayCore
 
 **Components**:
+
 - `Model Deployment Service` - Deploy fine-tuned models
 - `Performance Monitor` - Track model accuracy and speed
 - `Training Pipeline` - Continuous model improvement
 - `RelayCore Connector` - Register models with RelayCore
 
 **API Interface**:
+
 ```typescript
 interface NeuroWeaver {
-  deployModel(model: TrainedModel): ModelEndpoint
-  monitorPerformance(modelId: string): PerformanceMetrics
-  retrainModel(modelId: string, feedback: TrainingData): void
-  registerWithRelayCore(endpoint: ModelEndpoint): void
+  deployModel(model: TrainedModel): ModelEndpoint;
+  monitorPerformance(modelId: string): PerformanceMetrics;
+  retrainModel(modelId: string, feedback: TrainingData): void;
+  registerWithRelayCore(endpoint: ModelEndpoint): void;
 }
 ```
 
@@ -106,16 +112,18 @@ interface NeuroWeaver {
 **Purpose**: Single sign-on across all three systems
 
 **Components**:
+
 - `JWT Token Service` - Issue and validate tokens
 - `Permission Manager` - Role-based access control
 - `Session Synchronizer` - Keep sessions in sync across systems
 
 **API Interface**:
+
 ```typescript
 interface UnifiedAuth {
-  authenticate(credentials: LoginCredentials): JWTToken
-  validateToken(token: JWTToken): UserPermissions
-  synchronizeSessions(userId: string): void
+  authenticate(credentials: LoginCredentials): JWTToken;
+  validateToken(token: JWTToken): UserPermissions;
+  synchronizeSessions(userId: string): void;
 }
 ```
 
@@ -126,35 +134,36 @@ interface UnifiedAuth {
 ```typescript
 // Shared across all systems
 interface AIRequest {
-  id: string
-  prompt: string
-  context: RequestContext
-  routing_preferences: RoutingPreferences
-  cost_constraints: CostConstraints
+  id: string;
+  prompt: string;
+  context: RequestContext;
+  routing_preferences: RoutingPreferences;
+  cost_constraints: CostConstraints;
 }
 
 interface AIResponse {
-  id: string
-  content: string
-  model_used: string
-  cost: number
-  latency: number
-  confidence: number
+  id: string;
+  content: string;
+  model_used: string;
+  cost: number;
+  latency: number;
+  confidence: number;
 }
 
 interface ModelDefinition {
-  id: string
-  name: string
-  provider: 'openai' | 'anthropic' | 'neuroweaver'
-  specialization: string[]
-  cost_per_token: number
-  performance_metrics: PerformanceMetrics
+  id: string;
+  name: string;
+  provider: "openai" | "anthropic" | "neuroweaver";
+  specialization: string[];
+  cost_per_token: number;
+  performance_metrics: PerformanceMetrics;
 }
 ```
 
 ### Database Schema
 
 **Shared PostgreSQL Database**:
+
 - `users` - Unified user management
 - `ai_requests` - All AI request logs
 - `models` - Model registry
@@ -167,16 +176,19 @@ interface ModelDefinition {
 ### Autonomous Error Resolution
 
 **Level 1: Tool Self-Resolution**
+
 - Cline attempts fix using available context
 - Amazon Q analyzes error and provides solution
 - Tools iterate until resolution or escalation
 
 **Level 2: Tool-to-Tool Communication**
+
 - Cline hands off errors to Amazon Q automatically
 - Amazon Q provides fixes directly to Cline
 - Shared error context maintained throughout
 
 **Level 3: Kiro Escalation (Last Resort)**
+
 - Only when tools cannot resolve after 3 iterations
 - Full context and attempted solutions provided
 - Kiro makes final architectural decision
@@ -185,10 +197,10 @@ interface ModelDefinition {
 
 ```typescript
 interface ErrorHandlingStrategy {
-  security_vulnerabilities: 'amazon_q_immediate'
-  build_failures: 'cline_to_amazon_q_handoff'
-  integration_errors: 'tool_collaboration'
-  architectural_conflicts: 'kiro_escalation'
+  security_vulnerabilities: "amazon_q_immediate";
+  build_failures: "cline_to_amazon_q_handoff";
+  integration_errors: "tool_collaboration";
+  architectural_conflicts: "kiro_escalation";
 }
 ```
 
@@ -197,18 +209,21 @@ interface ErrorHandlingStrategy {
 ### Automated Testing Approach
 
 **Amazon Q Responsibilities**:
+
 - Security vulnerability scanning
 - Integration test creation and execution
 - Performance regression testing
 - Cross-system compatibility validation
 
 **Cline Responsibilities**:
+
 - Unit test implementation
 - Component test creation
 - API endpoint testing
 - Database migration testing
 
 **Testing Pipeline**:
+
 1. Cline implements features with unit tests
 2. Amazon Q creates integration tests
 3. Automated CI/CD runs all tests
@@ -227,6 +242,7 @@ interface ErrorHandlingStrategy {
 ### Direct Tool Communication
 
 **Cline → Amazon Q Handoff Format**:
+
 ```markdown
 ## HANDOFF: CLINE → AMAZON Q
 
@@ -239,6 +255,7 @@ interface ErrorHandlingStrategy {
 ```
 
 **Amazon Q → Cline Response Format**:
+
 ```markdown
 ## SOLUTION: AMAZON Q → CLINE
 

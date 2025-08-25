@@ -42,7 +42,7 @@ check_service() {
 # Function to check API endpoints
 check_api_endpoints() {
     echo -e "${YELLOW}Checking API endpoints...${NC}"
-    
+
     local endpoints=(
         "/api/monitoring/health"
         "/api/monitoring/metrics/system"
@@ -63,10 +63,10 @@ check_api_endpoints() {
 # Function to check database connectivity
 check_database() {
     echo -e "${YELLOW}Checking database connectivity...${NC}"
-    
+
     local health_response
     health_response=$(curl -s "${BACKEND_URL}/api/monitoring/health")
-    
+
     if echo "$health_response" | grep -q '"database":.*"healthy"'; then
         echo -e "${GREEN}✓ Database is healthy${NC}"
     else
@@ -79,13 +79,13 @@ check_database() {
 # Function to check container status
 check_containers() {
     echo -e "${YELLOW}Checking container status...${NC}"
-    
+
     if command -v docker-compose > /dev/null 2>&1; then
         local compose_file="docker-compose.prod.yml"
         if [ -f "$compose_file" ]; then
             local unhealthy_containers
             unhealthy_containers=$(docker-compose -f "$compose_file" ps --filter "health=unhealthy" -q)
-            
+
             if [ -n "$unhealthy_containers" ]; then
                 echo -e "${RED}✗ Found unhealthy containers:${NC}"
                 docker-compose -f "$compose_file" ps --filter "health=unhealthy"
@@ -104,23 +104,23 @@ check_containers() {
 # Function to check system resources
 check_resources() {
     echo -e "${YELLOW}Checking system resources...${NC}"
-    
+
     # Check disk space
     local disk_usage
     disk_usage=$(df / | awk 'NR==2 {print $5}' | sed 's/%//')
-    
+
     if [ "$disk_usage" -gt 90 ]; then
         echo -e "${RED}✗ Disk usage is high: ${disk_usage}%${NC}"
         return 1
     else
         echo -e "${GREEN}✓ Disk usage is acceptable: ${disk_usage}%${NC}"
     fi
-    
+
     # Check memory usage
     if command -v free > /dev/null 2>&1; then
         local memory_usage
         memory_usage=$(free | awk 'NR==2{printf "%.0f", $3*100/$2}')
-        
+
         if [ "$memory_usage" -gt 90 ]; then
             echo -e "${RED}✗ Memory usage is high: ${memory_usage}%${NC}"
             return 1

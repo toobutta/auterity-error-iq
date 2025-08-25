@@ -3,7 +3,6 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
 from app.exceptions import AIServiceError
 from app.services.ai_service import (
     AIResponse,

@@ -39,7 +39,7 @@ if [ ${#MISSING_PACKAGES[@]} -gt 0 ]; then
   for package in "${MISSING_PACKAGES[@]}"; do
     echo "  - $package"
   done
-  
+
   read -p "Would you like to install them now? (y/n) " -n 1 -r
   echo
   if [[ $REPLY =~ ^[Yy]$ ]]; then

@@ -1,6 +1,8 @@
 """Custom exception classes for structured error handling."""
 
+
 from enum import Enum
+from typing import Any, Dict, Optional
 
 
 class ErrorCategory(str, Enum):

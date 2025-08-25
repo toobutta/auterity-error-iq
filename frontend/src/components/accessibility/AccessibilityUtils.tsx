@@ -1,8 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from "react";
 
 // Focus management utilities
 export const useFocusManagement = () => {
-  const [focusedElement, setFocusedElement] = useState<HTMLElement | null>(null);
+  const [focusedElement, setFocusedElement] = useState<HTMLElement | null>(
+    null,
+  );
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const captureFocus = () => {
@@ -10,7 +12,10 @@ export const useFocusManagement = () => {
   };
 
   const restoreFocus = () => {
-    if (previousFocusRef.current && typeof previousFocusRef.current.focus === 'function') {
+    if (
+      previousFocusRef.current &&
+      typeof previousFocusRef.current.focus === "function"
+    ) {
       previousFocusRef.current.focus();
     }
   };
@@ -30,13 +35,15 @@ export const useFocusTrap = (containerRef: React.RefObject<HTMLElement>) => {
     if (!container) return;
 
     const focusableElements = container.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
     const firstFocusable = focusableElements[0] as HTMLElement;
-    const lastFocusable = focusableElements[focusableElements.length - 1] as HTMLElement;
+    const lastFocusable = focusableElements[
+      focusableElements.length - 1
+    ] as HTMLElement;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Tab') {
+      if (e.key === "Tab") {
         if (e.shiftKey) {
           if (document.activeElement === firstFocusable) {
             e.preventDefault();
@@ -51,11 +58,11 @@ export const useFocusTrap = (containerRef: React.RefObject<HTMLElement>) => {
       }
     };
 
-    container.addEventListener('keydown', handleKeyDown);
+    container.addEventListener("keydown", handleKeyDown);
     firstFocusable?.focus();
 
     return () => {
-      container.removeEventListener('keydown', handleKeyDown);
+      container.removeEventListener("keydown", handleKeyDown);
     };
   }, [containerRef]);
 };
@@ -64,7 +71,7 @@ export const useFocusTrap = (containerRef: React.RefObject<HTMLElement>) => {
 export const useKeyboardNavigation = (
   items: Array<{ id: string; disabled?: boolean }>,
   onSelect?: (id: string) => void,
-  orientation: 'horizontal' | 'vertical' = 'vertical'
+  orientation: "horizontal" | "vertical" = "vertical",
 ) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -74,53 +81,59 @@ export const useKeyboardNavigation = (
     if (enabledItems.length === 0) return;
 
     const currentEnabledIndex = enabledItems.findIndex(
-      (item) => item.id === items[activeIndex]?.id
+      (item) => item.id === items[activeIndex]?.id,
     );
 
     let nextIndex = currentEnabledIndex;
 
     switch (e.key) {
-      case 'ArrowDown':
-        if (orientation === 'vertical') {
+      case "ArrowDown":
+        if (orientation === "vertical") {
           e.preventDefault();
           nextIndex = (currentEnabledIndex + 1) % enabledItems.length;
           setIsNavigating(true);
         }
         break;
-      case 'ArrowUp':
-        if (orientation === 'vertical') {
+      case "ArrowUp":
+        if (orientation === "vertical") {
           e.preventDefault();
-          nextIndex = currentEnabledIndex === 0 ? enabledItems.length - 1 : currentEnabledIndex - 1;
+          nextIndex =
+            currentEnabledIndex === 0
+              ? enabledItems.length - 1
+              : currentEnabledIndex - 1;
           setIsNavigating(true);
         }
         break;
-      case 'ArrowRight':
-        if (orientation === 'horizontal') {
+      case "ArrowRight":
+        if (orientation === "horizontal") {
           e.preventDefault();
           nextIndex = (currentEnabledIndex + 1) % enabledItems.length;
           setIsNavigating(true);
         }
         break;
-      case 'ArrowLeft':
-        if (orientation === 'horizontal') {
+      case "ArrowLeft":
+        if (orientation === "horizontal") {
           e.preventDefault();
-          nextIndex = currentEnabledIndex === 0 ? enabledItems.length - 1 : currentEnabledIndex - 1;
+          nextIndex =
+            currentEnabledIndex === 0
+              ? enabledItems.length - 1
+              : currentEnabledIndex - 1;
           setIsNavigating(true);
         }
         break;
-      case 'Enter':
-      case ' ':
+      case "Enter":
+      case " ":
         e.preventDefault();
         if (onSelect && enabledItems[currentEnabledIndex]) {
           onSelect(enabledItems[currentEnabledIndex].id);
         }
         break;
-      case 'Home':
+      case "Home":
         e.preventDefault();
         nextIndex = 0;
         setIsNavigating(true);
         break;
-      case 'End':
+      case "End":
         e.preventDefault();
         nextIndex = enabledItems.length - 1;
         setIsNavigating(true);
@@ -128,7 +141,9 @@ export const useKeyboardNavigation = (
     }
 
     if (nextIndex !== currentEnabledIndex) {
-      const actualIndex = items.findIndex((item) => item.id === enabledItems[nextIndex].id);
+      const actualIndex = items.findIndex(
+        (item) => item.id === enabledItems[nextIndex].id,
+      );
       setActiveIndex(actualIndex);
     }
   };
@@ -146,14 +161,17 @@ export const useKeyboardNavigation = (
 export const useScreenReader = () => {
   const [announcements, setAnnouncements] = useState<string[]>([]);
 
-  const announce = (message: string, priority: 'polite' | 'assertive' = 'polite') => {
+  const announce = (
+    message: string,
+    priority: "polite" | "assertive" = "polite",
+  ) => {
     setAnnouncements((prev) => [...prev, message]);
 
     // Create temporary announcement element
-    const announcement = document.createElement('div');
-    announcement.setAttribute('aria-live', priority);
-    announcement.setAttribute('aria-atomic', 'true');
-    announcement.className = 'sr-only';
+    const announcement = document.createElement("div");
+    announcement.setAttribute("aria-live", priority);
+    announcement.setAttribute("aria-atomic", "true");
+    announcement.className = "sr-only";
     announcement.textContent = message;
 
     document.body.appendChild(announcement);
@@ -177,9 +195,10 @@ export const useScreenReader = () => {
 };
 
 // Enhanced Button Component with accessibility
-interface AccessibleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
+interface AccessibleButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary" | "danger" | "ghost";
+  size?: "sm" | "md" | "lg";
   loading?: boolean;
   loadingText?: string;
   children: React.ReactNode;
@@ -188,31 +207,32 @@ interface AccessibleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEle
 }
 
 export const AccessibleButton: React.FC<AccessibleButtonProps> = ({
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   loading = false,
-  loadingText = 'Loading...',
+  loadingText = "Loading...",
   children,
   ariaLabel,
   ariaDescribedBy,
   disabled,
-  className = '',
+  className = "",
   ...props
 }) => {
   const baseClasses =
-    'font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+    "font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variantClasses = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-    ghost: 'bg-transparent text-blue-600 hover:bg-blue-50 focus:ring-blue-500',
+    primary: "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
+    secondary:
+      "bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500",
+    danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
+    ghost: "bg-transparent text-blue-600 hover:bg-blue-50 focus:ring-blue-500",
   };
 
   const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2 text-base",
+    lg: "px-6 py-3 text-lg",
   };
 
   return (
@@ -242,7 +262,7 @@ interface AccessibleModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: "sm" | "md" | "lg" | "xl";
   closeOnOverlayClick?: boolean;
   closeOnEscape?: boolean;
 }
@@ -252,7 +272,7 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
   onClose,
   title,
   children,
-  size = 'md',
+  size = "md",
   closeOnOverlayClick = true,
   closeOnEscape = true,
 }) => {
@@ -263,14 +283,14 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       captureFocus();
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
       restoreFocus();
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
 
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [isOpen, captureFocus, restoreFocus]);
 
@@ -278,22 +298,22 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
     if (!isOpen || !closeOnEscape) return;
 
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         onClose();
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, closeOnEscape, onClose]);
 
   if (!isOpen) return null;
 
   const sizeClasses = {
-    sm: 'max-w-md',
-    md: 'max-w-lg',
-    lg: 'max-w-2xl',
-    xl: 'max-w-4xl',
+    sm: "max-w-md",
+    md: "max-w-lg",
+    lg: "max-w-2xl",
+    xl: "max-w-4xl",
   };
 
   return (
@@ -317,7 +337,10 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 id="modal-title" className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          <h2
+            id="modal-title"
+            className="text-xl font-semibold text-gray-900 dark:text-gray-100"
+          >
             {title}
           </h2>
           <button
@@ -325,7 +348,12 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
             className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
             aria-label="Close modal"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -365,13 +393,13 @@ export const useReducedMotion = () => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReducedMotion(mediaQuery.matches);
 
     const handleChange = () => setPrefersReducedMotion(mediaQuery.matches);
-    mediaQuery.addEventListener('change', handleChange);
+    mediaQuery.addEventListener("change", handleChange);
 
-    return () => mediaQuery.removeEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
   return prefersReducedMotion;
@@ -382,13 +410,13 @@ export const useHighContrast = () => {
   const [prefersHighContrast, setPrefersHighContrast] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-contrast: high)');
+    const mediaQuery = window.matchMedia("(prefers-contrast: high)");
     setPrefersHighContrast(mediaQuery.matches);
 
     const handleChange = () => setPrefersHighContrast(mediaQuery.matches);
-    mediaQuery.addEventListener('change', handleChange);
+    mediaQuery.addEventListener("change", handleChange);
 
-    return () => mediaQuery.removeEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
   return prefersHighContrast;

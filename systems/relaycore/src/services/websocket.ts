@@ -3,11 +3,15 @@
  * Provides real-time metrics and system updates
  */
 
-import { Server as HTTPServer } from 'http';
-import { Server as SocketIOServer, Socket } from 'socket.io';
-import { logger } from '../utils/logger';
-import { MetricsCollector, SystemMetrics, ProviderMetrics } from './metrics-collector';
-import { authMiddleware } from '../middleware/auth';
+import { Server as HTTPServer } from "http";
+import { Server as SocketIOServer, Socket } from "socket.io";
+import { logger } from "../utils/logger";
+import {
+  MetricsCollector,
+  SystemMetrics,
+  ProviderMetrics,
+} from "./metrics-collector";
+import { authMiddleware } from "../middleware/auth";
 
 // Extend Socket interface to include custom properties
 interface AuthenticatedSocket extends Socket {
@@ -32,29 +36,32 @@ export class WebSocketService {
 
   constructor(httpServer: HTTPServer, metricsCollector: MetricsCollector) {
     this.metricsCollector = metricsCollector;
-    
+
     this.io = new SocketIOServer(httpServer, {
       cors: {
-        origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000'],
-        credentials: true
+        origin: process.env.CORS_ORIGINS?.split(",") || [
+          "http://localhost:3000",
+        ],
+        credentials: true,
       },
-      transports: ['websocket', 'polling']
+      transports: ["websocket", "polling"],
     });
 
     this.setupAuthentication();
     this.setupEventHandlers();
     this.startMetricsUpdates();
 
-    logger.info('WebSocket service initialized');
+    logger.info("WebSocket service initialized");
   }
 
   private setupAuthentication(): void {
     this.io.use((socket: any, next: any) => {
       // Extract token from handshake auth
-      const token = socket.handshake.auth.token || socket.handshake.headers.authorization;
-      
+      const token =
+        socket.handshake.auth.token || socket.handshake.headers.authorization;
+
       if (!token) {
-        return next(new Error('Authentication token required'));
+        return next(new Error("Authentication token required"));
       }
 
       // Validate token (implement your auth logic here)
@@ -64,23 +71,23 @@ export class WebSocketService {
         // const user = validateToken(token);
         // socket.userId = user.id;
         // socket.userRole = user.role;
-        
+
         // Temporary basic validation
         if (token === process.env.WEBSOCKET_AUTH_TOKEN) {
-          socket.userId = 'admin';
-          socket.userRole = 'admin';
+          socket.userId = "admin";
+          socket.userRole = "admin";
           next();
         } else {
-          next(new Error('Invalid authentication token'));
+          next(new Error("Invalid authentication token"));
         }
       } catch (error) {
-        next(new Error('Authentication failed'));
+        next(new Error("Authentication failed"));
       }
     });
   }
 
   private setupEventHandlers(): void {
-    this.io.on('connection', (socket: AuthenticatedSocket) => {
+    this.io.on("connection", (socket: AuthenticatedSocket) => {
       logger.info(`Client connected: ${socket.id} (User: ${socket.userId})`);
       this.connectedClients.add(socket.id);
 
@@ -88,43 +95,52 @@ export class WebSocketService {
       this.sendMetricsToClient(socket);
 
       // Handle subscription to specific metrics
-      socket.on('subscribe_metrics', (types: string[]) => {
-        logger.info(`Client ${socket.id} subscribed to metrics: ${types.join(', ')}`);
-        socket.join('metrics_subscribers');
+      socket.on("subscribe_metrics", (types: string[]) => {
+        logger.info(
+          `Client ${socket.id} subscribed to metrics: ${types.join(", ")}`,
+        );
+        socket.join("metrics_subscribers");
 
         // Send immediate update
         this.sendMetricsToClient(socket);
       });
 
       // Handle admin commands
-      socket.on('admin_command', async (command: any) => {
-        if (socket.userRole !== 'admin') {
-          socket.emit('error', { message: 'Unauthorized: Admin access required' });
+      socket.on("admin_command", async (command: any) => {
+        if (socket.userRole !== "admin") {
+          socket.emit("error", {
+            message: "Unauthorized: Admin access required",
+          });
           return;
         }
 
         try {
           await this.handleAdminCommand(socket, command);
         } catch (error) {
-          logger.error('Admin command failed:', error);
-          socket.emit('error', { message: 'Command execution failed', command });
+          logger.error("Admin command failed:", error);
+          socket.emit("error", {
+            message: "Command execution failed",
+            command,
+          });
         }
       });
 
       // Handle client disconnect
-      socket.on('disconnect', (reason: any) => {
+      socket.on("disconnect", (reason: any) => {
         logger.info(`Client disconnected: ${socket.id} (Reason: ${reason})`);
         this.connectedClients.delete(socket.id);
       });
 
       // Handle errors
-      socket.on('error', (error: any) => {
+      socket.on("error", (error: any) => {
         logger.error(`Socket error for client ${socket.id}:`, error);
       });
     });
   }
 
-  private async sendMetricsToClient(socket: AuthenticatedSocket): Promise<void> {
+  private async sendMetricsToClient(
+    socket: AuthenticatedSocket,
+  ): Promise<void> {
     try {
       const systemMetrics = await this.metricsCollector.getSystemMetrics();
       const providerMetrics = await this.getAllProviderMetrics();
@@ -135,13 +151,13 @@ export class WebSocketService {
         providers: providerMetrics,
         activeRequests: this.getActiveRequestsCount(),
         errorRate: systemMetrics.error_rate,
-        averageLatency: systemMetrics.average_latency
+        averageLatency: systemMetrics.average_latency,
       };
 
-      socket.emit('metrics_update', realtimeMetrics);
+      socket.emit("metrics_update", realtimeMetrics);
     } catch (error) {
-      logger.error('Failed to send metrics to client:', error);
-      socket.emit('error', { message: 'Failed to fetch metrics' });
+      logger.error("Failed to send metrics to client:", error);
+      socket.emit("error", { message: "Failed to fetch metrics" });
     }
   }
 
@@ -151,47 +167,50 @@ export class WebSocketService {
       try {
         const systemMetrics = await this.metricsCollector.getSystemMetrics();
         const providerMetrics = await this.getAllProviderMetrics();
-        
+
         const realtimeMetrics: RealtimeMetrics = {
           timestamp: Date.now(),
           system: systemMetrics,
           providers: providerMetrics,
           activeRequests: this.getActiveRequestsCount(),
           errorRate: systemMetrics.error_rate,
-          averageLatency: systemMetrics.average_latency
+          averageLatency: systemMetrics.average_latency,
         };
 
         // Broadcast to all subscribed clients
-        this.io.to('metrics_subscribers').emit('metrics_update', realtimeMetrics);
-        
+        this.io
+          .to("metrics_subscribers")
+          .emit("metrics_update", realtimeMetrics);
+
         // Log metrics summary every minute
         if (Date.now() % 60000 < 5000) {
-          logger.info('System metrics summary:', {
+          logger.info("System metrics summary:", {
             total_requests: systemMetrics.total_requests,
             error_rate: systemMetrics.error_rate,
             average_latency: systemMetrics.average_latency,
-            connected_clients: this.connectedClients.size
+            connected_clients: this.connectedClients.size,
           });
         }
       } catch (error) {
-        logger.error('Failed to broadcast metrics update:', error);
+        logger.error("Failed to broadcast metrics update:", error);
       }
     }, 5000);
   }
 
   private async getAllProviderMetrics(): Promise<ProviderMetrics[]> {
-    const providers = ['openai', 'anthropic', 'neuroweaver'];
+    const providers = ["openai", "anthropic", "neuroweaver"];
     const metrics: ProviderMetrics[] = [];
-    
+
     for (const provider of providers) {
       try {
-        const providerMetrics = await this.metricsCollector.getProviderMetrics(provider);
+        const providerMetrics =
+          await this.metricsCollector.getProviderMetrics(provider);
         metrics.push(providerMetrics);
       } catch (error) {
         logger.warn(`Failed to get metrics for provider ${provider}:`, error);
       }
     }
-    
+
     return metrics;
   }
 
@@ -201,36 +220,50 @@ export class WebSocketService {
     return 0;
   }
 
-  private async handleAdminCommand(socket: AuthenticatedSocket, command: any): Promise<void> {
+  private async handleAdminCommand(
+    socket: AuthenticatedSocket,
+    command: any,
+  ): Promise<void> {
     logger.info(`Admin command received from ${socket.id}:`, command);
 
     switch (command.type) {
-      case 'get_system_status':
+      case "get_system_status":
         const status = await this.getSystemStatus();
-        socket.emit('admin_response', { type: 'system_status', data: status });
+        socket.emit("admin_response", { type: "system_status", data: status });
         break;
 
-      case 'reset_metrics':
+      case "reset_metrics":
         // Since resetMetrics doesn't exist, we'll implement our own reset logic
-        logger.info('Metrics reset requested by admin');
-        socket.emit('admin_response', { type: 'metrics_reset', success: true });
-        this.broadcastSystemAlert('Metrics have been reset by admin', 'info');
+        logger.info("Metrics reset requested by admin");
+        socket.emit("admin_response", { type: "metrics_reset", success: true });
+        this.broadcastSystemAlert("Metrics have been reset by admin", "info");
         break;
 
-      case 'get_detailed_metrics':
+      case "get_detailed_metrics":
         // Since getDetailedMetrics doesn't exist, return system metrics
         const systemMetrics = await this.metricsCollector.getSystemMetrics();
-        socket.emit('admin_response', { type: 'detailed_metrics', data: systemMetrics });
+        socket.emit("admin_response", {
+          type: "detailed_metrics",
+          data: systemMetrics,
+        });
         break;
 
-      case 'emergency_shutdown':
-        this.broadcastSystemAlert('Emergency shutdown initiated by admin', 'critical');
+      case "emergency_shutdown":
+        this.broadcastSystemAlert(
+          "Emergency shutdown initiated by admin",
+          "critical",
+        );
         // Implement emergency shutdown logic here
-        socket.emit('admin_response', { type: 'emergency_shutdown', initiated: true });
+        socket.emit("admin_response", {
+          type: "emergency_shutdown",
+          initiated: true,
+        });
         break;
 
       default:
-        socket.emit('error', { message: `Unknown admin command: ${command.type}` });
+        socket.emit("error", {
+          message: `Unknown admin command: ${command.type}`,
+        });
     }
   }
 
@@ -240,29 +273,36 @@ export class WebSocketService {
       memory_usage: process.memoryUsage(),
       connected_clients: this.connectedClients.size,
       active_requests: this.getActiveRequestsCount(),
-      system_health: 'healthy', // Implement health check logic
-      last_updated: new Date().toISOString()
+      system_health: "healthy", // Implement health check logic
+      last_updated: new Date().toISOString(),
     };
   }
 
-  public broadcastSystemAlert(message: string, severity: 'info' | 'warning' | 'critical'): void {
+  public broadcastSystemAlert(
+    message: string,
+    severity: "info" | "warning" | "critical",
+  ): void {
     const alert = {
       timestamp: Date.now(),
       message,
       severity,
-      id: `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      id: `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     };
 
-    this.io.emit('system_alert', alert);
+    this.io.emit("system_alert", alert);
     logger.warn(`System alert broadcast: ${message} (${severity})`);
   }
 
-  public broadcastRequestUpdate(requestId: string, status: string, metadata?: any): void {
-    this.io.to('metrics_subscribers').emit('request_update', {
+  public broadcastRequestUpdate(
+    requestId: string,
+    status: string,
+    metadata?: any,
+  ): void {
+    this.io.to("metrics_subscribers").emit("request_update", {
       request_id: requestId,
       status,
       timestamp: Date.now(),
-      metadata
+      metadata,
     });
   }
 
@@ -277,6 +317,6 @@ export class WebSocketService {
     }
 
     this.io.close();
-    logger.info('WebSocket service shut down');
+    logger.info("WebSocket service shut down");
   }
 }

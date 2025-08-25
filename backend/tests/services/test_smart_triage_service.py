@@ -4,7 +4,6 @@ from unittest.mock import AsyncMock, Mock, patch
 from uuid import uuid4
 
 import pytest
-
 from app.models.auterity_expansion import TriageRule, TriageRuleType
 from app.models.tenant import Tenant
 from app.services.smart_triage_service import SmartTriageService, TriageDecision
@@ -64,7 +63,6 @@ class TestSmartTriageService:
             patch("app.services.smart_triage_service.AIService") as mock_ai,
             patch("app.services.smart_triage_service.VectorService") as mock_vector,
         ):
-
             mock_ai_instance = Mock()
             mock_ai_instance.generate_completion = AsyncMock(
                 return_value='{"routing_decision": "bug_triage", "confidence_score": 0.85, "reasoning": "Contains bug-related keywords", "suggested_actions": ["Assign to dev team"]}'

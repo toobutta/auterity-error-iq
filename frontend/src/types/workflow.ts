@@ -25,11 +25,11 @@ export interface WorkflowDefinition {
 
 export interface WorkflowValidationError {
   type:
-    | 'missing_connection'
-    | 'invalid_step'
-    | 'circular_dependency'
-    | 'missing_start'
-    | 'missing_end';
+    | "missing_connection"
+    | "invalid_step"
+    | "circular_dependency"
+    | "missing_start"
+    | "missing_end";
   message: string;
   stepId?: string;
   connectionId?: string;
@@ -39,7 +39,7 @@ export interface WorkflowExecution {
   id: string;
   workflowId: string;
   workflowName?: string;
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+  status: "pending" | "running" | "completed" | "failed" | "cancelled";
   inputData: Record<string, unknown>;
   outputData?: Record<string, unknown> | null;
   startedAt: string;
@@ -55,7 +55,7 @@ export interface NodeConfig extends Record<string, unknown> {
 export interface NodeData {
   label: string;
   description?: string;
-  type: WorkflowStep['type'];
+  type: WorkflowStep["type"];
   config: NodeConfig;
   isValid?: boolean;
   validationErrors?: string[];
@@ -63,7 +63,7 @@ export interface NodeData {
 
 export interface WorkflowExecutionError {
   id: string;
-  type: 'validation' | 'runtime' | 'ai_service' | 'timeout' | 'system';
+  type: "validation" | "runtime" | "ai_service" | "timeout" | "system";
   message: string;
   details?: string;
   stackTrace?: string;

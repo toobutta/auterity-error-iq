@@ -9,6 +9,7 @@ This guide covers complete production deployment of Auterity with all infrastruc
 ### Infrastructure Requirements
 
 #### Minimum System Requirements
+
 ```yaml
 # Production Server Specifications
 CPU: 8 cores (16 vCPUs recommended)
@@ -19,6 +20,7 @@ OS: Ubuntu 22.04 LTS or RHEL 8+
 ```
 
 #### Service Resource Allocation
+
 ```yaml
 # Resource Distribution
 PostgreSQL: 4GB RAM, 2 CPU cores
@@ -33,6 +35,7 @@ Monitoring Stack: 4GB RAM, 2 CPU cores
 ### Security Prerequisites
 
 #### SSL/TLS Certificates
+
 ```bash
 # Generate certificates using Let's Encrypt
 certbot certonly --standalone -d api.yourdomain.com
@@ -41,6 +44,7 @@ certbot certonly --standalone -d monitoring.yourdomain.com
 ```
 
 #### Firewall Configuration
+
 ```bash
 # UFW firewall rules
 ufw allow 22/tcp    # SSH
@@ -55,8 +59,9 @@ ufw enable
 ## Production Docker Compose
 
 ### docker-compose.prod.yml
+
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   # Reverse Proxy
@@ -93,7 +98,7 @@ services:
       resources:
         limits:
           memory: 4G
-          cpus: '2.0'
+          cpus: "2.0"
         reservations:
           memory: 2G
 
@@ -110,7 +115,7 @@ services:
       resources:
         limits:
           memory: 2G
-          cpus: '1.0'
+          cpus: "1.0"
 
   # Object Storage
   minio:
@@ -128,7 +133,7 @@ services:
       resources:
         limits:
           memory: 2G
-          cpus: '1.0'
+          cpus: "1.0"
 
   # Vector Database
   qdrant:
@@ -142,7 +147,7 @@ services:
       resources:
         limits:
           memory: 2G
-          cpus: '1.0'
+          cpus: "1.0"
 
   # Search Engine
   elasticsearch:
@@ -161,7 +166,7 @@ services:
       resources:
         limits:
           memory: 8G
-          cpus: '2.0'
+          cpus: "2.0"
         reservations:
           memory: 4G
 
@@ -209,7 +214,7 @@ services:
       resources:
         limits:
           memory: 4G
-          cpus: '2.0'
+          cpus: "2.0"
 
   # Frontend
   frontend:
@@ -229,10 +234,10 @@ services:
       - ./monitoring/prometheus:/etc/prometheus
       - prometheus_data:/prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=30d'
-      - '--web.enable-lifecycle'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=30d"
+      - "--web.enable-lifecycle"
     networks:
       - ai-platform
     restart: unless-stopped
@@ -269,6 +274,7 @@ networks:
 ## Environment Configuration
 
 ### Production Environment Variables
+
 ```bash
 # .env.production
 # Database
@@ -304,6 +310,7 @@ MONITORING_DOMAIN=monitoring.yourdomain.com
 ## Nginx Configuration
 
 ### nginx.prod.conf
+
 ```nginx
 events {
     worker_connections 1024;
@@ -313,33 +320,33 @@ http {
     upstream backend {
         server backend:8000;
     }
-    
+
     upstream frontend {
         server frontend:3000;
     }
-    
+
     upstream grafana {
         server grafana:3000;
     }
-    
+
     # Rate limiting
     limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
     limit_req_zone $binary_remote_addr zone=app:10m rate=30r/s;
-    
+
     # SSL Configuration
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512;
     ssl_prefer_server_ciphers off;
     ssl_session_cache shared:SSL:10m;
-    
+
     # API Server
     server {
         listen 443 ssl http2;
         server_name api.yourdomain.com;
-        
+
         ssl_certificate /etc/nginx/ssl/api.yourdomain.com/fullchain.pem;
         ssl_certificate_key /etc/nginx/ssl/api.yourdomain.com/privkey.pem;
-        
+
         location / {
             limit_req zone=api burst=20 nodelay;
             proxy_pass http://backend;
@@ -349,15 +356,15 @@ http {
             proxy_set_header X-Forwarded-Proto $scheme;
         }
     }
-    
+
     # Frontend App
     server {
         listen 443 ssl http2;
         server_name app.yourdomain.com;
-        
+
         ssl_certificate /etc/nginx/ssl/app.yourdomain.com/fullchain.pem;
         ssl_certificate_key /etc/nginx/ssl/app.yourdomain.com/privkey.pem;
-        
+
         location / {
             limit_req zone=app burst=50 nodelay;
             proxy_pass http://frontend;
@@ -367,19 +374,19 @@ http {
             proxy_set_header X-Forwarded-Proto $scheme;
         }
     }
-    
+
     # Monitoring Dashboard
     server {
         listen 443 ssl http2;
         server_name monitoring.yourdomain.com;
-        
+
         ssl_certificate /etc/nginx/ssl/monitoring.yourdomain.com/fullchain.pem;
         ssl_certificate_key /etc/nginx/ssl/monitoring.yourdomain.com/privkey.pem;
-        
+
         # Basic auth for monitoring
         auth_basic "Monitoring Access";
         auth_basic_user_file /etc/nginx/.htpasswd;
-        
+
         location / {
             proxy_pass http://grafana;
             proxy_set_header Host $host;
@@ -388,7 +395,7 @@ http {
             proxy_set_header X-Forwarded-Proto $scheme;
         }
     }
-    
+
     # HTTP to HTTPS redirect
     server {
         listen 80;
@@ -401,6 +408,7 @@ http {
 ## Deployment Scripts
 
 ### deploy.sh
+
 ```bash
 #!/bin/bash
 set -e
@@ -462,6 +470,7 @@ echo "🔌 API: https://api.$DOMAIN"
 ```
 
 ### health-check.sh
+
 ```bash
 #!/bin/bash
 
@@ -501,6 +510,7 @@ echo "🎉 All health checks passed!"
 ## Security Hardening
 
 ### Application Security
+
 ```python
 # backend/app/config/security.py
 from fastapi import FastAPI
@@ -512,13 +522,13 @@ def configure_security(app: FastAPI):
     # HTTPS redirect in production
     if os.getenv("ENVIRONMENT") == "production":
         app.add_middleware(HTTPSRedirectMiddleware)
-    
+
     # Trusted hosts
     app.add_middleware(
         TrustedHostMiddleware,
         allowed_hosts=["api.yourdomain.com", "localhost"]
     )
-    
+
     # CORS configuration
     app.add_middleware(
         CORSMiddleware,
@@ -527,7 +537,7 @@ def configure_security(app: FastAPI):
         allow_methods=["GET", "POST", "PUT", "DELETE"],
         allow_headers=["*"],
     )
-    
+
     # Security headers
     @app.middleware("http")
     async def add_security_headers(request, call_next):
@@ -540,6 +550,7 @@ def configure_security(app: FastAPI):
 ```
 
 ### Database Security
+
 ```sql
 -- Create read-only user for monitoring
 CREATE USER monitoring_user WITH PASSWORD 'secure_monitoring_password';
@@ -557,6 +568,7 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO backup_user;
 ## Monitoring and Alerting
 
 ### Prometheus Alerts
+
 ```yaml
 # monitoring/prometheus/alert_rules.yml
 groups:
@@ -569,7 +581,7 @@ groups:
           severity: critical
         annotations:
           summary: "High error rate detected"
-          
+
       - alert: DatabaseConnectionsHigh
         expr: pg_stat_activity_count > 80
         for: 5m
@@ -577,7 +589,7 @@ groups:
           severity: warning
         annotations:
           summary: "High database connections"
-          
+
       - alert: DiskSpaceUsage
         expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes > 0.85
         for: 5m
@@ -585,7 +597,7 @@ groups:
           severity: critical
         annotations:
           summary: "Disk space usage above 85%"
-          
+
       - alert: ServiceDown
         expr: up == 0
         for: 1m
@@ -596,6 +608,7 @@ groups:
 ```
 
 ### Grafana Dashboards
+
 ```json
 {
   "dashboard": {
@@ -639,6 +652,7 @@ groups:
 ## Backup and Recovery
 
 ### Automated Backup Script
+
 ```bash
 #!/bin/bash
 # backup.sh
@@ -664,6 +678,7 @@ find /backups -type d -mtime +30 -exec rm -rf {} \;
 ```
 
 ### Recovery Procedures
+
 ```bash
 #!/bin/bash
 # restore.sh
@@ -700,6 +715,7 @@ echo "Recovery completed from backup: $BACKUP_DATE"
 ## Maintenance Procedures
 
 ### Log Rotation
+
 ```bash
 # /etc/logrotate.d/auterity
 /var/log/auterity/*.log {
@@ -717,6 +733,7 @@ echo "Recovery completed from backup: $BACKUP_DATE"
 ```
 
 ### Update Procedure
+
 ```bash
 #!/bin/bash
 # update.sh

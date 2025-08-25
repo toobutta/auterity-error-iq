@@ -35,16 +35,11 @@
     },
     {
       "group": "Deployment",
-      "pages": [
-        "deployment/production-deployment",
-        "deployment/ENTERPRISE_SSO"
-      ]
+      "pages": ["deployment/production-deployment", "deployment/ENTERPRISE_SSO"]
     },
     {
       "group": "Business",
-      "pages": [
-        "business/product-overview"
-      ]
+      "pages": ["business/product-overview"]
     }
   ],
   "footerSocials": {

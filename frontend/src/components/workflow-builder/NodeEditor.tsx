@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { NodeEditorProps } from '../../types/workflow-builder';
+import React, { useState, useEffect } from "react";
+import { NodeEditorProps } from "../../types/workflow-builder";
 // TODO: Re-enable when needed
 // import { WorkflowNode, NodeConfig } from '../../types/workflow-builder';
 
@@ -7,7 +7,7 @@ interface FormFieldProps {
   label: string;
   value: unknown;
   onChange: (value: unknown) => void;
-  type?: 'text' | 'textarea' | 'number' | 'select' | 'checkbox' | 'multiselect';
+  type?: "text" | "textarea" | "number" | "select" | "checkbox" | "multiselect";
   options?: { value: string; label: string }[];
   placeholder?: string;
   required?: boolean;
@@ -18,7 +18,7 @@ const FormField: React.FC<FormFieldProps> = ({
   label,
   value,
   onChange,
-  type = 'text',
+  type = "text",
   options = [],
   placeholder,
   required = false,
@@ -26,10 +26,10 @@ const FormField: React.FC<FormFieldProps> = ({
 }) => {
   const renderInput = () => {
     switch (type) {
-      case 'textarea':
+      case "textarea":
         return (
           <textarea
-            value={value || ''}
+            value={value || ""}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical min-h-[80px]"
@@ -37,11 +37,11 @@ const FormField: React.FC<FormFieldProps> = ({
           />
         );
 
-      case 'number':
+      case "number":
         return (
           <input
             type="number"
-            value={value || ''}
+            value={value || ""}
             onChange={(e) => onChange(Number(e.target.value))}
             placeholder={placeholder}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -49,10 +49,10 @@ const FormField: React.FC<FormFieldProps> = ({
           />
         );
 
-      case 'select':
+      case "select":
         return (
           <select
-            value={value || ''}
+            value={value || ""}
             onChange={(e) => onChange(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required={required}
@@ -66,7 +66,7 @@ const FormField: React.FC<FormFieldProps> = ({
           </select>
         );
 
-      case 'multiselect':
+      case "multiselect":
         return (
           <div className="space-y-2">
             {options.map((option) => (
@@ -79,7 +79,9 @@ const FormField: React.FC<FormFieldProps> = ({
                     if (e.target.checked) {
                       onChange([...currentValues, option.value]);
                     } else {
-                      onChange(currentValues.filter((v: string) => v !== option.value));
+                      onChange(
+                        currentValues.filter((v: string) => v !== option.value),
+                      );
                     }
                   }}
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -90,7 +92,7 @@ const FormField: React.FC<FormFieldProps> = ({
           </div>
         );
 
-      case 'checkbox':
+      case "checkbox":
         return (
           <label className="flex items-center space-x-2">
             <input
@@ -107,7 +109,7 @@ const FormField: React.FC<FormFieldProps> = ({
         return (
           <input
             type="text"
-            value={value || ''}
+            value={value || ""}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -119,19 +121,26 @@ const FormField: React.FC<FormFieldProps> = ({
 
   return (
     <div className="mb-4">
-      {type !== 'checkbox' && (
+      {type !== "checkbox" && (
         <label className="block text-sm font-medium text-gray-700 mb-1">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
       {renderInput()}
-      {description && <p className="text-xs text-gray-500 mt-1">{description}</p>}
+      {description && (
+        <p className="text-xs text-gray-500 mt-1">{description}</p>
+      )}
     </div>
   );
 };
 
-const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClose }) => {
+const NodeEditor: React.FC<NodeEditorProps> = ({
+  node,
+  onUpdate,
+  onDelete,
+  onClose,
+}) => {
   const [localData, setLocalData] = useState(node?.data || null);
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -192,7 +201,7 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
   };
 
   const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this node?')) {
+    if (window.confirm("Are you sure you want to delete this node?")) {
       onDelete(node.id);
     }
   };
@@ -202,53 +211,61 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
     const config = localData.config || {};
 
     // Use string comparison for automotive node types
-    if (nodeType === 'customer_inquiry') {
+    if (nodeType === "customer_inquiry") {
       return (
         <>
           <FormField
             label="Inquiry Sources"
             value={config.customerInquiry?.sources || []}
             onChange={(value) =>
-              handleFieldChange('customerInquiry', { ...config.customerInquiry, sources: value })
+              handleFieldChange("customerInquiry", {
+                ...config.customerInquiry,
+                sources: value,
+              })
             }
             type="multiselect"
             options={[
-              { value: 'email', label: 'Email' },
-              { value: 'phone', label: 'Phone' },
-              { value: 'web_form', label: 'Web Form' },
-              { value: 'chat', label: 'Live Chat' },
+              { value: "email", label: "Email" },
+              { value: "phone", label: "Phone" },
+              { value: "web_form", label: "Web Form" },
+              { value: "chat", label: "Live Chat" },
             ]}
             description="Select which inquiry sources to monitor"
           />
         </>
       );
-    } else if (nodeType === 'inventory_update') {
+    } else if (nodeType === "inventory_update") {
       return (
         <>
           <FormField
             label="Event Types"
             value={config.inventoryUpdate?.eventTypes || []}
             onChange={(value) =>
-              handleFieldChange('inventoryUpdate', { ...config.inventoryUpdate, eventTypes: value })
+              handleFieldChange("inventoryUpdate", {
+                ...config.inventoryUpdate,
+                eventTypes: value,
+              })
             }
             type="multiselect"
             options={[
-              { value: 'new_arrival', label: 'New Arrival' },
-              { value: 'price_change', label: 'Price Change' },
-              { value: 'status_change', label: 'Status Change' },
+              { value: "new_arrival", label: "New Arrival" },
+              { value: "price_change", label: "Price Change" },
+              { value: "status_change", label: "Status Change" },
             ]}
             description="Select which inventory events to monitor"
           />
           <FormField
             label="Vehicle Make Filter"
-            value={config.inventoryUpdate?.vehicleFilters?.make?.join(', ') || ''}
+            value={
+              config.inventoryUpdate?.vehicleFilters?.make?.join(", ") || ""
+            }
             onChange={(value) =>
-              handleFieldChange('inventoryUpdate', {
+              handleFieldChange("inventoryUpdate", {
                 ...config.inventoryUpdate,
                 vehicleFilters: {
                   ...config.inventoryUpdate?.vehicleFilters,
                   make: value
-                    .split(',')
+                    .split(",")
                     .map((s: string) => s.trim())
                     .filter(Boolean),
                 },
@@ -259,23 +276,29 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
           />
         </>
       );
-    } else if (nodeType === 'send_email') {
+    } else if (nodeType === "send_email") {
       return (
         <>
           <FormField
             label="Email Subject"
-            value={config.emailTemplate?.subject || ''}
+            value={config.emailTemplate?.subject || ""}
             onChange={(value) =>
-              handleFieldChange('emailTemplate', { ...config.emailTemplate, subject: value })
+              handleFieldChange("emailTemplate", {
+                ...config.emailTemplate,
+                subject: value,
+              })
             }
             placeholder="Thank you for your inquiry"
             required
           />
           <FormField
             label="Email Body"
-            value={config.emailTemplate?.body || ''}
+            value={config.emailTemplate?.body || ""}
             onChange={(value) =>
-              handleFieldChange('emailTemplate', { ...config.emailTemplate, body: value })
+              handleFieldChange("emailTemplate", {
+                ...config.emailTemplate,
+                body: value,
+              })
             }
             type="textarea"
             placeholder="Dear {{customer_name}},..."
@@ -284,12 +307,12 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
           />
           <FormField
             label="Recipients"
-            value={config.emailTemplate?.recipients?.join(', ') || ''}
+            value={config.emailTemplate?.recipients?.join(", ") || ""}
             onChange={(value) =>
-              handleFieldChange('emailTemplate', {
+              handleFieldChange("emailTemplate", {
                 ...config.emailTemplate,
                 recipients: value
-                  .split(',')
+                  .split(",")
                   .map((s: string) => s.trim())
                   .filter(Boolean),
               })
@@ -299,14 +322,17 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
           />
         </>
       );
-    } else if (nodeType === 'update_crm') {
+    } else if (nodeType === "update_crm") {
       return (
         <>
           <FormField
             label="Lead Score"
             value={config.crmFields?.leadScore || 0}
             onChange={(value) =>
-              handleFieldChange('crmFields', { ...config.crmFields, leadScore: value })
+              handleFieldChange("crmFields", {
+                ...config.crmFields,
+                leadScore: value,
+              })
             }
             type="number"
             placeholder="0-100"
@@ -314,38 +340,44 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
           />
           <FormField
             label="Customer Status"
-            value={config.crmFields?.status || ''}
+            value={config.crmFields?.status || ""}
             onChange={(value) =>
-              handleFieldChange('crmFields', { ...config.crmFields, status: value })
+              handleFieldChange("crmFields", {
+                ...config.crmFields,
+                status: value,
+              })
             }
             type="select"
             options={[
-              { value: 'new', label: 'New' },
-              { value: 'contacted', label: 'Contacted' },
-              { value: 'qualified', label: 'Qualified' },
-              { value: 'negotiating', label: 'Negotiating' },
-              { value: 'closed', label: 'Closed' },
-              { value: 'lost', label: 'Lost' },
+              { value: "new", label: "New" },
+              { value: "contacted", label: "Contacted" },
+              { value: "qualified", label: "Qualified" },
+              { value: "negotiating", label: "Negotiating" },
+              { value: "closed", label: "Closed" },
+              { value: "lost", label: "Lost" },
             ]}
             required
           />
           <FormField
             label="Notes"
-            value={config.crmFields?.notes || ''}
+            value={config.crmFields?.notes || ""}
             onChange={(value) =>
-              handleFieldChange('crmFields', { ...config.crmFields, notes: value })
+              handleFieldChange("crmFields", {
+                ...config.crmFields,
+                notes: value,
+              })
             }
             type="textarea"
             placeholder="Additional notes about the customer..."
           />
           <FormField
             label="Tags"
-            value={config.crmFields?.tags?.join(', ') || ''}
+            value={config.crmFields?.tags?.join(", ") || ""}
             onChange={(value) =>
-              handleFieldChange('crmFields', {
+              handleFieldChange("crmFields", {
                 ...config.crmFields,
                 tags: value
-                  .split(',')
+                  .split(",")
                   .map((s: string) => s.trim())
                   .filter(Boolean),
               })
@@ -355,23 +387,23 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
           />
         </>
       );
-    } else if (nodeType === 'schedule_appointment') {
+    } else if (nodeType === "schedule_appointment") {
       return (
         <>
           <FormField
             label="Appointment Type"
-            value={config.scheduleAppointment?.appointmentType || ''}
+            value={config.scheduleAppointment?.appointmentType || ""}
             onChange={(value) =>
-              handleFieldChange('scheduleAppointment', {
+              handleFieldChange("scheduleAppointment", {
                 ...config.scheduleAppointment,
                 appointmentType: value,
               })
             }
             type="select"
             options={[
-              { value: 'sales', label: 'Sales Meeting' },
-              { value: 'service', label: 'Service Appointment' },
-              { value: 'test_drive', label: 'Test Drive' },
+              { value: "sales", label: "Sales Meeting" },
+              { value: "service", label: "Service Appointment" },
+              { value: "test_drive", label: "Test Drive" },
             ]}
             required
           />
@@ -379,7 +411,7 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
             label="Duration (minutes)"
             value={config.scheduleAppointment?.duration || 60}
             onChange={(value) =>
-              handleFieldChange('scheduleAppointment', {
+              handleFieldChange("scheduleAppointment", {
                 ...config.scheduleAppointment,
                 duration: value,
               })
@@ -390,9 +422,9 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
           />
           <FormField
             label="Location"
-            value={config.scheduleAppointment?.location || ''}
+            value={config.scheduleAppointment?.location || ""}
             onChange={(value) =>
-              handleFieldChange('scheduleAppointment', {
+              handleFieldChange("scheduleAppointment", {
                 ...config.scheduleAppointment,
                 location: value,
               })
@@ -403,7 +435,7 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
             label="Auto Confirm"
             value={config.scheduleAppointment?.autoConfirm || false}
             onChange={(value) =>
-              handleFieldChange('scheduleAppointment', {
+              handleFieldChange("scheduleAppointment", {
                 ...config.scheduleAppointment,
                 autoConfirm: value,
               })
@@ -414,31 +446,37 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
       );
     } else if (
       [
-        'lead_qualification',
-        'price_optimization',
-        'customer_sentiment',
-        'recommendation_engine',
+        "lead_qualification",
+        "price_optimization",
+        "customer_sentiment",
+        "recommendation_engine",
       ].includes(nodeType)
     ) {
       return (
         <>
           <FormField
             label="AI Model"
-            value={config.aiPrompt?.model || 'gpt-4'}
+            value={config.aiPrompt?.model || "gpt-4"}
             onChange={(value) =>
-              handleFieldChange('aiPrompt', { ...config.aiPrompt, model: value })
+              handleFieldChange("aiPrompt", {
+                ...config.aiPrompt,
+                model: value,
+              })
             }
             type="select"
             options={[
-              { value: 'gpt-4', label: 'GPT-4' },
-              { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
+              { value: "gpt-4", label: "GPT-4" },
+              { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo" },
             ]}
           />
           <FormField
             label="AI Prompt"
-            value={config.aiPrompt?.prompt || ''}
+            value={config.aiPrompt?.prompt || ""}
             onChange={(value) =>
-              handleFieldChange('aiPrompt', { ...config.aiPrompt, prompt: value })
+              handleFieldChange("aiPrompt", {
+                ...config.aiPrompt,
+                prompt: value,
+              })
             }
             type="textarea"
             placeholder="Analyze this data and provide insights..."
@@ -449,7 +487,10 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
             label="Temperature"
             value={config.aiPrompt?.temperature || 0.3}
             onChange={(value) =>
-              handleFieldChange('aiPrompt', { ...config.aiPrompt, temperature: value })
+              handleFieldChange("aiPrompt", {
+                ...config.aiPrompt,
+                temperature: value,
+              })
             }
             type="number"
             placeholder="0.3"
@@ -459,7 +500,10 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
             label="Max Tokens"
             value={config.aiPrompt?.maxTokens || 500}
             onChange={(value) =>
-              handleFieldChange('aiPrompt', { ...config.aiPrompt, maxTokens: value })
+              handleFieldChange("aiPrompt", {
+                ...config.aiPrompt,
+                maxTokens: value,
+              })
             }
             type="number"
             placeholder="500"
@@ -468,19 +512,22 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
         </>
       );
     } else if (
-      ['customer_type', 'budget_range', 'vehicle_preference', 'geographic_location'].includes(
-        nodeType
-      )
+      [
+        "customer_type",
+        "budget_range",
+        "vehicle_preference",
+        "geographic_location",
+      ].includes(nodeType)
     ) {
       return (
         <>
           <FormField
             label="Condition Field"
-            value={config.conditions?.[0]?.field || ''}
+            value={config.conditions?.[0]?.field || ""}
             onChange={(value) => {
               const conditions = config.conditions || [{}];
               conditions[0] = { ...conditions[0], field: value };
-              handleFieldChange('conditions', conditions);
+              handleFieldChange("conditions", conditions);
             }}
             placeholder="customer_history, budget, vehicle_type"
             required
@@ -488,29 +535,29 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
           />
           <FormField
             label="Operator"
-            value={config.conditions?.[0]?.operator || 'equals'}
+            value={config.conditions?.[0]?.operator || "equals"}
             onChange={(value) => {
               const conditions = config.conditions || [{}];
               conditions[0] = { ...conditions[0], operator: value };
-              handleFieldChange('conditions', conditions);
+              handleFieldChange("conditions", conditions);
             }}
             type="select"
             options={[
-              { value: 'equals', label: 'Equals' },
-              { value: 'contains', label: 'Contains' },
-              { value: 'greater_than', label: 'Greater Than' },
-              { value: 'less_than', label: 'Less Than' },
-              { value: 'in', label: 'In List' },
-              { value: 'not_in', label: 'Not In List' },
+              { value: "equals", label: "Equals" },
+              { value: "contains", label: "Contains" },
+              { value: "greater_than", label: "Greater Than" },
+              { value: "less_than", label: "Less Than" },
+              { value: "in", label: "In List" },
+              { value: "not_in", label: "Not In List" },
             ]}
           />
           <FormField
             label="Value"
-            value={config.conditions?.[0]?.value || ''}
+            value={config.conditions?.[0]?.value || ""}
             onChange={(value) => {
               const conditions = config.conditions || [{}];
               conditions[0] = { ...conditions[0], value: value };
-              handleFieldChange('conditions', conditions);
+              handleFieldChange("conditions", conditions);
             }}
             placeholder="null, 50000, sedan"
             description="The value to compare against"
@@ -540,7 +587,12 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -552,7 +604,9 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
           )}
         </div>
         <div className="text-sm text-gray-600">
-          {localData.type.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+          {localData.type
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, (l) => l.toUpperCase())}
         </div>
       </div>
 
@@ -564,14 +618,14 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
           <FormField
             label="Node Label"
             value={localData.label}
-            onChange={(value) => handleBasicFieldChange('label', value)}
+            onChange={(value) => handleBasicFieldChange("label", value)}
             placeholder="Enter node label"
             required
           />
           <FormField
             label="Description"
-            value={localData.description || ''}
-            onChange={(value) => handleBasicFieldChange('description', value)}
+            value={localData.description || ""}
+            onChange={(value) => handleBasicFieldChange("description", value)}
             type="textarea"
             placeholder="Describe what this node does..."
           />
@@ -584,21 +638,24 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
         </div>
 
         {/* Validation Errors */}
-        {localData.validationErrors && localData.validationErrors.length > 0 && (
-          <div className="mb-6">
-            <h4 className="font-medium text-red-600 mb-3">Validation Errors</h4>
-            <div className="space-y-2">
-              {localData.validationErrors.map((error, index) => (
-                <div
-                  key={index}
-                  className="text-sm text-red-600 bg-red-50 p-2 rounded border border-red-200"
-                >
-                  {error}
-                </div>
-              ))}
+        {localData.validationErrors &&
+          localData.validationErrors.length > 0 && (
+            <div className="mb-6">
+              <h4 className="font-medium text-red-600 mb-3">
+                Validation Errors
+              </h4>
+              <div className="space-y-2">
+                {localData.validationErrors.map((error, index) => (
+                  <div
+                    key={index}
+                    className="text-sm text-red-600 bg-red-50 p-2 rounded border border-red-200"
+                  >
+                    {error}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
 
       {/* Footer */}
@@ -616,7 +673,12 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdate, onDelete, onClo
           onClick={handleDelete}
           className="w-full px-3 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors flex items-center justify-center space-x-1"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

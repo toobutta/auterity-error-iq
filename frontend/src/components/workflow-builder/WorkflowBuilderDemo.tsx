@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import EnhancedWorkflowBuilder from './EnhancedWorkflowBuilder';
-import { Workflow } from '../../types/workflow-builder';
+import React, { useState } from "react";
+import EnhancedWorkflowBuilder from "./EnhancedWorkflowBuilder";
+import { Workflow } from "../../types/workflow-builder";
+import { sanitizeLog } from "../../utils/sanitizer";
 
 const WorkflowBuilderDemo: React.FC = () => {
   const [savedWorkflow, setSavedWorkflow] = useState<Workflow | null>(null);
@@ -8,14 +9,14 @@ const WorkflowBuilderDemo: React.FC = () => {
 
   const handleSave = (workflow: Workflow) => {
     setSavedWorkflow(workflow);
-    console.log('Workflow saved:', workflow);
+    console.log("Workflow saved:", sanitizeLog(JSON.stringify(workflow)));
     // Show success notification
-    alert(`Workflow "${workflow.name}" saved successfully!`);
+    alert(`Workflow "${sanitizeLog(workflow.name)}" saved successfully!`);
   };
 
   const handleTest = (workflow: Workflow) => {
-    console.log('Testing workflow:', workflow);
-    setExecutionResult(`Testing workflow: ${workflow.name}`);
+    console.log("Testing workflow:", sanitizeLog(JSON.stringify(workflow)));
+    setExecutionResult(`Testing workflow: ${sanitizeLog(workflow.name)}`);
   };
 
   return (
@@ -24,9 +25,12 @@ const WorkflowBuilderDemo: React.FC = () => {
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">🚗 Automotive Workflow Builder</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              🚗 Automotive Workflow Builder
+            </h1>
             <p className="text-sm text-gray-600 mt-1">
-              Drag and drop components to build powerful automotive dealership workflows
+              Drag and drop components to build powerful automotive dealership
+              workflows
             </p>
           </div>
 
@@ -38,7 +42,9 @@ const WorkflowBuilderDemo: React.FC = () => {
             </div>
 
             {savedWorkflow && (
-              <div className="text-sm text-gray-600">Last saved: {savedWorkflow.name}</div>
+              <div className="text-sm text-gray-600">
+                Last saved: {savedWorkflow.name}
+              </div>
             )}
           </div>
         </div>
@@ -46,7 +52,11 @@ const WorkflowBuilderDemo: React.FC = () => {
 
       {/* Enhanced Workflow Builder */}
       <div className="h-full">
-        <EnhancedWorkflowBuilder onSave={handleSave} onTest={handleTest} className="h-full" />
+        <EnhancedWorkflowBuilder
+          onSave={handleSave}
+          onTest={handleTest}
+          className="h-full"
+        />
       </div>
 
       {/* Demo Instructions Overlay */}
@@ -61,12 +71,22 @@ const WorkflowBuilderDemo: React.FC = () => {
         </ul>
 
         <div className="mt-3 pt-3 border-t border-gray-200">
-          <h4 className="font-medium text-gray-900 mb-1">Available Node Types:</h4>
+          <h4 className="font-medium text-gray-900 mb-1">
+            Available Node Types:
+          </h4>
           <div className="flex flex-wrap gap-1 text-xs">
-            <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded">Triggers</span>
-            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">Actions</span>
-            <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded">Conditions</span>
-            <span className="px-2 py-1 bg-green-100 text-green-800 rounded">AI Powered</span>
+            <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded">
+              Triggers
+            </span>
+            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">
+              Actions
+            </span>
+            <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded">
+              Conditions
+            </span>
+            <span className="px-2 py-1 bg-green-100 text-green-800 rounded">
+              AI Powered
+            </span>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 # [AMAZON Q] Production Deployment Architecture
 
 ## Task Assignment
+
 - **Priority**: 🚀 CRITICAL - Production readiness
 - **Tool**: Amazon Q (Claude 3.7)
 - **Complexity**: High - AWS architecture and deployment strategy
@@ -8,6 +9,7 @@
 - **Status**: READY FOR AMAZON Q DELEGATION
 
 ## Task Overview
+
 Design complete AWS production deployment architecture for AutoMatrix AI Hub with container orchestration, database strategy, infrastructure as code, CI/CD pipeline, security architecture, and cost optimization.
 
 ## Architecture Requirements
@@ -15,6 +17,7 @@ Design complete AWS production deployment architecture for AutoMatrix AI Hub wit
 ### 1. Container Orchestration Analysis
 
 #### ECS vs EKS vs App Runner Comparison
+
 ```yaml
 # Analysis Required:
 Container Platforms:
@@ -32,6 +35,7 @@ Evaluation Criteria:
 ```
 
 #### Recommended Architecture
+
 ```yaml
 # Provide detailed recommendation with:
 1. Primary container platform choice
@@ -45,18 +49,19 @@ Evaluation Criteria:
 ### 2. Database Strategy
 
 #### RDS vs Aurora Analysis
+
 ```yaml
 Database Options:
   PostgreSQL on RDS:
     - Standard RDS PostgreSQL
     - Multi-AZ deployment
     - Read replicas strategy
-    
+
   Amazon Aurora PostgreSQL:
     - Aurora Serverless v2
     - Aurora Global Database
     - Aurora Multi-Master
-    
+
   Hybrid Approach:
     - Primary database selection
     - Caching strategy (ElastiCache)
@@ -64,6 +69,7 @@ Database Options:
 ```
 
 #### Database Architecture Design
+
 ```yaml
 # Provide specifications for:
 1. Primary database configuration
@@ -77,6 +83,7 @@ Database Options:
 ### 3. Infrastructure as Code Templates
 
 #### CloudFormation Templates
+
 ```yaml
 # Create templates for:
 1. VPC and networking infrastructure
@@ -88,6 +95,7 @@ Database Options:
 ```
 
 #### CDK Alternative
+
 ```typescript
 // If CDK is preferred, provide:
 1. CDK stack structure
@@ -97,6 +105,7 @@ Database Options:
 ```
 
 #### Terraform Option
+
 ```hcl
 # If Terraform is chosen, provide:
 1. Module structure
@@ -108,6 +117,7 @@ Database Options:
 ### 4. CI/CD Pipeline Design
 
 #### GitHub Actions Integration
+
 ```yaml
 # Pipeline Requirements:
 name: Production Deployment Pipeline
@@ -124,6 +134,7 @@ stages:
 ```
 
 #### Pipeline Components
+
 ```yaml
 # Detailed pipeline design:
 1. Automated testing integration
@@ -138,6 +149,7 @@ stages:
 ### 5. Security Architecture
 
 #### VPC and Network Security
+
 ```yaml
 Network Security:
   - VPC design with public/private subnets
@@ -149,6 +161,7 @@ Network Security:
 ```
 
 #### IAM and Access Control
+
 ```yaml
 IAM Strategy:
   - Service-specific IAM roles
@@ -160,6 +173,7 @@ IAM Strategy:
 ```
 
 #### Compliance Considerations
+
 ```yaml
 Security Compliance:
   - Data encryption at rest and in transit
@@ -172,6 +186,7 @@ Security Compliance:
 ### 6. Monitoring and Observability
 
 #### CloudWatch Integration
+
 ```yaml
 Monitoring Stack:
   - Application metrics and alarms
@@ -183,6 +198,7 @@ Monitoring Stack:
 ```
 
 #### Third-party Integrations
+
 ```yaml
 # Consider integration with:
 1. DataDog or New Relic for APM
@@ -194,6 +210,7 @@ Monitoring Stack:
 ### 7. Cost Optimization Strategy
 
 #### Resource Optimization
+
 ```yaml
 Cost Optimization:
   - Right-sizing recommendations
@@ -205,6 +222,7 @@ Cost Optimization:
 ```
 
 #### Budget Management
+
 ```yaml
 Budget Controls:
   - AWS Budgets configuration
@@ -217,6 +235,7 @@ Budget Controls:
 ## Specific Deliverables
 
 ### 1. Architecture Diagram
+
 ```mermaid
 # Provide comprehensive architecture diagram showing:
 - VPC and subnet layout
@@ -228,6 +247,7 @@ Budget Controls:
 ```
 
 ### 2. Infrastructure Templates
+
 ```yaml
 # Provide complete IaC templates:
 1. Main infrastructure template
@@ -238,8 +258,10 @@ Budget Controls:
 ```
 
 ### 3. Deployment Guide
+
 ```markdown
 # Step-by-step deployment guide:
+
 1. Prerequisites and AWS account setup
 2. Infrastructure deployment steps
 3. Application deployment process
@@ -249,6 +271,7 @@ Budget Controls:
 ```
 
 ### 4. Cost Analysis
+
 ```yaml
 # Detailed cost breakdown:
 Monthly Cost Estimates:
@@ -258,7 +281,7 @@ Monthly Cost Estimates:
   - Monitoring and logging
   - Security services
   - Total estimated monthly cost
-  
+
 Cost Optimization Opportunities:
   - Reserved instance savings
   - Spot instance utilization
@@ -267,6 +290,7 @@ Cost Optimization Opportunities:
 ```
 
 ### 5. Security Assessment
+
 ```yaml
 # Security architecture review:
 Security Controls:
@@ -281,18 +305,19 @@ Security Controls:
 ## Environment Strategy
 
 ### 1. Multi-Environment Setup
+
 ```yaml
 Environments:
   Development:
     - Simplified architecture
     - Cost-optimized resources
     - Shared services where appropriate
-    
+
   Staging:
     - Production-like environment
     - Full feature testing
     - Performance validation
-    
+
   Production:
     - High availability setup
     - Auto-scaling enabled
@@ -300,6 +325,7 @@ Environments:
 ```
 
 ### 2. Environment Promotion
+
 ```yaml
 # Deployment pipeline across environments:
 1. Development deployment automation
@@ -311,6 +337,7 @@ Environments:
 ## Performance Considerations
 
 ### 1. Scalability Design
+
 ```yaml
 Scaling Strategy:
   - Horizontal scaling for web services
@@ -321,6 +348,7 @@ Scaling Strategy:
 ```
 
 ### 2. Performance Monitoring
+
 ```yaml
 Performance Metrics:
   - Application response times
@@ -333,6 +361,7 @@ Performance Metrics:
 ## Disaster Recovery
 
 ### 1. Backup Strategy
+
 ```yaml
 Backup and Recovery:
   - Database backup automation
@@ -344,6 +373,7 @@ Backup and Recovery:
 ```
 
 ### 2. High Availability
+
 ```yaml
 HA Implementation:
   - Multi-AZ deployment
@@ -356,6 +386,7 @@ HA Implementation:
 ## Success Criteria
 
 ### Architecture Quality
+
 - [ ] Scalable and resilient architecture design
 - [ ] Cost-optimized resource allocation
 - [ ] Security best practices implemented
@@ -363,6 +394,7 @@ HA Implementation:
 - [ ] Performance requirements met
 
 ### Implementation Readiness
+
 - [ ] Complete infrastructure templates provided
 - [ ] Deployment procedures documented
 - [ ] CI/CD pipeline designed and tested
@@ -370,6 +402,7 @@ HA Implementation:
 - [ ] Disaster recovery plan established
 
 ### Documentation Quality
+
 - [ ] Clear architecture diagrams
 - [ ] Step-by-step deployment guide
 - [ ] Cost analysis and optimization recommendations
@@ -377,6 +410,7 @@ HA Implementation:
 - [ ] Operational runbooks provided
 
 ## Next Steps After Architecture Design
+
 1. Review architecture with development team
 2. Validate cost estimates and budget approval
 3. Set up AWS accounts and initial infrastructure

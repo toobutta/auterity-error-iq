@@ -8,8 +8,6 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from sqlalchemy.orm import Session
-
 from app.database import get_db_session
 from app.exceptions import WorkflowExecutionError
 from app.executors.step_executors import (
@@ -26,6 +24,7 @@ from app.models.execution import ExecutionLog, ExecutionStatus, WorkflowExecutio
 from app.models.workflow import Workflow
 from app.monitoring.performance import PerformanceMonitor
 from app.types.workflow import RetryConfig, WorkflowEdge, WorkflowNode
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

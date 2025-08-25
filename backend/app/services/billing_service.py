@@ -7,10 +7,9 @@ from typing import Dict, Optional, Tuple
 from uuid import UUID
 
 import stripe
-from sqlalchemy.orm import Session
-
 from app.core.config import settings
 from app.models.tenant import BillingRecord, SubscriptionPlan, Tenant, UsageLog
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

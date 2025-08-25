@@ -1,8 +1,8 @@
 # Shared Modules Documentation
 
-**Document Version**: 1.0  
-**Last Updated**: August 8, 2025  
-**Maintained By**: Development Team  
+**Document Version**: 1.0
+**Last Updated**: August 8, 2025
+**Maintained By**: Development Team
 
 ## Overview
 
@@ -65,12 +65,13 @@ shared/
 ### 1. API Services (`/api`)
 
 #### HTTP Client Configuration
+
 **File**: `api/client.ts`
 
 ```typescript
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { AuthService } from './auth';
-import { Logger } from '../utils/logger';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import { AuthService } from "./auth";
+import { Logger } from "../utils/logger";
 
 interface ApiClientConfig {
   baseURL: string;
@@ -86,7 +87,7 @@ class ApiClient {
 
   constructor(config: ApiClientConfig) {
     this.config = config;
-    this.logger = new Logger('ApiClient');
+    this.logger = new Logger("ApiClient");
     this.client = this.createClient();
     this.setupInterceptors();
   }
@@ -96,7 +97,7 @@ class ApiClient {
       baseURL: this.config.baseURL,
       timeout: this.config.timeout,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
   }
@@ -109,18 +110,18 @@ class ApiClient {
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
-        
+
         if (this.config.enableRequestLogging) {
-          this.logger.info('API Request:', {
+          this.logger.info("API Request:", {
             method: config.method,
             url: config.url,
             params: config.params,
           });
         }
-        
+
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     // Response interceptor for error handling
@@ -128,10 +129,10 @@ class ApiClient {
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
-        
+
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
-          
+
           try {
             await AuthService.refreshToken();
             const newToken = AuthService.getToken();
@@ -139,18 +140,18 @@ class ApiClient {
             return this.client(originalRequest);
           } catch (refreshError) {
             AuthService.logout();
-            window.location.href = '/login';
+            window.location.href = "/login";
           }
         }
-        
-        this.logger.error('API Error:', {
+
+        this.logger.error("API Error:", {
           status: error.response?.status,
           message: error.message,
           url: error.config?.url,
         });
-        
+
         return Promise.reject(error);
-      }
+      },
     );
   }
 
@@ -160,12 +161,20 @@ class ApiClient {
     return response.data;
   }
 
-  async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  async post<T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<T> {
     const response = await this.client.post<T>(url, data, config);
     return response.data;
   }
 
-  async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  async put<T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<T> {
     const response = await this.client.put<T>(url, data, config);
     return response.data;
   }
@@ -178,19 +187,20 @@ class ApiClient {
 
 // Export configured instance
 export const apiClient = new ApiClient({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8000',
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:8000",
   timeout: 10000,
   retryAttempts: 3,
-  enableRequestLogging: process.env.NODE_ENV === 'development',
+  enableRequestLogging: process.env.NODE_ENV === "development",
 });
 ```
 
 #### Authentication Service
+
 **File**: `api/auth.ts`
 
 ```typescript
-import { apiClient } from './client';
-import { Logger } from '../utils/logger';
+import { apiClient } from "./client";
+import { Logger } from "../utils/logger";
 
 interface LoginCredentials {
   email: string;
@@ -224,60 +234,66 @@ interface User {
 
 class AuthServiceClass {
   private logger: Logger;
-  private tokenKey = 'auth_token';
-  private userKey = 'auth_user';
+  private tokenKey = "auth_token";
+  private userKey = "auth_user";
 
   constructor() {
-    this.logger = new Logger('AuthService');
+    this.logger = new Logger("AuthService");
   }
 
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post<AuthResponse>('/api/auth/login', credentials);
+      const response = await apiClient.post<AuthResponse>(
+        "/api/auth/login",
+        credentials,
+      );
       this.setToken(response.access_token);
-      
+
       // Fetch user data after successful login
       const user = await this.getCurrentUser();
       this.setUser(user);
-      
-      this.logger.info('User logged in successfully');
+
+      this.logger.info("User logged in successfully");
       return response;
     } catch (error) {
-      this.logger.error('Login failed:', error);
+      this.logger.error("Login failed:", error);
       throw error;
     }
   }
 
   async register(userData: RegisterData): Promise<User> {
     try {
-      const response = await apiClient.post<User>('/api/auth/register', userData);
-      this.logger.info('User registered successfully');
+      const response = await apiClient.post<User>(
+        "/api/auth/register",
+        userData,
+      );
+      this.logger.info("User registered successfully");
       return response;
     } catch (error) {
-      this.logger.error('Registration failed:', error);
+      this.logger.error("Registration failed:", error);
       throw error;
     }
   }
 
   async getCurrentUser(): Promise<User> {
     try {
-      const response = await apiClient.get<User>('/api/auth/me');
+      const response = await apiClient.get<User>("/api/auth/me");
       this.setUser(response);
       return response;
     } catch (error) {
-      this.logger.error('Failed to fetch current user:', error);
+      this.logger.error("Failed to fetch current user:", error);
       throw error;
     }
   }
 
   async refreshToken(): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post<AuthResponse>('/api/auth/refresh');
+      const response = await apiClient.post<AuthResponse>("/api/auth/refresh");
       this.setToken(response.access_token);
-      this.logger.info('Token refreshed successfully');
+      this.logger.info("Token refreshed successfully");
       return response;
     } catch (error) {
-      this.logger.error('Token refresh failed:', error);
+      this.logger.error("Token refresh failed:", error);
       this.logout();
       throw error;
     }
@@ -286,7 +302,7 @@ class AuthServiceClass {
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
-    this.logger.info('User logged out');
+    this.logger.info("User logged out");
   }
 
   getToken(): string | null {
@@ -327,6 +343,7 @@ export const AuthService = new AuthServiceClass();
 ### 2. Utility Functions (`/utils`)
 
 #### Logging Utility
+
 **File**: `utils/logger.ts`
 
 ```typescript
@@ -349,13 +366,13 @@ class LoggerClass {
   private namespace: string;
   private logLevel: LogLevel;
 
-  constructor(namespace: string = 'App') {
+  constructor(namespace: string = "App") {
     this.namespace = namespace;
     this.logLevel = this.getLogLevel();
   }
 
   private getLogLevel(): LogLevel {
-    const level = process.env.REACT_APP_LOG_LEVEL || 'INFO';
+    const level = process.env.REACT_APP_LOG_LEVEL || "INFO";
     return LogLevel[level as keyof typeof LogLevel] || LogLevel.INFO;
   }
 
@@ -363,7 +380,11 @@ class LoggerClass {
     return level >= this.logLevel;
   }
 
-  private formatMessage(level: LogLevel, message: string, data?: any): LogEntry {
+  private formatMessage(
+    level: LogLevel,
+    message: string,
+    data?: any,
+  ): LogEntry {
     return {
       timestamp: new Date().toISOString(),
       level,
@@ -380,34 +401,34 @@ class LoggerClass {
 
     switch (level) {
       case LogLevel.DEBUG:
-        console.debug(prefix, message, data || '');
+        console.debug(prefix, message, data || "");
         break;
       case LogLevel.INFO:
-        console.info(prefix, message, data || '');
+        console.info(prefix, message, data || "");
         break;
       case LogLevel.WARN:
-        console.warn(prefix, message, data || '');
+        console.warn(prefix, message, data || "");
         break;
       case LogLevel.ERROR:
-        console.error(prefix, message, data || '');
+        console.error(prefix, message, data || "");
         break;
     }
 
     // Send to monitoring service in production
-    if (process.env.NODE_ENV === 'production' && level >= LogLevel.WARN) {
+    if (process.env.NODE_ENV === "production" && level >= LogLevel.WARN) {
       this.sendToMonitoring(entry);
     }
   }
 
   private async sendToMonitoring(entry: LogEntry): Promise<void> {
     try {
-      await fetch('/api/monitoring/logs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      await fetch("/api/monitoring/logs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(entry),
       });
     } catch (error) {
-      console.error('Failed to send log to monitoring:', error);
+      console.error("Failed to send log to monitoring:", error);
     }
   }
 
@@ -445,10 +466,11 @@ export const logger = new LoggerClass();
 ```
 
 #### Error Handling Utilities
+
 **File**: `utils/errorUtils.ts`
 
 ```typescript
-import { Logger } from './logger';
+import { Logger } from "./logger";
 
 export interface ErrorContext {
   component?: string;
@@ -464,24 +486,24 @@ export interface ErrorReport {
   message: string;
   stack?: string;
   context: ErrorContext;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  category: 'network' | 'validation' | 'business' | 'system' | 'unknown';
+  severity: "low" | "medium" | "high" | "critical";
+  category: "network" | "validation" | "business" | "system" | "unknown";
 }
 
 class ErrorUtilsClass {
   private logger: Logger;
 
   constructor() {
-    this.logger = new Logger('ErrorUtils');
+    this.logger = new Logger("ErrorUtils");
   }
 
   createErrorReport(
     error: Error,
     context: ErrorContext,
-    severity: ErrorReport['severity'] = 'medium'
+    severity: ErrorReport["severity"] = "medium",
   ): ErrorReport {
     const category = this.categorizeError(error);
-    
+
     return {
       id: this.generateErrorId(),
       message: error.message,
@@ -495,23 +517,23 @@ class ErrorUtilsClass {
     };
   }
 
-  private categorizeError(error: Error): ErrorReport['category'] {
+  private categorizeError(error: Error): ErrorReport["category"] {
     const message = error.message.toLowerCase();
-    
-    if (message.includes('network') || message.includes('fetch')) {
-      return 'network';
+
+    if (message.includes("network") || message.includes("fetch")) {
+      return "network";
     }
-    if (message.includes('validation') || message.includes('invalid')) {
-      return 'validation';
+    if (message.includes("validation") || message.includes("invalid")) {
+      return "validation";
     }
-    if (message.includes('unauthorized') || message.includes('forbidden')) {
-      return 'business';
+    if (message.includes("unauthorized") || message.includes("forbidden")) {
+      return "business";
     }
-    if (message.includes('system') || message.includes('internal')) {
-      return 'system';
+    if (message.includes("system") || message.includes("internal")) {
+      return "system";
     }
-    
-    return 'unknown';
+
+    return "unknown";
   }
 
   private generateErrorId(): string {
@@ -521,55 +543,58 @@ class ErrorUtilsClass {
   async reportError(errorReport: ErrorReport): Promise<void> {
     try {
       // Log locally
-      this.logger.error('Error reported:', errorReport);
+      this.logger.error("Error reported:", errorReport);
 
       // Send to backend error reporting service
-      await fetch('/api/errors/report', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      await fetch("/api/errors/report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(errorReport),
       });
     } catch (reportingError) {
-      this.logger.error('Failed to report error:', reportingError);
+      this.logger.error("Failed to report error:", reportingError);
     }
   }
 
-  createUserFriendlyMessage(error: Error, category?: ErrorReport['category']): string {
+  createUserFriendlyMessage(
+    error: Error,
+    category?: ErrorReport["category"],
+  ): string {
     const detectedCategory = category || this.categorizeError(error);
-    
+
     switch (detectedCategory) {
-      case 'network':
-        return 'Connection problem. Please check your internet connection and try again.';
-      case 'validation':
-        return 'Please check your input and try again.';
-      case 'business':
-        return 'You do not have permission to perform this action.';
-      case 'system':
-        return 'A system error occurred. Our team has been notified.';
+      case "network":
+        return "Connection problem. Please check your internet connection and try again.";
+      case "validation":
+        return "Please check your input and try again.";
+      case "business":
+        return "You do not have permission to perform this action.";
+      case "system":
+        return "A system error occurred. Our team has been notified.";
       default:
-        return 'An unexpected error occurred. Please try again.';
+        return "An unexpected error occurred. Please try again.";
     }
   }
 
   isRetryableError(error: Error): boolean {
     const message = error.message.toLowerCase();
     const retryablePatterns = [
-      'network',
-      'timeout',
-      'connection',
-      'temporary',
-      'rate limit',
+      "network",
+      "timeout",
+      "connection",
+      "temporary",
+      "rate limit",
     ];
-    
-    return retryablePatterns.some(pattern => message.includes(pattern));
+
+    return retryablePatterns.some((pattern) => message.includes(pattern));
   }
 
   shouldShowDetails(error: Error, userRole?: string): boolean {
     // Show detailed errors to developers and admins
     return (
-      process.env.NODE_ENV === 'development' ||
-      userRole === 'admin' ||
-      userRole === 'developer'
+      process.env.NODE_ENV === "development" ||
+      userRole === "admin" ||
+      userRole === "developer"
     );
   }
 }
@@ -578,10 +603,11 @@ export const ErrorUtils = new ErrorUtilsClass();
 ```
 
 #### Retry Utilities
+
 **File**: `utils/retryUtils.ts`
 
 ```typescript
-import { Logger } from './logger';
+import { Logger } from "./logger";
 
 export interface RetryOptions {
   maxAttempts: number;
@@ -605,12 +631,12 @@ class RetryUtilsClass {
   private logger: Logger;
 
   constructor() {
-    this.logger = new Logger('RetryUtils');
+    this.logger = new Logger("RetryUtils");
   }
 
   async withRetry<T>(
     operation: () => Promise<T>,
-    options: Partial<RetryOptions> = {}
+    options: Partial<RetryOptions> = {},
   ): Promise<T> {
     const config = { ...defaultRetryOptions, ...options };
     let lastError: Error;
@@ -633,7 +659,7 @@ class RetryUtilsClass {
 
         // Calculate delay with exponential backoff
         const delay = this.calculateDelay(attempt, config);
-        
+
         this.logger.warn(`Attempt ${attempt} failed, retrying in ${delay}ms:`, {
           error: lastError.message,
           attempt,
@@ -656,36 +682,36 @@ class RetryUtilsClass {
   private calculateDelay(attempt: number, config: RetryOptions): number {
     // Exponential backoff: baseDelay * (backoffFactor ^ (attempt - 1))
     let delay = config.baseDelay * Math.pow(config.backoffFactor, attempt - 1);
-    
+
     // Apply maximum delay limit
     delay = Math.min(delay, config.maxDelay);
-    
+
     // Add jitter to prevent thundering herd
     if (config.jitter) {
       delay = delay * (0.5 + Math.random() * 0.5);
     }
-    
+
     return Math.floor(delay);
   }
 
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   // Predefined retry conditions
   isNetworkError(error: Error): boolean {
     const message = error.message.toLowerCase();
     return (
-      message.includes('network') ||
-      message.includes('connection') ||
-      message.includes('timeout') ||
-      message.includes('fetch')
+      message.includes("network") ||
+      message.includes("connection") ||
+      message.includes("timeout") ||
+      message.includes("fetch")
     );
   }
 
   isRetryableHttpError(error: any): boolean {
     if (!error.response) return false;
-    
+
     const status = error.response.status;
     // Retry on 5xx errors and 429 (rate limit)
     return status >= 500 || status === 429;
@@ -705,6 +731,7 @@ export const retry = RetryUtils.withRetry.bind(RetryUtils);
 ### 3. Custom Hooks (`/hooks`)
 
 #### Authentication Hook
+
 **File**: `hooks/useAuth.ts`
 
 ```typescript
@@ -777,11 +804,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       await AuthService.login({ email, password });
       const user = AuthService.getUser();
       setUser(user);
-      
+
       logger.info('User logged in successfully');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Login failed';
@@ -804,7 +831,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       await AuthService.register(userData);
       logger.info('User registered successfully');
     } catch (error) {
@@ -842,13 +869,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 ```
 
 #### API Hook
+
 **File**: `hooks/useApi.ts`
 
 ```typescript
-import { useState, useEffect, useCallback } from 'react';
-import { apiClient } from '../api/client';
-import { RetryUtils } from '../utils/retryUtils';
-import { Logger } from '../utils/logger';
+import { useState, useEffect, useCallback } from "react";
+import { apiClient } from "../api/client";
+import { RetryUtils } from "../utils/retryUtils";
+import { Logger } from "../utils/logger";
 
 interface UseApiOptions {
   immediate?: boolean;
@@ -868,12 +896,12 @@ interface UseApiReturn<T> {
 
 export function useApi<T>(
   apiFunction: (...args: any[]) => Promise<T>,
-  options: UseApiOptions = {}
+  options: UseApiOptions = {},
 ): UseApiReturn<T> {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const logger = new Logger('useApi');
+  const logger = new Logger("useApi");
 
   const execute = useCallback(
     async (...args: any[]): Promise<T> => {
@@ -881,27 +909,24 @@ export function useApi<T>(
         setLoading(true);
         setError(null);
 
-        const result = await RetryUtils.withRetry(
-          () => apiFunction(...args),
-          {
-            maxAttempts: options.retryOptions?.maxAttempts || 3,
-            baseDelay: options.retryOptions?.baseDelay || 1000,
-            shouldRetry: RetryUtils.isTemporaryError,
-          }
-        );
+        const result = await RetryUtils.withRetry(() => apiFunction(...args), {
+          maxAttempts: options.retryOptions?.maxAttempts || 3,
+          baseDelay: options.retryOptions?.baseDelay || 1000,
+          shouldRetry: RetryUtils.isTemporaryError,
+        });
 
         setData(result);
         return result;
       } catch (err) {
-        const error = err instanceof Error ? err : new Error('Unknown error');
+        const error = err instanceof Error ? err : new Error("Unknown error");
         setError(error);
-        logger.error('API call failed:', error);
+        logger.error("API call failed:", error);
         throw error;
       } finally {
         setLoading(false);
       }
     },
-    [apiFunction, options.retryOptions, logger]
+    [apiFunction, options.retryOptions, logger],
   );
 
   const reset = useCallback(() => {
@@ -929,11 +954,14 @@ export function useWorkflowApi() {
     try {
       setLoading(true);
       setError(null);
-      const response = await apiClient.get('/api/workflows', { params: filters });
+      const response = await apiClient.get("/api/workflows", {
+        params: filters,
+      });
       setWorkflows(response.workflows);
       return response;
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to fetch workflows');
+      const error =
+        err instanceof Error ? err : new Error("Failed to fetch workflows");
       setError(error);
       throw error;
     } finally {
@@ -944,11 +972,12 @@ export function useWorkflowApi() {
   const createWorkflow = useCallback(async (workflowData: any) => {
     try {
       setLoading(true);
-      const response = await apiClient.post('/api/workflows', workflowData);
-      setWorkflows(prev => [response, ...prev]);
+      const response = await apiClient.post("/api/workflows", workflowData);
+      setWorkflows((prev) => [response, ...prev]);
       return response;
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to create workflow');
+      const error =
+        err instanceof Error ? err : new Error("Failed to create workflow");
       setError(error);
       throw error;
     } finally {
@@ -956,22 +985,26 @@ export function useWorkflowApi() {
     }
   }, []);
 
-  const executeWorkflow = useCallback(async (workflowId: string, inputData: any) => {
-    try {
-      setLoading(true);
-      const response = await apiClient.post(
-        `/api/workflows/${workflowId}/execute`,
-        { input_data: inputData }
-      );
-      return response;
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to execute workflow');
-      setError(error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const executeWorkflow = useCallback(
+    async (workflowId: string, inputData: any) => {
+      try {
+        setLoading(true);
+        const response = await apiClient.post(
+          `/api/workflows/${workflowId}/execute`,
+          { input_data: inputData },
+        );
+        return response;
+      } catch (err) {
+        const error =
+          err instanceof Error ? err : new Error("Failed to execute workflow");
+        setError(error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
 
   return {
     workflows,
@@ -987,19 +1020,26 @@ export function useWorkflowApi() {
 ### 4. Type Definitions (`/types`)
 
 #### Core Types
+
 **File**: `types/index.ts`
 
 ```typescript
 // Common utility types
 export type UUID = string;
 export type Timestamp = string;
-export type JSONValue = string | number | boolean | null | JSONValue[] | { [key: string]: JSONValue };
+export type JSONValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JSONValue[]
+  | { [key: string]: JSONValue };
 
 // API Response types
 export interface ApiResponse<T = any> {
   data: T;
   message?: string;
-  status: 'success' | 'error';
+  status: "success" | "error";
   timestamp: Timestamp;
 }
 
@@ -1095,7 +1135,7 @@ export interface Workflow {
 export interface WorkflowExecution {
   id: UUID;
   workflow_id: UUID;
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+  status: "pending" | "running" | "completed" | "failed" | "cancelled";
   started_at: Timestamp;
   completed_at?: Timestamp;
   duration?: number;
@@ -1107,7 +1147,7 @@ export interface WorkflowExecution {
 
 export interface WorkflowExecutionStep {
   step_id: string;
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'skipped';
+  status: "pending" | "running" | "completed" | "failed" | "skipped";
   started_at?: Timestamp;
   completed_at?: Timestamp;
   input?: Record<string, any>;
@@ -1132,7 +1172,7 @@ export interface Template {
 export interface TemplateParameter {
   name: string;
   description?: string;
-  parameter_type: 'string' | 'number' | 'boolean' | 'email' | 'url' | 'date';
+  parameter_type: "string" | "number" | "boolean" | "email" | "url" | "date";
   is_required: boolean;
   default_value?: any;
   validation_pattern?: string;
@@ -1140,7 +1180,7 @@ export interface TemplateParameter {
 
 // System monitoring types
 export interface SystemHealth {
-  status: 'healthy' | 'degraded' | 'unhealthy';
+  status: "healthy" | "degraded" | "unhealthy";
   timestamp: Timestamp;
   version: string;
   environment: string;
@@ -1148,7 +1188,7 @@ export interface SystemHealth {
 }
 
 export interface ServiceHealth {
-  status: 'healthy' | 'degraded' | 'unhealthy';
+  status: "healthy" | "degraded" | "unhealthy";
   response_time: number;
   details?: Record<string, any>;
 }
@@ -1178,6 +1218,7 @@ export interface SystemMetrics {
 ```
 
 #### Error Types
+
 **File**: `types/error.ts`
 
 ```typescript
@@ -1195,8 +1236,8 @@ export interface ErrorReport {
   message: string;
   stack?: string;
   context: ErrorContext;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  category: 'network' | 'validation' | 'business' | 'system' | 'unknown';
+  severity: "low" | "medium" | "high" | "critical";
+  category: "network" | "validation" | "business" | "system" | "unknown";
 }
 
 export interface ErrorBoundaryState {
@@ -1207,7 +1248,7 @@ export interface ErrorBoundaryState {
 
 export interface ErrorNotification {
   id: string;
-  type: 'error' | 'warning' | 'info';
+  type: "error" | "warning" | "info";
   title: string;
   message: string;
   timestamp: string;
@@ -1224,17 +1265,17 @@ export interface ErrorNotification {
 
 ```typescript
 // Import specific modules
-import { apiClient } from '@/shared/api/client';
-import { Logger } from '@/shared/utils/logger';
-import { useAuth } from '@/shared/hooks/useAuth';
+import { apiClient } from "@/shared/api/client";
+import { Logger } from "@/shared/utils/logger";
+import { useAuth } from "@/shared/hooks/useAuth";
 
 // Import from index files
-import { AuthService, WorkflowService } from '@/shared/api';
-import { retry, ErrorUtils } from '@/shared/utils';
-import { useApi, useWorkflowApi } from '@/shared/hooks';
+import { AuthService, WorkflowService } from "@/shared/api";
+import { retry, ErrorUtils } from "@/shared/utils";
+import { useApi, useWorkflowApi } from "@/shared/hooks";
 
 // Import types
-import type { User, Workflow, ApiResponse } from '@/shared/types';
+import type { User, Workflow, ApiResponse } from "@/shared/types";
 ```
 
 ### 2. Component Integration
@@ -1276,31 +1317,34 @@ const WorkflowDashboard: React.FC = () => {
 
 ```typescript
 // Using shared services
-import { AuthService } from '@/shared/api/auth';
-import { retry } from '@/shared/utils/retryUtils';
-import { Logger } from '@/shared/utils/logger';
+import { AuthService } from "@/shared/api/auth";
+import { retry } from "@/shared/utils/retryUtils";
+import { Logger } from "@/shared/utils/logger";
 
 class CustomService {
-  private logger = new Logger('CustomService');
+  private logger = new Logger("CustomService");
 
   async performCriticalOperation() {
     if (!AuthService.isAuthenticated()) {
-      throw new Error('Authentication required');
+      throw new Error("Authentication required");
     }
 
     return retry(
       async () => {
         // Critical operation that might fail
-        const result = await fetch('/api/critical-endpoint');
+        const result = await fetch("/api/critical-endpoint");
         return result.json();
       },
       {
         maxAttempts: 5,
-        shouldRetry: (error) => error.message.includes('temporary'),
+        shouldRetry: (error) => error.message.includes("temporary"),
         onRetry: (attempt, error) => {
-          this.logger.warn(`Retrying critical operation (attempt ${attempt}):`, error);
+          this.logger.warn(
+            `Retrying critical operation (attempt ${attempt}):`,
+            error,
+          );
         },
-      }
+      },
     );
   }
 }
@@ -1314,33 +1358,36 @@ class CustomService {
 
 ```typescript
 // Testing utilities
-import { describe, it, expect, vi } from 'vitest';
-import { ErrorUtils } from '../utils/errorUtils';
-import { RetryUtils } from '../utils/retryUtils';
+import { describe, it, expect, vi } from "vitest";
+import { ErrorUtils } from "../utils/errorUtils";
+import { RetryUtils } from "../utils/retryUtils";
 
-describe('ErrorUtils', () => {
-  it('should categorize network errors correctly', () => {
-    const networkError = new Error('Network request failed');
+describe("ErrorUtils", () => {
+  it("should categorize network errors correctly", () => {
+    const networkError = new Error("Network request failed");
     const report = ErrorUtils.createErrorReport(networkError, {});
-    expect(report.category).toBe('network');
+    expect(report.category).toBe("network");
   });
 
-  it('should generate user-friendly messages', () => {
-    const validationError = new Error('Invalid email format');
-    const message = ErrorUtils.createUserFriendlyMessage(validationError, 'validation');
-    expect(message).toBe('Please check your input and try again.');
+  it("should generate user-friendly messages", () => {
+    const validationError = new Error("Invalid email format");
+    const message = ErrorUtils.createUserFriendlyMessage(
+      validationError,
+      "validation",
+    );
+    expect(message).toBe("Please check your input and try again.");
   });
 });
 
-describe('RetryUtils', () => {
-  it('should retry failed operations', async () => {
+describe("RetryUtils", () => {
+  it("should retry failed operations", async () => {
     let attempts = 0;
     const operation = vi.fn(() => {
       attempts++;
       if (attempts < 3) {
-        throw new Error('Temporary failure');
+        throw new Error("Temporary failure");
       }
-      return Promise.resolve('success');
+      return Promise.resolve("success");
     });
 
     const result = await RetryUtils.withRetry(operation, {
@@ -1349,7 +1396,7 @@ describe('RetryUtils', () => {
       shouldRetry: () => true,
     });
 
-    expect(result).toBe('success');
+    expect(result).toBe("success");
     expect(operation).toHaveBeenCalledTimes(3);
   });
 });
@@ -1359,20 +1406,20 @@ describe('RetryUtils', () => {
 
 ```typescript
 // Testing hooks
-import { renderHook, waitFor } from '@testing-library/react';
-import { useAuth } from '../hooks/useAuth';
-import { AuthService } from '../api/auth';
+import { renderHook, waitFor } from "@testing-library/react";
+import { useAuth } from "../hooks/useAuth";
+import { AuthService } from "../api/auth";
 
 // Mock AuthService
-vi.mock('../api/auth');
+vi.mock("../api/auth");
 
-describe('useAuth', () => {
+describe("useAuth", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should initialize user from stored token', async () => {
-    const mockUser = { id: '1', email: 'test@example.com' };
+  it("should initialize user from stored token", async () => {
+    const mockUser = { id: "1", email: "test@example.com" };
     AuthService.isAuthenticated.mockReturnValue(true);
     AuthService.getCurrentUser.mockResolvedValue(mockUser);
 
@@ -1391,24 +1438,28 @@ describe('useAuth', () => {
 ## Maintenance and Best Practices
 
 ### 1. Code Quality
+
 - **Type Safety**: All shared modules use TypeScript
 - **Error Handling**: Comprehensive error handling with logging
 - **Testing**: Unit tests for all utilities and services
 - **Documentation**: JSDoc comments for public APIs
 
 ### 2. Performance
+
 - **Tree Shaking**: Modular exports for optimal bundling
 - **Lazy Loading**: Conditional imports where appropriate
 - **Memoization**: React hooks use proper dependencies
 - **Caching**: API responses cached where beneficial
 
 ### 3. Security
+
 - **Input Validation**: All user inputs validated
 - **Token Management**: Secure token storage and refresh
 - **Error Sanitization**: Sensitive data excluded from error reports
 - **Audit Logging**: Security events logged appropriately
 
 ### 4. Versioning
+
 - **Semantic Versioning**: Breaking changes increment major version
 - **Changelog**: All changes documented
 - **Migration Guides**: Breaking change migration documentation

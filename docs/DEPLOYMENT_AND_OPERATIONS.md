@@ -1,8 +1,8 @@
 # Deployment and Operations Guide
 
-**Document Version**: 1.0  
-**Last Updated**: August 8, 2025  
-**Maintained By**: DevOps Team  
+**Document Version**: 1.0
+**Last Updated**: August 8, 2025
+**Maintained By**: DevOps Team
 
 ## Overview
 
@@ -47,6 +47,7 @@ This guide provides comprehensive instructions for deploying, configuring, and o
 ### 2. Infrastructure Components
 
 #### AWS Resources
+
 ```yaml
 # infrastructure/terraform/main.tf
 provider "aws" {
@@ -113,27 +114,27 @@ resource "aws_db_instance" "main" {
   engine         = "postgres"
   engine_version = "15.4"
   instance_class = var.db_instance_class
-  
+
   allocated_storage     = var.db_allocated_storage
   max_allocated_storage = var.db_max_allocated_storage
   storage_encrypted     = true
-  
+
   db_name  = "auterity"
   username = var.db_username
   password = var.db_password
-  
+
   vpc_security_group_ids = [aws_security_group.rds.id]
   db_subnet_group_name   = aws_db_subnet_group.main.name
-  
+
   backup_retention_period = var.environment == "production" ? 30 : 7
   backup_window          = "03:00-04:00"
   maintenance_window     = "sun:04:00-sun:05:00"
-  
+
   multi_az               = var.environment == "production"
   publicly_accessible    = false
-  
+
   skip_final_snapshot = var.environment != "production"
-  
+
   tags = {
     Environment = var.environment
   }
@@ -148,21 +149,21 @@ resource "aws_elasticache_subnet_group" "main" {
 resource "aws_elasticache_replication_group" "main" {
   replication_group_id         = "auterity-redis-${var.environment}"
   description                  = "Redis cluster for Auterity ${var.environment}"
-  
+
   node_type                    = var.redis_node_type
   port                         = 6379
   parameter_group_name         = "default.redis7"
-  
+
   num_cache_clusters           = var.environment == "production" ? 2 : 1
   automatic_failover_enabled   = var.environment == "production"
   multi_az_enabled             = var.environment == "production"
-  
+
   subnet_group_name            = aws_elasticache_subnet_group.main.name
   security_group_ids           = [aws_security_group.redis.id]
-  
+
   at_rest_encryption_enabled   = true
   transit_encryption_enabled   = true
-  
+
   tags = {
     Environment = var.environment
   }
@@ -190,6 +191,7 @@ resource "aws_ecs_cluster" "main" {
 ### 1. Production Deployment
 
 #### Pre-Deployment Checklist
+
 ```bash
 #!/bin/bash
 # scripts/pre-deployment-checklist.sh
@@ -200,7 +202,7 @@ echo "🔍 Running pre-deployment checklist..."
 echo "✅ Checking environment variables..."
 required_vars=(
     "DATABASE_URL"
-    "REDIS_URL" 
+    "REDIS_URL"
     "JWT_SECRET_KEY"
     "AWS_ACCESS_KEY_ID"
     "AWS_SECRET_ACCESS_KEY"
@@ -263,6 +265,7 @@ echo "🎉 Pre-deployment checklist completed successfully!"
 ```
 
 #### Blue-Green Deployment Script
+
 ```bash
 #!/bin/bash
 # scripts/blue-green-deploy.sh
@@ -410,6 +413,7 @@ echo "📊 New version $VERSION is now live in $ENVIRONMENT"
 ### 2. Environment-Specific Configuration
 
 #### Production Configuration
+
 ```yaml
 # infrastructure/environments/production.yml
 environment: production
@@ -442,13 +446,14 @@ waf_enabled: true
 enable_deletion_protection: true
 
 # Auto Scaling
-scale_up_threshold: 70    # CPU percentage
-scale_down_threshold: 30  # CPU percentage
-scale_up_adjustment: 2    # Number of instances
+scale_up_threshold: 70 # CPU percentage
+scale_down_threshold: 30 # CPU percentage
+scale_up_adjustment: 2 # Number of instances
 scale_down_adjustment: -1 # Number of instances
 ```
 
 #### Staging Configuration
+
 ```yaml
 # infrastructure/environments/staging.yml
 environment: staging
@@ -484,6 +489,7 @@ enable_deletion_protection: false
 ### 3. Database Migration Management
 
 #### Migration Scripts
+
 ```python
 # scripts/migrate_database.py
 """Database migration management script."""
@@ -504,14 +510,14 @@ class DatabaseMigrator:
     def __init__(self, database_url: str):
         self.database_url = database_url
         self.engine = create_engine(database_url)
-        
+
     def create_database_if_not_exists(self):
         """Create database if it doesn't exist."""
         try:
             # Parse database URL to get connection details
             from urllib.parse import urlparse
             parsed = urlparse(self.database_url)
-            
+
             # Connect to PostgreSQL server (not specific database)
             conn = psycopg2.connect(
                 host=parsed.hostname,
@@ -522,31 +528,31 @@ class DatabaseMigrator:
             )
             conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
             cursor = conn.cursor()
-            
+
             # Check if database exists
             cursor.execute(
                 "SELECT 1 FROM pg_database WHERE datname = %s",
                 (parsed.path.lstrip('/'),)
             )
-            
+
             if not cursor.fetchone():
                 logger.info(f"Creating database: {parsed.path.lstrip('/')}")
                 cursor.execute(f'CREATE DATABASE "{parsed.path.lstrip("/")}"')
             else:
                 logger.info("Database already exists")
-                
+
             cursor.close()
             conn.close()
-            
+
         except Exception as e:
             logger.error(f"Error creating database: {e}")
             raise
-    
+
     def backup_database(self, backup_path: str):
         """Create database backup before migration."""
         from urllib.parse import urlparse
         parsed = urlparse(self.database_url)
-        
+
         backup_command = [
             "pg_dump",
             "-h", parsed.hostname,
@@ -556,47 +562,47 @@ class DatabaseMigrator:
             "-f", backup_path,
             "--verbose"
         ]
-        
+
         env = os.environ.copy()
         env['PGPASSWORD'] = parsed.password
-        
+
         import subprocess
         result = subprocess.run(backup_command, env=env, capture_output=True, text=True)
-        
+
         if result.returncode != 0:
             logger.error(f"Backup failed: {result.stderr}")
             raise Exception("Database backup failed")
-        
+
         logger.info(f"Database backup created: {backup_path}")
-    
+
     def run_migrations(self, target_revision: str = "head"):
         """Run database migrations."""
         try:
             alembic_cfg = Config("backend/alembic.ini")
             alembic_cfg.set_main_option("sqlalchemy.url", self.database_url)
-            
+
             logger.info("Running database migrations...")
             command.upgrade(alembic_cfg, target_revision)
             logger.info("Migrations completed successfully")
-            
+
         except Exception as e:
             logger.error(f"Migration failed: {e}")
             raise
-    
+
     def rollback_migration(self, target_revision: str):
         """Rollback database migration."""
         try:
             alembic_cfg = Config("backend/alembic.ini")
             alembic_cfg.set_main_option("sqlalchemy.url", self.database_url)
-            
+
             logger.info(f"Rolling back to revision: {target_revision}")
             command.downgrade(alembic_cfg, target_revision)
             logger.info("Rollback completed successfully")
-            
+
         except Exception as e:
             logger.error(f"Rollback failed: {e}")
             raise
-    
+
     def validate_migration(self):
         """Validate database state after migration."""
         try:
@@ -604,32 +610,32 @@ class DatabaseMigrator:
             with self.engine.connect() as conn:
                 # Check critical tables exist
                 result = conn.execute(text("""
-                    SELECT table_name 
-                    FROM information_schema.tables 
+                    SELECT table_name
+                    FROM information_schema.tables
                     WHERE table_schema = 'public'
                     AND table_name IN ('users', 'workflows', 'workflow_executions')
                 """))
-                
+
                 tables = [row[0] for row in result]
                 required_tables = ['users', 'workflows', 'workflow_executions']
-                
+
                 missing_tables = set(required_tables) - set(tables)
                 if missing_tables:
                     raise Exception(f"Missing required tables: {missing_tables}")
-                
+
                 # Check for any orphaned data
                 result = conn.execute(text("""
                     SELECT COUNT(*) FROM workflow_executions we
                     LEFT JOIN workflows w ON we.workflow_id = w.id
                     WHERE w.id IS NULL
                 """))
-                
+
                 orphaned_count = result.scalar()
                 if orphaned_count > 0:
                     logger.warning(f"Found {orphaned_count} orphaned workflow executions")
-                
+
                 logger.info("Database validation completed successfully")
-                
+
         except Exception as e:
             logger.error(f"Database validation failed: {e}")
             raise
@@ -638,40 +644,40 @@ def main():
     if len(sys.argv) < 2:
         print("Usage: python migrate_database.py [migrate|rollback|validate] [revision]")
         sys.exit(1)
-    
+
     command = sys.argv[1]
     revision = sys.argv[2] if len(sys.argv) > 2 else "head"
-    
+
     database_url = os.environ.get("DATABASE_URL")
     if not database_url:
         logger.error("DATABASE_URL environment variable not set")
         sys.exit(1)
-    
+
     migrator = DatabaseMigrator(database_url)
-    
+
     try:
         if command == "migrate":
             # Create backup before migration
             backup_path = f"backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.sql"
             migrator.backup_database(backup_path)
-            
+
             # Run migrations
             migrator.run_migrations(revision)
             migrator.validate_migration()
-            
+
         elif command == "rollback":
             if revision == "head":
                 logger.error("Revision required for rollback")
                 sys.exit(1)
             migrator.rollback_migration(revision)
-            
+
         elif command == "validate":
             migrator.validate_migration()
-            
+
         else:
             logger.error(f"Unknown command: {command}")
             sys.exit(1)
-            
+
     except Exception as e:
         logger.error(f"Operation failed: {e}")
         sys.exit(1)
@@ -687,6 +693,7 @@ if __name__ == "__main__":
 ### 1. Application Monitoring
 
 #### Health Check Endpoints
+
 ```python
 # backend/app/api/v1/health.py
 from fastapi import APIRouter, Depends, HTTPException
@@ -717,7 +724,7 @@ async def detailed_health_check(db: Session = Depends(get_db)):
         "version": settings.VERSION,
         "checks": {}
     }
-    
+
     # Database connectivity check
     try:
         result = db.execute(text("SELECT 1")).scalar()
@@ -731,31 +738,31 @@ async def detailed_health_check(db: Session = Depends(get_db)):
             "error": str(e)
         }
         health_status["status"] = "unhealthy"
-    
+
     # Redis connectivity check
     try:
         redis_client = redis.from_url(settings.REDIS_URL)
         start_time = time.time()
         redis_client.ping()
         response_time = (time.time() - start_time) * 1000
-        
+
         health_status["checks"]["redis"] = {
             "status": "healthy",
             "response_time_ms": round(response_time, 2)
         }
     except Exception as e:
         health_status["checks"]["redis"] = {
-            "status": "unhealthy", 
+            "status": "unhealthy",
             "error": str(e)
         }
         health_status["status"] = "unhealthy"
-    
+
     # External service checks
     health_status["checks"]["ai_service"] = await check_ai_service_health()
-    
+
     if health_status["status"] == "unhealthy":
         raise HTTPException(status_code=503, detail=health_status)
-    
+
     return health_status
 
 @router.get("/health/readiness")
@@ -766,15 +773,15 @@ async def readiness_check(db: Session = Depends(get_db)):
         result = db.execute(text("""
             SELECT version_num FROM alembic_version
         """)).scalar()
-        
+
         if not result:
             raise HTTPException(
-                status_code=503, 
+                status_code=503,
                 detail="Database not initialized"
             )
-        
+
         return {"status": "ready", "db_version": result}
-        
+
     except Exception as e:
         raise HTTPException(
             status_code=503,
@@ -788,6 +795,7 @@ async def liveness_check():
 ```
 
 #### Metrics Collection
+
 ```python
 # backend/app/core/metrics.py
 from prometheus_client import Counter, Histogram, Gauge, generate_latest
@@ -829,25 +837,25 @@ def track_request_metrics(func: Callable) -> Callable:
     @wraps(func)
     async def wrapper(*args, **kwargs):
         start_time = time.time()
-        
+
         try:
             response = await func(*args, **kwargs)
             status_code = getattr(response, 'status_code', 200)
-            
+
             # Track metrics
             REQUEST_COUNT.labels(
                 method=kwargs.get('method', 'GET'),
                 endpoint=func.__name__,
                 status_code=status_code
             ).inc()
-            
+
             REQUEST_DURATION.labels(
                 method=kwargs.get('method', 'GET'),
                 endpoint=func.__name__
             ).observe(time.time() - start_time)
-            
+
             return response
-            
+
         except Exception as e:
             REQUEST_COUNT.labels(
                 method=kwargs.get('method', 'GET'),
@@ -855,7 +863,7 @@ def track_request_metrics(func: Callable) -> Callable:
                 status_code=500
             ).inc()
             raise
-    
+
     return wrapper
 
 @router.get("/metrics")
@@ -870,6 +878,7 @@ async def get_metrics():
 ### 2. Logging Configuration
 
 #### Structured Logging
+
 ```python
 # backend/app/core/logging.py
 import logging
@@ -880,7 +889,7 @@ from typing import Dict, Any
 
 class StructuredFormatter(logging.Formatter):
     """JSON structured logging formatter."""
-    
+
     def format(self, record: logging.LogRecord) -> str:
         """Format log record as JSON."""
         log_entry = {
@@ -892,7 +901,7 @@ class StructuredFormatter(logging.Formatter):
             "function": record.funcName,
             "line": record.lineno
         }
-        
+
         # Add extra fields if present
         if hasattr(record, 'user_id'):
             log_entry['user_id'] = record.user_id
@@ -900,69 +909,69 @@ class StructuredFormatter(logging.Formatter):
             log_entry['request_id'] = record.request_id
         if hasattr(record, 'execution_time'):
             log_entry['execution_time'] = record.execution_time
-        
+
         # Add exception info if present
         if record.exc_info:
             log_entry['exception'] = self.formatException(record.exc_info)
-        
+
         return json.dumps(log_entry)
 
 def setup_logging(log_level: str = "INFO", structured: bool = True):
     """Setup application logging configuration."""
-    
+
     # Clear existing handlers
     root_logger = logging.getLogger()
     root_logger.handlers.clear()
-    
+
     # Create handler
     handler = logging.StreamHandler(sys.stdout)
-    
+
     if structured:
         formatter = StructuredFormatter()
     else:
         formatter = logging.Formatter(
             '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         )
-    
+
     handler.setFormatter(formatter)
-    
+
     # Configure root logger
     root_logger.addHandler(handler)
     root_logger.setLevel(getattr(logging, log_level.upper()))
-    
+
     # Configure specific loggers
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
 
 class ContextualLogger:
     """Logger with contextual information."""
-    
+
     def __init__(self, name: str):
         self.logger = logging.getLogger(name)
         self.context = {}
-    
+
     def set_context(self, **kwargs):
         """Set contextual information."""
         self.context.update(kwargs)
-    
+
     def clear_context(self):
         """Clear contextual information."""
         self.context.clear()
-    
+
     def _log_with_context(self, level: int, message: str, **kwargs):
         """Log message with context."""
         extra = {**self.context, **kwargs}
         self.logger.log(level, message, extra=extra)
-    
+
     def info(self, message: str, **kwargs):
         self._log_with_context(logging.INFO, message, **kwargs)
-    
+
     def warning(self, message: str, **kwargs):
         self._log_with_context(logging.WARNING, message, **kwargs)
-    
+
     def error(self, message: str, **kwargs):
         self._log_with_context(logging.ERROR, message, **kwargs)
-    
+
     def debug(self, message: str, **kwargs):
         self._log_with_context(logging.DEBUG, message, **kwargs)
 
@@ -976,9 +985,9 @@ async def execute_workflow(workflow_id: str, current_user: User = Depends(get_cu
         workflow_id=workflow_id,
         request_id=uuid.uuid4().hex
     )
-    
+
     logger.info("Starting workflow execution")
-    
+
     try:
         result = await workflow_service.execute(workflow_id)
         logger.info("Workflow execution completed", execution_time=result.duration)
@@ -993,6 +1002,7 @@ async def execute_workflow(workflow_id: str, current_user: User = Depends(get_cu
 ### 3. Performance Monitoring
 
 #### APM Integration
+
 ```python
 # backend/app/core/apm.py
 from elasticapm.contrib.starlette import ElasticAPM
@@ -1001,7 +1011,7 @@ import elasticapm
 
 def setup_apm(app, config: dict):
     """Setup Application Performance Monitoring."""
-    
+
     apm_config = {
         'SERVICE_NAME': config.get('service_name', 'auterity-backend'),
         'SERVER_URL': config.get('apm_server_url'),
@@ -1014,29 +1024,29 @@ def setup_apm(app, config: dict):
             '/metrics'
         ]
     }
-    
+
     if apm_config['SERVER_URL']:
         apm = make_apm_client(apm_config)
         app.add_middleware(ElasticAPM, client=apm)
-        
+
         # Custom transaction tracking
         @app.middleware("http")
         async def apm_transaction_middleware(request, call_next):
             transaction_name = f"{request.method} {request.url.path}"
-            
+
             elasticapm.set_transaction_name(transaction_name)
             elasticapm.tag(
                 http_method=request.method,
                 http_url=str(request.url),
                 user_agent=request.headers.get('user-agent')
             )
-            
+
             response = await call_next(request)
-            
+
             elasticapm.tag(
                 http_status_code=response.status_code
             )
-            
+
             return response
 
 # Custom instrumentation
@@ -1046,7 +1056,7 @@ def track_workflow_execution(workflow_id: str, execution_time: float):
         workflow_id=workflow_id,
         execution_time=execution_time
     )
-    
+
     # Custom metric
     elasticapm.capture_message(
         f"Workflow {workflow_id} executed in {execution_time}ms",
@@ -1061,6 +1071,7 @@ def track_workflow_execution(workflow_id: str, execution_time: float):
 ### 1. Backup Strategy
 
 #### Database Backup
+
 ```bash
 #!/bin/bash
 # scripts/backup-database.sh
@@ -1123,7 +1134,7 @@ echo "🧹 Cleaning up backups older than $RETENTION_DAYS days..."
 aws s3 ls s3://$BACKUP_BUCKET/database/ | while read -r line; do
     backup_date=$(echo $line | awk '{print $1 " " $2}')
     backup_file=$(echo $line | awk '{print $4}')
-    
+
     if [[ $(date -d "$backup_date" +%s) -lt $(date -d "$RETENTION_DAYS days ago" +%s) ]]; then
         aws s3 rm s3://$BACKUP_BUCKET/database/$backup_file
         echo "Deleted old backup: $backup_file"
@@ -1134,6 +1145,7 @@ echo "🎉 Database backup completed successfully!"
 ```
 
 #### Application Data Backup
+
 ```bash
 #!/bin/bash
 # scripts/backup-application-data.sh
@@ -1179,6 +1191,7 @@ echo "✅ Application data backup completed!"
 ### 2. Disaster Recovery Plan
 
 #### Recovery Procedures
+
 ```bash
 #!/bin/bash
 # scripts/disaster-recovery.sh
@@ -1263,11 +1276,11 @@ fi
 if [ -n "$DATA_BACKUP" ]; then
     aws s3 cp s3://$BACKUP_BUCKET/application-data/$DATA_BACKUP ./
     tar -xzf $DATA_BACKUP
-    
+
     # Restore to recovery buckets
     aws s3 sync backup-temp/config/ s3://auterity-config-recovery-${ENVIRONMENT}/
     aws s3 sync backup-temp/uploads/ s3://auterity-uploads-recovery-${ENVIRONMENT}/
-    
+
     rm -rf backup-temp $DATA_BACKUP
 fi
 
@@ -1302,6 +1315,7 @@ echo "📊 Recovery environment is running in region: $RECOVERY_REGION"
 ### 1. Common Issues and Solutions
 
 #### Application Won't Start
+
 ```bash
 # Problem: Application container fails to start
 # Solution: Check environment variables and dependencies
@@ -1327,19 +1341,20 @@ docker exec <container_id> python -m alembic heads
 ```
 
 #### Database Connection Issues
+
 ```sql
 -- Problem: Database connection timeouts or failures
 -- Solution: Check connection pool and database status
 
 -- 1. Check active connections
-SELECT 
+SELECT
     count(*) as total_connections,
     count(*) FILTER (WHERE state = 'active') as active_connections,
     count(*) FILTER (WHERE state = 'idle') as idle_connections
 FROM pg_stat_activity;
 
 -- 2. Check for long-running queries
-SELECT 
+SELECT
     pid,
     now() - pg_stat_activity.query_start AS duration,
     query,
@@ -1349,7 +1364,7 @@ WHERE (now() - pg_stat_activity.query_start) > interval '5 minutes'
 ORDER BY duration DESC;
 
 -- 3. Check database locks
-SELECT 
+SELECT
     blocked_locks.pid     AS blocked_pid,
     blocked_activity.usename  AS blocked_user,
     blocking_locks.pid     AS blocking_pid,
@@ -1358,7 +1373,7 @@ SELECT
     blocking_activity.query   AS current_statement_in_blocking_process
 FROM  pg_catalog.pg_locks         blocked_locks
 JOIN pg_catalog.pg_stat_activity blocked_activity  ON blocked_activity.pid = blocked_locks.pid
-JOIN pg_catalog.pg_locks         blocking_locks 
+JOIN pg_catalog.pg_locks         blocking_locks
     ON blocking_locks.locktype = blocked_locks.locktype
     AND blocking_locks.database IS NOT DISTINCT FROM blocked_locks.database
 JOIN pg_catalog.pg_stat_activity blocking_activity ON blocking_activity.pid = blocking_locks.pid
@@ -1366,6 +1381,7 @@ WHERE NOT blocked_locks.granted;
 ```
 
 #### Performance Issues
+
 ```python
 # Performance troubleshooting script
 # scripts/performance_diagnostics.py
@@ -1381,13 +1397,13 @@ class PerformanceDiagnostics:
     def __init__(self):
         self.redis_client = redis.from_url(os.environ['REDIS_URL'])
         self.db_engine = create_engine(os.environ['DATABASE_URL'])
-    
+
     def check_system_resources(self):
         """Check system resource usage."""
         cpu_percent = psutil.cpu_percent(interval=1)
         memory = psutil.virtual_memory()
         disk = psutil.disk_usage('/')
-        
+
         return {
             "cpu_usage": cpu_percent,
             "memory_usage": memory.percent,
@@ -1395,7 +1411,7 @@ class PerformanceDiagnostics:
             "disk_usage": disk.percent,
             "disk_free": disk.free / (1024**3)  # GB
         }
-    
+
     def check_database_performance(self):
         """Check database performance metrics."""
         with self.db_engine.connect() as conn:
@@ -1407,17 +1423,17 @@ class PerformanceDiagnostics:
                 ORDER BY mean_time DESC
                 LIMIT 10
             """)).fetchall()
-            
+
             # Check cache hit ratio
             cache_hit_ratio = conn.execute(text("""
-                SELECT 
+                SELECT
                     sum(heap_blks_hit) / (sum(heap_blks_hit) + sum(heap_blks_read)) as ratio
                 FROM pg_statio_user_tables
             """)).scalar()
-            
+
             # Check table sizes
             table_sizes = conn.execute(text("""
-                SELECT 
+                SELECT
                     schemaname,
                     tablename,
                     pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as size
@@ -1426,17 +1442,17 @@ class PerformanceDiagnostics:
                 ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC
                 LIMIT 10
             """)).fetchall()
-            
+
             return {
                 "slow_queries": [dict(row) for row in slow_queries],
                 "cache_hit_ratio": float(cache_hit_ratio or 0),
                 "largest_tables": [dict(row) for row in table_sizes]
             }
-    
+
     def check_redis_performance(self):
         """Check Redis performance metrics."""
         info = self.redis_client.info()
-        
+
         return {
             "memory_usage": info['used_memory_human'],
             "memory_peak": info['used_memory_peak_human'],
@@ -1446,7 +1462,7 @@ class PerformanceDiagnostics:
             "keyspace_misses": info['keyspace_misses'],
             "hit_rate": info['keyspace_hits'] / (info['keyspace_hits'] + info['keyspace_misses']) if (info['keyspace_hits'] + info['keyspace_misses']) > 0 else 0
         }
-    
+
     def check_api_response_times(self):
         """Check API response times."""
         endpoints = [
@@ -1454,16 +1470,16 @@ class PerformanceDiagnostics:
             "/api/workflows",
             "/api/users/me"
         ]
-        
+
         base_url = os.environ.get('API_BASE_URL', 'http://localhost:8000')
         results = {}
-        
+
         for endpoint in endpoints:
             try:
                 start_time = time.time()
                 response = requests.get(f"{base_url}{endpoint}", timeout=10)
                 response_time = (time.time() - start_time) * 1000
-                
+
                 results[endpoint] = {
                     "response_time_ms": round(response_time, 2),
                     "status_code": response.status_code,
@@ -1474,9 +1490,9 @@ class PerformanceDiagnostics:
                     "error": str(e),
                     "success": False
                 }
-        
+
         return results
-    
+
     def generate_report(self):
         """Generate comprehensive performance report."""
         report = {
@@ -1486,37 +1502,37 @@ class PerformanceDiagnostics:
             "redis_performance": self.check_redis_performance(),
             "api_response_times": self.check_api_response_times()
         }
-        
+
         # Generate recommendations
         recommendations = []
-        
+
         if report["system_resources"]["cpu_usage"] > 80:
             recommendations.append("High CPU usage detected. Consider scaling up or optimizing application code.")
-        
+
         if report["system_resources"]["memory_usage"] > 90:
             recommendations.append("High memory usage detected. Check for memory leaks or scale up instance.")
-        
+
         if report["database_performance"]["cache_hit_ratio"] < 0.95:
             recommendations.append("Low database cache hit ratio. Consider increasing shared_buffers or reviewing queries.")
-        
+
         if report["redis_performance"]["hit_rate"] < 0.8:
             recommendations.append("Low Redis hit rate. Review caching strategy.")
-        
+
         report["recommendations"] = recommendations
-        
+
         return report
 
 if __name__ == "__main__":
     diagnostics = PerformanceDiagnostics()
     report = diagnostics.generate_report()
-    
+
     print("📊 Performance Diagnostic Report")
     print("=" * 50)
     print(f"System CPU Usage: {report['system_resources']['cpu_usage']}%")
     print(f"System Memory Usage: {report['system_resources']['memory_usage']}%")
     print(f"Database Cache Hit Ratio: {report['database_performance']['cache_hit_ratio']:.2%}")
     print(f"Redis Hit Rate: {report['redis_performance']['hit_rate']:.2%}")
-    
+
     if report["recommendations"]:
         print("\n🔧 Recommendations:")
         for rec in report["recommendations"]:
@@ -1526,6 +1542,7 @@ if __name__ == "__main__":
 ### 2. Emergency Procedures
 
 #### Service Restart Procedure
+
 ```bash
 #!/bin/bash
 # scripts/emergency-restart.sh

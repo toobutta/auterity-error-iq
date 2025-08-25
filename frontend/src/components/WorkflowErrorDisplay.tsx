@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { WorkflowExecution } from '../types/workflow';
-import { getExecution, getExecutionLogs, retryWorkflowExecution } from '../api/workflows';
-import { useError } from '../contexts/ErrorContext';
-import { ErrorCategory, ErrorSeverity } from '../types/error';
-import { createAppError } from '../utils/errorUtils';
-import { ExecutionLog } from '../types/execution-logs';
+import React, { useState, useEffect } from "react";
+import { WorkflowExecution } from "../types/workflow";
+import {
+  getExecution,
+  getExecutionLogs,
+  retryWorkflowExecution,
+} from "../api/workflows";
+import { useError } from "../contexts/ErrorContext";
+import { ErrorCategory, ErrorSeverity } from "../types/error";
+import { createAppError } from "../utils/errorUtils";
+import { ExecutionLog } from "../types/execution-logs";
+import { sanitizeInput } from "../utils/sanitizer";
 // TODO: Re-enable when Kiro integration is needed
 // import { useKiroIntegration } from '../hooks/useKiroIntegration';
-import RetryWorkflowModal from './RetryWorkflowModal';
-import ErrorReportModal from './ErrorReportModal';
+import RetryWorkflowModal from "./RetryWorkflowModal";
+import ErrorReportModal from "./ErrorReportModal";
 
 interface WorkflowErrorDisplayProps {
   executionId: string;
@@ -23,14 +28,16 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
   workflowId,
   onRetrySuccess,
   onClose,
-  className = '',
+  className = "",
 }) => {
   const [execution, setExecution] = useState<WorkflowExecution | null>(null);
   const [logs, setLogs] = useState<ExecutionLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [showRetryModal, setShowRetryModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['overview']));
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set(["overview"]),
+  );
 
   const { addError } = useError();
   // TODO: Implement permission checking when needed
@@ -48,24 +55,24 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
           const logsData = await getExecutionLogs(executionId);
           const transformedLogs: ExecutionLog[] = logsData.map((entry) => ({
             id: entry.id,
-            stepName: entry.stepName || 'Unknown Step',
-            level: (entry.level === 'warn' ? 'warning' : entry.level) || 'info',
-            message: entry.message || '',
+            stepName: entry.stepName || "Unknown Step",
+            level: (entry.level === "warn" ? "warning" : entry.level) || "info",
+            message: entry.message || "",
             data: entry.data || {},
             inputData: entry.data || {},
             outputData: entry.data || {},
             duration: 0, // Default duration since API doesn't provide it
             timestamp: entry.timestamp,
-            errorMessage: entry.level === 'error' ? entry.message : undefined,
+            errorMessage: entry.level === "error" ? entry.message : undefined,
           })) as ExecutionLog[];
           setLogs(transformedLogs);
         } catch (logError) {
-          console.warn('Failed to fetch execution logs:', logError);
+          console.warn("Failed to fetch execution logs:", logError);
         }
       } catch (error) {
-        addError('Failed to load execution details', {
+        addError("Failed to load execution details", {
           executionId,
-          component: 'WorkflowErrorDisplay',
+          component: "WorkflowErrorDisplay",
         });
       } finally {
         setLoading(false);
@@ -75,49 +82,64 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
     fetchExecutionData();
   }, [executionId, addError]);
 
-  const categorizeError = (errorMessage: string, logs: ExecutionLog[]): ErrorCategory => {
+  const categorizeError = (
+    errorMessage: string,
+    logs: ExecutionLog[],
+  ): ErrorCategory => {
     const message = errorMessage.toLowerCase();
 
     if (
-      message.includes('validation') ||
-      message.includes('invalid input') ||
-      message.includes('required field')
+      message.includes("validation") ||
+      message.includes("invalid input") ||
+      message.includes("required field")
     ) {
       return ErrorCategory.VALIDATION;
     }
-    if (message.includes('ai service') || message.includes('openai') || message.includes('gpt')) {
+    if (
+      message.includes("ai service") ||
+      message.includes("openai") ||
+      message.includes("gpt")
+    ) {
       return ErrorCategory.AI_SERVICE;
     }
     if (
-      message.includes('network') ||
-      message.includes('timeout') ||
-      message.includes('connection')
+      message.includes("network") ||
+      message.includes("timeout") ||
+      message.includes("connection")
     ) {
       return ErrorCategory.NETWORK;
     }
-    if (message.includes('database') || message.includes('sql')) {
+    if (message.includes("database") || message.includes("sql")) {
       return ErrorCategory.DATABASE;
     }
-    if (message.includes('authentication') || message.includes('unauthorized')) {
+    if (
+      message.includes("authentication") ||
+      message.includes("unauthorized")
+    ) {
       return ErrorCategory.AUTHENTICATION;
     }
-    if (message.includes('permission') || message.includes('forbidden')) {
+    if (message.includes("permission") || message.includes("forbidden")) {
       return ErrorCategory.AUTHORIZATION;
     }
 
     // Check logs for more context
     const hasAiErrors = logs.some(
-      (log) => log.errorMessage?.toLowerCase().includes('ai') || log.stepType === 'ai_process'
+      (log) =>
+        log.errorMessage?.toLowerCase().includes("ai") ||
+        log.stepType === "ai_process",
     );
     if (hasAiErrors) return ErrorCategory.AI_SERVICE;
 
     return ErrorCategory.WORKFLOW;
   };
 
-  const getErrorSeverity = (category: ErrorCategory, errorMessage: string): ErrorSeverity => {
+  const getErrorSeverity = (
+    category: ErrorCategory,
+    errorMessage: string,
+  ): ErrorSeverity => {
     if (
-      errorMessage.toLowerCase().includes('critical') ||
-      errorMessage.toLowerCase().includes('fatal')
+      errorMessage.toLowerCase().includes("critical") ||
+      errorMessage.toLowerCase().includes("fatal")
     ) {
       return ErrorSeverity.CRITICAL;
     }
@@ -136,7 +158,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
   };
 
   const getFailurePoint = (
-    logs: ExecutionLog[]
+    logs: ExecutionLog[],
   ): { stepName: string; stepIndex: number } | null => {
     const errorLog = logs.find((log) => log.errorMessage);
     if (errorLog) {
@@ -149,16 +171,27 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
     return null;
   };
 
-  const handleRetrySuccess = async (modifiedInputs: Record<string, unknown>) => {
+  const handleRetrySuccess = async (
+    modifiedInputs: Record<string, unknown>,
+  ) => {
     try {
-      // Execute retry with modified inputs
-      const response = await retryWorkflowExecution(executionId, modifiedInputs);
+      // Sanitize inputs to prevent NoSQL injection
+      const sanitizedInputs: Record<string, unknown> = {};
+      Object.entries(modifiedInputs).forEach(([key, value]) => {
+        sanitizedInputs[sanitizeInput(key)] = typeof value === 'string' ? sanitizeInput(value) : value;
+      });
+      
+      // Execute retry with sanitized inputs
+      const response = await retryWorkflowExecution(
+        executionId,
+        sanitizedInputs,
+      );
       setShowRetryModal(false);
       if (onRetrySuccess) {
         onRetrySuccess(response.executionId);
       }
     } catch (error) {
-      console.error('Retry failed:', error);
+      console.error("Retry failed:", error);
       // Error handling is done within the modal
     }
   };
@@ -190,7 +223,9 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
 
   if (loading) {
     return (
-      <div className={`bg-white border border-gray-200 rounded-lg p-6 ${className}`}>
+      <div
+        className={`bg-white border border-gray-200 rounded-lg p-6 ${className}`}
+      >
         <div className="flex items-center justify-center">
           <svg
             className="w-6 h-6 text-gray-400 animate-spin mr-3"
@@ -211,9 +246,11 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
     );
   }
 
-  if (!execution || execution.status !== 'failed') {
+  if (!execution || execution.status !== "failed") {
     return (
-      <div className={`bg-gray-50 border border-gray-200 rounded-lg p-6 ${className}`}>
+      <div
+        className={`bg-gray-50 border border-gray-200 rounded-lg p-6 ${className}`}
+      >
         <div className="text-center text-gray-600">
           <svg
             className="w-12 h-12 mx-auto mb-3 text-gray-400"
@@ -234,8 +271,11 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
     );
   }
 
-  const errorCategory = categorizeError(execution.errorMessage || '', logs);
-  const errorSeverity = getErrorSeverity(errorCategory, execution.errorMessage || '');
+  const errorCategory = categorizeError(execution.errorMessage || "", logs);
+  const errorSeverity = getErrorSeverity(
+    errorCategory,
+    execution.errorMessage || "",
+  );
   const failurePoint = getFailurePoint(logs);
 
   return (
@@ -258,8 +298,12 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
               />
             </svg>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Workflow Execution Failed</h2>
-              <p className="text-sm text-gray-600">Execution ID: {executionId}</p>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Workflow Execution Failed
+              </h2>
+              <p className="text-sm text-gray-600">
+                Execution ID: {executionId}
+              </p>
             </div>
           </div>
           {onClose && (
@@ -267,7 +311,12 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -286,7 +335,12 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
               onClick={() => setShowRetryModal(true)}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
             >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -301,7 +355,12 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
             onClick={() => setShowReportModal(true)}
             className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center"
           >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -318,7 +377,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
         {/* Error Overview */}
         <div>
           <button
-            onClick={() => toggleSection('overview')}
+            onClick={() => toggleSection("overview")}
             className="flex items-center justify-between w-full text-left"
           >
             <h3 className="text-lg font-medium text-gray-900 flex items-center">
@@ -338,7 +397,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
               Error Overview
             </h3>
             <svg
-              className={`w-5 h-5 text-gray-400 transition-transform ${expandedSections.has('overview') ? 'rotate-180' : ''}`}
+              className={`w-5 h-5 text-gray-400 transition-transform ${expandedSections.has("overview") ? "rotate-180" : ""}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -352,13 +411,15 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
             </svg>
           </button>
 
-          {expandedSections.has('overview') && (
+          {expandedSections.has("overview") && (
             <div className="mt-4 space-y-4">
               {/* Error Categorization */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                   <h4 className="font-medium text-red-800">Category</h4>
-                  <p className="text-red-700 capitalize">{errorCategory.replace('_', ' ')}</p>
+                  <p className="text-red-700 capitalize">
+                    {errorCategory.replace("_", " ")}
+                  </p>
                 </div>
                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                   <h4 className="font-medium text-orange-800">Severity</h4>
@@ -369,7 +430,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
                   <p className="text-yellow-700">
                     {failurePoint
                       ? `Step ${failurePoint.stepIndex}: ${failurePoint.stepName}`
-                      : 'Unknown'}
+                      : "Unknown"}
                   </p>
                 </div>
               </div>
@@ -378,25 +439,30 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <h4 className="font-medium text-red-800 mb-2">Error Message</h4>
                 <p className="text-red-700 font-mono text-sm whitespace-pre-wrap">
-                  {execution.errorMessage || 'No error message available'}
+                  {execution.errorMessage || "No error message available"}
                 </p>
               </div>
 
               {/* Execution Timeline */}
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <h4 className="font-medium text-gray-800 mb-2">Execution Timeline</h4>
+                <h4 className="font-medium text-gray-800 mb-2">
+                  Execution Timeline
+                </h4>
                 <div className="text-sm text-gray-600 space-y-1">
                   <p>
-                    <strong>Started:</strong> {formatTimestamp(execution.startedAt)}
+                    <strong>Started:</strong>{" "}
+                    {formatTimestamp(execution.startedAt)}
                   </p>
                   {execution.completedAt && (
                     <p>
-                      <strong>Failed:</strong> {formatTimestamp(execution.completedAt)}
+                      <strong>Failed:</strong>{" "}
+                      {formatTimestamp(execution.completedAt)}
                     </p>
                   )}
                   {execution.duration && (
                     <p>
-                      <strong>Duration:</strong> {formatDuration(execution.duration)}
+                      <strong>Duration:</strong>{" "}
+                      {formatDuration(execution.duration)}
                     </p>
                   )}
                 </div>
@@ -409,7 +475,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
         {logs.length > 0 && (
           <div>
             <button
-              onClick={() => toggleSection('logs')}
+              onClick={() => toggleSection("logs")}
               className="flex items-center justify-between w-full text-left"
             >
               <h3 className="text-lg font-medium text-gray-900 flex items-center">
@@ -429,7 +495,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
                 Execution Logs ({logs.length} steps)
               </h3>
               <svg
-                className={`w-5 h-5 text-gray-400 transition-transform ${expandedSections.has('logs') ? 'rotate-180' : ''}`}
+                className={`w-5 h-5 text-gray-400 transition-transform ${expandedSections.has("logs") ? "rotate-180" : ""}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -443,13 +509,15 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
               </svg>
             </button>
 
-            {expandedSections.has('logs') && (
+            {expandedSections.has("logs") && (
               <div className="mt-4 space-y-3">
                 {logs.map((log, index) => (
                   <div
                     key={log.id}
                     className={`border rounded-lg p-4 ${
-                      log.errorMessage ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-white'
+                      log.errorMessage
+                        ? "border-red-200 bg-red-50"
+                        : "border-gray-200 bg-white"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
@@ -459,28 +527,35 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
                           w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium mr-3
                           ${
                             log.errorMessage
-                              ? 'bg-red-200 text-red-800'
-                              : 'bg-blue-200 text-blue-800'
+                              ? "bg-red-200 text-red-800"
+                              : "bg-blue-200 text-blue-800"
                           }
                         `}
                         >
                           {index + 1}
                         </span>
-                        <h4 className="font-medium text-gray-900">{log.stepName}</h4>
+                        <h4 className="font-medium text-gray-900">
+                          {log.stepName}
+                        </h4>
                       </div>
                       <div className="text-xs text-gray-500">
-                        {formatTimestamp(log.timestamp)} • {formatDuration(log.duration)}
+                        {formatTimestamp(log.timestamp)} •{" "}
+                        {formatDuration(log.duration)}
                       </div>
                     </div>
 
                     <p className="text-sm text-gray-600 mb-2 capitalize">
-                      {log.level.replace('_', ' ')}
+                      {log.level.replace("_", " ")}
                     </p>
 
                     {log.errorMessage && (
                       <div className="bg-red-100 border border-red-200 rounded p-3 mb-3">
-                        <p className="text-red-800 font-medium text-sm">Error:</p>
-                        <p className="text-red-700 text-sm font-mono mt-1">{log.errorMessage}</p>
+                        <p className="text-red-800 font-medium text-sm">
+                          Error:
+                        </p>
+                        <p className="text-red-700 text-sm font-mono mt-1">
+                          {log.errorMessage}
+                        </p>
                       </div>
                     )}
 
@@ -494,7 +569,9 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
                         <div className="mt-2 space-y-2">
                           {Object.keys(log.inputData || {}).length > 0 && (
                             <div>
-                              <p className="text-xs font-medium text-gray-700">Input:</p>
+                              <p className="text-xs font-medium text-gray-700">
+                                Input:
+                              </p>
                               <pre className="text-xs bg-gray-100 p-2 rounded overflow-x-auto">
                                 {JSON.stringify(log.inputData, null, 2)}
                               </pre>
@@ -502,7 +579,9 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
                           )}
                           {Object.keys(log.outputData || {}).length > 0 && (
                             <div>
-                              <p className="text-xs font-medium text-gray-700">Output:</p>
+                              <p className="text-xs font-medium text-gray-700">
+                                Output:
+                              </p>
                               <pre className="text-xs bg-gray-100 p-2 rounded overflow-x-auto">
                                 {JSON.stringify(log.outputData, null, 2)}
                               </pre>
@@ -522,7 +601,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
         {execution.errorMessage && (
           <div>
             <button
-              onClick={() => toggleSection('stack')}
+              onClick={() => toggleSection("stack")}
               className="flex items-center justify-between w-full text-left"
             >
               <h3 className="text-lg font-medium text-gray-900 flex items-center">
@@ -542,7 +621,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
                 Technical Details
               </h3>
               <svg
-                className={`w-5 h-5 text-gray-400 transition-transform ${expandedSections.has('stack') ? 'rotate-180' : ''}`}
+                className={`w-5 h-5 text-gray-400 transition-transform ${expandedSections.has("stack") ? "rotate-180" : ""}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -556,7 +635,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
               </svg>
             </button>
 
-            {expandedSections.has('stack') && (
+            {expandedSections.has("stack") && (
               <div className="mt-4">
                 <div className="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto">
                   <pre className="text-sm font-mono whitespace-pre-wrap">
@@ -577,13 +656,13 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
           executionId={executionId}
           workflowId={workflowId}
           error={createAppError(
-            'WORKFLOW_EXECUTION_FAILED',
-            execution.errorMessage || 'Workflow execution failed',
+            "WORKFLOW_EXECUTION_FAILED",
+            execution.errorMessage || "Workflow execution failed",
             {
               workflowId,
               executionId,
-              component: 'WorkflowErrorDisplay',
-            }
+              component: "WorkflowErrorDisplay",
+            },
           )}
           onRetry={handleRetrySuccess}
         />
@@ -595,16 +674,16 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
           isOpen={showReportModal}
           onClose={() => setShowReportModal(false)}
           error={createAppError(
-            'WORKFLOW_EXECUTION_FAILED',
-            execution.errorMessage || 'Workflow execution failed',
+            "WORKFLOW_EXECUTION_FAILED",
+            execution.errorMessage || "Workflow execution failed",
             {
               workflowId,
               executionId,
-              component: 'WorkflowErrorDisplay',
+              component: "WorkflowErrorDisplay",
             },
             JSON.stringify({ logs, execution }),
             undefined,
-            execution.id
+            execution.id,
           )}
           onSubmit={handleReportSubmit}
         />

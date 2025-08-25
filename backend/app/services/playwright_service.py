@@ -4,10 +4,9 @@ import asyncio
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from playwright.async_api import async_playwright
-
 from app.config.settings import get_settings
 from app.services.storage_service import get_storage_service
+from playwright.async_api import async_playwright
 
 
 class PlaywrightService:

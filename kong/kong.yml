@@ -47,7 +47,7 @@ routes:
     paths:
       - /api
     strip_path: true
-    
+
   - name: app-route
     service: auterity-frontend
     paths:

@@ -44,27 +44,30 @@ npm start
 
 ### Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `NODE_ENV` | Environment mode | `development` |
-| `INTEGRATION_PORT` | Server port | `3002` |
-| `JWT_SECRET` | JWT signing secret | Required |
-| `REDIS_URL` | Redis connection URL | `redis://localhost:6379` |
-| `RABBITMQ_URL` | RabbitMQ connection URL | `amqp://localhost:5672` |
-| `HEALTH_CHECK_INTERVAL` | Health check interval (ms) | `30000` |
+| Variable                | Description                | Default                  |
+| ----------------------- | -------------------------- | ------------------------ |
+| `NODE_ENV`              | Environment mode           | `development`            |
+| `INTEGRATION_PORT`      | Server port                | `3002`                   |
+| `JWT_SECRET`            | JWT signing secret         | Required                 |
+| `REDIS_URL`             | Redis connection URL       | `redis://localhost:6379` |
+| `RABBITMQ_URL`          | RabbitMQ connection URL    | `amqp://localhost:5672`  |
+| `HEALTH_CHECK_INTERVAL` | Health check interval (ms) | `30000`                  |
 
 ## 📡 API Endpoints
 
 ### Health Checks
+
 - `GET /health` - Basic health check
 - `GET /health/detailed` - Detailed health information
 
 ### System Status
+
 - `GET /api/v1/integration/status` - All system status
 - `GET /api/v1/metrics` - System metrics
 - `GET /api/v1/metrics/system` - Detailed system metrics
 
 ### Cross-System Operations
+
 - `POST /api/v1/integration/message` - Send cross-system message
 - `GET /api/v1/integration/cache/:key` - Get cached value
 - `POST /api/v1/integration/cache/:key` - Set cached value
@@ -111,18 +114,21 @@ npm start
 ## 📊 Monitoring & Observability
 
 ### Health Monitoring
+
 - Automatic health checks for all connected systems
 - Configurable alert rules with multiple severity levels
 - Real-time status dashboard
 - Performance metrics collection
 
 ### Logging
+
 - Structured JSON logging
 - Correlation ID tracking across systems
 - Log levels: DEBUG, INFO, WARN, ERROR
 - Integration with external log aggregation systems
 
 ### Metrics
+
 - System performance metrics
 - Cache hit/miss ratios
 - Message bus throughput
@@ -162,17 +168,20 @@ npm run lint:fix
 ## 🔄 Deployment
 
 ### Development
+
 ```bash
 npm run dev
 ```
 
 ### Production
+
 ```bash
 npm run build
 npm start
 ```
 
 ### Docker
+
 ```bash
 docker-compose up -d
 ```
@@ -196,6 +205,7 @@ docker-compose up -d
 4. **Message Delivery Issues**: Verify RabbitMQ queue configurations
 
 ### Debug Mode
+
 ```bash
 DEBUG=* npm run dev
 ```

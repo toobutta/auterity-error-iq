@@ -1,24 +1,31 @@
-import React, { useState, useMemo } from 'react';
-import { useDrag } from 'react-dnd';
+import React, { useState, useMemo } from "react";
+import { useDrag } from "react-dnd";
 import {
   NodePaletteProps,
   NodeTemplate,
   NodeCategory,
   DragItem,
-} from '../../types/workflow-builder';
+} from "../../types/workflow-builder";
 
 interface NodePaletteItemProps {
   template: NodeTemplate;
   onDragStart?: () => void;
 }
 
-const NodePaletteItem: React.FC<NodePaletteItemProps> = ({ template, onDragStart }) => {
-  const [{ isDragging }, drag] = useDrag<DragItem, void, { isDragging: boolean }>({
-    type: 'workflow-node',
+const NodePaletteItem: React.FC<NodePaletteItemProps> = ({
+  template,
+  onDragStart,
+}) => {
+  const [{ isDragging }, drag] = useDrag<
+    DragItem,
+    void,
+    { isDragging: boolean }
+  >({
+    type: "workflow-node",
     item: () => {
       onDragStart?.();
       return {
-        type: 'workflow-node',
+        type: "workflow-node",
         nodeType: template.type,
         template,
       };
@@ -30,18 +37,18 @@ const NodePaletteItem: React.FC<NodePaletteItemProps> = ({ template, onDragStart
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'triggers':
-        return 'bg-yellow-100 border-yellow-300 hover:bg-yellow-200 text-yellow-800';
-      case 'actions':
-        return 'bg-blue-100 border-blue-300 hover:bg-blue-200 text-blue-800';
-      case 'conditions':
-        return 'bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-800';
-      case 'ai_powered':
-        return 'bg-green-100 border-green-300 hover:bg-green-200 text-green-800';
-      case 'integrations':
-        return 'bg-orange-100 border-orange-300 hover:bg-orange-200 text-orange-800';
+      case "triggers":
+        return "bg-yellow-100 border-yellow-300 hover:bg-yellow-200 text-yellow-800";
+      case "actions":
+        return "bg-blue-100 border-blue-300 hover:bg-blue-200 text-blue-800";
+      case "conditions":
+        return "bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-800";
+      case "ai_powered":
+        return "bg-green-100 border-green-300 hover:bg-green-200 text-green-800";
+      case "integrations":
+        return "bg-orange-100 border-orange-300 hover:bg-orange-200 text-orange-800";
       default:
-        return 'bg-gray-100 border-gray-300 hover:bg-gray-200 text-gray-800';
+        return "bg-gray-100 border-gray-300 hover:bg-gray-200 text-gray-800";
     }
   };
 
@@ -51,7 +58,7 @@ const NodePaletteItem: React.FC<NodePaletteItemProps> = ({ template, onDragStart
       className={`
         w-full p-3 border-2 rounded-lg cursor-grab transition-all duration-200 mb-2
         ${getCategoryColor(template.category)}
-        ${isDragging ? 'opacity-50 scale-95 cursor-grabbing' : 'opacity-100 scale-100'}
+        ${isDragging ? "opacity-50 scale-95 cursor-grabbing" : "opacity-100 scale-100"}
         hover:shadow-md active:scale-95
       `}
       title={template.description}
@@ -60,7 +67,9 @@ const NodePaletteItem: React.FC<NodePaletteItemProps> = ({ template, onDragStart
         <div className="text-2xl flex-shrink-0">{template.icon}</div>
         <div className="flex-1 min-w-0">
           <div className="font-medium text-sm truncate">{template.label}</div>
-          <div className="text-xs opacity-75 truncate">{template.description}</div>
+          <div className="text-xs opacity-75 truncate">
+            {template.description}
+          </div>
         </div>
       </div>
 
@@ -101,7 +110,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({
       (node) =>
         node.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
         node.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        node.type.toLowerCase().includes(searchTerm.toLowerCase())
+        node.type.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [category.nodes, searchTerm]);
 
@@ -111,18 +120,18 @@ const CategorySection: React.FC<CategorySectionProps> = ({
 
   const getCategoryHeaderColor = (categoryId: string) => {
     switch (categoryId) {
-      case 'triggers':
-        return 'bg-yellow-50 border-yellow-200 text-yellow-800';
-      case 'actions':
-        return 'bg-blue-50 border-blue-200 text-blue-800';
-      case 'conditions':
-        return 'bg-purple-50 border-purple-200 text-purple-800';
-      case 'ai_powered':
-        return 'bg-green-50 border-green-200 text-green-800';
-      case 'integrations':
-        return 'bg-orange-50 border-orange-200 text-orange-800';
+      case "triggers":
+        return "bg-yellow-50 border-yellow-200 text-yellow-800";
+      case "actions":
+        return "bg-blue-50 border-blue-200 text-blue-800";
+      case "conditions":
+        return "bg-purple-50 border-purple-200 text-purple-800";
+      case "ai_powered":
+        return "bg-green-50 border-green-200 text-green-800";
+      case "integrations":
+        return "bg-orange-50 border-orange-200 text-orange-800";
       default:
-        return 'bg-gray-50 border-gray-200 text-gray-800';
+        return "bg-gray-50 border-gray-200 text-gray-800";
     }
   };
 
@@ -145,13 +154,18 @@ const CategorySection: React.FC<CategorySectionProps> = ({
         </div>
         <svg
           className={`w-5 h-5 transition-transform duration-200 ${
-            isExpanded ? 'rotate-180' : 'rotate-0'
+            isExpanded ? "rotate-180" : "rotate-0"
           }`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 
@@ -173,11 +187,11 @@ const CategorySection: React.FC<CategorySectionProps> = ({
 const NodePalette: React.FC<NodePaletteProps> = ({
   categories,
   onNodeDrag,
-  searchTerm = '',
+  searchTerm = "",
   onSearchChange,
 }) => {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set(['triggers', 'actions']) // Default expanded categories
+    new Set(["triggers", "actions"]), // Default expanded categories
   );
 
   const toggleCategory = (categoryId: string) => {
@@ -191,11 +205,14 @@ const NodePalette: React.FC<NodePaletteProps> = ({
   };
 
   const handleNodeDragStart = () => {
-    onNodeDrag('node-drag-started');
+    onNodeDrag("node-drag-started");
   };
 
   const totalNodes = useMemo(() => {
-    return categories.reduce((total, category) => total + category.nodes.length, 0);
+    return categories.reduce(
+      (total, category) => total + category.nodes.length,
+      0,
+    );
   }, [categories]);
 
   const filteredTotalNodes = useMemo(() => {
@@ -206,7 +223,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({
         (node) =>
           node.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
           node.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          node.type.toLowerCase().includes(searchTerm.toLowerCase())
+          node.type.toLowerCase().includes(searchTerm.toLowerCase()),
       );
       return total + filtered.length;
     }, 0);
@@ -270,7 +287,9 @@ const NodePalette: React.FC<NodePaletteProps> = ({
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-            <p className="text-sm">No nodes found for &quot;{searchTerm}&quot;</p>
+            <p className="text-sm">
+              No nodes found for &quot;{searchTerm}&quot;
+            </p>
             <p className="text-xs mt-1">Try a different search term</p>
           </div>
         ) : (
@@ -294,7 +313,9 @@ const NodePalette: React.FC<NodePaletteProps> = ({
             <span>🖱️</span>
             <span>Drag nodes to canvas</span>
           </div>
-          <div className="text-gray-400">Click category headers to expand/collapse</div>
+          <div className="text-gray-400">
+            Click category headers to expand/collapse
+          </div>
         </div>
       </div>
     </div>

@@ -3,9 +3,6 @@
 import uuid
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
-
 from app.auth import get_current_user
 from app.database import get_db
 from app.models import Template, TemplateParameter, User
@@ -18,6 +15,8 @@ from app.schemas import (
     WorkflowResponse,
 )
 from app.services.template_engine import TemplateEngine
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/templates", tags=["templates"])
 

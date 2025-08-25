@@ -7,9 +7,11 @@
 **Estimated Effort**: 12-16 hours (comprehensive enhancement)
 
 ## EXECUTIVE SUMMARY
+
 Transform the existing basic workflow builder into a professional-grade workflow design tool with multiple node types, visual rule builder, real-time validation, versioning, and template composition capabilities.
 
 ## BUSINESS CONTEXT
+
 The workflow builder is the core user interface for creating AI-powered automation workflows in AutoMatrix. This enhancement elevates it from a basic drag-and-drop interface to an enterprise-grade workflow design platform comparable to tools like Zapier, Microsoft Power Automate, or n8n.
 
 ## CURRENT STATE ANALYSIS REQUIRED
@@ -17,6 +19,7 @@ The workflow builder is the core user interface for creating AI-powered automati
 ### Pre-Development Assessment Tasks for Cline
 
 #### 1. Existing Workflow Builder Analysis (30 minutes)
+
 ```bash
 # Find existing workflow builder components
 find frontend/src/ -name "*workflow*" -o -name "*builder*" -o -name "*flow*" | grep -i component
@@ -34,6 +37,7 @@ grep -r "workflow.*type\|Workflow.*interface" frontend/src/ --include="*.ts" --i
 ```
 
 #### 2. React Flow Version and Capabilities (15 minutes)
+
 ```bash
 # Check React Flow version and features
 npm list @reactflow/core @reactflow/node-toolbar @reactflow/minimap @reactflow/controls
@@ -46,6 +50,7 @@ find frontend/src/ -name "*node*" -exec grep -l "Handle\|Position" {} \;
 ```
 
 #### 3. State Management Analysis (15 minutes)
+
 ```bash
 # Check current state management approach
 grep -r "useState\|useReducer\|zustand\|redux" frontend/src/components/*workflow* --include="*.tsx"
@@ -58,6 +63,7 @@ grep -r "validate\|validation" frontend/src/ --include="*.tsx" --include="*.ts" 
 ```
 
 #### 4. Template and Versioning Systems (15 minutes)
+
 ```bash
 # Look for existing template systems
 grep -r "template" frontend/src/ --include="*.tsx" --include="*.ts" | grep -i workflow
@@ -74,6 +80,7 @@ grep -r "undo\|redo\|history" frontend/src/ --include="*.tsx"
 ### 1. Multiple Node Types System
 
 #### Node Type Architecture
+
 ```typescript
 // Base node interface
 interface BaseWorkflowNode {
@@ -87,19 +94,19 @@ interface BaseWorkflowNode {
 }
 
 // Comprehensive node types
-type WorkflowNodeType = 
-  | 'start' 
-  | 'end' 
-  | 'action' 
-  | 'decision' 
-  | 'ai' 
-  | 'condition' 
-  | 'loop' 
-  | 'parallel' 
-  | 'delay' 
-  | 'webhook' 
-  | 'email' 
-  | 'database';
+type WorkflowNodeType =
+  | "start"
+  | "end"
+  | "action"
+  | "decision"
+  | "ai"
+  | "condition"
+  | "loop"
+  | "parallel"
+  | "delay"
+  | "webhook"
+  | "email"
+  | "database";
 
 // Node data structure
 interface NodeData {
@@ -117,7 +124,7 @@ interface NodeConfiguration {
   // Common properties
   timeout?: number;
   retryAttempts?: number;
-  
+
   // Type-specific configurations
   [key: string]: any;
 }
@@ -140,12 +147,13 @@ interface DecisionNodeConfiguration extends NodeConfiguration {
 
 // Action Node specific configuration
 interface ActionNodeConfiguration extends NodeConfiguration {
-  actionType: 'api_call' | 'data_transform' | 'file_operation' | 'notification';
+  actionType: "api_call" | "data_transform" | "file_operation" | "notification";
   parameters: Record<string, any>;
 }
 ```
 
 #### Node Component Implementation
+
 ```tsx
 // Base Node Component
 interface BaseNodeProps {
@@ -157,21 +165,30 @@ interface BaseNodeProps {
   onDuplicate: (id: string) => void;
 }
 
-const BaseNode: React.FC<BaseNodeProps> = ({ id, data, selected, onUpdate, onDelete, onDuplicate }) => {
+const BaseNode: React.FC<BaseNodeProps> = ({
+  id,
+  data,
+  selected,
+  onUpdate,
+  onDelete,
+  onDuplicate,
+}) => {
   return (
-    <div className={`
+    <div
+      className={`
       relative bg-white border-2 rounded-lg shadow-sm min-w-[200px] min-h-[80px]
-      ${selected ? 'border-blue-500 shadow-lg' : 'border-gray-200'}
-      ${data.errors?.length ? 'border-red-500' : ''}
-      ${data.warnings?.length ? 'border-yellow-500' : ''}
-    `}>
+      ${selected ? "border-blue-500 shadow-lg" : "border-gray-200"}
+      ${data.errors?.length ? "border-red-500" : ""}
+      ${data.warnings?.length ? "border-yellow-500" : ""}
+    `}
+    >
       {/* Node Header */}
       <div className="flex items-center justify-between p-3 border-b border-gray-100">
         <div className="flex items-center space-x-2">
           <NodeIcon type={data.config.type} />
           <span className="font-medium text-sm">{data.label}</span>
         </div>
-        
+
         {/* Node Actions */}
         <div className="flex items-center space-x-1">
           <button
@@ -190,35 +207,41 @@ const BaseNode: React.FC<BaseNodeProps> = ({ id, data, selected, onUpdate, onDel
           </button>
         </div>
       </div>
-      
+
       {/* Node Content */}
       <div className="p-3">
         {data.description && (
           <p className="text-xs text-gray-600 mb-2">{data.description}</p>
         )}
-        
+
         {/* Type-specific content */}
         <NodeContent type={data.config.type} config={data.config} />
       </div>
-      
+
       {/* Validation Indicators */}
       {(data.errors?.length || data.warnings?.length) && (
         <div className="px-3 pb-2">
           {data.errors?.map((error, index) => (
-            <div key={index} className="text-xs text-red-600 flex items-center space-x-1">
+            <div
+              key={index}
+              className="text-xs text-red-600 flex items-center space-x-1"
+            >
               <AlertCircleIcon size={12} />
               <span>{error.message}</span>
             </div>
           ))}
           {data.warnings?.map((warning, index) => (
-            <div key={index} className="text-xs text-yellow-600 flex items-center space-x-1">
+            <div
+              key={index}
+              className="text-xs text-yellow-600 flex items-center space-x-1"
+            >
               <AlertTriangleIcon size={12} />
               <span>{warning.message}</span>
             </div>
           ))}
         </div>
       )}
-      
+
       {/* Connection Handles */}
       <Handle
         type="target"
@@ -238,6 +261,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({ id, data, selected, onUpdate, onDel
 ### 2. Visual Rule Builder Integration
 
 #### Rule Builder Component
+
 ```tsx
 interface RuleBuilderProps {
   nodeId: string;
@@ -261,29 +285,29 @@ interface RuleCondition {
   field: string;
   operator: ConditionOperator;
   value: any;
-  logicalOperator?: 'AND' | 'OR';
+  logicalOperator?: "AND" | "OR";
 }
 
-type ConditionOperator = 
-  | 'equals' 
-  | 'not_equals' 
-  | 'contains' 
-  | 'not_contains' 
-  | 'greater_than' 
-  | 'less_than' 
-  | 'between' 
-  | 'in' 
-  | 'not_in' 
-  | 'exists' 
-  | 'not_exists' 
-  | 'regex_match';
+type ConditionOperator =
+  | "equals"
+  | "not_equals"
+  | "contains"
+  | "not_contains"
+  | "greater_than"
+  | "less_than"
+  | "between"
+  | "in"
+  | "not_in"
+  | "exists"
+  | "not_exists"
+  | "regex_match";
 
-const RuleBuilder: React.FC<RuleBuilderProps> = ({ 
-  nodeId, 
-  nodeType, 
-  existingRules, 
-  onRulesUpdate, 
-  availableFields 
+const RuleBuilder: React.FC<RuleBuilderProps> = ({
+  nodeId,
+  nodeType,
+  existingRules,
+  onRulesUpdate,
+  availableFields,
 }) => {
   const [activeRule, setActiveRule] = useState<WorkflowRule | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -301,25 +325,27 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({
             Add Rule
           </button>
         </div>
-        
+
         <div className="space-y-2">
           {existingRules.map((rule) => (
             <div
               key={rule.id}
               className={`
                 p-3 border rounded cursor-pointer transition-colors
-                ${activeRule?.id === rule.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'}
+                ${activeRule?.id === rule.id ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:bg-gray-50"}
               `}
               onClick={() => setActiveRule(rule)}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <span className="font-medium text-sm">{rule.name}</span>
-                  <span className={`
+                  <span
+                    className={`
                     px-2 py-1 text-xs rounded
-                    ${rule.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}
-                  `}>
-                    {rule.isActive ? 'Active' : 'Inactive'}
+                    ${rule.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"}
+                  `}
+                  >
+                    {rule.isActive ? "Active" : "Inactive"}
                   </span>
                 </div>
                 <div className="flex items-center space-x-1">
@@ -343,15 +369,16 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({
                   </button>
                 </div>
               </div>
-              
+
               <div className="mt-2 text-xs text-gray-600">
-                {rule.conditions.length} condition(s), {rule.actions.length} action(s)
+                {rule.conditions.length} condition(s), {rule.actions.length}{" "}
+                action(s)
               </div>
             </div>
           ))}
         </div>
       </div>
-      
+
       {/* Rule Editor */}
       {activeRule && (
         <div className="p-4">
@@ -361,10 +388,10 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({
               onClick={() => setIsEditing(!isEditing)}
               className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50"
             >
-              {isEditing ? 'Cancel' : 'Edit'}
+              {isEditing ? "Cancel" : "Edit"}
             </button>
           </div>
-          
+
           {isEditing ? (
             <RuleEditor
               rule={activeRule}
@@ -385,11 +412,17 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({
 ### 3. Real-Time Validation System
 
 #### Validation Engine
+
 ```typescript
 interface ValidationEngine {
-  validateNode: (node: BaseWorkflowNode, context: ValidationContext) => ValidationResult;
+  validateNode: (
+    node: BaseWorkflowNode,
+    context: ValidationContext,
+  ) => ValidationResult;
   validateWorkflow: (workflow: Workflow) => WorkflowValidationResult;
-  validateConnections: (connections: Connection[]) => ConnectionValidationResult;
+  validateConnections: (
+    connections: Connection[],
+  ) => ConnectionValidationResult;
   validateRules: (rules: WorkflowRule[]) => RuleValidationResult;
 }
 
@@ -410,44 +443,46 @@ interface ValidationError {
   id: string;
   field: string;
   message: string;
-  severity: 'error' | 'warning' | 'info';
+  severity: "error" | "warning" | "info";
   fixSuggestion?: string;
 }
 
 // Real-time validation hook
 const useWorkflowValidation = (workflow: Workflow) => {
-  const [validationResults, setValidationResults] = useState<Map<string, ValidationResult>>(new Map());
+  const [validationResults, setValidationResults] = useState<
+    Map<string, ValidationResult>
+  >(new Map());
   const [isValidating, setIsValidating] = useState(false);
 
   const validateWorkflow = useCallback(async () => {
     setIsValidating(true);
-    
+
     try {
       const results = new Map<string, ValidationResult>();
-      
+
       // Validate each node
       for (const node of workflow.nodes) {
         const context: ValidationContext = {
           availableVariables: getAvailableVariables(workflow, node.id),
           connectedNodes: getConnectedNodes(workflow, node.id),
-          workflowSettings: workflow.settings
+          workflowSettings: workflow.settings,
         };
-        
+
         const result = await validateNode(node, context);
         results.set(node.id, result);
       }
-      
+
       // Validate connections
       const connectionResult = await validateConnections(workflow.edges);
-      results.set('connections', connectionResult);
-      
+      results.set("connections", connectionResult);
+
       // Validate overall workflow
       const workflowResult = await validateWorkflowStructure(workflow);
-      results.set('workflow', workflowResult);
-      
+      results.set("workflow", workflowResult);
+
       setValidationResults(results);
     } catch (error) {
-      console.error('Validation error:', error);
+      console.error("Validation error:", error);
     } finally {
       setIsValidating(false);
     }
@@ -462,7 +497,7 @@ const useWorkflowValidation = (workflow: Workflow) => {
   return {
     validationResults,
     isValidating,
-    revalidate: validateWorkflow
+    revalidate: validateWorkflow,
   };
 };
 ```
@@ -470,6 +505,7 @@ const useWorkflowValidation = (workflow: Workflow) => {
 ### 4. Workflow Versioning and Rollback
 
 #### Version Control System
+
 ```typescript
 interface WorkflowVersion {
   id: string;
@@ -486,7 +522,13 @@ interface WorkflowVersion {
 
 interface ChangeLog {
   id: string;
-  type: 'node_added' | 'node_removed' | 'node_modified' | 'connection_added' | 'connection_removed' | 'settings_changed';
+  type:
+    | "node_added"
+    | "node_removed"
+    | "node_modified"
+    | "connection_added"
+    | "connection_removed"
+    | "settings_changed";
   target: string;
   before?: any;
   after?: any;
@@ -503,77 +545,85 @@ interface WorkflowSnapshot {
 // Version control hook
 const useWorkflowVersioning = (workflowId: string) => {
   const [versions, setVersions] = useState<WorkflowVersion[]>([]);
-  const [currentVersion, setCurrentVersion] = useState<WorkflowVersion | null>(null);
+  const [currentVersion, setCurrentVersion] = useState<WorkflowVersion | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(false);
 
-  const saveVersion = useCallback(async (
-    workflow: Workflow, 
-    message: string, 
-    tags: string[] = []
-  ): Promise<WorkflowVersion> => {
-    setIsLoading(true);
-    
-    try {
-      const changes = calculateChanges(currentVersion?.snapshot, workflow);
-      
-      const newVersion: WorkflowVersion = {
-        id: generateId(),
-        workflowId,
-        version: generateVersionNumber(versions),
-        timestamp: new Date(),
-        author: getCurrentUser().id,
-        message,
-        changes,
-        snapshot: {
-          nodes: workflow.nodes,
-          edges: workflow.edges,
-          settings: workflow.settings,
-          metadata: workflow.metadata
-        },
-        parentVersion: currentVersion?.id,
-        tags
-      };
-      
-      const savedVersion = await api.saveWorkflowVersion(newVersion);
-      setVersions(prev => [savedVersion, ...prev]);
-      setCurrentVersion(savedVersion);
-      
-      return savedVersion;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [workflowId, currentVersion, versions]);
+  const saveVersion = useCallback(
+    async (
+      workflow: Workflow,
+      message: string,
+      tags: string[] = [],
+    ): Promise<WorkflowVersion> => {
+      setIsLoading(true);
 
-  const loadVersion = useCallback(async (versionId: string): Promise<Workflow> => {
-    setIsLoading(true);
-    
-    try {
-      const version = await api.getWorkflowVersion(versionId);
-      setCurrentVersion(version);
-      
-      return {
-        id: workflowId,
-        nodes: version.snapshot.nodes,
-        edges: version.snapshot.edges,
-        settings: version.snapshot.settings,
-        metadata: version.snapshot.metadata
-      };
-    } finally {
-      setIsLoading(false);
-    }
-  }, [workflowId]);
+      try {
+        const changes = calculateChanges(currentVersion?.snapshot, workflow);
 
-  const compareVersions = useCallback(async (
-    version1Id: string, 
-    version2Id: string
-  ): Promise<VersionDiff> => {
-    const [v1, v2] = await Promise.all([
-      api.getWorkflowVersion(version1Id),
-      api.getWorkflowVersion(version2Id)
-    ]);
-    
-    return calculateVersionDiff(v1.snapshot, v2.snapshot);
-  }, []);
+        const newVersion: WorkflowVersion = {
+          id: generateId(),
+          workflowId,
+          version: generateVersionNumber(versions),
+          timestamp: new Date(),
+          author: getCurrentUser().id,
+          message,
+          changes,
+          snapshot: {
+            nodes: workflow.nodes,
+            edges: workflow.edges,
+            settings: workflow.settings,
+            metadata: workflow.metadata,
+          },
+          parentVersion: currentVersion?.id,
+          tags,
+        };
+
+        const savedVersion = await api.saveWorkflowVersion(newVersion);
+        setVersions((prev) => [savedVersion, ...prev]);
+        setCurrentVersion(savedVersion);
+
+        return savedVersion;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [workflowId, currentVersion, versions],
+  );
+
+  const loadVersion = useCallback(
+    async (versionId: string): Promise<Workflow> => {
+      setIsLoading(true);
+
+      try {
+        const version = await api.getWorkflowVersion(versionId);
+        setCurrentVersion(version);
+
+        return {
+          id: workflowId,
+          nodes: version.snapshot.nodes,
+          edges: version.snapshot.edges,
+          settings: version.snapshot.settings,
+          metadata: version.snapshot.metadata,
+        };
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [workflowId],
+  );
+
+  const compareVersions = useCallback(
+    async (version1Id: string, version2Id: string): Promise<VersionDiff> => {
+      const [v1, v2] = await Promise.all([
+        api.getWorkflowVersion(version1Id),
+        api.getWorkflowVersion(version2Id),
+      ]);
+
+      return calculateVersionDiff(v1.snapshot, v2.snapshot);
+    },
+    [],
+  );
 
   return {
     versions,
@@ -581,7 +631,7 @@ const useWorkflowVersioning = (workflowId: string) => {
     isLoading,
     saveVersion,
     loadVersion,
-    compareVersions
+    compareVersions,
   };
 };
 ```
@@ -589,6 +639,7 @@ const useWorkflowVersioning = (workflowId: string) => {
 ### 5. Template Composition System
 
 #### Template Architecture
+
 ```typescript
 interface WorkflowTemplate {
   id: string;
@@ -635,7 +686,7 @@ const TemplateComposer: React.FC = () => {
 
   const composeTemplates = useCallback(async (): Promise<Workflow> => {
     const composer = new WorkflowTemplateComposer();
-    
+
     switch (compositionMode) {
       case 'merge':
         return composer.mergeTemplates(selectedTemplates, parameterMappings);
@@ -653,7 +704,7 @@ const TemplateComposer: React.FC = () => {
       {/* Template Selection */}
       <div className="p-4 border-b">
         <h3 className="font-medium mb-4">Template Composition</h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {availableTemplates.map((template) => (
             <TemplateCard
@@ -665,12 +716,12 @@ const TemplateComposer: React.FC = () => {
           ))}
         </div>
       </div>
-      
+
       {/* Composition Configuration */}
       {selectedTemplates.length > 1 && (
         <div className="p-4 border-b">
           <h4 className="font-medium mb-3">Composition Mode</h4>
-          
+
           <div className="flex space-x-4">
             <label className="flex items-center space-x-2">
               <input
@@ -702,18 +753,18 @@ const TemplateComposer: React.FC = () => {
           </div>
         </div>
       )}
-      
+
       {/* Parameter Mapping */}
       {selectedTemplates.length > 0 && (
         <div className="p-4">
           <h4 className="font-medium mb-3">Parameter Configuration</h4>
-          
+
           <ParameterMappingEditor
             templates={selectedTemplates}
             mappings={parameterMappings}
             onMappingsChange={setParameterMappings}
           />
-          
+
           <div className="mt-4 flex justify-end space-x-2">
             <button
               onClick={() => setSelectedTemplates([])}
@@ -740,6 +791,7 @@ const TemplateComposer: React.FC = () => {
 ### Phase 1: Enhanced Foundation (Week 1 - 40 hours)
 
 #### Days 1-2: Core Architecture Enhancement (16 hours)
+
 1. **Enhanced WorkflowBuilder Component** (4 hours)
    - Upgrade existing builder with new architecture
    - Implement advanced state management with Zustand
@@ -757,6 +809,7 @@ const TemplateComposer: React.FC = () => {
    - Implement zoom, pan, fit-to-screen, and selection tools
 
 #### Days 3-4: Validation and Rules (16 hours)
+
 1. **Real-Time Validation Engine** (8 hours)
    - Build comprehensive validation framework
    - Implement node-level and workflow-level validation
@@ -770,6 +823,7 @@ const TemplateComposer: React.FC = () => {
    - Integrate with node configuration panels
 
 #### Day 5: Testing and Integration (8 hours)
+
 1. **Unit Testing** (4 hours)
    - Write comprehensive tests for all components
    - Mock React Flow and external dependencies
@@ -783,6 +837,7 @@ const TemplateComposer: React.FC = () => {
 ### Phase 2: Advanced Features (Week 2 - 40 hours)
 
 #### Days 6-7: Versioning System (16 hours)
+
 1. **Version Control Implementation** (8 hours)
    - Build version management system with Git-like features
    - Implement change tracking and snapshots
@@ -794,6 +849,7 @@ const TemplateComposer: React.FC = () => {
    - Add rollback functionality with conflict resolution
 
 #### Days 8-9: Template System (16 hours)
+
 1. **Template Management** (8 hours)
    - Build template library interface with categories
    - Implement template CRUD operations
@@ -805,6 +861,7 @@ const TemplateComposer: React.FC = () => {
    - Add template instantiation with customization wizard
 
 #### Day 10: Final Integration and Polish (8 hours)
+
 1. **Feature Integration** (4 hours)
    - Integrate all features into main workflow builder
    - Test cross-feature interactions and edge cases
@@ -816,6 +873,7 @@ const TemplateComposer: React.FC = () => {
    - Prepare handoff documentation with API specifications
 
 ## SUCCESS CRITERIA CHECKLIST
+
 - [ ] 12 node types implemented with full configuration panels
 - [ ] Drag-and-drop from node palette to canvas with snap-to-grid
 - [ ] Real-time validation with visual feedback and suggestions
@@ -832,6 +890,7 @@ const TemplateComposer: React.FC = () => {
 - [ ] Bundle size optimization (<500KB additional for workflow features)
 
 ## QUALITY GATES
+
 - **Performance**: <3s load time, <100ms interaction response, 60fps animations
 - **Accessibility**: Full keyboard navigation, screen reader support, high contrast mode
 - **Testing**: 95%+ coverage with unit, integration, and E2E tests
@@ -840,6 +899,7 @@ const TemplateComposer: React.FC = () => {
 - **Memory**: <100MB memory usage for large workflows (500+ nodes)
 
 ## DEPENDENCIES & INTEGRATION
+
 - **Blocking**: TASK-004 (RelayCore admin interface) for shared patterns and components
 - **React Flow**: Latest version (11.x) with advanced features and plugins
 - **State Management**: Zustand for complex workflow state with persistence
@@ -848,6 +908,7 @@ const TemplateComposer: React.FC = () => {
 - **Performance**: React.memo, useMemo, useCallback for optimization
 
 ## CONTEXT FILES TO REFERENCE
+
 - `frontend/src/components/` - Existing workflow components and patterns
 - `frontend/src/types/` - Current workflow type definitions
 - `shared/components/` - Shared UI components for consistency
@@ -855,7 +916,9 @@ const TemplateComposer: React.FC = () => {
 - `.kiro/tasks/cline-task-004-relaycore-admin-interface-detailed.md` - Shared patterns
 
 ## HANDBACK CRITERIA
+
 Task is complete when:
+
 1. All 12 node types implemented with comprehensive configuration panels
 2. Visual rule builder functional with drag-and-drop interface
 3. Real-time validation working with contextual feedback

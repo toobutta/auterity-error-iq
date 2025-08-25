@@ -7,7 +7,7 @@
  * This will be replaced with clsx + tailwind-merge when dependencies are installed
  */
 export function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 /**
@@ -18,7 +18,7 @@ export function formatRelativeTime(date: Date): string {
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
   if (diffInSeconds < 60) {
-    return 'just now';
+    return "just now";
   }
 
   const diffInMinutes = Math.floor(diffInSeconds / 60);
@@ -66,13 +66,15 @@ export function formatNumber(num: number): string {
 /**
  * Get severity color classes
  */
-export function getSeverityStyles(severity: 'critical' | 'high' | 'medium' | 'low' | 'info') {
+export function getSeverityStyles(
+  severity: "critical" | "high" | "medium" | "low" | "info",
+) {
   const styles = {
-    critical: 'bg-red-50 text-red-700 border-red-200',
-    high: 'bg-orange-50 text-orange-700 border-orange-200',
-    medium: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    low: 'bg-lime-50 text-lime-700 border-lime-200',
-    info: 'bg-blue-50 text-blue-700 border-blue-200',
+    critical: "bg-red-50 text-red-700 border-red-200",
+    high: "bg-orange-50 text-orange-700 border-orange-200",
+    medium: "bg-yellow-50 text-yellow-700 border-yellow-200",
+    low: "bg-lime-50 text-lime-700 border-lime-200",
+    info: "bg-blue-50 text-blue-700 border-blue-200",
   };
 
   return styles[severity];

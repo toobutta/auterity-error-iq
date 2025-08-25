@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 
 interface Status {
   agents: Record<string, { status: string; lastSeen: string }>;
@@ -18,7 +24,9 @@ const RealtimeStatusContext = createContext<RealtimeStatusContextProps>({
 
 export const useRealtimeStatus = () => useContext(RealtimeStatusContext);
 
-export const RealtimeStatusProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const RealtimeStatusProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [status, setStatus] = useState<Status | null>(null);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
@@ -26,7 +34,7 @@ export const RealtimeStatusProvider: React.FC<{ children: ReactNode }> = ({ chil
     let ws: WebSocket | null = null;
 
     const connect = () => {
-      ws = new WebSocket('wss://localhost:8000/ws/status');
+      ws = new WebSocket("wss://localhost:8000/ws/status");
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
@@ -46,12 +54,12 @@ export const RealtimeStatusProvider: React.FC<{ children: ReactNode }> = ({ chil
     // Fallback polling every 30s
     const interval = setInterval(async () => {
       try {
-        const res = await fetch('/api/v1/health');
+        const res = await fetch("/api/v1/health");
         const data = await res.json();
         setStatus(data.services);
         setLastUpdate(new Date());
       } catch (error) {
-        console.warn('Health check failed:', error);
+        console.warn("Health check failed:", error);
       }
     }, 30000);
 

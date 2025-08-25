@@ -4,17 +4,18 @@ Tracks model accuracy, latency, and triggers automatic switching
 """
 
 import asyncio
-import logging
-import json
 import hashlib
+import json
+import logging
 import random
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass
-from enum import Enum
 from collections import defaultdict
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class PerformanceThresholds:
@@ -22,6 +23,7 @@ class PerformanceThresholds:
     max_latency_ms: int = 2000
     min_throughput_rps: float = 10.0
     max_cost_per_request: float = 0.01
+
 
 @dataclass
 class ModelMetrics:
@@ -31,78 +33,94 @@ class ModelMetrics:
     cost_per_request: float
     timestamp: datetime
 
+
 class PerformanceMonitor:
     def __init__(self):
         self.thresholds: Dict[str, PerformanceThresholds] = {}
         self.monitoring_active = False
-        
-    async def track_model_performance(self, model_id: str, metrics: ModelMetrics) -> None:
+
+    async def track_model_performance(
+        self, model_id: str, metrics: ModelMetrics
+    ) -> None:
         """Record performance metrics for a model"""
         # Evaluate performance
         health_status = await self._evaluate_model_health(model_id, metrics)
-        
+
         # Check for degradation
-        if health_status['needs_switch']:
-            await self._trigger_model_switch(model_id, health_status['reason'])
-            
-    async def _evaluate_model_health(self, model_id: str, current_metrics: ModelMetrics) -> Dict:
+        if health_status["needs_switch"]:
+            await self._trigger_model_switch(model_id, health_status["reason"])
+
+    async def _evaluate_model_health(
+        self, model_id: str, current_metrics: ModelMetrics
+    ) -> Dict:
         """Evaluate if model performance is healthy"""
         thresholds = self.thresholds.get(model_id, PerformanceThresholds())
-        
+
         issues = []
         needs_switch = False
-        
+
         # Check thresholds
         if current_metrics.accuracy_score < thresholds.min_accuracy:
-            issues.append(f"Accuracy {current_metrics.accuracy_score:.3f} below threshold")
+            issues.append(
+                f"Accuracy {current_metrics.accuracy_score:.3f} below threshold"
+            )
             needs_switch = True
-            
+
         if current_metrics.latency_ms > thresholds.max_latency_ms:
             issues.append(f"Latency {current_metrics.latency_ms}ms above threshold")
             needs_switch = True
-            
+
         # Calculate performance score
-        performance_score = min(current_metrics.accuracy_score / thresholds.min_accuracy, 1.0)
-        
+        performance_score = min(
+            current_metrics.accuracy_score / thresholds.min_accuracy, 1.0
+        )
+
         return {
-            'performance_score': performance_score,
-            'needs_switch': needs_switch,
-            'reason': '; '.join(issues) if issues else 'Healthy',
-            'status': 'degraded' if needs_switch else 'healthy'
+            "performance_score": performance_score,
+            "needs_switch": needs_switch,
+            "reason": "; ".join(issues) if issues else "Healthy",
+            "status": "degraded" if needs_switch else "healthy",
         }
-        
+
     async def _trigger_model_switch(self, model_id: str, reason: str) -> None:
         """Trigger automatic model switch due to performance degradation"""
         backup_model = self._get_backup_model(model_id)
-        
+
         if backup_model:
-            logger.warning(f"Triggered model switch: {model_id} -> {backup_model} ({reason})")
+            logger.warning(
+                f"Triggered model switch: {model_id} -> {backup_model} ({reason})"
+            )
             # Send switch request to RelayCore
             await self._notify_relaycore_switch(model_id, backup_model, reason)
         else:
             logger.critical(f"No backup model available for {model_id}: {reason}")
-            
+
     def _get_backup_model(self, failing_model: str) -> Optional[str]:
         """Get backup model for failing model"""
         backup_models = {
-            'automotive-sales-v1': 'gpt-4-turbo',
-            'service-advisor-v1': 'gpt-3.5-turbo',
-            'parts-specialist-v1': 'gpt-3.5-turbo'
+            "automotive-sales-v1": "gpt-4-turbo",
+            "service-advisor-v1": "gpt-3.5-turbo",
+            "parts-specialist-v1": "gpt-3.5-turbo",
         }
         return backup_models.get(failing_model)
-        
-    async def _notify_relaycore_switch(self, current_model: str, target_model: str, reason: str):
+
+    async def _notify_relaycore_switch(
+        self, current_model: str, target_model: str, reason: str
+    ):
         """Notify RelayCore of model switch"""
         # Placeholder for RelayCore notification
         logger.info(f"Notifying RelayCore: switch {current_model} -> {target_model}")
-        
-    def set_performance_thresholds(self, model_id: str, thresholds: PerformanceThresholds):
+
+    def set_performance_thresholds(
+        self, model_id: str, thresholds: PerformanceThresholds
+    ):
         """Set performance thresholds for a model"""
         self.thresholds[model_id] = thresholds
 
 
 class ABTestStatus(Enum):
     """A/B test status enumeration"""
+
     CREATED = "created"
     RUNNING = "running"
     PAUSED = "paused"
@@ -113,6 +131,7 @@ class ABTestStatus(Enum):
 @dataclass
 class ABTestVariant:
     """A/B test variant configuration"""
+
     model_id: str
     weight: float  # Traffic allocation weight (0-1)
     name: str
@@ -122,6 +141,7 @@ class ABTestVariant:
 @dataclass
 class ABTestConfiguration:
     """A/B test configuration"""
+
     test_id: str
     name: str
     description: str
@@ -140,6 +160,7 @@ class ABTestConfiguration:
 @dataclass
 class ABTestMetrics:
     """Metrics collected during A/B test"""
+
     variant: str
     requests: int
     successful_requests: int
@@ -157,7 +178,9 @@ class ABTestEngine:
     def __init__(self):
         self.active_tests: Dict[str, ABTestConfiguration] = {}
         self.test_metrics: Dict[str, List[ABTestMetrics]] = defaultdict(list)
-        self.user_assignments: Dict[str, Dict[str, str]] = defaultdict(dict)  # user_id -> test_id -> variant
+        self.user_assignments: Dict[str, Dict[str, str]] = defaultdict(
+            dict
+        )  # user_id -> test_id -> variant
 
     async def create_ab_test(self, config: ABTestConfiguration) -> ABTestConfiguration:
         """Create a new A/B test"""
@@ -186,12 +209,16 @@ class ABTestEngine:
         # Check traffic split adds up to 1.0
         total_weight = sum(config.traffic_split.values())
         if abs(total_weight - 1.0) > 0.01:  # Allow small floating point errors
-            raise ValueError(f"Traffic split weights must sum to 1.0, got {total_weight}")
+            raise ValueError(
+                f"Traffic split weights must sum to 1.0, got {total_weight}"
+            )
 
         # Check variant weights match traffic split
         for variant in config.variants:
             if variant.model_id not in config.traffic_split:
-                raise ValueError(f"Variant {variant.model_id} not found in traffic split")
+                raise ValueError(
+                    f"Variant {variant.model_id} not found in traffic split"
+                )
 
             if abs(variant.weight - config.traffic_split[variant.model_id]) > 0.01:
                 raise ValueError(f"Variant weight mismatch for {variant.model_id}")
@@ -266,7 +293,10 @@ class ABTestEngine:
                 return None
 
             # Check if user already assigned
-            if user_id in self.user_assignments and test_id in self.user_assignments[user_id]:
+            if (
+                user_id in self.user_assignments
+                and test_id in self.user_assignments[user_id]
+            ):
                 return self.user_assignments[user_id][test_id]
 
             # Assign based on consistent hashing for reproducibility
@@ -279,7 +309,9 @@ class ABTestEngine:
             logger.error(f"Error assigning user {user_id} to test {test_id}: {e}")
             return None
 
-    def _consistent_hash_assignment(self, user_id: str, traffic_split: Dict[str, float]) -> str:
+    def _consistent_hash_assignment(
+        self, user_id: str, traffic_split: Dict[str, float]
+    ) -> str:
         """Assign user to variant using consistent hashing"""
         try:
             # Create hash of user_id
@@ -302,7 +334,9 @@ class ABTestEngine:
             logger.error(f"Error in consistent hash assignment: {e}")
             return list(traffic_split.keys())[0]
 
-    async def record_test_metrics(self, test_id: str, variant: str, metrics: Dict[str, Any]) -> None:
+    async def record_test_metrics(
+        self, test_id: str, variant: str, metrics: Dict[str, Any]
+    ) -> None:
         """Record metrics for an A/B test variant"""
         try:
             if test_id not in self.active_tests:
@@ -310,14 +344,14 @@ class ABTestEngine:
 
             test_metrics = ABTestMetrics(
                 variant=variant,
-                requests=metrics.get('requests', 0),
-                successful_requests=metrics.get('successful_requests', 0),
-                failed_requests=metrics.get('failed_requests', 0),
-                total_latency_ms=metrics.get('total_latency_ms', 0),
-                average_latency_ms=metrics.get('average_latency_ms', 0.0),
-                accuracy_score=metrics.get('accuracy_score', 0.0),
-                cost_per_request=metrics.get('cost_per_request', 0.0),
-                timestamp=datetime.utcnow()
+                requests=metrics.get("requests", 0),
+                successful_requests=metrics.get("successful_requests", 0),
+                failed_requests=metrics.get("failed_requests", 0),
+                total_latency_ms=metrics.get("total_latency_ms", 0),
+                average_latency_ms=metrics.get("average_latency_ms", 0.0),
+                accuracy_score=metrics.get("accuracy_score", 0.0),
+                cost_per_request=metrics.get("cost_per_request", 0.0),
+                timestamp=datetime.utcnow(),
             )
 
             self.test_metrics[test_id].append(test_metrics)
@@ -335,8 +369,7 @@ class ABTestEngine:
 
             if test_id in self.test_metrics:
                 self.test_metrics[test_id] = [
-                    m for m in self.test_metrics[test_id]
-                    if m.timestamp > cutoff_time
+                    m for m in self.test_metrics[test_id] if m.timestamp > cutoff_time
                 ]
 
         except Exception as e:
@@ -359,14 +392,12 @@ class ABTestEngine:
                 return {
                     "status": "insufficient_data",
                     "message": "Need at least 2 variants with metrics to analyze",
-                    "variants": variant_metrics
+                    "variants": variant_metrics,
                 }
 
             # Perform statistical analysis
             analysis_result = await self._perform_statistical_analysis(
-                variant_metrics,
-                test.target_metric,
-                test.minimum_sample_size
+                variant_metrics, test.target_metric, test.minimum_sample_size
             )
 
             return {
@@ -375,17 +406,18 @@ class ABTestEngine:
                 "status": test.status.value,
                 "analysis": analysis_result,
                 "variants": variant_metrics,
-                "recommendation": self._generate_test_recommendation(analysis_result, test)
+                "recommendation": self._generate_test_recommendation(
+                    analysis_result, test
+                ),
             }
 
         except Exception as e:
             logger.error(f"Error analyzing A/B test {test_id}: {e}")
-            return {
-                "status": "error",
-                "message": str(e)
-            }
+            return {"status": "error", "message": str(e)}
 
-    async def _aggregate_variant_metrics(self, test_id: str) -> Dict[str, Dict[str, Any]]:
+    async def _aggregate_variant_metrics(
+        self, test_id: str
+    ) -> Dict[str, Dict[str, Any]]:
         """Aggregate metrics for each variant"""
         try:
             if test_id not in self.test_metrics:
@@ -402,7 +434,7 @@ class ABTestEngine:
                         "total_latency": 0,
                         "accuracy_sum": 0.0,
                         "cost_sum": 0.0,
-                        "data_points": 0
+                        "data_points": 0,
                     }
 
                 agg = variant_aggregates[metrics.variant]
@@ -416,9 +448,13 @@ class ABTestEngine:
             # Calculate averages
             for variant, agg in variant_aggregates.items():
                 if agg["total_requests"] > 0:
-                    agg["average_accuracy"] = agg["accuracy_sum"] / agg["total_requests"]
+                    agg["average_accuracy"] = (
+                        agg["accuracy_sum"] / agg["total_requests"]
+                    )
                     agg["average_cost"] = agg["cost_sum"] / agg["total_requests"]
-                    agg["success_rate"] = agg["total_successful"] / agg["total_requests"]
+                    agg["success_rate"] = (
+                        agg["total_successful"] / agg["total_requests"]
+                    )
                 if agg["data_points"] > 0:
                     agg["average_latency"] = agg["total_latency"] / agg["data_points"]
 
@@ -432,7 +468,7 @@ class ABTestEngine:
         self,
         variant_metrics: Dict[str, Dict[str, Any]],
         target_metric: str,
-        min_sample_size: int
+        min_sample_size: int,
     ) -> Dict[str, Any]:
         """Perform statistical analysis on A/B test results"""
         try:
@@ -444,7 +480,7 @@ class ABTestEngine:
                 "metric_values": {},
                 "statistical_significance": False,
                 "winner": None,
-                "confidence_level": 0.0
+                "confidence_level": 0.0,
             }
 
             # Check sample sizes
@@ -457,11 +493,17 @@ class ABTestEngine:
 
                 # Extract target metric value
                 if target_metric == "accuracy":
-                    analysis["metric_values"][variant] = metrics.get("average_accuracy", 0.0)
+                    analysis["metric_values"][variant] = metrics.get(
+                        "average_accuracy", 0.0
+                    )
                 elif target_metric == "latency":
-                    analysis["metric_values"][variant] = metrics.get("average_latency", 0.0)
+                    analysis["metric_values"][variant] = metrics.get(
+                        "average_latency", 0.0
+                    )
                 elif target_metric == "cost":
-                    analysis["metric_values"][variant] = metrics.get("average_cost", 0.0)
+                    analysis["metric_values"][variant] = metrics.get(
+                        "average_cost", 0.0
+                    )
                 else:
                     analysis["metric_values"][variant] = 0.0
 
@@ -495,7 +537,9 @@ class ABTestEngine:
             logger.error(f"Error in statistical analysis: {e}")
             return {"error": str(e)}
 
-    def _generate_test_recommendation(self, analysis: Dict[str, Any], test: ABTestConfiguration) -> str:
+    def _generate_test_recommendation(
+        self, analysis: Dict[str, Any], test: ABTestConfiguration
+    ) -> str:
         """Generate recommendation based on analysis results"""
         try:
             if not analysis.get("has_sufficient_data", False):
@@ -518,7 +562,8 @@ class ABTestEngine:
     async def list_active_tests(self) -> List[ABTestConfiguration]:
         """List all active A/B tests"""
         return [
-            test for test in self.active_tests.values()
+            test
+            for test in self.active_tests.values()
             if test.status in [ABTestStatus.RUNNING, ABTestStatus.PAUSED]
         ]
 
@@ -539,9 +584,9 @@ class ABTestEngine:
                     "status": test.status.value,
                     "start_time": test.start_time.isoformat(),
                     "end_time": test.end_time.isoformat() if test.end_time else None,
-                    "target_metric": test.target_metric
+                    "target_metric": test.target_metric,
                 },
-                "analysis": analysis
+                "analysis": analysis,
             }
 
         except Exception as e:

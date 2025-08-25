@@ -36,7 +36,9 @@ examples/
 ## 🏗️ Core Components
 
 ### 1. WorkflowExecutionEngine
+
 Main orchestrator that handles:
+
 - Workflow execution planning
 - Batch processing with parallel execution
 - Resource limiting (configurable max parallel steps)
@@ -44,19 +46,25 @@ Main orchestrator that handles:
 - Status tracking
 
 ### 2. TopologicalExecutor
+
 Handles dependency resolution:
+
 - Creates execution plans with topological sorting
 - Identifies parallel execution opportunities
 - Manages step dependencies
 
 ### 3. RetryManager
+
 Manages retry logic:
+
 - Exponential backoff with configurable delays
 - Retry count limits per step
 - Smart retry decisions based on error types
 
 ### 4. Step Executors
+
 Modular executors for different step types:
+
 - **InputStepExecutor**: Data collection and validation
 - **ProcessStepExecutor**: Data transformation with rules
 - **AIStepExecutor**: AI-powered processing
@@ -66,26 +74,31 @@ Modular executors for different step types:
 ## 🚀 Key Features
 
 ### ✅ Topological Sorting
+
 - Automatically resolves step dependencies
 - Creates optimal execution batches
 - Maximizes parallel execution opportunities
 
 ### ✅ Parallel Execution
+
 - Executes independent steps simultaneously
 - Resource limiting with semaphores
 - Configurable concurrency limits
 
 ### ✅ Data Flow Management
+
 - Automatic data passing between dependent steps
 - Type-aware data merging (input → process → AI → output)
 - Dependency result aggregation
 
 ### ✅ Error Handling & Retry
+
 - Exponential backoff retry mechanism
 - Per-step retry configuration
 - Graceful failure handling with detailed error reporting
 
 ### ✅ Performance Monitoring
+
 - Execution time tracking
 - Step-level performance metrics
 - Resource utilization monitoring
@@ -93,6 +106,7 @@ Modular executors for different step types:
 ## 📊 Usage Examples
 
 ### Basic Workflow
+
 ```python
 from app.services.workflow_execution_engine import WorkflowExecutionEngine
 
@@ -107,7 +121,7 @@ workflow = {
             "depends_on": []
         },
         "process_data": {
-            "type": "process", 
+            "type": "process",
             "input": {"rules": [{"type": "transform", "field": "message", "operation": "uppercase"}]},
             "depends_on": ["collect_data"]
         }
@@ -118,6 +132,7 @@ result = await engine.execute_workflow(workflow)
 ```
 
 ### Complex Parallel Workflow
+
 ```python
 workflow = {
     "id": "parallel_workflow",
@@ -135,6 +150,7 @@ workflow = {
 ## 🧪 Testing
 
 ### Run Tests
+
 ```bash
 # Run comprehensive tests
 python3 -m pytest tests/services/ -v
@@ -144,6 +160,7 @@ python3 examples/workflow_execution_example.py
 ```
 
 ### Test Coverage
+
 - **Topological sorting**: Linear and complex dependency graphs
 - **Parallel execution**: Resource limiting and concurrent processing
 - **Error handling**: Retry mechanisms and failure recovery
@@ -153,6 +170,7 @@ python3 examples/workflow_execution_example.py
 ## 🔧 Configuration
 
 ### Engine Configuration
+
 ```python
 engine = WorkflowExecutionEngine(
     max_parallel_steps=10  # Limit concurrent step execution
@@ -160,6 +178,7 @@ engine = WorkflowExecutionEngine(
 ```
 
 ### Retry Configuration
+
 ```python
 # Per-step retry settings
 "step_id": {
@@ -170,6 +189,7 @@ engine = WorkflowExecutionEngine(
 ```
 
 ### Step Type Registration
+
 ```python
 from app.services.step_executors.factory import StepExecutorFactory
 from app.services.step_executors.base_executor import StepType
@@ -189,12 +209,14 @@ StepExecutorFactory.register_executor(StepType.CUSTOM, CustomExecutor)
 ## 🔍 Monitoring & Observability
 
 ### Execution Status
+
 ```python
 status = engine.get_execution_status(workflow_id)
 # Returns: completed_steps, active_executions, step_results
 ```
 
 ### Performance Metrics
+
 - Total execution time
 - Per-step execution time
 - Retry counts and failure rates
@@ -203,17 +225,20 @@ status = engine.get_execution_status(workflow_id)
 ## 🛡️ Production Readiness
 
 ### Code Quality
+
 - ✅ **999+ linting violations resolved**
 - ✅ **Type hints throughout**
 - ✅ **Comprehensive error handling**
 - ✅ **Modular, testable architecture**
 
 ### Security
+
 - ✅ **Input validation at all levels**
 - ✅ **Safe error message handling**
 - ✅ **Resource limiting to prevent DoS**
 
 ### Reliability
+
 - ✅ **Comprehensive test coverage**
 - ✅ **Graceful failure handling**
 - ✅ **Automatic retry mechanisms**
@@ -229,7 +254,7 @@ status = engine.get_execution_status(workflow_id)
 
 ---
 
-**Status**: ✅ **Production Ready**  
-**Test Coverage**: ✅ **Comprehensive**  
-**Documentation**: ✅ **Complete**  
+**Status**: ✅ **Production Ready**
+**Test Coverage**: ✅ **Comprehensive**
+**Documentation**: ✅ **Complete**
 **Performance**: ✅ **Optimized**

@@ -43,20 +43,20 @@ check_service_health() {
     local service=$1
     local max_attempts=30
     local attempt=1
-    
+
     print_status "Checking $service health..."
-    
+
     while [ $attempt -le $max_attempts ]; do
         if docker-compose ps $service | grep -q "healthy\|Up"; then
             print_success "$service is healthy"
             return 0
         fi
-        
+
         print_status "Waiting for $service... (attempt $attempt/$max_attempts)"
         sleep 2
         attempt=$((attempt + 1))
     done
-    
+
     print_error "$service failed to become healthy"
     return 1
 }
@@ -64,13 +64,13 @@ check_service_health() {
 # Function to run backend tests
 run_backend_tests() {
     print_status "Running backend integration tests..."
-    
+
     # Set test environment variables
     export PYTEST_CURRENT_TEST=true
     export DATABASE_URL="sqlite:///:memory:"
-    
+
     cd backend
-    
+
     # Install test dependencies if needed
     if [ ! -d "venv" ]; then
         print_status "Creating Python virtual environment..."
@@ -80,7 +80,7 @@ run_backend_tests() {
     else
         source venv/bin/activate
     fi
-    
+
     # Run integration tests with coverage
     print_status "Executing backend integration tests..."
     pytest tests/integration/ -v \
@@ -90,15 +90,15 @@ run_backend_tests() {
         --cov-report=html:htmlcov \
         --junit-xml=test-results.xml \
         --durations=10
-    
+
     local backend_exit_code=$?
-    
+
     if [ $backend_exit_code -eq 0 ]; then
         print_success "Backend integration tests passed"
     else
         print_error "Backend integration tests failed"
     fi
-    
+
     cd ..
     return $backend_exit_code
 }
@@ -106,15 +106,15 @@ run_backend_tests() {
 # Function to run frontend tests
 run_frontend_tests() {
     print_status "Running frontend integration tests..."
-    
+
     cd frontend
-    
+
     # Install dependencies if needed
     if [ ! -d "node_modules" ]; then
         print_status "Installing frontend dependencies..."
         npm install
     fi
-    
+
     # Run integration tests
     print_status "Executing frontend integration tests..."
     npm run test -- --run \
@@ -123,15 +123,15 @@ run_frontend_tests() {
         --coverage.reporter=text \
         --coverage.reporter=html \
         --coverage.reporter=json-summary
-    
+
     local frontend_exit_code=$?
-    
+
     if [ $frontend_exit_code -eq 0 ]; then
         print_success "Frontend integration tests passed"
     else
         print_error "Frontend integration tests failed"
     fi
-    
+
     cd ..
     return $frontend_exit_code
 }
@@ -139,25 +139,25 @@ run_frontend_tests() {
 # Function to run performance tests
 run_performance_tests() {
     print_status "Running performance and load tests..."
-    
+
     cd backend
     source venv/bin/activate
-    
+
     # Run performance tests with special markers
     pytest tests/integration/test_performance_load.py -v \
         --tb=short \
         --durations=0 \
         -m "not slow" \
         --junit-xml=performance-results.xml
-    
+
     local perf_exit_code=$?
-    
+
     if [ $perf_exit_code -eq 0 ]; then
         print_success "Performance tests passed"
     else
         print_error "Performance tests failed"
     fi
-    
+
     cd ..
     return $perf_exit_code
 }
@@ -165,7 +165,7 @@ run_performance_tests() {
 # Function to generate test report
 generate_test_report() {
     print_status "Generating comprehensive test report..."
-    
+
     cat > test-report.md << EOF
 # AutoMatrix AI Hub - Integration Test Report
 
@@ -179,7 +179,7 @@ generate_test_report() {
 - **Coverage Report:** \`backend/htmlcov/index.html\`
 - **Results:** \`backend/test-results.xml\`
 
-### Frontend Integration Tests  
+### Frontend Integration Tests
 - **Location:** \`frontend/src/tests/integration/\`
 - **Coverage Report:** \`frontend/coverage/index.html\`
 
@@ -253,15 +253,15 @@ main() {
     local backend_passed=false
     local frontend_passed=false
     local performance_passed=false
-    
+
     print_status "Starting integration test suite..."
-    
+
     # Parse command line arguments
     RUN_BACKEND=true
     RUN_FRONTEND=true
     RUN_PERFORMANCE=true
     SKIP_SETUP=false
-    
+
     while [[ $# -gt 0 ]]; do
         case $1 in
             --backend-only)
@@ -299,17 +299,17 @@ main() {
                 ;;
         esac
     done
-    
+
     # Setup test environment
     if [ "$SKIP_SETUP" = false ]; then
         print_status "Setting up test environment..."
-        
+
         # Start services
         docker-compose up -d postgres
-        
+
         # Wait for services to be ready
         check_service_health postgres || exit 1
-        
+
         # Run database migrations
         print_status "Running database migrations..."
         cd backend
@@ -319,39 +319,39 @@ main() {
         fi
         cd ..
     fi
-    
+
     # Run tests based on flags
     if [ "$RUN_BACKEND" = true ]; then
         if run_backend_tests; then
             backend_passed=true
         fi
     fi
-    
+
     if [ "$RUN_FRONTEND" = true ]; then
         if run_frontend_tests; then
             frontend_passed=true
         fi
     fi
-    
+
     if [ "$RUN_PERFORMANCE" = true ]; then
         if run_performance_tests; then
             performance_passed=true
         fi
     fi
-    
+
     # Generate report
     generate_test_report
-    
+
     # Calculate total time
     local end_time=$(date +%s)
     local total_time=$((end_time - start_time))
-    
+
     # Print final results
     echo ""
     echo "================================================"
     echo "🏁 Integration Test Results"
     echo "================================================"
-    
+
     if [ "$RUN_BACKEND" = true ]; then
         if [ "$backend_passed" = true ]; then
             print_success "Backend Tests: PASSED"
@@ -359,7 +359,7 @@ main() {
             print_error "Backend Tests: FAILED"
         fi
     fi
-    
+
     if [ "$RUN_FRONTEND" = true ]; then
         if [ "$frontend_passed" = true ]; then
             print_success "Frontend Tests: PASSED"
@@ -367,7 +367,7 @@ main() {
             print_error "Frontend Tests: FAILED"
         fi
     fi
-    
+
     if [ "$RUN_PERFORMANCE" = true ]; then
         if [ "$performance_passed" = true ]; then
             print_success "Performance Tests: PASSED"
@@ -375,11 +375,11 @@ main() {
             print_error "Performance Tests: FAILED"
         fi
     fi
-    
+
     echo ""
     print_status "Total execution time: ${total_time} seconds"
     print_status "Detailed reports available in test-report.md"
-    
+
     # Exit with appropriate code
     if [ "$backend_passed" = true ] && [ "$frontend_passed" = true ] && [ "$performance_passed" = true ]; then
         print_success "All integration tests passed! 🎉"

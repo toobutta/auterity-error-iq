@@ -9,16 +9,15 @@ from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID
 
 import numpy as np
+from app.core.saas_config import SaaSConfig
+from app.models.tenant import BillingRecord, Tenant, UsageLog
+from app.models.user import User
+from app.models.workflow import WorkflowExecution
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
 from sqlalchemy import and_, func
 from sqlalchemy.orm import Session
-
-from app.core.saas_config import SaaSConfig
-from app.models.tenant import BillingRecord, Tenant, UsageLog
-from app.models.user import User
-from app.models.workflow import WorkflowExecution
 
 logger = logging.getLogger(__name__)
 

@@ -8,6 +8,8 @@ import json
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from app.services.ai_orchestrator import ai_orchestrator
+from app.services.registry import service_registry
 from fastapi import (
     APIRouter,
     BackgroundTasks,
@@ -17,9 +19,6 @@ from fastapi import (
 )
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-
-from app.services.ai_orchestrator import ai_orchestrator
-from app.services.registry import service_registry
 
 router = APIRouter(prefix="/api/v1", tags=["AI Service Orchestration"])
 
@@ -133,33 +132,33 @@ async def get_service_ai_insights(service_name: str):
         }
 
         # AI Analysis
-        insights["ai_analysis"]["health_prediction"] = (
-            await ai_orchestrator._calculate_health_score(health_data)
-        )
-        insights["ai_analysis"]["anomaly_score"] = (
-            await ai_orchestrator.anomaly_detector.detect_anomaly(
-                service_name, health_data
-            )
+        insights["ai_analysis"][
+            "health_prediction"
+        ] = await ai_orchestrator._calculate_health_score(health_data)
+        insights["ai_analysis"][
+            "anomaly_score"
+        ] = await ai_orchestrator.anomaly_detector.detect_anomaly(
+            service_name, health_data
         )
 
         # Predictive analytics
-        insights["predictive_analytics"] = (
-            await ai_orchestrator.predictive_analytics.get_comprehensive_prediction(
-                service_name, health_data
-            )
+        insights[
+            "predictive_analytics"
+        ] = await ai_orchestrator.predictive_analytics.get_comprehensive_prediction(
+            service_name, health_data
         )
 
         # Generate recommendations
-        insights["recommendations"] = (
-            await ai_orchestrator._generate_optimization_recommendations(
-                service_name, health_data
-            )
+        insights[
+            "recommendations"
+        ] = await ai_orchestrator._generate_optimization_recommendations(
+            service_name, health_data
         )
 
         # Calculate optimization score
-        insights["optimization_score"] = (
-            await ai_orchestrator._calculate_optimization_score(health_data)
-        )
+        insights[
+            "optimization_score"
+        ] = await ai_orchestrator._calculate_optimization_score(health_data)
 
         return insights
 
@@ -368,7 +367,9 @@ async def get_all_services_enhanced():
                         "predicted_performance": (
                             "excellent"
                             if ai_score > 0.9
-                            else "good" if ai_score > 0.7 else "needs_attention"
+                            else "good"
+                            if ai_score > 0.7
+                            else "needs_attention"
                         ),
                     }
                 except Exception:

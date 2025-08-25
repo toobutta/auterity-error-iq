@@ -1,17 +1,20 @@
 # Production Deployment Guide
 
 ## Overview
+
 This guide covers deploying Auterity to production environments with proper security, scalability, and monitoring.
 
 ## Infrastructure Requirements
 
 ### Minimum System Requirements
+
 - **CPU**: 4 cores
 - **RAM**: 8GB
 - **Storage**: 100GB SSD
 - **Network**: 1Gbps connection
 
 ### Recommended Production Setup
+
 - **Application Servers**: 2+ instances (load balanced)
 - **Database**: PostgreSQL 15+ with replication
 - **Cache**: Redis for session storage
@@ -31,6 +34,7 @@ Internet → Load Balancer → App Servers → Database
 ## Environment Setup
 
 ### 1. Server Preparation
+
 ```bash
 # Update system
 sudo apt update && sudo apt upgrade -y
@@ -45,6 +49,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 ```
 
 ### 2. Application Deployment
+
 ```bash
 # Clone repository
 git clone https://github.com/toobutta/auterity-error-iq.git
@@ -58,6 +63,7 @@ docker-compose -f docker-compose.prod.yml up -d
 ```
 
 ### 3. Database Setup
+
 ```bash
 # Run migrations
 docker-compose exec backend alembic upgrade head
@@ -69,6 +75,7 @@ docker-compose exec backend python seed_templates.py
 ## Environment Configuration
 
 ### Production Environment Variables
+
 ```env
 # Database
 DATABASE_URL=postgresql://user:password@db:5432/auterity_prod
@@ -96,6 +103,7 @@ MAX_CONNECTIONS=100
 ```
 
 ### Nginx Configuration
+
 ```nginx
 upstream auterity_backend {
     server app1:8000;
@@ -133,6 +141,7 @@ server {
 ## Security Configuration
 
 ### 1. SSL/TLS Setup
+
 ```bash
 # Install Certbot
 sudo apt install certbot python3-certbot-nginx
@@ -142,6 +151,7 @@ sudo certbot --nginx -d yourdomain.com
 ```
 
 ### 2. Firewall Configuration
+
 ```bash
 # Configure UFW
 sudo ufw allow ssh
@@ -151,6 +161,7 @@ sudo ufw enable
 ```
 
 ### 3. Database Security
+
 ```sql
 -- Create production user
 CREATE USER auterity_prod WITH PASSWORD 'secure_password';
@@ -162,9 +173,10 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO auterity_prod;
 ## Monitoring and Logging
 
 ### 1. Application Monitoring
+
 ```yaml
 # docker-compose.monitoring.yml
-version: '3.8'
+version: "3.8"
 services:
   prometheus:
     image: prom/prometheus
@@ -182,6 +194,7 @@ services:
 ```
 
 ### 2. Log Management
+
 ```bash
 # Configure log rotation
 sudo tee /etc/logrotate.d/auterity << EOF
@@ -198,6 +211,7 @@ EOF
 ```
 
 ### 3. Health Checks
+
 ```python
 # Add to FastAPI app
 @app.get("/health")
@@ -212,6 +226,7 @@ async def health_check():
 ## Backup and Recovery
 
 ### 1. Database Backup
+
 ```bash
 #!/bin/bash
 # backup.sh
@@ -221,6 +236,7 @@ aws s3 cp backup_$DATE.sql s3://auterity-backups/
 ```
 
 ### 2. Application Backup
+
 ```bash
 # Backup application files
 tar -czf app_backup_$(date +%Y%m%d).tar.gz /opt/auterity
@@ -228,6 +244,7 @@ aws s3 cp app_backup_$(date +%Y%m%d).tar.gz s3://auterity-backups/
 ```
 
 ### 3. Recovery Procedures
+
 ```bash
 # Database recovery
 psql -h localhost -U auterity_prod auterity_prod < backup_20240101_120000.sql
@@ -240,6 +257,7 @@ docker-compose restart
 ## Performance Optimization
 
 ### 1. Database Optimization
+
 ```sql
 -- Add indexes for common queries
 CREATE INDEX idx_workflows_user_id ON workflows(user_id);
@@ -248,6 +266,7 @@ CREATE INDEX idx_executions_status ON workflow_executions(status);
 ```
 
 ### 2. Application Optimization
+
 ```python
 # Connection pooling
 DATABASE_POOL_SIZE = 20
@@ -259,6 +278,7 @@ CACHE_TTL = 300
 ```
 
 ### 3. Frontend Optimization
+
 ```bash
 # Build optimized frontend
 npm run build
@@ -271,12 +291,14 @@ aws cloudfront create-invalidation --distribution-id E123456789 --paths "/*"
 ## Scaling Considerations
 
 ### Horizontal Scaling
+
 - Multiple application server instances
 - Load balancer configuration
 - Session storage in Redis
 - Database read replicas
 
 ### Vertical Scaling
+
 - Increase server resources
 - Optimize database configuration
 - Tune application settings
@@ -287,6 +309,7 @@ aws cloudfront create-invalidation --distribution-id E123456789 --paths "/*"
 ### Common Issues
 
 #### High CPU Usage
+
 ```bash
 # Check processes
 top -p $(pgrep -d',' python)
@@ -296,6 +319,7 @@ SELECT query, state, query_start FROM pg_stat_activity;
 ```
 
 #### Memory Issues
+
 ```bash
 # Check memory usage
 free -h
@@ -306,6 +330,7 @@ ps aux --sort=-%mem | head
 ```
 
 #### Database Connection Issues
+
 ```bash
 # Check connections
 SELECT count(*) FROM pg_stat_activity;
@@ -317,12 +342,14 @@ SHOW max_connections;
 ## Maintenance
 
 ### Regular Tasks
+
 - **Daily**: Check logs and monitoring
 - **Weekly**: Review performance metrics
 - **Monthly**: Update dependencies and security patches
 - **Quarterly**: Capacity planning and optimization review
 
 ### Update Procedures
+
 ```bash
 # Update application
 git pull origin main
@@ -339,12 +366,14 @@ docker-compose restart
 ## Disaster Recovery
 
 ### Backup Strategy
+
 - **Database**: Daily automated backups
 - **Application**: Weekly full backups
 - **Configuration**: Version controlled
 - **Monitoring**: Backup retention policies
 
 ### Recovery Plan
+
 1. Assess damage and scope
 2. Restore from latest backup
 3. Verify data integrity
@@ -355,18 +384,20 @@ docker-compose restart
 ## Support and Maintenance
 
 ### Monitoring Alerts
+
 - High error rates
 - Database connection issues
 - Disk space warnings
 - SSL certificate expiration
 
 ### Support Contacts
+
 - **Technical Lead**: technical@auterity.com
 - **DevOps Team**: devops@auterity.com
 - **Emergency**: +1-555-AUTERITY
 
 ---
 
-**Last Updated**: $(date)  
-**Version**: 1.0  
+**Last Updated**: $(date)
+**Version**: 1.0
 **Environment**: Production

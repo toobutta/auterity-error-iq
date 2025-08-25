@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import {
   getExecutionHistory,
   ExecutionHistoryParams,
   ExecutionHistoryResponse,
-} from '../api/workflows';
-import { WorkflowExecution } from '../types/workflow';
+} from "../api/workflows";
+import { WorkflowExecution } from "../types/workflow";
+import { sanitizeInput } from "../utils/sanitizer";
 
 // Interface for API error responses
 interface ApiErrorResponse {
@@ -33,14 +34,14 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
   // Filter and pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [statusFilter, setStatusFilter] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [sortBy, setSortBy] = useState<'started_at' | 'completed_at' | 'duration' | 'status'>(
-    'started_at'
-  );
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [sortBy, setSortBy] = useState<
+    "started_at" | "completed_at" | "duration" | "status"
+  >("started_at");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const fetchExecutions = useCallback(async () => {
     try {
@@ -55,17 +56,18 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
       };
 
       if (statusFilter)
-        params.status = statusFilter as
-          | 'pending'
-          | 'running'
-          | 'completed'
-          | 'failed'
-          | 'cancelled';
-      if (searchQuery.trim()) params.search = searchQuery.trim();
-      if (startDate) params.startDate = startDate;
-      if (endDate) params.endDate = endDate;
+        params.status = sanitizeInput(statusFilter) as
+          | "pending"
+          | "running"
+          | "completed"
+          | "failed"
+          | "cancelled";
+      if (searchQuery.trim()) params.search = sanitizeInput(searchQuery.trim());
+      if (startDate) params.startDate = sanitizeInput(startDate);
+      if (endDate) params.endDate = sanitizeInput(endDate);
 
-      const response: ExecutionHistoryResponse = await getExecutionHistory(params);
+      const response: ExecutionHistoryResponse =
+        await getExecutionHistory(params);
 
       setExecutions(response.executions);
       setTotalPages(response.totalPages);
@@ -74,12 +76,23 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
       const apiError = err as ApiErrorResponse;
       const errorMessage =
         apiError?.response?.data?.detail ||
-        (err instanceof Error ? err.message : 'Failed to load execution history');
+        (err instanceof Error
+          ? err.message
+          : "Failed to load execution history");
       setError(errorMessage);
     } finally {
       setLoading(false);
     }
-  }, [currentPage, pageSize, statusFilter, searchQuery, startDate, endDate, sortBy, sortOrder]);
+  }, [
+    currentPage,
+    pageSize,
+    statusFilter,
+    searchQuery,
+    startDate,
+    endDate,
+    sortBy,
+    sortOrder,
+  ]);
 
   useEffect(() => {
     fetchExecutions();
@@ -93,10 +106,10 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
 
   const handleSort = (column: typeof sortBy) => {
     if (sortBy === column) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
       setSortBy(column);
-      setSortOrder('desc');
+      setSortOrder("desc");
     }
     setCurrentPage(1);
   };
@@ -106,7 +119,7 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
   };
 
   const formatDuration = (startedAt: string, completedAt?: string) => {
-    if (!completedAt) return '-';
+    if (!completedAt) return "-";
 
     const start = new Date(startedAt).getTime();
     const end = new Date(completedAt).getTime();
@@ -118,17 +131,17 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
     return `${(duration / 3600000).toFixed(1)}h`;
   };
 
-  const getStatusBadge = (status: WorkflowExecution['status']) => {
-    const baseClasses = 'px-2 py-1 text-xs font-medium rounded-full';
+  const getStatusBadge = (status: WorkflowExecution["status"]) => {
+    const baseClasses = "px-2 py-1 text-xs font-medium rounded-full";
 
     switch (status) {
-      case 'pending':
+      case "pending":
         return `${baseClasses} bg-yellow-100 text-yellow-800`;
-      case 'running':
+      case "running":
         return `${baseClasses} bg-blue-100 text-blue-800`;
-      case 'completed':
+      case "completed":
         return `${baseClasses} bg-green-100 text-green-800`;
-      case 'failed':
+      case "failed":
         return `${baseClasses} bg-red-100 text-red-800`;
       default:
         return `${baseClasses} bg-gray-100 text-gray-800`;
@@ -139,7 +152,7 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
     if (sortBy !== column) {
       return <span className="text-gray-400">↕</span>;
     }
-    return sortOrder === 'asc' ? (
+    return sortOrder === "asc" ? (
       <span className="text-blue-600">↑</span>
     ) : (
       <span className="text-blue-600">↓</span>
@@ -149,33 +162,44 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
   return (
     <div className="bg-white rounded-lg shadow-md">
       <div className="p-6 border-b border-gray-200">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Execution History</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          Execution History
+        </h2>
 
         {/* Filters */}
         <div className="space-y-4">
-          <form onSubmit={handleSearch} className="flex flex-wrap gap-4 items-end">
+          <form
+            onSubmit={handleSearch}
+            className="flex flex-wrap gap-4 items-end"
+          >
             <div className="flex-1 min-w-64">
-              <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="search"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Search workflows
               </label>
               <input
                 id="search"
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(sanitizeInput(e.target.value))}
                 placeholder="Search by workflow name or description..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="status"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Status
               </label>
               <select
                 id="status"
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={(e) => setStatusFilter(sanitizeInput(e.target.value))}
                 className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">All statuses</option>
@@ -187,27 +211,33 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
             </div>
 
             <div>
-              <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="startDate"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Start Date
               </label>
               <input
                 id="startDate"
                 type="date"
                 value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                onChange={(e) => setStartDate(sanitizeInput(e.target.value))}
                 className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
             <div>
-              <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="endDate"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 End Date
               </label>
               <input
                 id="endDate"
                 type="date"
                 value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                onChange={(e) => setEndDate(sanitizeInput(e.target.value))}
                 className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -222,10 +252,10 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
             <button
               type="button"
               onClick={() => {
-                setSearchQuery('');
-                setStatusFilter('');
-                setStartDate('');
-                setEndDate('');
+                setSearchQuery("");
+                setStatusFilter("");
+                setStartDate("");
+                setEndDate("");
                 setCurrentPage(1);
               }}
               className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
@@ -266,38 +296,38 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                   </th>
                   <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort('status')}
+                    onClick={() => handleSort("status")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Status</span>
-                      {getSortIcon('status')}
+                      {getSortIcon("status")}
                     </div>
                   </th>
                   <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort('started_at')}
+                    onClick={() => handleSort("started_at")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Started At</span>
-                      {getSortIcon('started_at')}
+                      {getSortIcon("started_at")}
                     </div>
                   </th>
                   <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort('completed_at')}
+                    onClick={() => handleSort("completed_at")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Completed At</span>
-                      {getSortIcon('completed_at')}
+                      {getSortIcon("completed_at")}
                     </div>
                   </th>
                   <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort('duration')}
+                    onClick={() => handleSort("duration")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Duration</span>
-                      {getSortIcon('duration')}
+                      {getSortIcon("duration")}
                     </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -308,7 +338,10 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
               <tbody className="bg-white divide-y divide-gray-200">
                 {executions.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                    <td
+                      colSpan={6}
+                      className="px-6 py-8 text-center text-gray-500"
+                    >
                       No executions found
                     </td>
                   </tr>
@@ -318,7 +351,7 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
                           <div className="text-sm font-medium text-gray-900">
-                            {execution.workflowName || 'Unknown Workflow'}
+                            {execution.workflowName || "Unknown Workflow"}
                           </div>
                           <div className="text-sm text-gray-500">
                             ID: {execution.id.substring(0, 8)}...
@@ -326,16 +359,23 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={getStatusBadge(execution.status)}>{execution.status}</span>
+                        <span className={getStatusBadge(execution.status)}>
+                          {execution.status}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {formatDate(execution.startedAt)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {execution.completedAt ? formatDate(execution.completedAt) : '-'}
+                        {execution.completedAt
+                          ? formatDate(execution.completedAt)
+                          : "-"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {formatDuration(execution.startedAt, execution.completedAt)}
+                        {formatDuration(
+                          execution.startedAt,
+                          execution.completedAt,
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button
@@ -344,11 +384,15 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                         >
                           View Details
                         </button>
-                        {execution.status === 'failed' && execution.errorMessage && (
-                          <span className="text-red-600" title={execution.errorMessage}>
-                            Error
-                          </span>
-                        )}
+                        {execution.status === "failed" &&
+                          execution.errorMessage && (
+                            <span
+                              className="text-red-600"
+                              title={execution.errorMessage}
+                            >
+                              Error
+                            </span>
+                          )}
                       </td>
                     </tr>
                   ))
@@ -395,7 +439,9 @@ const WorkflowExecutionHistory: React.FC<WorkflowExecutionHistoryProps> = ({
                 </span>
 
                 <button
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  onClick={() =>
+                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                  }
                   disabled={currentPage === totalPages}
                   className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >

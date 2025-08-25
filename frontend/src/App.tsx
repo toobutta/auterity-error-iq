@@ -1,24 +1,33 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Suspense, lazy } from 'react';
-import { AuthProvider } from './contexts/AuthContext';
-import { ErrorProvider } from './contexts/ErrorContext';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import { ThemeProvider } from './components/ThemeProvider';
-import { NotificationProvider } from './components/notifications/NotificationSystem';
-import ProtectedRoute from './components/auth/ProtectedRoute';
-import LoginForm from './components/auth/LoginForm';
-import RegisterForm from './components/auth/RegisterForm';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { Suspense, lazy } from "react";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ErrorProvider } from "./contexts/ErrorContext";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ThemeProvider } from "./components/ThemeProvider";
+import { NotificationProvider } from "./components/notifications/NotificationSystem";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import LoginForm from "./components/auth/LoginForm";
+import RegisterForm from "./components/auth/RegisterForm";
 // Lazy load heavy components
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const ModernDashboard = lazy(() => import('./pages/ModernDashboard'));
-const Workflows = lazy(() => import('./pages/Workflows'));
-const Templates = lazy(() => import('./pages/Templates'));
-const WorkflowBuilderPage = lazy(() => import('./pages/WorkflowBuilderPage'));
-const ErrorDisplayDemo = lazy(() => import('./pages/ErrorDisplayDemo'));
-const KiroTestPage = lazy(() => import('./pages/KiroTestPage'));
-const AgentModelCorrelationPage = lazy(() => import('./pages/AgentModelCorrelationPage'));
-const AuterityExpansion = lazy(() => import('./pages/AuterityExpansion'));
-const EnterpriseDashboard = lazy(() => import('./components/enterprise/EnterpriseDashboard'));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const ModernDashboard = lazy(() => import("./pages/ModernDashboard"));
+const Workflows = lazy(() => import("./pages/Workflows"));
+const Templates = lazy(() => import("./pages/Templates"));
+const WorkflowBuilderPage = lazy(() => import("./pages/WorkflowBuilderPage"));
+const ErrorDisplayDemo = lazy(() => import("./pages/ErrorDisplayDemo"));
+const KiroTestPage = lazy(() => import("./pages/KiroTestPage"));
+const AgentModelCorrelationPage = lazy(
+  () => import("./pages/AgentModelCorrelationPage"),
+);
+const AuterityExpansion = lazy(() => import("./pages/AuterityExpansion"));
+const EnterpriseDashboard = lazy(
+  () => import("./components/enterprise/EnterpriseDashboard"),
+);
 
 // Loading component for lazy-loaded routes
 const LoadingSpinner = () => (
@@ -31,13 +40,17 @@ const LoadingSpinner = () => (
 function App() {
   return (
     <ErrorBoundary
-      showDetails={process.env.NODE_ENV === 'development'}
+      showDetails={process.env.NODE_ENV === "development"}
       enableReporting={true}
       component="App"
     >
       <ThemeProvider defaultMode="auto" storageKey="autmatrix-theme">
         <NotificationProvider position="top-right" maxNotifications={5}>
-          <ErrorProvider maxErrors={10} enableErrorReporting={true} toastPosition="top-right">
+          <ErrorProvider
+            maxErrors={10}
+            enableErrorReporting={true}
+            toastPosition="top-right"
+          >
             <AuthProvider>
               <Router>
                 <div className="App">
@@ -195,7 +208,10 @@ function App() {
                     />
 
                     {/* Default redirect */}
-                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                    <Route
+                      path="/"
+                      element={<Navigate to="/dashboard" replace />}
+                    />
                   </Routes>
                 </div>
               </Router>

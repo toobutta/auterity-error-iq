@@ -134,9 +134,7 @@ class AIEcosystemManager:
             startup_results["status"] = "completed"
             self.initialization_complete = True
 
-            logger.info(
-                f"✅ AI Ecosystem startup completed in {total_time:.2f} seconds"
-            )
+            logger.info(f"✅ AI Ecosystem startup completed in {total_time:.2f} seconds")
 
             return startup_results
 

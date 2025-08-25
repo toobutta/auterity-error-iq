@@ -9,10 +9,9 @@ from typing import Any, Dict, List, Optional
 import fitz  # PyMuPDF
 import openai
 import pytesseract
-from PIL import Image
-
 from app.config.settings import get_settings
 from app.services.storage_service import get_storage_service
+from PIL import Image
 
 
 class DocumentAIService:
@@ -183,7 +182,7 @@ class DocumentAIService:
                         - report
                         - email
                         - other
-                        
+
                         Return only the category name and confidence score (0-1) as JSON:
                         {"category": "invoice", "confidence": 0.95}
                         """,

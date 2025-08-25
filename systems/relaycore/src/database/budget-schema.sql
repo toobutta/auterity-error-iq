@@ -90,8 +90,8 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
-CREATE TRIGGER update_budget_definitions_updated_at 
-    BEFORE UPDATE ON budget_definitions 
+CREATE TRIGGER update_budget_definitions_updated_at
+    BEFORE UPDATE ON budget_definitions
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Function to calculate budget status
@@ -116,21 +116,21 @@ DECLARE
 BEGIN
     -- Get budget definition
     SELECT * INTO budget_record FROM budget_definitions WHERE id = budget_uuid AND active = true;
-    
+
     IF NOT FOUND THEN
         RETURN;
     END IF;
-    
+
     -- Calculate total usage
     SELECT COALESCE(SUM(amount), 0) INTO total_usage
-    FROM budget_usage_records 
-    WHERE budget_id = budget_uuid 
-    AND timestamp >= budget_record.start_date 
+    FROM budget_usage_records
+    WHERE budget_id = budget_uuid
+    AND timestamp >= budget_record.start_date
     AND (budget_record.end_date IS NULL OR timestamp <= budget_record.end_date);
-    
+
     -- Calculate time metrics
     days_elapsed := GREATEST(1, EXTRACT(DAY FROM CURRENT_TIMESTAMP - budget_record.start_date)::INTEGER);
-    
+
     IF budget_record.end_date IS NOT NULL THEN
         total_days := EXTRACT(DAY FROM budget_record.end_date - budget_record.start_date)::INTEGER;
         days_remaining := GREATEST(0, EXTRACT(DAY FROM budget_record.end_date - CURRENT_TIMESTAMP)::INTEGER);
@@ -146,11 +146,11 @@ BEGIN
         END CASE;
         days_remaining := total_days - (days_elapsed % total_days);
     END IF;
-    
+
     -- Calculate burn rate and projections
     calculated_burn_rate := total_usage / GREATEST(1, days_elapsed);
     calculated_projected := calculated_burn_rate * GREATEST(1, total_days);
-    
+
     -- Determine status
     IF total_usage >= budget_record.amount THEN
         calculated_status := 'exceeded';
@@ -161,7 +161,7 @@ BEGIN
     ELSE
         calculated_status := 'normal';
     END IF;
-    
+
     -- Return calculated values
     current_amount := total_usage;
     percent_used := ROUND((total_usage / budget_record.amount) * 100, 2);
@@ -169,7 +169,7 @@ BEGIN
     burn_rate := calculated_burn_rate;
     projected_total := calculated_projected;
     status := calculated_status;
-    
+
     RETURN NEXT;
 END;
 $$ LANGUAGE plpgsql;
@@ -185,11 +185,11 @@ BEGIN
     IF budget_uuid IS NOT NULL THEN
         FOR status_record IN SELECT * FROM calculate_budget_status(budget_uuid) LOOP
             INSERT INTO budget_status_cache (
-                budget_id, current_amount, percent_used, remaining, 
+                budget_id, current_amount, percent_used, remaining,
                 days_remaining, burn_rate, projected_total, status, last_updated
             ) VALUES (
-                budget_uuid, status_record.current_amount, status_record.percent_used, 
-                status_record.remaining, status_record.days_remaining, status_record.burn_rate, 
+                budget_uuid, status_record.current_amount, status_record.percent_used,
+                status_record.remaining, status_record.days_remaining, status_record.burn_rate,
                 status_record.projected_total, status_record.status, CURRENT_TIMESTAMP
             )
             ON CONFLICT (budget_id) DO UPDATE SET
@@ -207,11 +207,11 @@ BEGIN
         FOR budget_id_to_update IN SELECT id FROM budget_definitions WHERE active = true LOOP
             FOR status_record IN SELECT * FROM calculate_budget_status(budget_id_to_update) LOOP
                 INSERT INTO budget_status_cache (
-                    budget_id, current_amount, percent_used, remaining, 
+                    budget_id, current_amount, percent_used, remaining,
                     days_remaining, burn_rate, projected_total, status, last_updated
                 ) VALUES (
-                    budget_id_to_update, status_record.current_amount, status_record.percent_used, 
-                    status_record.remaining, status_record.days_remaining, status_record.burn_rate, 
+                    budget_id_to_update, status_record.current_amount, status_record.percent_used,
+                    status_record.remaining, status_record.days_remaining, status_record.burn_rate,
                     status_record.projected_total, status_record.status, CURRENT_TIMESTAMP
                 )
                 ON CONFLICT (budget_id) DO UPDATE SET

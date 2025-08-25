@@ -4,7 +4,8 @@ Scaffold for integrating LiteLLM and dynamic model selection.
 """
 
 import os
-from typing import Dict, Any
+from typing import Any, Dict
+
 
 class LiteLLMRouter:
     def __init__(self, config: Dict[str, Any]):
@@ -29,18 +30,12 @@ class LiteLLMRouter:
         # TODO: Integrate LiteLLM API here
         return {"model": model_name, "response": "stub"}
 
+
 # Example config
 CONFIG = {
-    "models": {
-        "gpt-3.5-turbo": {},
-        "llama-2": {},
-        "custom-model": {}
-    },
-    "routing_rules": {
-        "chat": "gpt-3.5-turbo",
-        "summarization": "llama-2"
-    },
-    "default_model": "gpt-3.5-turbo"
+    "models": {"gpt-3.5-turbo": {}, "llama-2": {}, "custom-model": {}},
+    "routing_rules": {"chat": "gpt-3.5-turbo", "summarization": "llama-2"},
+    "default_model": "gpt-3.5-turbo",
 }
 
 router = LiteLLMRouter(CONFIG)

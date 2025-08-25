@@ -41,8 +41,8 @@ repos:
         types: [file]
         additional_dependencies:
           - eslint@8.56.0
-          - @typescript-eslint/parser@6.19.1
-          - @typescript-eslint/eslint-plugin@6.19.1
+          - '@typescript-eslint/parser@6.19.1'
+          - '@typescript-eslint/eslint-plugin@6.19.1'
           - eslint-plugin-react@7.33.2
           - eslint-plugin-react-hooks@4.6.0
 
@@ -81,7 +81,7 @@ repos:
         entry: npm run security-scan
         language: system
         pass_filenames: false
-        stages: [push]
+        stages: [pre-push]
 
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.4.0

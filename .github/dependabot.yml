@@ -16,7 +16,7 @@ updates:
     directory: "/backend"
     schedule:
       interval: "monthly"
-      day: "monday" 
+      day: "monday"
       time: "09:00"
     open-pull-requests-limit: 3
     reviewers:

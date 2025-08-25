@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { getExecutionLogs } from '../api/workflows';
-import { useWebSocketLogs } from '../hooks/useWebSocketLogs';
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { getExecutionLogs } from "../api/workflows";
+import { useWebSocketLogs } from "../hooks/useWebSocketLogs";
 
 interface InputData {
   [key: string]: string | number | boolean | null;
@@ -20,7 +20,7 @@ export interface ExecutionLog {
   duration_ms: number;
   timestamp: string;
   error_message?: string;
-  level: 'info' | 'warning' | 'error';
+  level: "info" | "warning" | "error";
 }
 interface ExecutionLogViewerProps {
   executionId: string;
@@ -31,16 +31,18 @@ interface ExecutionLogViewerProps {
 
 export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
   executionId,
-  className = '',
-  maxHeight = 'max-h-96',
+  className = "",
+  maxHeight = "max-h-96",
   enableRealTime = true,
 }) => {
   const [logs, setLogs] = useState<ExecutionLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedLogs, setExpandedLogs] = useState<Set<string>>(new Set());
-  const [filterLevel, setFilterLevel] = useState<'all' | 'info' | 'warning' | 'error'>('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [filterLevel, setFilterLevel] = useState<
+    "all" | "info" | "warning" | "error"
+  >("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const [autoScroll, setAutoScroll] = useState(true);
 
   // Refs for auto-scroll functionality
@@ -65,20 +67,23 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
       const transformedLogs: ExecutionLog[] = data.map((log) => ({
         id: log.id,
         execution_id: log.executionId,
-        step_name: log.stepName || 'Unknown Step',
-        step_type: log.stepName ? 'step' : 'system',
+        step_name: log.stepName || "Unknown Step",
+        step_type: log.stepName ? "step" : "system",
         input_data: (log.data || {}) as InputData,
         output_data: (log.data || {}) as OutputData,
         duration_ms: log.duration || 0,
         timestamp: log.timestamp,
-        error_message: log.level === 'error' ? log.message : undefined,
-        level: log.level === 'debug' ? 'info' : (log.level as 'info' | 'warning' | 'error'),
+        error_message: log.level === "error" ? log.message : undefined,
+        level:
+          log.level === "debug"
+            ? "info"
+            : (log.level as "info" | "warning" | "error"),
       }));
 
       setLogs(transformedLogs);
     } catch (err) {
-      setError('Failed to load execution logs');
-      console.error('Execution logs error:', err);
+      setError("Failed to load execution logs");
+      console.error("Execution logs error:", err);
     } finally {
       setLoading(false);
     }
@@ -92,13 +97,16 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
         const existingLogsMap = new Map(prevLogs.map((log) => [log.id, log]));
 
         // Add new real-time logs that don't already exist
-        const newLogs = realtimeLogs.filter((log) => !existingLogsMap.has(log.id));
+        const newLogs = realtimeLogs.filter(
+          (log) => !existingLogsMap.has(log.id),
+        );
 
         if (newLogs.length > 0) {
           const mergedLogs = [...prevLogs, ...newLogs];
           // Sort by timestamp to maintain chronological order
           return mergedLogs.sort(
-            (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+            (a, b) =>
+              new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
           );
         }
 
@@ -110,14 +118,15 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
   // Auto-scroll to bottom when new logs arrive
   useEffect(() => {
     if (autoScroll && logsEndRef.current) {
-      logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      logsEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [logs, autoScroll]);
 
   // Handle scroll to detect if user has scrolled up (disable auto-scroll)
   const handleScroll = useCallback(() => {
     if (logsContainerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = logsContainerRef.current;
+      const { scrollTop, scrollHeight, clientHeight } =
+        logsContainerRef.current;
       const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10; // 10px threshold
       setAutoScroll(isAtBottom);
     }
@@ -145,12 +154,13 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
   };
 
   const filteredLogs = logs.filter((log) => {
-    const matchesLevel = filterLevel === 'all' || log.level === filterLevel;
+    const matchesLevel = filterLevel === "all" || log.level === filterLevel;
     const matchesSearch =
-      searchTerm === '' ||
+      searchTerm === "" ||
       log.step_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.step_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (log.error_message && log.error_message.toLowerCase().includes(searchTerm.toLowerCase()));
+      (log.error_message &&
+        log.error_message.toLowerCase().includes(searchTerm.toLowerCase()));
 
     return matchesLevel && matchesSearch;
   });
@@ -158,14 +168,14 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
   // Get connection status display info
   const getConnectionStatusInfo = () => {
     switch (connectionStatus) {
-      case 'connected':
-        return { color: 'bg-green-500', text: 'Live', icon: '🟢' };
-      case 'connecting':
-        return { color: 'bg-yellow-500', text: 'Connecting...', icon: '🟡' };
-      case 'error':
-        return { color: 'bg-red-500', text: 'Error', icon: '🔴' };
+      case "connected":
+        return { color: "bg-green-500", text: "Live", icon: "🟢" };
+      case "connecting":
+        return { color: "bg-yellow-500", text: "Connecting...", icon: "🟡" };
+      case "error":
+        return { color: "bg-red-500", text: "Error", icon: "🔴" };
       default:
-        return { color: 'bg-gray-500', text: 'Disconnected', icon: '⚫' };
+        return { color: "bg-gray-500", text: "Disconnected", icon: "⚫" };
     }
   };
 
@@ -173,23 +183,23 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
 
   const getLevelIcon = (level: string) => {
     switch (level) {
-      case 'error':
-        return '❌';
-      case 'warning':
-        return '⚠️';
+      case "error":
+        return "❌";
+      case "warning":
+        return "⚠️";
       default:
-        return 'ℹ️';
+        return "ℹ️";
     }
   };
 
   const getLevelColor = (level: string) => {
     switch (level) {
-      case 'error':
-        return 'text-red-600 bg-red-50 border-red-200';
-      case 'warning':
-        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case "error":
+        return "text-red-600 bg-red-50 border-red-200";
+      case "warning":
+        return "text-yellow-600 bg-yellow-50 border-yellow-200";
       default:
-        return 'text-blue-600 bg-blue-50 border-blue-200';
+        return "text-blue-600 bg-blue-50 border-blue-200";
     }
   };
 
@@ -200,24 +210,26 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
   };
 
   const formatTimestamp = (timestamp: string) => {
-    return new Date(timestamp).toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
+    return new Date(timestamp).toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
       hour12: false,
     });
   };
 
   const formatJsonData = (data: InputData | OutputData) => {
-    if (!data || Object.keys(data).length === 0) return 'No data';
+    if (!data || Object.keys(data).length === 0) return "No data";
     return JSON.stringify(data, null, 2);
   };
 
   if (loading) {
     return (
-      <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}>
+      <div
+        className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}
+      >
         <div className="animate-pulse" data-testid="loading-skeleton">
           <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
           <div className="space-y-3">
@@ -232,10 +244,14 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
 
   if (error) {
     return (
-      <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}>
+      <div
+        className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}
+      >
         <div className="text-center py-8">
           <div className="text-red-500 text-4xl mb-4">⚠️</div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Logs</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            Error Loading Logs
+          </h3>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={fetchLogs}
@@ -249,7 +265,9 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
   }
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className}`}>
+    <div
+      className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className}`}
+    >
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200">
         {/* Connection Status Bar */}
@@ -257,11 +275,15 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
           <div className="flex items-center justify-between mb-3 p-2 bg-gray-50 rounded-md">
             <div className="flex items-center space-x-2">
               <div className={`w-2 h-2 rounded-full ${connectionInfo.color}`} />
-              <span className="text-sm text-gray-600">{connectionInfo.text}</span>
-              {wsError && <span className="text-xs text-red-600 ml-2">{wsError}</span>}
+              <span className="text-sm text-gray-600">
+                {connectionInfo.text}
+              </span>
+              {wsError && (
+                <span className="text-xs text-red-600 ml-2">{wsError}</span>
+              )}
             </div>
             <div className="flex items-center space-x-2">
-              {connectionStatus === 'error' && (
+              {connectionStatus === "error" && (
                 <button
                   onClick={reconnect}
                   className="inline-flex items-center px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -286,11 +308,16 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
                 onClick={() => setAutoScroll(!autoScroll)}
                 className={`inline-flex items-center px-2 py-1 border shadow-sm text-xs font-medium rounded focus:outline-none focus:ring-1 focus:ring-blue-500 ${
                   autoScroll
-                    ? 'border-blue-300 text-blue-700 bg-blue-50 hover:bg-blue-100'
-                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                    ? "border-blue-300 text-blue-700 bg-blue-50 hover:bg-blue-100"
+                    : "border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
                 }`}
               >
-                <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="h-3 w-3 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -323,7 +350,12 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
                 disabled={loading}
                 className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
               >
-                <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="h-3 w-3 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -339,7 +371,12 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
                 onClick={clearRealtimeLogs}
                 className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="h-3 w-3 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -388,7 +425,9 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
             <select
               value={filterLevel}
               onChange={(e) =>
-                setFilterLevel(e.target.value as 'all' | 'info' | 'warning' | 'error')
+                setFilterLevel(
+                  e.target.value as "all" | "info" | "warning" | "error",
+                )
               }
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
             >
@@ -410,11 +449,13 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
         {filteredLogs.length === 0 ? (
           <div className="text-center py-8">
             <div className="text-gray-400 text-4xl mb-4">📝</div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Logs Found</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No Logs Found
+            </h3>
             <p className="text-gray-600">
               {logs.length === 0
-                ? 'No execution logs available for this workflow.'
-                : 'No logs match your current filters.'}
+                ? "No execution logs available for this workflow."
+                : "No logs match your current filters."}
             </p>
           </div>
         ) : (
@@ -439,7 +480,9 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
                         </div>
                         <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500">
                           <span>{formatTimestamp(log.timestamp)}</span>
-                          <span>Duration: {formatDuration(log.duration_ms)}</span>
+                          <span>
+                            Duration: {formatDuration(log.duration_ms)}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -456,7 +499,9 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
                       <div className="mt-3 space-y-3">
                         {/* Input Data */}
                         <div>
-                          <h5 className="text-xs font-medium text-gray-700 mb-1">Input Data:</h5>
+                          <h5 className="text-xs font-medium text-gray-700 mb-1">
+                            Input Data:
+                          </h5>
                           <pre className="text-xs bg-gray-100 p-2 rounded overflow-x-auto">
                             {formatJsonData(log.input_data)}
                           </pre>
@@ -464,7 +509,9 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
 
                         {/* Output Data */}
                         <div>
-                          <h5 className="text-xs font-medium text-gray-700 mb-1">Output Data:</h5>
+                          <h5 className="text-xs font-medium text-gray-700 mb-1">
+                            Output Data:
+                          </h5>
                           <pre className="text-xs bg-gray-100 p-2 rounded overflow-x-auto">
                             {formatJsonData(log.output_data)}
                           </pre>
@@ -479,7 +526,7 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
                     className="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600"
                   >
                     <svg
-                      className={`h-5 w-5 transform transition-transform ${expandedLogs.has(log.id) ? 'rotate-180' : ''}`}
+                      className={`h-5 w-5 transform transition-transform ${expandedLogs.has(log.id) ? "rotate-180" : ""}`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"

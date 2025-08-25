@@ -9,6 +9,7 @@
 NeuroWeaver is a comprehensive ML model management platform that specializes in training, deploying, and managing AI models for specific domains. It includes pre-built automotive industry templates and vertical kits.
 
 **Key Features**:
+
 - 🧠 **Automated Training**: Fine-tuning pipeline with AutoRLAIF
 - 🚗 **Automotive Templates**: Pre-built models for dealership operations
 - 📊 **Performance Monitoring**: Real-time model accuracy and speed tracking
@@ -18,11 +19,13 @@ NeuroWeaver is a comprehensive ML model management platform that specializes in 
 ## 🚀 **Quick Start**
 
 ### **Docker (Recommended)**
+
 ```bash
 docker run -p 3002:3002 -v $(pwd)/models:/app/models auterity/neuroweaver:latest
 ```
 
 ### **From Source**
+
 ```bash
 cd systems/neuroweaver
 pip install -r requirements.txt
@@ -30,6 +33,7 @@ python -m app.main
 ```
 
 ### **Basic Usage**
+
 ```python
 import requests
 
@@ -51,6 +55,7 @@ response = requests.post('http://localhost:3002/api/v1/inference', json={
 ## 📋 **Configuration**
 
 ### **Environment Variables**
+
 ```bash
 # Required
 OPENAI_API_KEY=your_openai_key
@@ -68,6 +73,7 @@ MLFLOW_TRACKING_URI=http://localhost:5000
 ```
 
 ### **Model Configuration**
+
 ```yaml
 # config/model-config.yaml
 automotive_models:
@@ -76,7 +82,7 @@ automotive_models:
     specialization: "automotive_service"
     training_epochs: 3
     learning_rate: 0.0001
-    
+
   sales_assistant:
     base_model: "claude-3-haiku"
     specialization: "automotive_sales"
@@ -87,6 +93,7 @@ automotive_models:
 ## 🏭 **Industry Profile System**
 
 ### **Available Industry Profiles**
+
 ```
 industry_profiles/
 ├── automotive/
@@ -112,6 +119,7 @@ industry_profiles/
 ```
 
 ### **Dynamic Profile Configuration**
+
 ```yaml
 name: "Industry-Adaptive Workflow Assistant"
 description: "AI assistant that adapts to industry-specific needs"
@@ -130,6 +138,7 @@ capabilities:
 ```
 
 ### **Using Industry Profiles**
+
 ```python
 # Deploy industry-specific model
 response = requests.post('/api/v1/models/deploy-template', json={
@@ -159,6 +168,7 @@ response = requests.post('/api/v1/models/deploy-template', json={
 ## 🔧 **API Reference**
 
 ### **Model Management**
+
 ```http
 POST /api/v1/models/deploy
 GET /api/v1/models
@@ -167,6 +177,7 @@ DELETE /api/v1/models/{model_id}
 ```
 
 ### **Training Pipeline**
+
 ```http
 POST /api/v1/training/start
 GET /api/v1/training/{job_id}/status
@@ -175,6 +186,7 @@ POST /api/v1/training/{job_id}/stop
 ```
 
 ### **Inference Engine**
+
 ```http
 POST /api/v1/inference
 POST /api/v1/inference/batch
@@ -182,6 +194,7 @@ GET /api/v1/inference/{request_id}/status
 ```
 
 ### **Performance Monitoring**
+
 ```http
 GET /api/v1/models/{model_id}/metrics
 GET /api/v1/models/{model_id}/performance
@@ -191,6 +204,7 @@ POST /api/v1/models/{model_id}/feedback
 ## 🧪 **Training Pipeline**
 
 ### **AutoRLAIF Training**
+
 ```python
 # Start training with AutoRLAIF
 training_config = {
@@ -208,6 +222,7 @@ response = requests.post('/api/v1/training/start', json=training_config)
 ```
 
 ### **Dataset Refinement**
+
 ```python
 # Refine training dataset
 refinement_config = {
@@ -221,6 +236,7 @@ response = requests.post('/api/v1/dataset/refine', json=refinement_config)
 ```
 
 ### **Training Monitoring**
+
 ```bash
 # Monitor training progress
 curl http://localhost:3002/api/v1/training/job123/status
@@ -235,6 +251,7 @@ curl http://localhost:3002/api/v1/training/job123/metrics
 ## 📊 **Performance Monitoring**
 
 ### **Model Metrics**
+
 - **Accuracy**: Response quality scores
 - **Latency**: Inference response times
 - **Throughput**: Requests per second
@@ -242,6 +259,7 @@ curl http://localhost:3002/api/v1/training/job123/metrics
 - **User Satisfaction**: Feedback scores
 
 ### **MLflow Integration**
+
 ```python
 import mlflow
 
@@ -254,6 +272,7 @@ with mlflow.start_run():
 ```
 
 ### **Grafana Dashboard**
+
 ```bash
 # Import NeuroWeaver dashboard
 curl -X POST http://admin:admin@localhost:3000/api/dashboards/db \
@@ -264,6 +283,7 @@ curl -X POST http://admin:admin@localhost:3000/api/dashboards/db \
 ## 🚀 **Deployment**
 
 ### **Production Docker**
+
 ```bash
 docker run -d \
   --name neuroweaver \
@@ -275,6 +295,7 @@ docker run -d \
 ```
 
 ### **Kubernetes with GPU**
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -291,19 +312,20 @@ spec:
         app: neuroweaver
     spec:
       containers:
-      - name: neuroweaver
-        image: auterity/neuroweaver:latest
-        resources:
-          limits:
-            nvidia.com/gpu: 1
-          requests:
-            memory: "4Gi"
-            cpu: "2"
-        ports:
-        - containerPort: 3002
+        - name: neuroweaver
+          image: auterity/neuroweaver:latest
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+            requests:
+              memory: "4Gi"
+              cpu: "2"
+          ports:
+            - containerPort: 3002
 ```
 
 ### **Model Storage**
+
 ```bash
 # Configure persistent storage for models
 kubectl create pv neuroweaver-models --capacity=100Gi --access-modes=ReadWriteOnce
@@ -313,6 +335,7 @@ kubectl create pvc neuroweaver-models-claim --request=100Gi
 ## 🛠️ **Development**
 
 ### **Local Development**
+
 ```bash
 git clone https://github.com/toobutta/auterity-error-iq.git
 cd auterity-error-iq/systems/neuroweaver
@@ -329,6 +352,7 @@ npm run dev
 ```
 
 ### **Code Structure**
+
 ```
 neuroweaver/
 ├── backend/
@@ -350,6 +374,7 @@ neuroweaver/
 ## 🧪 **Testing**
 
 ### **Backend Tests**
+
 ```bash
 cd backend
 pytest tests/                    # Run all tests
@@ -358,6 +383,7 @@ pytest tests/test_inference.py  # Inference engine tests
 ```
 
 ### **Frontend Tests**
+
 ```bash
 cd frontend
 npm test                        # Run React tests
@@ -365,6 +391,7 @@ npm run test:e2e               # End-to-end tests
 ```
 
 ### **Integration Tests**
+
 ```bash
 # Test full pipeline
 python backend/test_automotive_integration.py
@@ -378,6 +405,7 @@ python backend/test_implementation.py
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines.
 
 ### **Quick Contribution Steps**
+
 1. Fork the repository
 2. Create feature branch: `git checkout -b feature/neuroweaver-enhancement`
 3. Make changes and add tests
@@ -393,6 +421,7 @@ See [CHANGELOG.md](CHANGELOG.md) for version history and breaking changes.
 ### **Common Issues**
 
 **Training Job Fails**
+
 ```bash
 # Check GPU availability
 nvidia-smi
@@ -405,6 +434,7 @@ python -c "import json; [json.loads(line) for line in open('data.jsonl')]"
 ```
 
 **Model Deployment Issues**
+
 ```bash
 # Check model storage
 ls -la /app/models/
@@ -417,6 +447,7 @@ curl http://localhost:3002/health
 ```
 
 **Performance Issues**
+
 ```bash
 # Monitor resource usage
 docker stats neuroweaver

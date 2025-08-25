@@ -94,6 +94,7 @@ Auterity is designed as a cloud-native, microservices-based platform that provid
 ## Architecture Principles
 
 ### 1. Cloud-Native Design
+
 - **Containerized Applications**: All services run in Docker containers
 - **Orchestration**: Kubernetes for container management and scaling
 - **Stateless Services**: Applications designed for horizontal scaling
@@ -101,6 +102,7 @@ Auterity is designed as a cloud-native, microservices-based platform that provid
 - **Health Checks**: Built-in health monitoring and auto-recovery
 
 ### 2. Microservices Architecture
+
 - **Service Separation**: Clear boundaries between business domains
 - **API-First Design**: All services communicate via well-defined APIs
 - **Independent Deployment**: Services can be deployed independently
@@ -108,6 +110,7 @@ Auterity is designed as a cloud-native, microservices-based platform that provid
 - **Fault Isolation**: Failures contained within service boundaries
 
 ### 3. Event-Driven Architecture
+
 - **Asynchronous Processing**: Non-blocking operations for better performance
 - **Event Sourcing**: Workflow execution events for audit and replay
 - **Message Queues**: Reliable message delivery between services
@@ -115,6 +118,7 @@ Auterity is designed as a cloud-native, microservices-based platform that provid
 - **Pub/Sub Patterns**: Decoupled communication between services
 
 ### 4. Security by Design
+
 - **Zero Trust Model**: Verify every request and connection
 - **Defense in Depth**: Multiple layers of security controls
 - **Encryption Everywhere**: Data encrypted at rest and in transit
@@ -176,6 +180,7 @@ FastAPI Application
 ### Database Design
 
 #### Primary Database (PostgreSQL)
+
 ```sql
 -- Core Tables
 Users (id, email, name, password_hash, created_at, updated_at)
@@ -192,6 +197,7 @@ Templates 1:N TemplateParameters
 ```
 
 #### Cache Layer (Redis)
+
 ```
 Session Storage:
 - session:{user_id} -> user session data
@@ -213,6 +219,7 @@ Real-time Data:
 ```
 
 #### Vector Database (Pinecone/Weaviate)
+
 ```
 Embeddings Storage:
 - Template embeddings for similarity search
@@ -285,6 +292,7 @@ Embeddings Storage:
 ### Security Implementation
 
 #### JWT Authentication Flow
+
 ```
 1. User Login Request
    ├── Validate Credentials
@@ -307,6 +315,7 @@ Embeddings Storage:
 ```
 
 #### Role-Based Access Control
+
 ```
 Roles:
 ├── Super Admin
@@ -367,6 +376,7 @@ Roles:
 ### Performance Optimization
 
 #### Caching Strategy
+
 ```
 Multi-Layer Caching:
 ├── CDN Cache (Static Assets)
@@ -389,6 +399,7 @@ Multi-Layer Caching:
 ```
 
 #### Database Optimization
+
 ```
 Performance Strategies:
 ├── Indexing Strategy
@@ -603,24 +614,28 @@ API Gateway Features:
 ## Technology Evolution Roadmap
 
 ### Phase 1: Current Architecture (MVP)
+
 - Monolithic deployment with microservices design
 - Single region deployment
 - Basic monitoring and logging
 - Manual scaling and deployment
 
 ### Phase 2: Enhanced Scalability (3-6 months)
+
 - Multi-region deployment
 - Auto-scaling implementation
 - Advanced monitoring and alerting
 - CI/CD pipeline automation
 
 ### Phase 3: Advanced Features (6-12 months)
+
 - Service mesh implementation (Istio)
 - Advanced AI/ML capabilities
 - Real-time analytics platform
 - Multi-tenant architecture
 
 ### Phase 4: Enterprise Scale (12+ months)
+
 - Global deployment with edge computing
 - Advanced security features
 - Machine learning optimization
@@ -628,8 +643,8 @@ API Gateway Features:
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: $(date)  
-**Architecture Review**: Quarterly system architecture review  
-**Maintained By**: Auterity Architecture Team  
+**Document Version**: 1.0
+**Last Updated**: $(date)
+**Architecture Review**: Quarterly system architecture review
+**Maintained By**: Auterity Architecture Team
 **Classification**: Confidential - Technical Documentation

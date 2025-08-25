@@ -2,12 +2,11 @@
 
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
-
 from app.auth import get_current_user
 from app.models.user import User
 from app.services.ai_service_relaycore import EnhancedAIService, get_enhanced_ai_service
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/relaycore", tags=["relaycore"])
 

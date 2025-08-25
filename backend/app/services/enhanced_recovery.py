@@ -14,7 +14,6 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import redis.asyncio as redis
-
 from app.exceptions import BaseAppException, ErrorCategory
 from app.services.notification_service import get_notification_service
 from app.utils.retry_utils import RetryConfig

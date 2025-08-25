@@ -19,7 +19,7 @@ while attempt <= max_attempts:
     if check_database_connection():
         print('Database is ready!')
         sys.exit(0)
-    
+
     print(f'Database not ready, attempt {attempt}/{max_attempts}')
     time.sleep(2)
     attempt += 1

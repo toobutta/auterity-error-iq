@@ -5,11 +5,10 @@ AgentRegistry service for agent registration, discovery, capability matching, he
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from fastapi import HTTPException
-from sqlalchemy.orm import Session
-
 from app.models.agent import Agent, AgentCapability, AgentStatus
 from app.schemas.agent import AgentCreate
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
 
 class AgentRegistry:

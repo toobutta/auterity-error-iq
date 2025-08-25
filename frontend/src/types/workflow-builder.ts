@@ -1,33 +1,37 @@
-import { WorkflowStep, WorkflowDefinition } from './workflow';
+import { WorkflowStep, WorkflowDefinition } from "./workflow";
 
 // Enhanced workflow interfaces for automotive dealership workflows
 export interface Workflow extends WorkflowDefinition {
-  category: 'sales' | 'service' | 'marketing' | 'inventory';
+  category: "sales" | "service" | "marketing" | "inventory";
   triggers: TriggerConfig[];
   variables: WorkflowVariable[];
   version: number;
-  status: 'draft' | 'active' | 'archived';
+  status: "draft" | "active" | "archived";
   created_at: string;
   updated_at: string;
 }
 
 export interface WorkflowVariable {
   name: string;
-  type: 'string' | 'number' | 'boolean' | 'object';
+  type: "string" | "number" | "boolean" | "object";
   defaultValue?: string | number | boolean | Record<string, unknown>;
   description: string;
 }
 
 export interface TriggerConfig {
   id: string;
-  type: 'customer_inquiry' | 'inventory_update' | 'service_appointment' | 'lead_generation';
+  type:
+    | "customer_inquiry"
+    | "inventory_update"
+    | "service_appointment"
+    | "lead_generation";
   config: Record<string, unknown>;
 }
 
 // Node system interfaces
 export interface WorkflowNode {
   id: string;
-  type: 'trigger' | 'action' | 'condition' | 'ai_step';
+  type: "trigger" | "action" | "condition" | "ai_step";
   position: { x: number; y: number };
   data: NodeData;
   connections: Connection[];
@@ -43,7 +47,7 @@ export interface Connection {
 export interface NodeData {
   label: string;
   description?: string;
-  type: WorkflowStep['type'];
+  type: WorkflowStep["type"];
   config: NodeConfig;
   validation: ValidationRule[];
   isValid?: boolean;
@@ -74,7 +78,7 @@ export interface NodeTemplate {
 export interface InputPort {
   id: string;
   name: string;
-  type: 'string' | 'number' | 'boolean' | 'object' | 'unknown';
+  type: "string" | "number" | "boolean" | "object" | "unknown";
   required: boolean;
   description?: string;
 }
@@ -82,7 +86,7 @@ export interface InputPort {
 export interface OutputPort {
   id: string;
   name: string;
-  type: 'string' | 'number' | 'boolean' | 'object' | 'unknown';
+  type: "string" | "number" | "boolean" | "object" | "unknown";
   description?: string;
 }
 
@@ -107,7 +111,7 @@ export interface NodeConfig {
 
   // AI Node
   aiPrompt?: {
-    model: 'gpt-4' | 'gpt-3.5-turbo';
+    model: "gpt-4" | "gpt-3.5-turbo";
     prompt: string;
     temperature: number;
     maxTokens?: number;
@@ -117,19 +121,25 @@ export interface NodeConfig {
   // Condition Node
   conditions?: {
     field: string;
-    operator: 'equals' | 'contains' | 'greater_than' | 'less_than' | 'in' | 'not_in';
+    operator:
+      | "equals"
+      | "contains"
+      | "greater_than"
+      | "less_than"
+      | "in"
+      | "not_in";
     value: unknown;
-    logicalOperator?: 'and' | 'or';
+    logicalOperator?: "and" | "or";
   }[];
 
   // Trigger Nodes
   customerInquiry?: {
-    sources: ('email' | 'phone' | 'web_form' | 'chat')[];
+    sources: ("email" | "phone" | "web_form" | "chat")[];
     filters?: Record<string, unknown>;
   };
 
   inventoryUpdate?: {
-    eventTypes: ('new_arrival' | 'price_change' | 'status_change')[];
+    eventTypes: ("new_arrival" | "price_change" | "status_change")[];
     vehicleFilters?: {
       make?: string[];
       model?: string[];
@@ -139,7 +149,7 @@ export interface NodeConfig {
   };
 
   serviceAppointment?: {
-    serviceTypes: ('maintenance' | 'repair' | 'inspection')[];
+    serviceTypes: ("maintenance" | "repair" | "inspection")[];
     reminderSettings?: {
       enabled: boolean;
       daysBefore: number;
@@ -148,7 +158,7 @@ export interface NodeConfig {
 
   // Action Nodes
   scheduleAppointment?: {
-    appointmentType: 'service' | 'sales' | 'test_drive';
+    appointmentType: "service" | "sales" | "test_drive";
     duration: number;
     location?: string;
     autoConfirm: boolean;
@@ -174,7 +184,7 @@ export interface NodeConfig {
 
 export interface ValidationRule {
   field: string;
-  type: 'required' | 'min_length' | 'max_length' | 'pattern' | 'custom';
+  type: "required" | "min_length" | "max_length" | "pattern" | "custom";
   value?: string | number | boolean | RegExp | Record<string, unknown>;
   message: string;
 }
@@ -232,7 +242,7 @@ export interface CustomerData {
     features?: string[];
   };
   leadScore?: number;
-  status: 'new' | 'contacted' | 'qualified' | 'negotiating' | 'closed' | 'lost';
+  status: "new" | "contacted" | "qualified" | "negotiating" | "closed" | "lost";
 }
 
 export interface VehicleData {
@@ -242,7 +252,7 @@ export interface VehicleData {
   model: string;
   year: number;
   price: number;
-  status: 'available' | 'sold' | 'reserved' | 'maintenance';
+  status: "available" | "sold" | "reserved" | "maintenance";
   features: string[];
   images?: string[];
   specifications?: Record<string, unknown>;
@@ -252,48 +262,48 @@ export interface ServiceAppointmentData {
   id: string;
   customerId: string;
   vehicleId?: string;
-  serviceType: 'maintenance' | 'repair' | 'inspection';
+  serviceType: "maintenance" | "repair" | "inspection";
   scheduledDate: string;
   duration: number;
-  status: 'scheduled' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
+  status: "scheduled" | "confirmed" | "in_progress" | "completed" | "cancelled";
   notes?: string;
 }
 
 // Template categories for automotive workflows
 export const AUTOMOTIVE_NODE_CATEGORIES: NodeCategory[] = [
   {
-    id: 'triggers',
-    name: 'Triggers',
-    icon: '⚡',
-    color: 'yellow',
+    id: "triggers",
+    name: "Triggers",
+    icon: "⚡",
+    color: "yellow",
     nodes: [],
   },
   {
-    id: 'actions',
-    name: 'Actions',
-    icon: '🔄',
-    color: 'blue',
+    id: "actions",
+    name: "Actions",
+    icon: "🔄",
+    color: "blue",
     nodes: [],
   },
   {
-    id: 'conditions',
-    name: 'Conditions',
-    icon: '❓',
-    color: 'purple',
+    id: "conditions",
+    name: "Conditions",
+    icon: "❓",
+    color: "purple",
     nodes: [],
   },
   {
-    id: 'ai_powered',
-    name: 'AI Powered',
-    icon: '🤖',
-    color: 'green',
+    id: "ai_powered",
+    name: "AI Powered",
+    icon: "🤖",
+    color: "green",
     nodes: [],
   },
   {
-    id: 'integrations',
-    name: 'Integrations',
-    icon: '🔌',
-    color: 'orange',
+    id: "integrations",
+    name: "Integrations",
+    icon: "🔌",
+    color: "orange",
     nodes: [],
   },
 ];

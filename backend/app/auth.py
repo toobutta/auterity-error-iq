@@ -1,11 +1,18 @@
 """Authentication utilities for JWT token management and password hashing."""
 
 import os
+from datetime import datetime, timedelta
 from typing import Optional
 
-from passlib.context import CryptContext
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import jwt
+from jwt import InvalidTokenError
+from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
+from app.models.user import User, Role, Permission
+from passlib.context import CryptContext
 
 # Configuration
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
@@ -74,7 +81,7 @@ def verify_token(token: str) -> Optional[dict]:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except JWTError:
+    except InvalidTokenError:
         return None
 
 

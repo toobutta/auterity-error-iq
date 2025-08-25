@@ -12,9 +12,8 @@ from uuid import UUID
 
 import aiohttp
 import jwt
-from cryptography.fernet import Fernet
-
 from app.core.saas_config import SaaSConfig
+from cryptography.fernet import Fernet
 
 logger = logging.getLogger(__name__)
 
@@ -485,7 +484,6 @@ class PartnerEcosystemService:
                 json=data if method in ["POST", "PUT", "PATCH"] else None,
                 params=data if method == "GET" else None,
             ) as response:
-
                 result = {
                     "success": response.status < 400,
                     "status_code": response.status,
@@ -551,7 +549,6 @@ class PartnerEcosystemService:
             async with self.http_client.post(
                 webhook_url, json=payload, headers=headers
             ) as response:
-
                 event.status = "delivered" if response.status < 400 else "failed"
                 event.delivered_at = datetime.utcnow()
                 event.response_status = response.status

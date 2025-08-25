@@ -2,12 +2,11 @@
 
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
-
 from app.auth.dependencies import get_current_user
 from app.database import get_db
 from app.models.user import User
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/models", tags=["models"])
 

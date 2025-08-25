@@ -1,13 +1,16 @@
-import React from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
-import { NodeData } from '../../../types/workflow';
+import React from "react";
+import { Handle, Position, NodeProps } from "@xyflow/react";
+import { NodeData } from "../../../types/workflow";
 
-const SendEmailNode: React.FC<NodeProps<NodeData>> = ({ data, isConnectable }) => {
+const SendEmailNode: React.FC<NodeProps<NodeData>> = ({
+  data,
+  isConnectable,
+}) => {
   const hasErrors = data.validationErrors && data.validationErrors.length > 0;
 
   return (
     <div
-      className={`bg-blue-100 border-2 ${hasErrors ? 'border-red-400' : 'border-blue-300'} rounded-lg p-3 shadow-md min-w-[160px]`}
+      className={`bg-blue-100 border-2 ${hasErrors ? "border-red-400" : "border-blue-300"} rounded-lg p-3 shadow-md min-w-[160px]`}
     >
       <Handle
         type="target"
@@ -21,17 +24,22 @@ const SendEmailNode: React.FC<NodeProps<NodeData>> = ({ data, isConnectable }) =
           <span className="text-white text-sm font-bold">📤</span>
         </div>
         <h3 className="font-bold text-blue-800">{data.label}</h3>
-        {data.description && <p className="text-xs text-blue-600 mt-1">{data.description}</p>}
-        {(data.config as { emailTemplate?: { subject?: string } })?.emailTemplate?.subject && (
+        {data.description && (
+          <p className="text-xs text-blue-600 mt-1">{data.description}</p>
+        )}
+        {(data.config as { emailTemplate?: { subject?: string } })
+          ?.emailTemplate?.subject && (
           <p
             className="text-xs text-gray-500 mt-1 truncate"
             title={
-              (data.config as { emailTemplate?: { subject?: string } }).emailTemplate?.subject || ''
+              (data.config as { emailTemplate?: { subject?: string } })
+                .emailTemplate?.subject || ""
             }
           >
-            Subject:{' '}
+            Subject:{" "}
             {(
-              (data.config as { emailTemplate?: { subject?: string } }).emailTemplate?.subject || ''
+              (data.config as { emailTemplate?: { subject?: string } })
+                .emailTemplate?.subject || ""
             ).substring(0, 20)}
             ...
           </p>

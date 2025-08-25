@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { WorkflowExecution } from '../types/workflow';
-import { getExecution } from '../api/workflows';
-import WorkflowErrorDisplay from './WorkflowErrorDisplay';
-import LazyCodeHighlighter from './LazyCodeHighlighter';
+import React, { useState, useEffect } from "react";
+import { WorkflowExecution } from "../types/workflow";
+import { getExecution } from "../api/workflows";
+import WorkflowErrorDisplay from "./WorkflowErrorDisplay";
+import LazyCodeHighlighter from "./LazyCodeHighlighter";
 
 interface WorkflowExecutionResultsProps {
   executionId: string;
@@ -15,7 +15,7 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
   executionId,
   workflowId,
   onRetrySuccess,
-  className = '',
+  className = "",
 }) => {
   const [execution, setExecution] = useState<WorkflowExecution | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,16 +29,18 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
         const executionData = await getExecution(executionId);
         setExecution(executionData);
       } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+        const errorMessage =
+          err instanceof Error ? err.message : "Unknown error occurred";
         const errorContext = {
-          operation: 'fetchExecution',
+          operation: "fetchExecution",
           executionId,
           timestamp: new Date().toISOString(),
-          errorType: err instanceof Error ? err.constructor.name : 'UnknownError',
+          errorType:
+            err instanceof Error ? err.constructor.name : "UnknownError",
           errorMessage,
           stack: err instanceof Error ? err.stack : undefined,
         };
-        console.error('Execution fetch failed:', errorContext);
+        console.error("Execution fetch failed:", errorContext);
         setError(`Failed to fetch execution results: ${errorMessage}`);
       } finally {
         setLoading(false);
@@ -51,21 +53,21 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
   }, [executionId]);
   const formatValue = (value: unknown): string => {
     if (value === null || value === undefined) {
-      return 'null';
+      return "null";
     }
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       return value;
     }
-    if (typeof value === 'boolean' || typeof value === 'number') {
+    if (typeof value === "boolean" || typeof value === "number") {
       return String(value);
     }
     return JSON.stringify(value, null, 2);
   };
 
   const getValueType = (value: unknown): string => {
-    if (value === null || value === undefined) return 'null';
-    if (Array.isArray(value)) return 'array';
-    if (typeof value === 'object') return 'object';
+    if (value === null || value === undefined) return "null";
+    if (Array.isArray(value)) return "array";
+    if (typeof value === "object") return "object";
     return typeof value;
   };
 
@@ -85,28 +87,31 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
 
     try {
       await navigator.clipboard.writeText(formatValue(execution.outputData));
-      console.log('Clipboard operation successful', {
-        operation: 'copyToClipboard',
+      console.log("Clipboard operation successful", {
+        operation: "copyToClipboard",
         timestamp: new Date().toISOString(),
         dataLength: formatValue(execution.outputData).length,
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown clipboard error';
+      const errorMessage =
+        err instanceof Error ? err.message : "Unknown clipboard error";
       const errorContext = {
-        operation: 'copyToClipboard',
+        operation: "copyToClipboard",
         timestamp: new Date().toISOString(),
         hasOutputData: !!execution?.outputData,
         errorMessage,
-        errorType: err instanceof Error ? err.constructor.name : 'UnknownError',
+        errorType: err instanceof Error ? err.constructor.name : "UnknownError",
       };
-      console.error('Clipboard operation failed:', errorContext);
+      console.error("Clipboard operation failed:", errorContext);
       // Could add user notification here if needed
     }
   };
 
   if (loading) {
     return (
-      <div className={`bg-white border border-gray-200 rounded-lg p-6 ${className}`}>
+      <div
+        className={`bg-white border border-gray-200 rounded-lg p-6 ${className}`}
+      >
         <div className="flex items-center justify-center">
           <svg
             className="w-6 h-6 text-gray-400 animate-spin mr-3"
@@ -129,7 +134,9 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
 
   if (error) {
     return (
-      <div className={`bg-red-50 border border-red-200 rounded-lg p-6 ${className}`}>
+      <div
+        className={`bg-red-50 border border-red-200 rounded-lg p-6 ${className}`}
+      >
         <div className="flex items-center">
           <svg
             className="w-5 h-5 text-red-600 mr-2"
@@ -144,7 +151,9 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
               d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <span className="text-red-800 font-medium">Error Loading Results</span>
+          <span className="text-red-800 font-medium">
+            Error Loading Results
+          </span>
         </div>
         <p className="text-red-700 mt-2">{error}</p>
       </div>
@@ -153,7 +162,9 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
 
   if (!execution) {
     return (
-      <div className={`bg-gray-50 border border-gray-200 rounded-lg p-6 ${className}`}>
+      <div
+        className={`bg-gray-50 border border-gray-200 rounded-lg p-6 ${className}`}
+      >
         <div className="text-center text-gray-600">
           <svg
             className="w-12 h-12 mx-auto mb-3 text-gray-400"
@@ -174,11 +185,13 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
     );
   }
 
-  const hasOutputData = execution.outputData && Object.keys(execution.outputData).length > 0;
-  const hasInputData = execution.inputData && Object.keys(execution.inputData).length > 0;
+  const hasOutputData =
+    execution.outputData && Object.keys(execution.outputData).length > 0;
+  const hasInputData =
+    execution.inputData && Object.keys(execution.inputData).length > 0;
 
   // Show comprehensive error display for failed executions
-  if (execution.status === 'failed') {
+  if (execution.status === "failed") {
     return (
       <WorkflowErrorDisplay
         executionId={executionId}
@@ -190,19 +203,23 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
   }
 
   // Handle pending and running states
-  if (execution.status === 'pending' || execution.status === 'running') {
+  if (execution.status === "pending" || execution.status === "running") {
     return (
-      <div className={`bg-white border border-gray-200 rounded-lg ${className}`}>
+      <div
+        className={`bg-white border border-gray-200 rounded-lg ${className}`}
+      >
         <div className="border-b border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Execution Results</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Execution Results
+            </h3>
             <span
               className={`
               px-3 py-1 rounded-full text-sm font-medium capitalize
               ${
-                execution.status === 'running'
-                  ? 'bg-blue-100 text-blue-800'
-                  : 'bg-yellow-100 text-yellow-800'
+                execution.status === "running"
+                  ? "bg-blue-100 text-blue-800"
+                  : "bg-yellow-100 text-yellow-800"
               }
             `}
             >
@@ -212,11 +229,15 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
             <div>
               <span className="text-gray-500">Execution ID:</span>
-              <p className="font-mono text-gray-900 break-all">{execution.id}</p>
+              <p className="font-mono text-gray-900 break-all">
+                {execution.id}
+              </p>
             </div>
             <div>
               <span className="text-gray-500">Started:</span>
-              <p className="text-gray-900">{formatDateTime(execution.startedAt)}</p>
+              <p className="text-gray-900">
+                {formatDateTime(execution.startedAt)}
+              </p>
             </div>
           </div>
         </div>
@@ -236,9 +257,9 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
               />
             </svg>
             <p>
-              {execution.status === 'pending' || execution.status === 'running'
-                ? 'Output data will appear here when execution completes'
-                : 'No output data available'}
+              {execution.status === "pending" || execution.status === "running"
+                ? "Output data will appear here when execution completes"
+                : "No output data available"}
             </p>
           </div>
         </div>
@@ -251,14 +272,16 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
       {/* Header with Execution Metadata */}
       <div className="border-b border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Execution Results</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            Execution Results
+          </h3>
           <span
             className={`
             px-3 py-1 rounded-full text-sm font-medium capitalize
             ${
-              execution.status === 'completed'
-                ? 'bg-green-100 text-green-800'
-                : 'bg-red-100 text-red-800'
+              execution.status === "completed"
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
             }
           `}
           >
@@ -274,18 +297,24 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
           </div>
           <div>
             <span className="text-gray-500">Started:</span>
-            <p className="text-gray-900">{formatDateTime(execution.startedAt)}</p>
+            <p className="text-gray-900">
+              {formatDateTime(execution.startedAt)}
+            </p>
           </div>
           {execution.completedAt && (
             <div>
               <span className="text-gray-500">Completed:</span>
-              <p className="text-gray-900">{formatDateTime(execution.completedAt)}</p>
+              <p className="text-gray-900">
+                {formatDateTime(execution.completedAt)}
+              </p>
             </div>
           )}
           {execution.duration && (
             <div>
               <span className="text-gray-500">Duration:</span>
-              <p className="text-gray-900">{formatDuration(execution.duration)}</p>
+              <p className="text-gray-900">
+                {formatDuration(execution.duration)}
+              </p>
             </div>
           )}
         </div>
@@ -342,7 +371,12 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
                 onClick={copyToClipboard}
                 className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors flex items-center"
               >
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -359,7 +393,11 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
             <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
               <div className="overflow-x-auto">
                 <LazyCodeHighlighter
-                  language={getValueType(execution.outputData) === 'string' ? 'text' : 'json'}
+                  language={
+                    getValueType(execution.outputData) === "string"
+                      ? "text"
+                      : "json"
+                  }
                   className="rounded"
                 >
                   {formatValue(execution.outputData)}

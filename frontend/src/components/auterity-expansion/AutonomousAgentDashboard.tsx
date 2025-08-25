@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription } from '../ui/card';
-import { Button } from '../ui/button';
-import { MetricCard } from '../MetricCard';
+import React, { useState, useEffect } from "react";
+import { Card, CardHeader, CardTitle, CardDescription } from "../ui/card";
+import { Button } from "../ui/button";
+import { MetricCard } from "../MetricCard";
 
 interface Agent {
   id: string;
   name: string;
-  agent_type: 'support' | 'analytics' | 'automation' | 'monitoring' | 'custom';
-  status: 'active' | 'idle' | 'busy' | 'error' | 'offline';
+  agent_type: "support" | "analytics" | "automation" | "monitoring" | "custom";
+  status: "active" | "idle" | "busy" | "error" | "offline";
   current_task?: string;
   memory_count: number;
   performance_score: number;
@@ -19,9 +19,14 @@ interface Agent {
 interface AgentTask {
   id: string;
   agent_id: string;
-  task_type: 'classification' | 'analysis' | 'automation' | 'monitoring' | 'custom';
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
-  priority: 'low' | 'medium' | 'high' | 'critical';
+  task_type:
+    | "classification"
+    | "analysis"
+    | "automation"
+    | "monitoring"
+    | "custom";
+  status: "pending" | "running" | "completed" | "failed" | "cancelled";
+  priority: "low" | "medium" | "high" | "critical";
   description: string;
   assigned_at: string;
   completed_at?: string;
@@ -62,10 +67,10 @@ const AutonomousAgentDashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<AgentMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'agents' | 'tasks' | 'memories' | 'coordination'
-  >('overview');
-  const [selectedAgentType, setSelectedAgentType] = useState<string>('all');
-  const [selectedTaskStatus, setSelectedTaskStatus] = useState<string>('all');
+    "overview" | "agents" | "tasks" | "memories" | "coordination"
+  >("overview");
+  const [selectedAgentType, setSelectedAgentType] = useState<string>("all");
+  const [selectedTaskStatus, setSelectedTaskStatus] = useState<string>("all");
 
   useEffect(() => {
     fetchAgentData();
@@ -77,78 +82,88 @@ const AutonomousAgentDashboard: React.FC = () => {
       // Mock data for now - replace with actual API calls
       const mockAgents: Agent[] = [
         {
-          id: '1',
-          name: 'Support Agent Alpha',
-          agent_type: 'support',
-          status: 'active',
-          current_task: 'Customer ticket classification',
+          id: "1",
+          name: "Support Agent Alpha",
+          agent_type: "support",
+          status: "active",
+          current_task: "Customer ticket classification",
           memory_count: 1250,
           performance_score: 0.94,
-          last_active: '2025-01-27T10:30:00Z',
-          capabilities: ['NLP', 'Classification', 'Routing'],
-          tenant_id: 'tenant-1',
+          last_active: "2025-01-27T10:30:00Z",
+          capabilities: ["NLP", "Classification", "Routing"],
+          tenant_id: "tenant-1",
         },
         {
-          id: '2',
-          name: 'Analytics Agent Beta',
-          agent_type: 'analytics',
-          status: 'busy',
-          current_task: 'Performance trend analysis',
+          id: "2",
+          name: "Analytics Agent Beta",
+          agent_type: "analytics",
+          status: "busy",
+          current_task: "Performance trend analysis",
           memory_count: 890,
           performance_score: 0.87,
-          last_active: '2025-01-27T10:25:00Z',
-          capabilities: ['Data Analysis', 'Trend Detection', 'Reporting'],
-          tenant_id: 'tenant-1',
+          last_active: "2025-01-27T10:25:00Z",
+          capabilities: ["Data Analysis", "Trend Detection", "Reporting"],
+          tenant_id: "tenant-1",
         },
         {
-          id: '3',
-          name: 'Automation Agent Gamma',
-          agent_type: 'automation',
-          status: 'idle',
+          id: "3",
+          name: "Automation Agent Gamma",
+          agent_type: "automation",
+          status: "idle",
           current_task: undefined,
           memory_count: 567,
           performance_score: 0.91,
-          last_active: '2025-01-27T10:20:00Z',
-          capabilities: ['Workflow Automation', 'Task Execution', 'Error Handling'],
-          tenant_id: 'tenant-1',
+          last_active: "2025-01-27T10:20:00Z",
+          capabilities: [
+            "Workflow Automation",
+            "Task Execution",
+            "Error Handling",
+          ],
+          tenant_id: "tenant-1",
         },
       ];
 
       const mockTasks: AgentTask[] = [
         {
-          id: '1',
-          agent_id: '1',
-          task_type: 'classification',
-          status: 'running',
-          priority: 'high',
-          description: 'Classify incoming support tickets by urgency and category',
-          assigned_at: '2025-01-27T10:00:00Z',
+          id: "1",
+          agent_id: "1",
+          task_type: "classification",
+          status: "running",
+          priority: "high",
+          description:
+            "Classify incoming support tickets by urgency and category",
+          assigned_at: "2025-01-27T10:00:00Z",
         },
         {
-          id: '2',
-          agent_id: '2',
-          task_type: 'analysis',
-          status: 'completed',
-          priority: 'medium',
-          description: 'Analyze workflow performance metrics for Q4',
-          assigned_at: '2025-01-27T09:00:00Z',
-          completed_at: '2025-01-27T10:15:00Z',
-          result: { insights: ['Performance improved 15%', 'Bottleneck identified in step 3'] },
+          id: "2",
+          agent_id: "2",
+          task_type: "analysis",
+          status: "completed",
+          priority: "medium",
+          description: "Analyze workflow performance metrics for Q4",
+          assigned_at: "2025-01-27T09:00:00Z",
+          completed_at: "2025-01-27T10:15:00Z",
+          result: {
+            insights: [
+              "Performance improved 15%",
+              "Bottleneck identified in step 3",
+            ],
+          },
         },
       ];
 
       const mockMemories: AgentMemory[] = [
         {
-          id: '1',
-          agent_id: '1',
-          context_hash: 'ctx_001',
+          id: "1",
+          agent_id: "1",
+          context_hash: "ctx_001",
           memory_data: {
-            context: 'Customer support patterns',
-            patterns: ['urgent', 'technical', 'billing'],
+            context: "Customer support patterns",
+            patterns: ["urgent", "technical", "billing"],
           },
           importance_score: 0.85,
-          created_at: '2025-01-27T08:00:00Z',
-          accessed_at: '2025-01-27T10:30:00Z',
+          created_at: "2025-01-27T08:00:00Z",
+          accessed_at: "2025-01-27T10:30:00Z",
         },
       ];
 
@@ -166,7 +181,7 @@ const AutonomousAgentDashboard: React.FC = () => {
       setMemories(mockMemories);
       setMetrics(mockMetrics);
     } catch (error) {
-      console.error('Failed to fetch agent data:', error);
+      console.error("Failed to fetch agent data:", error);
     } finally {
       setLoading(false);
     }
@@ -174,76 +189,78 @@ const AutonomousAgentDashboard: React.FC = () => {
 
   const getAgentTypeColor = (type: string) => {
     switch (type) {
-      case 'support':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'analytics':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'automation':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
-      case 'monitoring':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
-      case 'custom':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+      case "support":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+      case "analytics":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "automation":
+        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200";
+      case "monitoring":
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200";
+      case "custom":
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'idle':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'busy':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'error':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      case 'offline':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+      case "active":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "idle":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+      case "busy":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+      case "error":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+      case "offline":
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
   };
 
   const getTaskStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'running':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'completed':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'failed':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      case 'cancelled':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+      case "running":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+      case "completed":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "failed":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+      case "cancelled":
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'critical':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      case 'high':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'low':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case "critical":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+      case "high":
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+      case "low":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
   };
 
   const filteredAgents = agents.filter(
-    (agent) => selectedAgentType === 'all' || agent.agent_type === selectedAgentType
+    (agent) =>
+      selectedAgentType === "all" || agent.agent_type === selectedAgentType,
   );
 
   const filteredTasks = tasks.filter(
-    (task) => selectedTaskStatus === 'all' || task.status === selectedTaskStatus
+    (task) =>
+      selectedTaskStatus === "all" || task.status === selectedTaskStatus,
   );
 
   if (loading) {
@@ -264,7 +281,8 @@ const AutonomousAgentDashboard: React.FC = () => {
               Autonomous Agent Dashboard
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Manage AI agents, monitor performance, and coordinate multi-agent workflows
+              Manage AI agents, monitor performance, and coordinate multi-agent
+              workflows
             </p>
           </div>
           <Button
@@ -272,7 +290,12 @@ const AutonomousAgentDashboard: React.FC = () => {
             size="lg"
             onClick={fetchAgentData}
             leftIcon={
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -290,21 +313,28 @@ const AutonomousAgentDashboard: React.FC = () => {
       {/* Navigation Tabs */}
       <div className="flex space-x-1 bg-white dark:bg-neutral-800 rounded-lg p-1 shadow-sm">
         {[
-          { id: 'overview', label: 'Overview', icon: '📊' },
-          { id: 'agents', label: 'Agents', icon: '🤖' },
-          { id: 'tasks', label: 'Tasks', icon: '📋' },
-          { id: 'memories', label: 'Memories', icon: '🧠' },
-          { id: 'coordination', label: 'Coordination', icon: '🔗' },
+          { id: "overview", label: "Overview", icon: "📊" },
+          { id: "agents", label: "Agents", icon: "🤖" },
+          { id: "tasks", label: "Tasks", icon: "📋" },
+          { id: "memories", label: "Memories", icon: "🧠" },
+          { id: "coordination", label: "Coordination", icon: "🔗" },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() =>
-              setActiveTab(tab.id as 'overview' | 'agents' | 'tasks' | 'memories' | 'coordination')
+              setActiveTab(
+                tab.id as
+                  | "overview"
+                  | "agents"
+                  | "tasks"
+                  | "memories"
+                  | "coordination",
+              )
             }
             className={`flex-1 flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
               activeTab === tab.id
-                ? 'bg-automotive-primary text-white shadow-md'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-neutral-700'
+                ? "bg-automotive-primary text-white shadow-md"
+                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-neutral-700"
             }`}
           >
             <span className="mr-2">{tab.icon}</span>
@@ -314,20 +344,20 @@ const AutonomousAgentDashboard: React.FC = () => {
       </div>
 
       {/* Content based on active tab */}
-      {activeTab === 'overview' && (
+      {activeTab === "overview" && (
         <div className="space-y-6">
           {/* Metrics Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <MetricCard
               title="Total Agents"
-              value={metrics?.total_agents.toString() || '0'}
+              value={metrics?.total_agents.toString() || "0"}
               change="+2"
               changeType="positive"
               icon="🤖"
             />
             <MetricCard
               title="Active Agents"
-              value={metrics?.active_agents.toString() || '0'}
+              value={metrics?.active_agents.toString() || "0"}
               change="+1"
               changeType="positive"
               icon="🟢"
@@ -341,7 +371,7 @@ const AutonomousAgentDashboard: React.FC = () => {
             />
             <MetricCard
               title="Tasks Completed"
-              value={metrics?.total_tasks_completed.toLocaleString() || '0'}
+              value={metrics?.total_tasks_completed.toLocaleString() || "0"}
               change="+15%"
               changeType="positive"
               icon="✅"
@@ -366,11 +396,16 @@ const AutonomousAgentDashboard: React.FC = () => {
           <Card variant="glass" interactive>
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Common agent management operations</CardDescription>
+              <CardDescription>
+                Common agent management operations
+              </CardDescription>
             </CardHeader>
             <div className="p-6 pt-0">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Button variant="outline" className="h-20 flex-col justify-center">
+                <Button
+                  variant="outline"
+                  className="h-20 flex-col justify-center"
+                >
                   <svg
                     className="w-8 h-8 mb-2 text-automotive-primary"
                     fill="none"
@@ -386,7 +421,10 @@ const AutonomousAgentDashboard: React.FC = () => {
                   </svg>
                   Deploy New Agent
                 </Button>
-                <Button variant="outline" className="h-20 flex-col justify-center">
+                <Button
+                  variant="outline"
+                  className="h-20 flex-col justify-center"
+                >
                   <svg
                     className="w-8 h-8 mb-2 text-automotive-primary"
                     fill="none"
@@ -402,7 +440,10 @@ const AutonomousAgentDashboard: React.FC = () => {
                   </svg>
                   Assign Task
                 </Button>
-                <Button variant="outline" className="h-20 flex-col justify-center">
+                <Button
+                  variant="outline"
+                  className="h-20 flex-col justify-center"
+                >
                   <svg
                     className="w-8 h-8 mb-2 text-automotive-primary"
                     fill="none"
@@ -418,7 +459,10 @@ const AutonomousAgentDashboard: React.FC = () => {
                   </svg>
                   View Analytics
                 </Button>
-                <Button variant="outline" className="h-20 flex-col justify-center">
+                <Button
+                  variant="outline"
+                  className="h-20 flex-col justify-center"
+                >
                   <svg
                     className="w-8 h-8 mb-2 text-automotive-primary"
                     fill="none"
@@ -446,10 +490,12 @@ const AutonomousAgentDashboard: React.FC = () => {
         </div>
       )}
 
-      {activeTab === 'agents' && (
+      {activeTab === "agents" && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">AI Agents</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              AI Agents
+            </h2>
             <div className="flex space-x-3">
               <select
                 value={selectedAgentType}
@@ -464,7 +510,12 @@ const AutonomousAgentDashboard: React.FC = () => {
                 <option value="custom">Custom</option>
               </select>
               <Button variant="default" size="lg">
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -500,16 +551,20 @@ const AutonomousAgentDashboard: React.FC = () => {
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
                         <div>
-                          <span className="font-medium">Performance Score:</span>
+                          <span className="font-medium">
+                            Performance Score:
+                          </span>
                           <span
-                            className={`ml-2 ${agent.performance_score >= 0.9 ? 'text-green-600' : agent.performance_score >= 0.7 ? 'text-yellow-600' : 'text-red-600'}`}
+                            className={`ml-2 ${agent.performance_score >= 0.9 ? "text-green-600" : agent.performance_score >= 0.7 ? "text-yellow-600" : "text-red-600"}`}
                           >
                             {(agent.performance_score * 100).toFixed(1)}%
                           </span>
                         </div>
                         <div>
                           <span className="font-medium">Memory Count:</span>
-                          <span className="ml-2">{agent.memory_count.toLocaleString()}</span>
+                          <span className="ml-2">
+                            {agent.memory_count.toLocaleString()}
+                          </span>
                         </div>
                         <div>
                           <span className="font-medium">Last Active:</span>
@@ -530,7 +585,7 @@ const AutonomousAgentDashboard: React.FC = () => {
                       )}
                       <div className="mt-3">
                         <span className="text-sm text-gray-500 dark:text-gray-400">
-                          Capabilities:{' '}
+                          Capabilities:{" "}
                         </span>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {agent.capabilities.map((capability, index) => (
@@ -566,10 +621,12 @@ const AutonomousAgentDashboard: React.FC = () => {
         </div>
       )}
 
-      {activeTab === 'tasks' && (
+      {activeTab === "tasks" && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Agent Tasks</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              Agent Tasks
+            </h2>
             <div className="flex space-x-3">
               <select
                 value={selectedTaskStatus}
@@ -584,7 +641,12 @@ const AutonomousAgentDashboard: React.FC = () => {
                 <option value="cancelled">Cancelled</option>
               </select>
               <Button variant="default" size="lg">
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -618,11 +680,15 @@ const AutonomousAgentDashboard: React.FC = () => {
                           {task.task_type.toUpperCase()}
                         </span>
                       </div>
-                      <p className="text-gray-900 dark:text-gray-100 mb-2">{task.description}</p>
+                      <p className="text-gray-900 dark:text-gray-100 mb-2">
+                        {task.description}
+                      </p>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400">
                         <div>
                           <span className="font-medium">Agent ID:</span>
-                          <span className="ml-2 font-mono">{task.agent_id}</span>
+                          <span className="ml-2 font-mono">
+                            {task.agent_id}
+                          </span>
                         </div>
                         <div>
                           <span className="font-medium">Assigned:</span>
@@ -645,9 +711,11 @@ const AutonomousAgentDashboard: React.FC = () => {
                             Result:
                           </span>
                           <div className="mt-1 text-sm text-green-700 dark:text-green-300">
-                            {task.result.insights?.map((insight: string, index: number) => (
-                              <div key={index}>• {insight}</div>
-                            ))}
+                            {task.result.insights?.map(
+                              (insight: string, index: number) => (
+                                <div key={index}>• {insight}</div>
+                              ),
+                            )}
                           </div>
                         </div>
                       )}
@@ -666,12 +734,12 @@ const AutonomousAgentDashboard: React.FC = () => {
                       <Button variant="outline" size="sm">
                         View Details
                       </Button>
-                      {task.status === 'pending' && (
+                      {task.status === "pending" && (
                         <Button variant="outline" size="sm">
                           Start
                         </Button>
                       )}
-                      {task.status === 'running' && (
+                      {task.status === "running" && (
                         <Button variant="outline" size="sm">
                           Cancel
                         </Button>
@@ -688,7 +756,7 @@ const AutonomousAgentDashboard: React.FC = () => {
         </div>
       )}
 
-      {activeTab === 'memories' && (
+      {activeTab === "memories" && (
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
             Agent Memories
@@ -710,23 +778,25 @@ const AutonomousAgentDashboard: React.FC = () => {
                         <span
                           className={`px-2 py-1 text-xs font-medium rounded-full ${
                             memory.importance_score >= 0.8
-                              ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                              ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
                               : memory.importance_score >= 0.6
-                                ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                                : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                                : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                           }`}
                         >
                           {memory.importance_score >= 0.8
-                            ? 'HIGH IMPORTANCE'
+                            ? "HIGH IMPORTANCE"
                             : memory.importance_score >= 0.6
-                              ? 'MEDIUM IMPORTANCE'
-                              : 'LOW IMPORTANCE'}
+                              ? "MEDIUM IMPORTANCE"
+                              : "LOW IMPORTANCE"}
                         </span>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
                         <div>
                           <span className="font-medium">Context Hash:</span>
-                          <span className="ml-2 font-mono">{memory.context_hash}</span>
+                          <span className="ml-2 font-mono">
+                            {memory.context_hash}
+                          </span>
                         </div>
                         <div>
                           <span className="font-medium">Importance Score:</span>
@@ -771,7 +841,7 @@ const AutonomousAgentDashboard: React.FC = () => {
         </div>
       )}
 
-      {activeTab === 'coordination' && (
+      {activeTab === "coordination" && (
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
             Multi-Agent Coordination
@@ -789,20 +859,20 @@ const AutonomousAgentDashboard: React.FC = () => {
                 <div className="space-y-4">
                   {[
                     {
-                      agent1: 'Support Alpha',
-                      agent2: 'Analytics Beta',
+                      agent1: "Support Alpha",
+                      agent2: "Analytics Beta",
                       efficiency: 0.92,
                       interactions: 45,
                     },
                     {
-                      agent1: 'Analytics Beta',
-                      agent2: 'Automation Gamma',
+                      agent1: "Analytics Beta",
+                      agent2: "Automation Gamma",
                       efficiency: 0.87,
                       interactions: 32,
                     },
                     {
-                      agent1: 'Support Alpha',
-                      agent2: 'Automation Gamma',
+                      agent1: "Support Alpha",
+                      agent2: "Automation Gamma",
                       efficiency: 0.78,
                       interactions: 28,
                     },
@@ -823,7 +893,9 @@ const AutonomousAgentDashboard: React.FC = () => {
                         <div className="text-lg font-bold text-automotive-primary">
                           {(coordination.efficiency * 100).toFixed(0)}%
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">efficiency</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          efficiency
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -842,19 +914,19 @@ const AutonomousAgentDashboard: React.FC = () => {
                 <div className="space-y-3">
                   {[
                     {
-                      workflow: 'Customer Support',
-                      agents: ['Support Alpha', 'Analytics Beta'],
-                      status: 'active',
+                      workflow: "Customer Support",
+                      agents: ["Support Alpha", "Analytics Beta"],
+                      status: "active",
                     },
                     {
-                      workflow: 'Performance Analysis',
-                      agents: ['Analytics Beta', 'Automation Gamma'],
-                      status: 'pending',
+                      workflow: "Performance Analysis",
+                      agents: ["Analytics Beta", "Automation Gamma"],
+                      status: "pending",
                     },
                     {
-                      workflow: 'System Monitoring',
-                      agents: ['Automation Gamma', 'Support Alpha'],
-                      status: 'completed',
+                      workflow: "System Monitoring",
+                      agents: ["Automation Gamma", "Support Alpha"],
+                      status: "completed",
                     },
                   ].map((workflow, index) => (
                     <div
@@ -866,16 +938,16 @@ const AutonomousAgentDashboard: React.FC = () => {
                           {workflow.workflow}
                         </div>
                         <div className="text-sm text-gray-600 dark:text-gray-400">
-                          {workflow.agents.join(' + ')}
+                          {workflow.agents.join(" + ")}
                         </div>
                       </div>
                       <span
                         className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          workflow.status === 'active'
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                            : workflow.status === 'pending'
-                              ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                              : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                          workflow.status === "active"
+                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                            : workflow.status === "pending"
+                              ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                              : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                         }`}
                       >
                         {workflow.status.toUpperCase()}

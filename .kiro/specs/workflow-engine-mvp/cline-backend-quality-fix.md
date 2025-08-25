@@ -1,9 +1,9 @@
 # CLINE-TASK-BACKEND: Backend Code Quality Emergency Fix
 
-**Status:** 🚀 **READY FOR IMMEDIATE EXECUTION**  
-**Priority:** 🔴 **CRITICAL** - Blocking production deployment  
-**Assigned to:** [TOOL] Cline (Cerebras Qwen-3-32b)  
-**Complexity:** Medium - Systematic cleanup with functionality preservation  
+**Status:** 🚀 **READY FOR IMMEDIATE EXECUTION**
+**Priority:** 🔴 **CRITICAL** - Blocking production deployment
+**Assigned to:** [TOOL] Cline (Cerebras Qwen-3-32b)
+**Complexity:** Medium - Systematic cleanup with functionality preservation
 
 ## 🎯 OBJECTIVE
 
@@ -12,9 +12,10 @@ Fix 500+ backend linting violations making the codebase unmaintainable and block
 ## 📊 CURRENT STATE ANALYSIS
 
 **Flake8 Violations Summary:**
+
 - **999 total violations** across 50+ Python files
 - **590 W293** - Blank lines contain whitespace
-- **176 E501** - Line too long (>88 characters)  
+- **176 E501** - Line too long (>88 characters)
 - **118 F401** - Unused imports
 - **28 E402** - Module level import not at top of file
 - **23 W292** - No newline at end of file
@@ -28,11 +29,13 @@ Fix 500+ backend linting violations making the codebase unmaintainable and block
 ## 🔧 REQUIRED ACTIONS
 
 ### Phase 1: Critical Functionality Fixes (PRIORITY 1)
+
 1. **Fix undefined name references (F821)** - These break functionality:
    - `test_execution_endpoints_simple.py:32:19: F821 undefined name 'WorkflowExecuteRequest'`
    - `test_execution_endpoints_simple.py:36:18: F821 undefined name 'ExecutionResultResponse'`
 
 ### Phase 2: Import Organization & Cleanup (PRIORITY 2)
+
 2. **Remove unused imports (F401)** - 118 violations:
    - Remove all unused typing imports (Dict, List, Optional, Union, Any)
    - Remove unused model imports
@@ -45,6 +48,7 @@ Fix 500+ backend linting violations making the codebase unmaintainable and block
    - Apply isort formatting
 
 ### Phase 3: Code Style & Formatting (PRIORITY 3)
+
 4. **Fix whitespace violations**:
    - **W293** (590): Remove whitespace from blank lines
    - **W291** (10): Remove trailing whitespace
@@ -62,6 +66,7 @@ Fix 500+ backend linting violations making the codebase unmaintainable and block
    - **F811** (12): Fix variable redefinitions
 
 ### Phase 4: Validation & Testing
+
 7. **Apply automated formatting**:
    - Run `black .` for consistent formatting
    - Run `isort .` for import organization
@@ -75,10 +80,12 @@ Fix 500+ backend linting violations making the codebase unmaintainable and block
 ## 🛠 TOOLS & CONFIGURATION
 
 **Existing Configuration Files:**
+
 - `.flake8`: max-line-length = 88, extends ignore E203, W503
 - `pyproject.toml`: black config with line-length = 88, isort profile = "black"
 
 **Required Commands:**
+
 ```bash
 # Navigate to backend directory
 cd backend
@@ -96,14 +103,16 @@ python -m pytest tests/ -v  # Ensure functionality preserved
 ## 📁 AFFECTED FILES (50+ files)
 
 **High Priority Files (Critical Issues):**
+
 - `test_execution_endpoints_simple.py` - F821 undefined names
 - `app/api/websockets.py` - F811 redefinitions, multiple violations
 - `app/services/workflow_engine.py` - F401 unused imports, F811 redefinitions
 - `app/services/ai_service.py` - F401 unused imports, F811 redefinitions
 
 **Major Violation Files (50+ violations each):**
+
 - `app/utils/log_aggregator.py` - 60+ violations
-- `app/utils/retry_utils.py` - 50+ violations  
+- `app/utils/retry_utils.py` - 50+ violations
 - `app/api/monitoring.py` - 40+ violations
 - `app/middleware/error_handler.py` - 30+ violations
 
@@ -127,7 +136,7 @@ python -m pytest tests/ -v  # Ensure functionality preserved
 ## 📋 EXECUTION CHECKLIST
 
 - [ ] Phase 1: Fix F821 undefined name references
-- [ ] Phase 2: Remove F401 unused imports  
+- [ ] Phase 2: Remove F401 unused imports
 - [ ] Phase 3: Fix E402 import organization
 - [ ] Phase 4: Fix whitespace violations (W293, W291, W292)
 - [ ] Phase 5: Fix line length violations (E501)

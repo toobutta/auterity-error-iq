@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Layout from '../components/Layout';
-import TemplateLibrary from '../components/TemplateLibrary';
-import TemplatePreviewModal from '../components/TemplatePreviewModal';
-import TemplateComparison from '../components/TemplateComparison';
-import { Template } from '../types/template';
-import { instantiateTemplate } from '../api/templates';
-import { createWorkflow } from '../api/workflows';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Layout from "../components/Layout";
+import TemplateLibrary from "../components/TemplateLibrary";
+import TemplatePreviewModal from "../components/TemplatePreviewModal";
+import TemplateComparison from "../components/TemplateComparison";
+import { Template } from "../types/template";
+import { instantiateTemplate } from "../api/templates";
+import { createWorkflow } from "../api/workflows";
 
 const Templates: React.FC = () => {
   const navigate = useNavigate();
   const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
-  const [comparisonTemplates, setComparisonTemplates] = useState<Template[]>([]);
+  const [comparisonTemplates, setComparisonTemplates] = useState<Template[]>(
+    [],
+  );
   const [showComparison, setShowComparison] = useState(false);
   const [isInstantiating, setIsInstantiating] = useState(false);
 
@@ -26,7 +28,7 @@ const Templates: React.FC = () => {
 
   const handleTemplateInstantiate = async (
     template: Template,
-    parameterValues: { [key: string]: string | number | boolean }
+    parameterValues: { [key: string]: string | number | boolean },
   ) => {
     setIsInstantiating(true);
     try {
@@ -43,8 +45,8 @@ const Templates: React.FC = () => {
       // Navigate to the workflow builder with the new workflow
       navigate(`/workflows/builder/${createdWorkflow.id}`);
     } catch (error) {
-      console.error('Failed to instantiate template:', error);
-      alert('Failed to create workflow from template. Please try again.');
+      console.error("Failed to instantiate template:", error);
+      alert("Failed to create workflow from template. Please try again.");
     } finally {
       setIsInstantiating(false);
     }
@@ -58,7 +60,7 @@ const Templates: React.FC = () => {
     }
 
     if (comparisonTemplates.length >= 3) {
-      alert('You can compare up to 3 templates at once.');
+      alert("You can compare up to 3 templates at once.");
       return;
     }
 
@@ -100,7 +102,8 @@ const Templates: React.FC = () => {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Templates</h1>
               <p className="mt-2 text-gray-600">
-                Browse and use pre-built workflow templates for common dealership scenarios
+                Browse and use pre-built workflow templates for common
+                dealership scenarios
               </p>
             </div>
 
@@ -131,7 +134,12 @@ const Templates: React.FC = () => {
                   className="text-gray-400 hover:text-gray-600 focus:outline-none"
                   title="Clear comparison"
                 >
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -156,12 +164,19 @@ const Templates: React.FC = () => {
         {comparisonTemplates.length > 0 && !showComparison && (
           <div className="fixed bottom-6 right-6 bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-sm">
             <div className="flex items-center justify-between mb-2">
-              <h4 className="text-sm font-medium text-gray-900">Template Comparison</h4>
+              <h4 className="text-sm font-medium text-gray-900">
+                Template Comparison
+              </h4>
               <button
                 onClick={() => setComparisonTemplates([])}
                 className="text-gray-400 hover:text-gray-600"
               >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -173,13 +188,21 @@ const Templates: React.FC = () => {
             </div>
             <div className="space-y-2 mb-3">
               {comparisonTemplates.map((template) => (
-                <div key={template.id} className="flex items-center justify-between text-xs">
+                <div
+                  key={template.id}
+                  className="flex items-center justify-between text-xs"
+                >
                   <span className="truncate flex-1 mr-2">{template.name}</span>
                   <button
                     onClick={() => handleRemoveFromComparison(template.id)}
                     className="text-gray-400 hover:text-red-600"
                   >
-                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg
+                      className="h-3 w-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -223,7 +246,9 @@ const Templates: React.FC = () => {
           <div className="fixed inset-0 z-50 bg-gray-500 bg-opacity-75 flex items-center justify-center">
             <div className="bg-white rounded-lg p-6 flex items-center space-x-3">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
-              <span className="text-gray-900">Creating workflow from template...</span>
+              <span className="text-gray-900">
+                Creating workflow from template...
+              </span>
             </div>
           </div>
         )}

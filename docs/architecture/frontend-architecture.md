@@ -143,13 +143,17 @@ App
 ### Component Design Principles
 
 #### 1. Single Responsibility
+
 Each component has a single, well-defined purpose:
+
 - **Presentational Components**: Focus on UI rendering
 - **Container Components**: Handle data fetching and state management
 - **Hook Components**: Encapsulate reusable logic
 
 #### 2. Composition over Inheritance
+
 Components are composed together rather than using inheritance:
+
 ```typescript
 // Good: Composition
 const WorkflowCard = ({ workflow, onEdit, onDelete }) => (
@@ -165,7 +169,9 @@ class WorkflowCard extends BaseCard { ... }
 ```
 
 #### 3. Props Interface Design
+
 Clear, typed interfaces for all component props:
+
 ```typescript
 interface WorkflowBuilderProps {
   workflow?: Workflow;
@@ -203,6 +209,7 @@ Application State
 ### State Management Patterns
 
 #### 1. Context for Global State
+
 ```typescript
 // AuthContext.tsx
 interface AuthContextType {
@@ -217,18 +224,19 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };
 ```
 
 #### 2. React Query for Server State
+
 ```typescript
 // hooks/useWorkflows.ts
 export const useWorkflows = () => {
   return useQuery({
-    queryKey: ['workflows'],
+    queryKey: ["workflows"],
     queryFn: () => workflowAPI.getWorkflows(),
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 10 * 60 * 1000, // 10 minutes
@@ -237,24 +245,25 @@ export const useWorkflows = () => {
 
 export const useCreateWorkflow = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: workflowAPI.createWorkflow,
     onSuccess: () => {
-      queryClient.invalidateQueries(['workflows']);
+      queryClient.invalidateQueries(["workflows"]);
     },
   });
 };
 ```
 
 #### 3. Local State for UI
+
 ```typescript
 // Component local state
 const WorkflowBuilder = () => {
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  
+
   // Component logic...
 };
 ```
@@ -265,7 +274,7 @@ const WorkflowBuilder = () => {
 
 ```typescript
 // api/client.ts
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 class APIClient {
   private client: AxiosInstance;
@@ -275,7 +284,7 @@ class APIClient {
       baseURL,
       timeout: 10000,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
@@ -286,13 +295,13 @@ class APIClient {
     // Request interceptor for auth token
     this.client.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem('auth_token');
+        const token = localStorage.getItem("auth_token");
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     // Response interceptor for error handling
@@ -304,7 +313,7 @@ class APIClient {
           this.handleUnauthorized();
         }
         return Promise.reject(error);
-      }
+      },
     );
   }
 
@@ -313,7 +322,11 @@ class APIClient {
     return response.data;
   }
 
-  async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  async post<T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<T> {
     const response = await this.client.post(url, data, config);
     return response.data;
   }
@@ -330,15 +343,17 @@ export class WorkflowAPI {
   constructor(private client: APIClient) {}
 
   async getWorkflows(): Promise<Workflow[]> {
-    return this.client.get<Workflow[]>('/api/workflows');
+    return this.client.get<Workflow[]>("/api/workflows");
   }
 
   async createWorkflow(workflow: CreateWorkflowRequest): Promise<Workflow> {
-    return this.client.post<Workflow>('/api/workflows', workflow);
+    return this.client.post<Workflow>("/api/workflows", workflow);
   }
 
   async executeWorkflow(id: string, input: any): Promise<ExecutionResult> {
-    return this.client.post<ExecutionResult>(`/api/workflows/${id}/execute`, { input });
+    return this.client.post<ExecutionResult>(`/api/workflows/${id}/execute`, {
+      input,
+    });
   }
 
   async getExecutionStatus(executionId: string): Promise<ExecutionStatus> {
@@ -361,7 +376,7 @@ export class WebSocketClient {
 
   connect(url: string, token: string) {
     this.socket = new WebSocket(`${url}?token=${token}`);
-    
+
     this.socket.onopen = this.handleOpen.bind(this);
     this.socket.onmessage = this.handleMessage.bind(this);
     this.socket.onclose = this.handleClose.bind(this);
@@ -369,7 +384,7 @@ export class WebSocketClient {
   }
 
   private handleOpen() {
-    console.log('WebSocket connected');
+    console.log("WebSocket connected");
     this.reconnectAttempts = 0;
   }
 
@@ -378,16 +393,19 @@ export class WebSocketClient {
       const data = JSON.parse(event.data);
       this.emit(data.type, data.payload);
     } catch (error) {
-      console.error('Failed to parse WebSocket message:', error);
+      console.error("Failed to parse WebSocket message:", error);
     }
   }
 
   private handleClose() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
-      setTimeout(() => {
-        this.reconnectAttempts++;
-        this.reconnect();
-      }, this.reconnectInterval * Math.pow(2, this.reconnectAttempts));
+      setTimeout(
+        () => {
+          this.reconnectAttempts++;
+          this.reconnect();
+        },
+        this.reconnectInterval * Math.pow(2, this.reconnectAttempts),
+      );
     }
   }
 
@@ -416,10 +434,10 @@ export const useWebSocket = (url: string) => {
     if (token) {
       const ws = new WebSocketClient();
       ws.connect(url, token);
-      
-      ws.on('connect', () => setIsConnected(true));
-      ws.on('disconnect', () => setIsConnected(false));
-      
+
+      ws.on("connect", () => setIsConnected(true));
+      ws.on("disconnect", () => setIsConnected(false));
+
       setSocket(ws);
 
       return () => {
@@ -428,9 +446,12 @@ export const useWebSocket = (url: string) => {
     }
   }, [url, token]);
 
-  const subscribe = useCallback((event: string, callback: (data: any) => void) => {
-    socket?.subscribe(event, callback);
-  }, [socket]);
+  const subscribe = useCallback(
+    (event: string, callback: (data: any) => void) => {
+      socket?.subscribe(event, callback);
+    },
+    [socket],
+  );
 
   return { socket, isConnected, subscribe };
 };
@@ -442,16 +463,16 @@ export const useWebSocket = (url: string) => {
 
 ```typescript
 // Lazy loading for route-based splitting
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const Workflows = lazy(() => import('./pages/Workflows'));
-const Templates = lazy(() => import('./pages/Templates'));
-const WorkflowBuilder = lazy(() => import('./pages/WorkflowBuilder'));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Workflows = lazy(() => import("./pages/Workflows"));
+const Templates = lazy(() => import("./pages/Templates"));
+const WorkflowBuilder = lazy(() => import("./pages/WorkflowBuilder"));
 
 // Component-based splitting
-const LazyWorkflowBuilder = lazy(() => 
-  import('./components/WorkflowBuilder').then(module => ({
-    default: module.WorkflowBuilder
-  }))
+const LazyWorkflowBuilder = lazy(() =>
+  import("./components/WorkflowBuilder").then((module) => ({
+    default: module.WorkflowBuilder,
+  })),
 );
 ```
 
@@ -472,7 +493,7 @@ export const WorkflowCard = React.memo<WorkflowCardProps>(({ workflow, onEdit })
 // useMemo for expensive calculations
 const WorkflowList = ({ workflows, searchTerm }) => {
   const filteredWorkflows = useMemo(() => {
-    return workflows.filter(workflow => 
+    return workflows.filter(workflow =>
       workflow.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [workflows, searchTerm]);
@@ -540,10 +561,10 @@ export class ErrorBoundary extends Component<
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({ errorInfo });
-    
+
     // Log error to monitoring service
     console.error('Error caught by boundary:', error, errorInfo);
-    
+
     // Send to error tracking service
     if (process.env.NODE_ENV === 'production') {
       // Sentry.captureException(error, { extra: errorInfo });
@@ -629,7 +650,7 @@ const mockWorkflow: Workflow = {
 describe('WorkflowCard', () => {
   it('renders workflow information', () => {
     render(<WorkflowCard workflow={mockWorkflow} onEdit={jest.fn()} />);
-    
+
     expect(screen.getByText('Test Workflow')).toBeInTheDocument();
     expect(screen.getByText('Test Description')).toBeInTheDocument();
   });
@@ -637,7 +658,7 @@ describe('WorkflowCard', () => {
   it('calls onEdit when edit button is clicked', () => {
     const onEdit = jest.fn();
     render(<WorkflowCard workflow={mockWorkflow} onEdit={onEdit} />);
-    
+
     fireEvent.click(screen.getByText('Edit'));
     expect(onEdit).toHaveBeenCalledWith('1');
   });
@@ -648,15 +669,18 @@ describe('WorkflowCard', () => {
 
 ```typescript
 // __tests__/useAuth.test.ts
-import { renderHook, act } from '@testing-library/react';
-import { useAuth } from '../hooks/useAuth';
+import { renderHook, act } from "@testing-library/react";
+import { useAuth } from "../hooks/useAuth";
 
-describe('useAuth', () => {
-  it('should login user successfully', async () => {
+describe("useAuth", () => {
+  it("should login user successfully", async () => {
     const { result } = renderHook(() => useAuth());
 
     await act(async () => {
-      await result.current.login({ email: 'test@example.com', password: 'password' });
+      await result.current.login({
+        email: "test@example.com",
+        password: "password",
+      });
     });
 
     expect(result.current.isAuthenticated).toBe(true);
@@ -677,7 +701,7 @@ const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
-  
+
   return ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
       {children}
@@ -691,7 +715,7 @@ describe('WorkflowBuilder Integration', () => {
 
     // Select template
     fireEvent.click(screen.getByText('Use Template'));
-    
+
     // Fill form
     fireEvent.change(screen.getByLabelText('Workflow Name'), {
       target: { value: 'New Workflow' },
@@ -713,33 +737,33 @@ describe('WorkflowBuilder Integration', () => {
 
 ```typescript
 // vite.config.ts
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { resolve } from "path";
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
-      '@components': resolve(__dirname, 'src/components'),
-      '@pages': resolve(__dirname, 'src/pages'),
-      '@hooks': resolve(__dirname, 'src/hooks'),
-      '@utils': resolve(__dirname, 'src/utils'),
-      '@types': resolve(__dirname, 'src/types'),
+      "@": resolve(__dirname, "src"),
+      "@components": resolve(__dirname, "src/components"),
+      "@pages": resolve(__dirname, "src/pages"),
+      "@hooks": resolve(__dirname, "src/hooks"),
+      "@utils": resolve(__dirname, "src/utils"),
+      "@types": resolve(__dirname, "src/types"),
     },
   },
   build: {
-    target: 'es2020',
-    outDir: 'dist',
+    target: "es2020",
+    outDir: "dist",
     sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
-          ui: ['@headlessui/react', '@heroicons/react'],
-          charts: ['recharts'],
-          workflow: ['reactflow'],
+          vendor: ["react", "react-dom"],
+          ui: ["@headlessui/react", "@heroicons/react"],
+          charts: ["recharts"],
+          workflow: ["reactflow"],
         },
       },
     },
@@ -747,16 +771,16 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
+      "/api": {
+        target: "http://localhost:8000",
         changeOrigin: true,
       },
     },
   },
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/setupTests.ts'],
+    environment: "jsdom",
+    setupFiles: ["./src/setupTests.ts"],
   },
 });
 ```
@@ -798,7 +822,7 @@ export default defineConfig({
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: $(date)  
-**Architecture Review**: Monthly architecture assessment  
+**Document Version**: 1.0
+**Last Updated**: $(date)
+**Architecture Review**: Monthly architecture assessment
 **Maintained By**: Auterity Frontend Team

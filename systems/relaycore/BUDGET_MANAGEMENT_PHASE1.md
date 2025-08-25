@@ -9,6 +9,7 @@ Phase 1 of the Budget Management System implements the core components for cost-
 ### 1. Core Services
 
 #### Budget Registry (`src/services/budget-registry.ts`)
+
 - **Purpose**: Manages the lifecycle of budget definitions
 - **Features**:
   - Create, read, update, delete budgets
@@ -18,6 +19,7 @@ Phase 1 of the Budget Management System implements the core components for cost-
   - Budget validation and constraint checking
 
 #### Budget Tracker (`src/services/budget-tracker.ts`)
+
 - **Purpose**: Monitors and records usage against budgets
 - **Features**:
   - Record usage with detailed metadata
@@ -28,6 +30,7 @@ Phase 1 of the Budget Management System implements the core components for cost-
   - Automatic cache refresh for performance
 
 #### Budget Integration (`src/services/budget-integration.ts`)
+
 - **Purpose**: Integrates budget tracking with AI request processing
 - **Features**:
   - Multi-scope constraint checking (user, team, project)
@@ -38,12 +41,14 @@ Phase 1 of the Budget Management System implements the core components for cost-
 ### 2. Database Schema
 
 #### Enhanced Tables (`src/database/budget-schema.sql`)
+
 - **budget_definitions**: Core budget configuration and metadata
 - **budget_usage_records**: Detailed usage tracking with metadata
 - **budget_alert_history**: Alert trigger history and acknowledgments
 - **budget_status_cache**: Performance-optimized status calculations
 
 #### Database Functions
+
 - **calculate_budget_status()**: Real-time budget status calculation
 - **refresh_budget_status_cache()**: Cache management for performance
 - **Triggers**: Automatic cache updates on usage recording
@@ -51,6 +56,7 @@ Phase 1 of the Budget Management System implements the core components for cost-
 ### 3. RESTful API (`src/routes/budgets.ts`)
 
 #### Budget Management Endpoints
+
 ```
 POST   /api/v1/budgets                    - Create budget
 GET    /api/v1/budgets/:id               - Get budget details
@@ -61,6 +67,7 @@ GET    /api/v1/budgets/hierarchy/:type/:id - Get budget hierarchy
 ```
 
 #### Usage Tracking Endpoints
+
 ```
 GET    /api/v1/budgets/:id/status        - Get budget status
 POST   /api/v1/budgets/:id/usage         - Record usage
@@ -69,6 +76,7 @@ GET    /api/v1/budgets/:id/usage/summary - Get usage summary
 ```
 
 #### Constraint Checking Endpoints
+
 ```
 POST   /api/v1/budgets/:id/check-constraints - Check budget constraints
 POST   /api/v1/budgets/:id/refresh-cache     - Refresh status cache
@@ -77,12 +85,14 @@ POST   /api/v1/budgets/:id/refresh-cache     - Refresh status cache
 ### 4. Type Definitions (`src/types/budget.ts`)
 
 #### Core Types
+
 - **BudgetDefinition**: Complete budget configuration
 - **BudgetStatusInfo**: Real-time budget status and metrics
 - **UsageRecord**: Detailed usage tracking record
 - **BudgetConstraintCheck**: Constraint validation results
 
 #### Request/Response Types
+
 - **CreateBudgetRequest**: Budget creation payload
 - **UpdateBudgetRequest**: Budget update payload
 - **RecordUsageRequest**: Usage recording payload
@@ -90,6 +100,7 @@ POST   /api/v1/budgets/:id/refresh-cache     - Refresh status cache
 ### 5. Testing Framework (`src/test/budget-management.test.ts`)
 
 #### Test Coverage
+
 - Budget Registry CRUD operations
 - Budget Tracker usage recording and status calculation
 - Budget Integration multi-scope constraint checking
@@ -102,41 +113,41 @@ POST   /api/v1/budgets/:id/refresh-cache     - Refresh status cache
 
 ```typescript
 const budgetRequest: CreateBudgetRequest = {
-  name: 'Q1 2025 AI Development Budget',
-  description: 'Budget for AI development activities',
-  scopeType: 'team',
-  scopeId: 'team-engineering-ai',
+  name: "Q1 2025 AI Development Budget",
+  description: "Budget for AI development activities",
+  scopeType: "team",
+  scopeId: "team-engineering-ai",
   amount: 5000,
-  currency: 'USD',
-  period: 'quarterly',
-  startDate: '2025-01-01T00:00:00Z',
+  currency: "USD",
+  period: "quarterly",
+  startDate: "2025-01-01T00:00:00Z",
   recurring: true,
   alerts: [
     {
       threshold: 80,
-      actions: ['notify', 'restrict-models'],
-      notificationChannels: ['email', 'slack']
-    }
-  ]
+      actions: ["notify", "restrict-models"],
+      notificationChannels: ["email", "slack"],
+    },
+  ],
 };
 
-const budget = await budgetRegistry.createBudget(budgetRequest, 'user-123');
+const budget = await budgetRegistry.createBudget(budgetRequest, "user-123");
 ```
 
 ### Recording Usage
 
 ```typescript
 const usageRequest: RecordUsageRequest = {
-  amount: 25.50,
-  currency: 'USD',
-  source: 'relaycore',
-  description: 'GPT-4 API usage',
+  amount: 25.5,
+  currency: "USD",
+  source: "relaycore",
+  description: "GPT-4 API usage",
   metadata: {
-    requestId: 'req-789',
-    modelId: 'gpt-4',
-    userId: 'user-456',
-    teamId: 'team-123'
-  }
+    requestId: "req-789",
+    modelId: "gpt-4",
+    userId: "user-456",
+    teamId: "team-123",
+  },
 };
 
 const usageRecord = await budgetTracker.recordUsage(budgetId, usageRequest);
@@ -146,13 +157,13 @@ const usageRecord = await budgetTracker.recordUsage(budgetId, usageRequest);
 
 ```typescript
 const constraintCheck = await budgetTracker.checkBudgetConstraints(
-  budgetId, 
-  estimatedCost
+  budgetId,
+  estimatedCost,
 );
 
 if (!constraintCheck.canProceed) {
-  console.log('Request blocked:', constraintCheck.reason);
-  console.log('Suggested actions:', constraintCheck.suggestedActions);
+  console.log("Request blocked:", constraintCheck.reason);
+  console.log("Suggested actions:", constraintCheck.suggestedActions);
 }
 ```
 
@@ -163,29 +174,31 @@ The system provides comprehensive budget status information:
 ```typescript
 interface BudgetStatusInfo {
   budgetId: string;
-  currentAmount: number;      // Current spend
-  limit: number;              // Budget limit
-  currency: string;           // Currency code
-  percentUsed: number;        // Percentage used (0-100)
-  remaining: number;          // Remaining amount
-  daysRemaining: number;      // Days left in period
-  burnRate: number;           // Average daily spend
-  projectedTotal: number;     // Projected total by period end
-  status: BudgetStatus;       // normal | warning | critical | exceeded
+  currentAmount: number; // Current spend
+  limit: number; // Budget limit
+  currency: string; // Currency code
+  percentUsed: number; // Percentage used (0-100)
+  remaining: number; // Remaining amount
+  daysRemaining: number; // Days left in period
+  burnRate: number; // Average daily spend
+  projectedTotal: number; // Projected total by period end
+  status: BudgetStatus; // normal | warning | critical | exceeded
   activeAlerts: BudgetAlertStatus[]; // Currently active alerts
-  lastUpdated: string;        // Last update timestamp
+  lastUpdated: string; // Last update timestamp
 }
 ```
 
 ## 🔧 Configuration
 
 ### Environment Variables
+
 ```bash
 DATABASE_URL=postgresql://user:password@localhost:5432/relaycore
 NODE_ENV=development
 ```
 
 ### Alert Actions
+
 - **notify**: Send notification only
 - **restrict-models**: Restrict access to expensive models
 - **require-approval**: Require approval for further spending
@@ -195,11 +208,13 @@ NODE_ENV=development
 ## 🧪 Testing
 
 Run the test suite:
+
 ```bash
 npm test -- budget-management.test.ts
 ```
 
 Run the demo:
+
 ```bash
 npx ts-node src/demo/budget-demo.ts
 ```
@@ -207,11 +222,13 @@ npx ts-node src/demo/budget-demo.ts
 ## 📈 Performance Features
 
 ### Caching Strategy
+
 - **budget_status_cache**: Pre-calculated status for fast retrieval
 - **Automatic refresh**: Triggers update cache on usage recording
 - **Stale detection**: Refreshes cache older than 5 minutes
 
 ### Database Optimization
+
 - **Indexes**: Optimized for common query patterns
 - **Functions**: PostgreSQL functions for complex calculations
 - **Triggers**: Automatic cache maintenance
@@ -219,12 +236,14 @@ npx ts-node src/demo/budget-demo.ts
 ## 🔒 Security & Validation
 
 ### Input Validation
+
 - Required field validation
 - Data type and format validation
 - Business rule validation (positive amounts, valid dates)
 - SQL injection prevention through parameterized queries
 
 ### Error Handling
+
 - Graceful database connection error handling
 - Transaction rollback on failures
 - Detailed error logging
@@ -233,12 +252,14 @@ npx ts-node src/demo/budget-demo.ts
 ## 🎯 Next Steps (Future Phases)
 
 ### Phase 2: Advanced Features
+
 - **Budget Reporter**: Historical analysis and forecasting
 - **Alert Manager**: Advanced notification system
 - **Usage Collector**: Automated cost data collection
 - **Multi-currency support**: Currency conversion and management
 
 ### Phase 3: Enterprise Features
+
 - **Approval workflows**: Multi-level approval processes
 - **Advanced analytics**: Detailed reporting and insights
 - **Integration APIs**: External system integrations
@@ -247,6 +268,7 @@ npx ts-node src/demo/budget-demo.ts
 ## 📝 API Documentation
 
 Complete API documentation is available through the implemented endpoints. Each endpoint includes:
+
 - Request/response schemas
 - Validation rules
 - Error codes and messages
@@ -255,6 +277,7 @@ Complete API documentation is available through the implemented endpoints. Each 
 ## 🤝 Integration Points
 
 The Budget Management System integrates with:
+
 - **AI Request Processing**: Automatic constraint checking
 - **Cost Tracking**: Usage recording from AI providers
 - **User Management**: Multi-scope budget assignment

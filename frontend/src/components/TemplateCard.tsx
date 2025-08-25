@@ -1,6 +1,6 @@
-import React from 'react';
-import { Template } from '../types/template';
-import { Button } from '../../../shared/components/Button';
+import React from "react";
+import { Template } from "../types/template";
+import { Button } from "../../../shared/components/Button";
 
 interface TemplateCardProps {
   template: Template;
@@ -19,24 +19,24 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
 }) => {
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'sales':
-        return 'bg-blue-100 text-blue-800';
-      case 'service':
-        return 'bg-green-100 text-green-800';
-      case 'parts':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'general':
-        return 'bg-gray-100 text-gray-800';
+      case "sales":
+        return "bg-blue-100 text-blue-800";
+      case "service":
+        return "bg-green-100 text-green-800";
+      case "parts":
+        return "bg-yellow-100 text-yellow-800";
+      case "general":
+        return "bg-gray-100 text-gray-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -55,7 +55,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
         </div>
 
         <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-          {template.description || 'No description available'}
+          {template.description || "No description available"}
         </p>
 
         <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
@@ -86,12 +86,16 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
             <Button
               onClick={() => onAddToComparison(template)}
               disabled={isInComparison}
-              variant={isInComparison ? 'ghost' : 'outline'}
+              variant={isInComparison ? "ghost" : "outline"}
               size="sm"
               fullWidth
               leftIcon={
                 isInComparison ? (
-                  <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                  <svg
+                    className="h-3 w-3"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -99,7 +103,12 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
                     />
                   </svg>
                 ) : (
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg
+                    className="h-3 w-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -110,7 +119,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
                 )
               }
             >
-              {isInComparison ? 'In Comparison' : 'Add to Compare'}
+              {isInComparison ? "In Comparison" : "Add to Compare"}
             </Button>
           )}
         </div>

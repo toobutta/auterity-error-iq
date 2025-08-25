@@ -55,12 +55,14 @@ workflow-builder/
 ### 2. Automotive Node Categories
 
 #### 🟡 Triggers
+
 - **Customer Inquiry**: Email, phone, web form submissions
 - **Inventory Update**: New arrivals, price changes, status updates
 - **Service Appointment**: Maintenance scheduling, reminders
 - **Lead Generation**: Website visits, test drive requests
 
 #### 🔵 Actions
+
 - **Send Email**: Automated responses with templates
 - **Update CRM**: Customer data synchronization
 - **Schedule Appointment**: Automated booking system
@@ -68,12 +70,14 @@ workflow-builder/
 - **Inventory Check**: Real-time availability lookup
 
 #### 🟣 Conditions
+
 - **Customer Type**: New vs returning customer routing
 - **Budget Range**: Price-based workflow branching
 - **Vehicle Preference**: Make/model/feature filtering
 - **Geographic Location**: Dealership proximity routing
 
 #### 🟢 AI-Powered
+
 - **Lead Qualification**: Intelligent scoring (0-100)
 - **Price Optimization**: Market-based pricing recommendations
 - **Customer Sentiment**: Communication tone analysis
@@ -85,10 +89,10 @@ workflow-builder/
 // Test execution with live monitoring
 const testWorkflow = async (inputData: Record<string, any>) => {
   const executionId = await executeWorkflow(workflow.id, inputData);
-  
+
   // Real-time status updates via WebSocket
   subscribeToStatusUpdates((update) => {
-    console.log('Workflow status:', update.status);
+    console.log("Workflow status:", update.status);
   });
 };
 ```
@@ -96,15 +100,19 @@ const testWorkflow = async (inputData: Record<string, any>) => {
 ### 4. Pre-Built Templates
 
 #### Lead Qualification & Follow-up
+
 - Customer inquiry trigger → AI scoring → Conditional email routing → CRM update
 
 #### Service Appointment Reminder
+
 - Service due trigger → Reminder email → Auto-scheduling → Record update
 
 #### New Inventory Alert
+
 - Inventory arrival → Customer matching → Personalized alerts → Notification logging
 
 #### Dynamic Price Optimization
+
 - Price review trigger → AI analysis → Threshold check → Pricing update
 
 ## 🛠️ Usage
@@ -112,52 +120,55 @@ const testWorkflow = async (inputData: Record<string, any>) => {
 ### Basic Implementation
 
 ```tsx
-import EnhancedWorkflowBuilder from './components/workflow-builder/EnhancedWorkflowBuilder';
+import EnhancedWorkflowBuilder from "./components/workflow-builder/EnhancedWorkflowBuilder";
 
 function App() {
   const handleSave = (workflow: Workflow) => {
-    console.log('Workflow saved:', workflow);
+    console.log("Workflow saved:", workflow);
   };
 
   const handleTest = (workflow: Workflow) => {
-    console.log('Testing workflow:', workflow);
+    console.log("Testing workflow:", workflow);
   };
 
-  return (
-    <EnhancedWorkflowBuilder
-      onSave={handleSave}
-      onTest={handleTest}
-    />
-  );
+  return <EnhancedWorkflowBuilder onSave={handleSave} onTest={handleTest} />;
 }
 ```
 
 ### Demo Page
 
 ```tsx
-import WorkflowBuilderDemo from './components/workflow-builder/WorkflowBuilderDemo';
+import WorkflowBuilderDemo from "./components/workflow-builder/WorkflowBuilderDemo";
 
 // Full-featured demo with instructions
-<WorkflowBuilderDemo />
+<WorkflowBuilderDemo />;
 ```
 
 ### Custom Node Creation
 
 ```tsx
-import React from 'react';
-import { Handle, Position, NodeProps } from 'reactflow';
+import React from "react";
+import { Handle, Position, NodeProps } from "reactflow";
 
 const CustomNode: React.FC<NodeProps<NodeData>> = ({ data, isConnectable }) => {
   return (
     <div className="bg-purple-100 border-2 border-purple-300 rounded-lg p-3">
-      <Handle type="target" position={Position.Top} isConnectable={isConnectable} />
-      
+      <Handle
+        type="target"
+        position={Position.Top}
+        isConnectable={isConnectable}
+      />
+
       <div className="text-center">
         <h3 className="font-bold text-purple-800">{data.label}</h3>
         <p className="text-xs text-purple-600">{data.description}</p>
       </div>
-      
-      <Handle type="source" position={Position.Bottom} isConnectable={isConnectable} />
+
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        isConnectable={isConnectable}
+      />
     </div>
   );
 };
@@ -169,15 +180,29 @@ const CustomNode: React.FC<NodeProps<NodeData>> = ({ data, isConnectable }) => {
 
 ```css
 /* Node Categories */
-.trigger-node { @apply bg-yellow-100 border-yellow-300 text-yellow-800; }
-.action-node { @apply bg-blue-100 border-blue-300 text-blue-800; }
-.condition-node { @apply bg-purple-100 border-purple-300 text-purple-800; }
-.ai-node { @apply bg-green-100 border-green-300 text-green-800; }
+.trigger-node {
+  @apply bg-yellow-100 border-yellow-300 text-yellow-800;
+}
+.action-node {
+  @apply bg-blue-100 border-blue-300 text-blue-800;
+}
+.condition-node {
+  @apply bg-purple-100 border-purple-300 text-purple-800;
+}
+.ai-node {
+  @apply bg-green-100 border-green-300 text-green-800;
+}
 
 /* Interactive States */
-.node-dragging { @apply opacity-50 scale-95; }
-.node-selected { @apply ring-2 ring-blue-500; }
-.drop-zone-active { @apply bg-blue-50 border-blue-400; }
+.node-dragging {
+  @apply opacity-50 scale-95;
+}
+.node-selected {
+  @apply ring-2 ring-blue-500;
+}
+.drop-zone-active {
+  @apply bg-blue-50 border-blue-400;
+}
 ```
 
 ### Responsive Design
@@ -196,7 +221,7 @@ interface NodeTemplate {
   label: string;
   icon: string;
   description: string;
-  category: 'triggers' | 'actions' | 'conditions' | 'ai_powered';
+  category: "triggers" | "actions" | "conditions" | "ai_powered";
   inputs: InputPort[];
   outputs: OutputPort[];
   config: NodeConfig;
@@ -211,13 +236,13 @@ interface Workflow {
   id?: string;
   name: string;
   description: string;
-  category: 'sales' | 'service' | 'marketing' | 'inventory';
+  category: "sales" | "service" | "marketing" | "inventory";
   steps: WorkflowStep[];
   connections: WorkflowConnection[];
   triggers: TriggerConfig[];
   variables: WorkflowVariable[];
   version: number;
-  status: 'draft' | 'active' | 'archived';
+  status: "draft" | "active" | "archived";
 }
 ```
 
@@ -266,7 +291,7 @@ npm run test:e2e -- --spec="workflow-builder/**"
 const wsClient = new WebSocketClient();
 await wsClient.connect(`/ws/executions/${executionId}/status`);
 
-wsClient.subscribe('status_update', (update) => {
+wsClient.subscribe("status_update", (update) => {
   setExecutionStatus(update.status);
 });
 ```
@@ -275,7 +300,7 @@ wsClient.subscribe('status_update', (update) => {
 
 ```typescript
 // Workflow CRUD operations
-import { createWorkflow, executeWorkflow } from '../api/workflows';
+import { createWorkflow, executeWorkflow } from "../api/workflows";
 
 const savedWorkflow = await createWorkflow(workflowData);
 const execution = await executeWorkflow(savedWorkflow.id, inputData);
@@ -294,10 +319,10 @@ const execution = await executeWorkflow(savedWorkflow.id, inputData);
 
 ```typescript
 interface ValidationError {
-  type: 'missing_connection' | 'invalid_step' | 'circular_dependency';
+  type: "missing_connection" | "invalid_step" | "circular_dependency";
   message: string;
   stepId?: string;
-  severity: 'error' | 'warning' | 'info';
+  severity: "error" | "warning" | "info";
 }
 ```
 

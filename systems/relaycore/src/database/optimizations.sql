@@ -2,10 +2,10 @@
 -- Performance tuning for high-throughput AI request routing and budget management
 
 -- Optimize AI request logging and metrics
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_ai_requests_timestamp_model 
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_ai_requests_timestamp_model
 ON ai_requests(timestamp DESC, model_used);
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_cost_tracking_user_date 
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_cost_tracking_user_date
 ON cost_tracking(user_id, date DESC);
 
 -- Partitioning for large tables
@@ -14,7 +14,7 @@ DO $$
 BEGIN
   -- Check if table exists and is not already partitioned
   IF EXISTS (
-    SELECT FROM information_schema.tables 
+    SELECT FROM information_schema.tables
     WHERE table_name = 'ai_requests'
     AND table_schema = 'public'
   ) AND NOT EXISTS (
@@ -34,52 +34,52 @@ BEGIN
       timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
       metadata JSONB DEFAULT '{}'
     ) PARTITION BY RANGE (timestamp);
-    
+
     -- Create partitions for current and next month
     CREATE TABLE ai_requests_2024_01 PARTITION OF ai_requests_partitioned
     FOR VALUES FROM ('2024-01-01') TO ('2024-02-01');
-    
+
     CREATE TABLE ai_requests_2024_02 PARTITION OF ai_requests_partitioned
     FOR VALUES FROM ('2024-02-01') TO ('2024-03-01');
-    
+
     -- Create indexes on partitions
     CREATE INDEX ON ai_requests_2024_01 (user_id, timestamp DESC);
     CREATE INDEX ON ai_requests_2024_01 (model_used, timestamp DESC);
-    
+
     CREATE INDEX ON ai_requests_2024_02 (user_id, timestamp DESC);
     CREATE INDEX ON ai_requests_2024_02 (model_used, timestamp DESC);
-    
+
     -- Note: In production, you would migrate data from the old table to the new partitioned table
     -- and then rename tables to complete the migration
   END IF;
 END $$;
 
 -- Optimize budget management queries
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_budget_usage_records_budget_timestamp 
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_budget_usage_records_budget_timestamp
 ON budget_usage_records(budget_id, timestamp DESC);
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_budget_usage_records_metadata 
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_budget_usage_records_metadata
 ON budget_usage_records USING GIN (metadata jsonb_path_ops);
 
 -- Create partial index for active budgets
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_budget_definitions_active_scope 
-ON budget_definitions(scope_type, scope_id) 
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_budget_definitions_active_scope
+ON budget_definitions(scope_type, scope_id)
 WHERE active = true;
 
 -- Create index for budget status lookups
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_budget_status_cache_status 
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_budget_status_cache_status
 ON budget_status_cache(status, last_updated DESC);
 
 -- Optimize performance metrics queries
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_performance_metrics_type_timestamp 
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_performance_metrics_type_timestamp
 ON performance_metrics(metric_type, timestamp DESC);
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_performance_metrics_system_type 
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_performance_metrics_system_type
 ON performance_metrics(system, metric_type, timestamp DESC);
 
 -- Create materialized view for common budget reports
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_daily_budget_usage AS
-SELECT 
+SELECT
   budget_id,
   DATE_TRUNC('day', timestamp) AS day,
   SUM(amount) AS daily_amount,
@@ -87,15 +87,15 @@ SELECT
   MIN(amount) AS min_amount,
   MAX(amount) AS max_amount,
   AVG(amount) AS avg_amount
-FROM 
+FROM
   budget_usage_records
-WHERE 
+WHERE
   timestamp > CURRENT_DATE - INTERVAL '30 days'
-GROUP BY 
+GROUP BY
   budget_id, DATE_TRUNC('day', timestamp)
 WITH DATA;
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_daily_budget_usage 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_daily_budget_usage
 ON mv_daily_budget_usage(budget_id, day);
 
 -- Create function to refresh materialized view
@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS api_response_cache (
   access_count INTEGER DEFAULT 1
 );
 
-CREATE INDEX IF NOT EXISTS idx_api_response_cache_expires 
+CREATE INDEX IF NOT EXISTS idx_api_response_cache_expires
 ON api_response_cache(expires_at);
 
 -- Create function to clean expired cache entries
@@ -166,10 +166,10 @@ RETURNS INTEGER AS $$
 DECLARE
   deleted_count INTEGER;
 BEGIN
-  DELETE FROM api_response_cache 
+  DELETE FROM api_response_cache
   WHERE expires_at < CURRENT_TIMESTAMP
   RETURNING COUNT(*) INTO deleted_count;
-  
+
   RETURN deleted_count;
 END;
 $$ LANGUAGE plpgsql;
@@ -239,7 +239,7 @@ CREATE TABLE IF NOT EXISTS cost_prediction_accuracy (
   timestamp TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_cost_prediction_accuracy_model 
+CREATE INDEX IF NOT EXISTS idx_cost_prediction_accuracy_model
 ON cost_prediction_accuracy(model_id, timestamp DESC);
 
 -- Create table for model steering rules
@@ -254,7 +254,7 @@ CREATE TABLE IF NOT EXISTS model_steering_rules (
   active BOOLEAN DEFAULT true
 );
 
-CREATE INDEX IF NOT EXISTS idx_model_steering_rules_source 
+CREATE INDEX IF NOT EXISTS idx_model_steering_rules_source
 ON model_steering_rules(source_model) WHERE active = true;
 
 -- Create table for performance alerts
@@ -281,11 +281,11 @@ CREATE TABLE IF NOT EXISTS performance_alert_history (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_performance_alert_history_alert 
+CREATE INDEX IF NOT EXISTS idx_performance_alert_history_alert
 ON performance_alert_history(alert_id, triggered_at DESC);
 
-CREATE INDEX IF NOT EXISTS idx_performance_alert_history_active 
-ON performance_alert_history(resolved_at) 
+CREATE INDEX IF NOT EXISTS idx_performance_alert_history_active
+ON performance_alert_history(resolved_at)
 WHERE resolved_at IS NULL;
 
 -- Create table for API request logs
@@ -300,8 +300,8 @@ CREATE TABLE IF NOT EXISTS api_request_logs (
   timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_api_request_logs_path_method 
+CREATE INDEX IF NOT EXISTS idx_api_request_logs_path_method
 ON api_request_logs(path, method, timestamp DESC);
 
-CREATE INDEX IF NOT EXISTS idx_api_request_logs_response_time 
+CREATE INDEX IF NOT EXISTS idx_api_request_logs_response_time
 ON api_request_logs(response_time DESC, timestamp DESC);

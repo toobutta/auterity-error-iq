@@ -3,31 +3,30 @@
  * Sets up database schema and initial data
  */
 
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { DatabaseConnection } from '../services/database';
-import { logger } from '../utils/logger';
+import { readFileSync } from "fs";
+import { join } from "path";
+import { DatabaseConnection } from "../services/database";
+import { logger } from "../utils/logger";
 
 export async function initializeDatabase(): Promise<void> {
   try {
-    logger.info('Initializing RelayCore database...');
+    logger.info("Initializing RelayCore database...");
 
     // Read main schema file
-    const schemaPath = join(__dirname, 'schema.sql');
-    const schema = readFileSync(schemaPath, 'utf8');
+    const schemaPath = join(__dirname, "schema.sql");
+    const schema = readFileSync(schemaPath, "utf8");
 
     // Read budget schema file
-    const budgetSchemaPath = join(__dirname, 'budget-schema.sql');
-    const budgetSchema = readFileSync(budgetSchemaPath, 'utf8');
+    const budgetSchemaPath = join(__dirname, "budget-schema.sql");
+    const budgetSchema = readFileSync(budgetSchemaPath, "utf8");
 
     // Execute schemas
     await DatabaseConnection.query(schema);
     await DatabaseConnection.query(budgetSchema);
 
-    logger.info('Database schema initialized successfully');
-
+    logger.info("Database schema initialized successfully");
   } catch (error) {
-    logger.error('Failed to initialize database:', error);
+    logger.error("Failed to initialize database:", error);
     throw error;
   }
 }
@@ -36,24 +35,24 @@ export async function checkDatabaseHealth(): Promise<boolean> {
   try {
     // Check if required tables exist
     const tables = [
-      'ai_request_metrics',
-      'steering_rules', 
-      'provider_status',
-      'budget_definitions',
-      'budget_usage_records',
-      'budget_alert_history',
-      'budget_status_cache',
-      'cost_history'
+      "ai_request_metrics",
+      "steering_rules",
+      "provider_status",
+      "budget_definitions",
+      "budget_usage_records",
+      "budget_alert_history",
+      "budget_status_cache",
+      "cost_history",
     ];
 
     for (const table of tables) {
       const result = await DatabaseConnection.query(
         `SELECT EXISTS (
-          SELECT FROM information_schema.tables 
-          WHERE table_schema = 'public' 
+          SELECT FROM information_schema.tables
+          WHERE table_schema = 'public'
           AND table_name = $1
         )`,
-        [table]
+        [table],
       );
 
       if (!result.rows[0].exists) {
@@ -62,11 +61,10 @@ export async function checkDatabaseHealth(): Promise<boolean> {
       }
     }
 
-    logger.info('Database health check passed');
+    logger.info("Database health check passed");
     return true;
-
   } catch (error) {
-    logger.error('Database health check failed:', error);
+    logger.error("Database health check failed:", error);
     return false;
   }
 }
@@ -75,11 +73,11 @@ export async function checkDatabaseHealth(): Promise<boolean> {
 if (require.main === module) {
   initializeDatabase()
     .then(() => {
-      logger.info('Database initialization completed');
+      logger.info("Database initialization completed");
       process.exit(0);
     })
     .catch((error) => {
-      logger.error('Database initialization failed:', error);
+      logger.error("Database initialization failed:", error);
       process.exit(1);
     });
 }

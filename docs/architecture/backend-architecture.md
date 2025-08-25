@@ -180,7 +180,7 @@ def create_application() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    
+
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.ALLOWED_HOSTS)
     app.add_middleware(RateLimitMiddleware)
     app.add_middleware(ErrorHandlerMiddleware)
@@ -261,7 +261,7 @@ class Workflow(BaseModel):
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     status = Column(Enum(WorkflowStatus), default=WorkflowStatus.DRAFT)
     definition = Column(JSON, nullable=False)
-    
+
     # Relationships
     user = relationship("User", back_populates="workflows")
     executions = relationship("WorkflowExecution", back_populates="workflow")
@@ -276,7 +276,7 @@ class WorkflowExecution(BaseModel):
     error_message = Column(Text)
     started_at = Column(DateTime(timezone=True))
     completed_at = Column(DateTime(timezone=True))
-    
+
     # Relationships
     workflow = relationship("Workflow", back_populates="executions")
     logs = relationship("ExecutionLog", back_populates="execution")
@@ -303,8 +303,8 @@ async_engine = create_async_engine(
 )
 
 AsyncSessionLocal = sessionmaker(
-    async_engine, 
-    class_=AsyncSession, 
+    async_engine,
+    class_=AsyncSession,
     expire_on_commit=False
 )
 
@@ -350,12 +350,12 @@ class WorkflowEngine:
         self.ai_service = ai_service
 
     async def execute_workflow(
-        self, 
-        workflow_id: str, 
+        self,
+        workflow_id: str,
         input_data: Dict[str, Any]
     ) -> str:
         """Execute a workflow and return execution ID."""
-        
+
         # Get workflow
         workflow = await self._get_workflow(workflow_id)
         if not workflow:
@@ -387,11 +387,11 @@ class WorkflowEngine:
             steps = self._build_execution_order(workflow.definition)
 
             current_data = execution.input_data
-            
+
             for step in steps:
                 step_result = await self._execute_step(
-                    execution.id, 
-                    step, 
+                    execution.id,
+                    step,
                     current_data
                 )
                 current_data = step_result.get('output', current_data)
@@ -400,24 +400,24 @@ class WorkflowEngine:
             execution.status = ExecutionStatus.COMPLETED
             execution.output_data = current_data
             execution.completed_at = func.now()
-            
+
         except Exception as e:
             logger.error(f"Workflow execution failed: {e}")
             execution.status = ExecutionStatus.FAILED
             execution.error_message = str(e)
             execution.completed_at = func.now()
-        
+
         finally:
             await self.db.commit()
 
     async def _execute_step(
-        self, 
-        execution_id: str, 
-        step: Dict[str, Any], 
+        self,
+        execution_id: str,
+        step: Dict[str, Any],
         input_data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Execute a single workflow step."""
-        
+
         step_log = ExecutionLog(
             execution_id=execution_id,
             step_name=step.get('name', 'Unknown'),
@@ -428,7 +428,7 @@ class WorkflowEngine:
 
         try:
             start_time = time.time()
-            
+
             # Route to appropriate step handler
             if step['type'] == 'ai_process':
                 result = await self._execute_ai_step(step, input_data)
@@ -442,34 +442,34 @@ class WorkflowEngine:
             # Log successful execution
             step_log.output_data = result
             step_log.duration_ms = int((time.time() - start_time) * 1000)
-            
+
             return result
 
         except Exception as e:
             step_log.error_message = str(e)
             step_log.duration_ms = int((time.time() - start_time) * 1000)
             raise WorkflowExecutionError(f"Step {step['name']} failed: {e}")
-        
+
         finally:
             self.db.add(step_log)
             await self.db.commit()
 
     async def _execute_ai_step(
-        self, 
-        step: Dict[str, Any], 
+        self,
+        step: Dict[str, Any],
         input_data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Execute AI processing step."""
-        
+
         prompt_template = step.get('prompt', '')
         model = step.get('model', 'gpt-3.5-turbo')
-        
+
         # Substitute variables in prompt
         prompt = self._substitute_variables(prompt_template, input_data)
-        
+
         # Call AI service
         response = await self.ai_service.process_text(prompt, model)
-        
+
         return {
             'ai_response': response.content,
             'model_used': model,
@@ -479,11 +479,11 @@ class WorkflowEngine:
 
     async def get_execution_status(self, execution_id: str) -> Optional[Dict[str, Any]]:
         """Get execution status and details."""
-        
+
         stmt = select(WorkflowExecution).where(WorkflowExecution.id == execution_id)
         result = await self.db.execute(stmt)
         execution = result.scalar_one_or_none()
-        
+
         if not execution:
             return None
 
@@ -500,18 +500,18 @@ class WorkflowEngine:
 
     async def cancel_execution(self, execution_id: str) -> bool:
         """Cancel a running workflow execution."""
-        
+
         stmt = select(WorkflowExecution).where(WorkflowExecution.id == execution_id)
         result = await self.db.execute(stmt)
         execution = result.scalar_one_or_none()
-        
+
         if not execution or execution.status != ExecutionStatus.RUNNING:
             return False
 
         execution.status = ExecutionStatus.CANCELLED
         execution.completed_at = func.now()
         await self.db.commit()
-        
+
         return True
 ```
 
@@ -537,16 +537,16 @@ class AIService:
         self.temperature = 0.7
 
     async def process_text(
-        self, 
-        prompt: str, 
+        self,
+        prompt: str,
         model: Optional[str] = None,
         context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """Process text using AI model."""
-        
+
         try:
             model = model or self.default_model
-            
+
             # Build messages
             messages = [
                 {"role": "system", "content": self._get_system_prompt(context)},
@@ -582,10 +582,10 @@ class AIService:
 
     def _get_system_prompt(self, context: Optional[Dict[str, Any]] = None) -> str:
         """Get system prompt for AI model."""
-        
-        base_prompt = """You are an AI assistant for an automotive dealership workflow automation system. 
+
+        base_prompt = """You are an AI assistant for an automotive dealership workflow automation system.
         You help process customer inquiries, service requests, and sales interactions.
-        
+
         Always provide helpful, accurate, and professional responses.
         Format your responses in a clear, structured manner.
         """
@@ -593,7 +593,7 @@ class AIService:
         if context:
             dealership_name = context.get('dealership_name', 'the dealership')
             base_prompt += f"\n\nYou are representing {dealership_name}."
-            
+
             if context.get('department'):
                 base_prompt += f" You are assisting the {context['department']} department."
 
@@ -601,15 +601,15 @@ class AIService:
 
     async def generate_embeddings(self, texts: List[str]) -> List[List[float]]:
         """Generate embeddings for text similarity."""
-        
+
         try:
             response = await self.client.embeddings.create(
                 model="text-embedding-ada-002",
                 input=texts
             )
-            
+
             return [embedding.embedding for embedding in response.data]
-            
+
         except Exception as e:
             logger.error(f"Embedding generation failed: {e}")
             raise AIServiceError(f"Embedding generation failed: {e}")
@@ -642,7 +642,7 @@ async def register(
 ):
     """Register a new user."""
     auth_service = AuthService(db)
-    
+
     # Check if user already exists
     existing_user = await auth_service.get_user_by_email(user_data.email)
     if existing_user:
@@ -650,7 +650,7 @@ async def register(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered"
         )
-    
+
     # Create user
     user = await auth_service.create_user(user_data)
     return UserResponse.from_orm(user)
@@ -662,27 +662,27 @@ async def login(
 ):
     """Authenticate user and return access token."""
     auth_service = AuthService(db)
-    
+
     # Authenticate user
     user = await auth_service.authenticate_user(
-        credentials.email, 
+        credentials.email,
         credentials.password
     )
-    
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     # Create access token
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": str(user.id)}, 
+        data={"sub": str(user.id)},
         expires_delta=access_token_expires
     )
-    
+
     return Token(
         access_token=access_token,
         token_type="bearer",
@@ -698,23 +698,23 @@ async def get_current_user_info(
     # Verify token
     payload = verify_token(credentials.credentials)
     user_id = payload.get("sub")
-    
+
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token"
         )
-    
+
     # Get user
     auth_service = AuthService(db)
     user = await auth_service.get_user_by_id(user_id)
-    
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
-    
+
     return UserResponse.from_orm(user)
 
 @router.post("/refresh", response_model=Token)
@@ -726,20 +726,20 @@ async def refresh_token(
     # Verify current token
     payload = verify_token(credentials.credentials)
     user_id = payload.get("sub")
-    
+
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token"
         )
-    
+
     # Create new token
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user_id}, 
+        data={"sub": user_id},
         expires_delta=access_token_expires
     )
-    
+
     return Token(
         access_token=access_token,
         token_type="bearer",
@@ -761,47 +761,47 @@ class Settings(BaseSettings):
     VERSION: str = "1.0.0"
     ENVIRONMENT: str = "development"
     DEBUG: bool = False
-    
+
     # Security
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
-    
+
     # Database
     DATABASE_URL: str
     DATABASE_ECHO: bool = False
     DATABASE_POOL_SIZE: int = 10
     DATABASE_MAX_OVERFLOW: int = 20
-    
+
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
-    
+
     # AI Services
     OPENAI_API_KEY: str
     OPENAI_MODEL: str = "gpt-3.5-turbo"
-    
+
     # CORS
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]
     ALLOWED_HOSTS: List[str] = ["*"]
-    
+
     # Rate Limiting
     RATE_LIMIT_REQUESTS: int = 100
     RATE_LIMIT_WINDOW: int = 60  # seconds
-    
+
     # Email
     SMTP_HOST: Optional[str] = None
     SMTP_PORT: int = 587
     SMTP_USERNAME: Optional[str] = None
     SMTP_PASSWORD: Optional[str] = None
-    
+
     # File Storage
     FILE_STORAGE_TYPE: str = "local"  # local, s3, azure
     FILE_STORAGE_BUCKET: Optional[str] = None
-    
+
     # Monitoring
     SENTRY_DSN: Optional[str] = None
     LOG_LEVEL: str = "INFO"
-    
+
     class Config:
         env_file = ".env"
         case_sensitive = True
@@ -845,12 +845,12 @@ async def test_engine():
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     yield engine
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
 
@@ -860,7 +860,7 @@ async def db_session(test_engine):
     TestSessionLocal = sessionmaker(
         test_engine, class_=AsyncSession, expire_on_commit=False
     )
-    
+
     async with TestSessionLocal() as session:
         yield session
 
@@ -868,10 +868,10 @@ async def db_session(test_engine):
 async def client(db_session):
     """Create test client."""
     app.dependency_overrides[get_db] = lambda: db_session
-    
+
     async with AsyncClient(app=app, base_url="http://test") as ac:
         yield ac
-    
+
     app.dependency_overrides.clear()
 
 @pytest.fixture
@@ -883,19 +883,19 @@ async def authenticated_client(client, db_session):
         "password": "testpassword",
         "name": "Test User"
     }
-    
+
     # Register user
     await client.post("/api/auth/register", json=user_data)
-    
+
     # Login and get token
     login_response = await client.post("/api/auth/login", json={
         "email": user_data["email"],
         "password": user_data["password"]
     })
-    
+
     token = login_response.json()["access_token"]
     client.headers.update({"Authorization": f"Bearer {token}"})
-    
+
     return client
 ```
 
@@ -909,7 +909,7 @@ from httpx import AsyncClient
 @pytest.mark.asyncio
 async def test_workflow_creation_and_execution(authenticated_client: AsyncClient):
     """Test complete workflow creation and execution flow."""
-    
+
     # Create workflow
     workflow_data = {
         "name": "Test Workflow",
@@ -941,23 +941,23 @@ async def test_workflow_creation_and_execution(authenticated_client: AsyncClient
             ]
         }
     }
-    
+
     # Create workflow
     create_response = await authenticated_client.post(
-        "/api/workflows", 
+        "/api/workflows",
         json=workflow_data
     )
     assert create_response.status_code == 201
     workflow = create_response.json()
     workflow_id = workflow["id"]
-    
+
     # Execute workflow
     execution_data = {
         "input_data": {
             "input_text": "Hello, this is a test message"
         }
     }
-    
+
     execute_response = await authenticated_client.post(
         f"/api/workflows/{workflow_id}/execute",
         json=execution_data
@@ -965,7 +965,7 @@ async def test_workflow_creation_and_execution(authenticated_client: AsyncClient
     assert execute_response.status_code == 200
     execution = execute_response.json()
     execution_id = execution["execution_id"]
-    
+
     # Check execution status
     status_response = await authenticated_client.get(
         f"/api/executions/{execution_id}"
@@ -973,7 +973,7 @@ async def test_workflow_creation_and_execution(authenticated_client: AsyncClient
     assert status_response.status_code == 200
     status = status_response.json()
     assert status["status"] in ["pending", "running", "completed"]
-    
+
     # Get execution logs
     logs_response = await authenticated_client.get(
         f"/api/executions/{execution_id}/logs"
@@ -1006,7 +1006,7 @@ def receive_after_cursor_execute(conn, cursor, statement, parameters, context, e
 # Index optimization
 class Workflow(BaseModel):
     __tablename__ = "workflows"
-    
+
     # Add indexes for common queries
     __table_args__ = (
         Index('idx_workflows_user_id', 'user_id'),
@@ -1034,20 +1034,20 @@ def cache_result(expiration: int = 300):
         async def wrapper(*args, **kwargs):
             # Generate cache key
             cache_key = f"{func.__name__}:{hash(str(args) + str(kwargs))}"
-            
+
             # Try to get from cache
             cached_result = redis_client.get(cache_key)
             if cached_result:
                 return json.loads(cached_result)
-            
+
             # Execute function and cache result
             result = await func(*args, **kwargs)
             redis_client.setex(
-                cache_key, 
-                expiration, 
+                cache_key,
+                expiration,
                 json.dumps(result, default=str)
             )
-            
+
             return result
         return wrapper
     return decorator
@@ -1101,7 +1101,7 @@ def execute_workflow_async(self, workflow_id: str, input_data: dict):
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: $(date)  
-**Architecture Review**: Monthly backend architecture assessment  
+**Document Version**: 1.0
+**Last Updated**: $(date)
+**Architecture Review**: Monthly backend architecture assessment
 **Maintained By**: Auterity Backend Team

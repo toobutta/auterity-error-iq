@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { WorkflowExecution } from '../types/workflow';
-import { getExecution, getExecutionLogs } from '../api/workflows';
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { WorkflowExecution } from "../types/workflow";
+import { getExecution, getExecutionLogs } from "../api/workflows";
 
 interface ExecutionStatusProps {
   executionId: string;
@@ -38,7 +38,10 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
   const getPollingInterval = useCallback((retries: number) => {
     const baseInterval = 2000; // 2 seconds
     const maxInterval = 30000; // 30 seconds
-    const interval = Math.min(baseInterval * Math.pow(1.5, retries), maxInterval);
+    const interval = Math.min(
+      baseInterval * Math.pow(1.5, retries),
+      maxInterval,
+    );
     return interval;
   }, []);
 
@@ -52,43 +55,51 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
       // Fetch logs if requested and execution is running or completed
       if (
         showLogs &&
-        (executionData.status === 'running' || executionData.status === 'completed')
+        (executionData.status === "running" ||
+          executionData.status === "completed")
       ) {
         try {
           const logsData = await getExecutionLogs(executionId);
           // Transform ExecutionLogEntry to ExecutionLog format
           const transformedLogs: ExecutionLog[] = logsData.map((entry) => ({
             id: entry.id,
-            step_name: entry.stepName || 'Unknown Step',
-            step_type: entry.level || 'info',
+            step_name: entry.stepName || "Unknown Step",
+            step_type: entry.level || "info",
             input_data: entry.data || {},
             output_data: entry.data || {},
             duration_ms: entry.duration || 0,
             timestamp: entry.timestamp,
-            error_message: entry.level === 'error' ? entry.message : undefined,
+            error_message: entry.level === "error" ? entry.message : undefined,
           }));
           setLogs(transformedLogs);
         } catch (logError) {
-          console.warn('Failed to fetch execution logs:', logError);
+          console.warn("Failed to fetch execution logs:", logError);
         }
       }
 
       // Stop polling if execution is complete
-      if (executionData.status === 'completed' || executionData.status === 'failed') {
+      if (
+        executionData.status === "completed" ||
+        executionData.status === "failed"
+      ) {
         setIsPolling(false);
         if (onComplete) {
           onComplete(executionData);
         }
       }
     } catch (err: unknown) {
-      console.error('Failed to fetch execution data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch execution status');
+      console.error("Failed to fetch execution data:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch execution status",
+      );
       setRetryCount((prev) => prev + 1);
 
       // Stop polling after max retries
       if (retryCount >= maxRetries) {
         setIsPolling(false);
-        setError(`Failed to fetch execution status after ${maxRetries} attempts`);
+        setError(
+          `Failed to fetch execution status after ${maxRetries} attempts`,
+        );
       }
     }
   }, [executionId, showLogs, onComplete, retryCount, maxRetries]);
@@ -110,26 +121,31 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
     };
   }, [fetchExecutionData, isPolling, retryCount, getPollingInterval]);
 
-  const getStatusColor = (status: WorkflowExecution['status']) => {
+  const getStatusColor = (status: WorkflowExecution["status"]) => {
     switch (status) {
-      case 'pending':
-        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      case 'running':
-        return 'text-blue-600 bg-blue-50 border-blue-200';
-      case 'completed':
-        return 'text-green-600 bg-green-50 border-green-200';
-      case 'failed':
-        return 'text-red-600 bg-red-50 border-red-200';
+      case "pending":
+        return "text-yellow-600 bg-yellow-50 border-yellow-200";
+      case "running":
+        return "text-blue-600 bg-blue-50 border-blue-200";
+      case "completed":
+        return "text-green-600 bg-green-50 border-green-200";
+      case "failed":
+        return "text-red-600 bg-red-50 border-red-200";
       default:
-        return 'text-gray-600 bg-gray-50 border-gray-200';
+        return "text-gray-600 bg-gray-50 border-gray-200";
     }
   };
 
-  const getStatusIcon = (status: WorkflowExecution['status']) => {
+  const getStatusIcon = (status: WorkflowExecution["status"]) => {
     switch (status) {
-      case 'pending':
+      case "pending":
         return (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -138,7 +154,7 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
             />
           </svg>
         );
-      case 'running':
+      case "running":
         return (
           <svg
             className="w-5 h-5 animate-spin"
@@ -154,9 +170,14 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
             />
           </svg>
         );
-      case 'completed':
+      case "completed":
         return (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -165,9 +186,14 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
             />
           </svg>
         );
-      case 'failed':
+      case "failed":
         return (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -272,30 +298,36 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
           </div>
           {execution.duration && (
             <div className="text-right">
-              <p className="font-medium">{formatDuration(execution.duration)}</p>
+              <p className="font-medium">
+                {formatDuration(execution.duration)}
+              </p>
               <p className="text-sm opacity-75">Duration</p>
             </div>
           )}
         </div>
 
         {/* Progress Bar for Running Status */}
-        {execution.status === 'running' && (
+        {execution.status === "running" && (
           <div className="mt-3">
             <div className="w-full bg-blue-200 rounded-full h-2">
               <div
                 className="bg-blue-600 h-2 rounded-full animate-pulse"
-                style={{ width: '60%' }}
+                style={{ width: "60%" }}
               ></div>
             </div>
-            <p className="text-sm mt-1 opacity-75">Processing workflow steps...</p>
+            <p className="text-sm mt-1 opacity-75">
+              Processing workflow steps...
+            </p>
           </div>
         )}
 
         {/* Error Message */}
-        {execution.status === 'failed' && execution.errorMessage && (
+        {execution.status === "failed" && execution.errorMessage && (
           <div className="mt-3 p-3 bg-red-100 border border-red-200 rounded">
             <p className="text-red-800 text-sm font-medium">Error Details:</p>
-            <p className="text-red-700 text-sm mt-1">{execution.errorMessage}</p>
+            <p className="text-red-700 text-sm mt-1">
+              {execution.errorMessage}
+            </p>
           </div>
         )}
       </div>
@@ -308,11 +340,15 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
             {logs.map((log, index) => (
               <div key={log.id} className="flex items-start">
                 <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-blue-600 text-sm font-medium">{index + 1}</span>
+                  <span className="text-blue-600 text-sm font-medium">
+                    {index + 1}
+                  </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-gray-900">{log.step_name}</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      {log.step_name}
+                    </p>
                     <div className="flex items-center text-xs text-gray-500">
                       <span>{formatTimestamp(log.timestamp)}</span>
                       <span className="mx-1">•</span>
@@ -320,10 +356,12 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
                     </div>
                   </div>
                   <p className="text-sm text-gray-600 capitalize">
-                    {log.step_type.replace('_', ' ')}
+                    {log.step_type.replace("_", " ")}
                   </p>
                   {log.error_message && (
-                    <p className="text-sm text-red-600 mt-1">Error: {log.error_message}</p>
+                    <p className="text-sm text-red-600 mt-1">
+                      Error: {log.error_message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -337,7 +375,8 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
         <div className="text-center">
           <p className="text-xs text-gray-500">
             <span className="inline-block w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></span>
-            Live updates every {Math.round(getPollingInterval(retryCount) / 1000)}s
+            Live updates every{" "}
+            {Math.round(getPollingInterval(retryCount) / 1000)}s
           </p>
         </div>
       )}

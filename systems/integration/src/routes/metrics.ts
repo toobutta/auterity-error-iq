@@ -1,8 +1,8 @@
-import { Router } from 'express';
+import { Router } from "express";
 
 const router = Router();
 
-router.get('/', (req, res) => {
+router.get("/", (req, res) => {
   const metrics = {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
@@ -10,13 +10,13 @@ router.get('/', (req, res) => {
     cpu: process.cpuUsage(),
     platform: process.platform,
     nodeVersion: process.version,
-    pid: process.pid
+    pid: process.pid,
   };
 
   res.json(metrics);
 });
 
-router.get('/system', (req, res) => {
+router.get("/system", (req, res) => {
   res.json({
     timestamp: new Date().toISOString(),
     system: {
@@ -24,11 +24,11 @@ router.get('/system', (req, res) => {
       arch: process.arch,
       nodeVersion: process.version,
       uptime: process.uptime(),
-      loadAverage: require('os').loadavg(),
-      totalMemory: require('os').totalmem(),
-      freeMemory: require('os').freemem(),
-      cpuCount: require('os').cpus().length
-    }
+      loadAverage: require("os").loadavg(),
+      totalMemory: require("os").totalmem(),
+      freeMemory: require("os").freemem(),
+      cpuCount: require("os").cpus().length,
+    },
   });
 });
 

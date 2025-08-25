@@ -1,13 +1,16 @@
-import React from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
-import { NodeData } from '../../../types/workflow';
+import React from "react";
+import { Handle, Position, NodeProps } from "@xyflow/react";
+import { NodeData } from "../../../types/workflow";
 
-const LeadQualificationNode: React.FC<NodeProps<NodeData>> = ({ data, isConnectable }) => {
+const LeadQualificationNode: React.FC<NodeProps<NodeData>> = ({
+  data,
+  isConnectable,
+}) => {
   const hasErrors = data.validationErrors && data.validationErrors.length > 0;
 
   return (
     <div
-      className={`bg-green-100 border-2 ${hasErrors ? 'border-red-400' : 'border-green-300'} rounded-lg p-3 shadow-md min-w-[160px]`}
+      className={`bg-green-100 border-2 ${hasErrors ? "border-red-400" : "border-green-300"} rounded-lg p-3 shadow-md min-w-[160px]`}
     >
       <Handle
         type="target"
@@ -21,10 +24,15 @@ const LeadQualificationNode: React.FC<NodeProps<NodeData>> = ({ data, isConnecta
           <span className="text-white text-sm font-bold">🤖</span>
         </div>
         <h3 className="font-bold text-green-800">{data.label}</h3>
-        {data.description && <p className="text-xs text-green-600 mt-1">{data.description}</p>}
-        {(data.config as { aiPrompt?: { model?: string } })?.aiPrompt?.model && (
+        {data.description && (
+          <p className="text-xs text-green-600 mt-1">{data.description}</p>
+        )}
+        {(data.config as { aiPrompt?: { model?: string } })?.aiPrompt
+          ?.model && (
           <p className="text-xs text-gray-500 mt-1">
-            Model: {(data.config as { aiPrompt?: { model?: string } }).aiPrompt?.model || ''}
+            Model:{" "}
+            {(data.config as { aiPrompt?: { model?: string } }).aiPrompt
+              ?.model || ""}
           </p>
         )}
       </div>

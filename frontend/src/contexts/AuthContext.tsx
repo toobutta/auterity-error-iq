@@ -1,5 +1,5 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { AuthApi, LoginRequest, RegisterRequest, User } from '../api/auth';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { AuthApi, LoginRequest, RegisterRequest, User } from "../api/auth";
 
 interface AuthContextType {
   user: User | null;
@@ -15,12 +15,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,8 +32,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Check for existing token and user data on app load
     const initializeAuth = async () => {
       try {
-        const token = localStorage.getItem('access_token');
-        const userData = localStorage.getItem('user');
+        const token = localStorage.getItem("access_token");
+        const userData = localStorage.getItem("user");
 
         if (token && userData) {
           setUser(JSON.parse(userData));
@@ -39,16 +41,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           try {
             const currentUser = await AuthApi.getCurrentUser();
             setUser(currentUser);
-            localStorage.setItem('user', JSON.stringify(currentUser));
+            localStorage.setItem("user", JSON.stringify(currentUser));
           } catch (error) {
             // Token is invalid, clear storage
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('user');
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user");
             setUser(null);
           }
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        console.error("Auth initialization error:", error);
       } finally {
         setIsLoading(false);
       }
@@ -62,12 +64,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await AuthApi.login(credentials);
 
       // Store token and user data
-      localStorage.setItem('access_token', response.access_token);
-      localStorage.setItem('user', JSON.stringify(response.user));
+      localStorage.setItem("access_token", response.access_token);
+      localStorage.setItem("user", JSON.stringify(response.user));
 
       setUser(response.user);
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       throw error;
     }
   };
@@ -77,12 +79,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await AuthApi.register(userData);
 
       // Store token and user data
-      localStorage.setItem('access_token', response.access_token);
-      localStorage.setItem('user', JSON.stringify(response.user));
+      localStorage.setItem("access_token", response.access_token);
+      localStorage.setItem("user", JSON.stringify(response.user));
 
       setUser(response.user);
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
       throw error;
     }
   };
@@ -91,11 +93,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await AuthApi.logout();
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     } finally {
       // Clear local storage and state regardless of API call success
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('user');
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user");
       setUser(null);
     }
   };

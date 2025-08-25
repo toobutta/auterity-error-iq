@@ -1,7 +1,7 @@
-import { lazy } from 'react';
+import { lazy } from "react";
 
 export const LazyLineChart = lazy(() =>
-  import('../LineChart').then((module) => ({
+  import("../LineChart").then((module) => ({
     default: module.LineChart,
-  }))
+  })),
 );

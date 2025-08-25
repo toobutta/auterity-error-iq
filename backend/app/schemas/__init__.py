@@ -38,6 +38,7 @@ from .auterity_expansion import (  # Triage schemas; Vector and similarity schem
     VectorEmbeddingResponse,
 )
 from .auth import (
+    AuditLogResponse,
     CrossSystemTokenRequest,
     CrossSystemTokenResponse,
     PermissionResponse,
@@ -58,6 +59,13 @@ from .template import (
     TemplateListResponse,
     TemplateResponse,
     TemplateUpdate,
+)
+from .tenant import (
+    SSOConfigurationCreate,
+    TenantCreate,
+    TenantResponse, 
+    TenantStatsResponse,
+    TenantUpdate,
 )
 from .workflow import (
     ExecutionLogResponse,

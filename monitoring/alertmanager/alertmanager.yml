@@ -8,7 +8,7 @@ global:
   smtp_auth_password: ''
   smtp_require_tls: false
   slack_api_url: '${SLACK_WEBHOOK_URL}'
-  
+
   # High availability settings
   cluster:
     listen_address: '0.0.0.0:9094'
@@ -23,7 +23,7 @@ route:
   group_interval: 30s
   repeat_interval: 2h
   receiver: 'default-receiver'
-  
+
   routes:
   # Critical alerts - immediate notification
   - match:
@@ -31,35 +31,35 @@ route:
     receiver: 'critical-alerts'
     group_wait: 0s
     repeat_interval: 30m
-    
+
   # High severity alerts
   - match:
       severity: high
     receiver: 'high-priority-alerts'
     group_wait: 2s
     repeat_interval: 1h
-    
+
   # Database alerts
   - match:
       service: postgres
     receiver: 'database-alerts'
     group_interval: 2m
-    
+
   # Application errors
   - match:
       service: backend
     receiver: 'application-alerts'
-    
-  # Infrastructure alerts  
+
+  # Infrastructure alerts
   - match_re:
       service: (redis|kafka|vault|minio)
     receiver: 'infrastructure-alerts'
-    
+
   # Monitoring system alerts
   - match_re:
       service: (prometheus|grafana|loki|jaeger)
     receiver: 'monitoring-alerts'
-    
+
   # AI/ML service alerts
   - match_re:
       service: (mlflow|weaviate|puppeteer)
@@ -110,7 +110,7 @@ receivers:
     subject: '🚨 CRITICAL ALERT: [Auterity] {{ .GroupLabels.alertname }}'
     body: |
       **🚨 CRITICAL SYSTEM ALERT 🚨**
-      
+
       {{ range .Alerts }}
       **Alert:** {{ .Annotations.summary }}
       **Description:** {{ .Annotations.description }}
@@ -119,12 +119,12 @@ receivers:
       **Instance:** {{ .Labels.instance }}
       **Started:** {{ .StartsAt.Format "2006-01-02 15:04:05 UTC" }}
       {{ if .Labels.runbook_url }}**Runbook:** {{ .Labels.runbook_url }}{{ end }}
-      
+
       **Immediate action required!**
       {{ end }}
     headers:
       Priority: 'urgent'
-      
+
   slack_configs:
   - api_url: '${SLACK_WEBHOOK_URL}'
     channel: '#critical-alerts'
@@ -147,7 +147,7 @@ receivers:
     subject: '⚠️ HIGH: [Auterity] {{ .GroupLabels.alertname }}'
     body: |
       **⚠️ HIGH PRIORITY ALERT**
-      
+
       {{ range .Alerts }}
       **Alert:** {{ .Annotations.summary }}
       **Description:** {{ .Annotations.description }}
@@ -155,7 +155,7 @@ receivers:
       **Instance:** {{ .Labels.instance }}
       **Started:** {{ .StartsAt.Format "2006-01-02 15:04:05 UTC" }}
       {{ end }}
-      
+
   slack_configs:
   - api_url: '${SLACK_WEBHOOK_URL}'
     channel: '#alerts'
@@ -170,7 +170,7 @@ receivers:
     subject: '🗄️ DATABASE: [Auterity] {{ .GroupLabels.alertname }}'
     body: |
       **🗄️ DATABASE ALERT**
-      
+
       {{ range .Alerts }}
       **Alert:** {{ .Annotations.summary }}
       **Database:** {{ .Labels.service }}
@@ -178,22 +178,22 @@ receivers:
       **Query:** {{ .Labels.query }}
       **Value:** {{ .Labels.value }}
       {{ end }}
-      
+
 - name: 'application-alerts'
   email_configs:
   - to: 'dev@auterity.local,ops@auterity.local'
     subject: '🔧 APPLICATION: [Auterity] {{ .GroupLabels.alertname }}'
-    
+
 - name: 'infrastructure-alerts'
   email_configs:
   - to: 'infra@auterity.local,ops@auterity.local'
     subject: '🏗️ INFRASTRUCTURE: [Auterity] {{ .GroupLabels.alertname }}'
-    
+
 - name: 'monitoring-alerts'
   email_configs:
   - to: 'monitoring@auterity.local,ops@auterity.local'
     subject: '📊 MONITORING: [Auterity] {{ .GroupLabels.alertname }}'
-    
+
 - name: 'ai-service-alerts'
   email_configs:
   - to: 'ai-team@auterity.local,ops@auterity.local'

@@ -15,7 +15,7 @@
             "legendFormat": "{{job}}"
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 }
       },
       {
         "id": 2,
@@ -27,7 +27,7 @@
             "legendFormat": "{{job}} - {{method}}"
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 }
       },
       {
         "id": 3,
@@ -39,7 +39,7 @@
             "legendFormat": "{{job}}"
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 }
       },
       {
         "id": 4,
@@ -51,7 +51,7 @@
             "legendFormat": "{{provider}} - {{model}}"
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 }
       },
       {
         "id": 5,
@@ -63,10 +63,10 @@
             "legendFormat": "{{job}}"
           }
         ],
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16}
+        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 }
       }
     ],
-    "time": {"from": "now-1h", "to": "now"},
+    "time": { "from": "now-1h", "to": "now" },
     "refresh": "30s"
   }
 }

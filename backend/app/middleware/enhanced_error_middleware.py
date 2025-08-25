@@ -9,13 +9,12 @@ import logging
 import time
 from typing import Callable
 
-from fastapi import Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
-
 from app.exceptions import BaseAppException
 from app.services.enhanced_recovery import get_enhanced_recovery_service
 from app.services.error_analytics import get_error_analytics_service
 from app.services.notification_service import get_notification_service
+from fastapi import Request, Response
+from starlette.middleware.base import BaseHTTPMiddleware
 
 
 class EnhancedErrorHandlingMiddleware(BaseHTTPMiddleware):
@@ -141,7 +140,6 @@ class EnhancedErrorHandlingMiddleware(BaseHTTPMiddleware):
             if error.severity.value in ["high", "critical"] or context.get(
                 "business_critical", False
             ):
-
                 recovery_service = await get_enhanced_recovery_service()
 
                 # Create recovery plan

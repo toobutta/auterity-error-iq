@@ -1,8 +1,8 @@
 # Frontend Architecture Documentation
 
-**Document Version**: 1.0  
-**Last Updated**: August 8, 2025  
-**Maintained By**: Frontend Team  
+**Document Version**: 1.0
+**Last Updated**: August 8, 2025
+**Maintained By**: Frontend Team
 
 ## Overview
 
@@ -13,23 +13,27 @@ The Auterity Unified Platform frontend is built with React 18, TypeScript, and V
 ## Technology Stack
 
 ### Core Framework
+
 - **React 18.2.0** - Component-based UI library with concurrent features
 - **TypeScript 5.2.2** - Type-safe JavaScript development
 - **Vite 7.0.6** - Modern build tool and development server
 - **React Router DOM 6.18.0** - Client-side routing
 
 ### Styling & Design
+
 - **Tailwind CSS 3.3.5** - Utility-first CSS framework
 - **@tailwindcss/line-clamp** - Text truncation utilities
 - **CSS Modules** - Component-scoped styling
 
 ### Data Visualization
+
 - **React Flow 11.11.4** - Interactive workflow diagrams
 - **Recharts 3.1.0** - Chart and data visualization library
 - **ApexCharts 5.3.2** - Advanced charting capabilities
 - **Plotly.js 3.0.3** - Scientific and statistical charts
 
 ### Development Tools
+
 - **ESLint** - Code linting and quality enforcement
 - **Prettier** - Code formatting
 - **Vitest** - Fast unit testing framework
@@ -127,6 +131,7 @@ frontend/
 The application uses React Context for global state management, avoiding the complexity of external state management libraries while maintaining performance.
 
 #### AuthContext
+
 ```typescript
 interface AuthContextType {
   user: User | null;
@@ -140,12 +145,14 @@ interface AuthContextType {
 ```
 
 **Responsibilities**:
+
 - User authentication state
 - JWT token management
 - Login/logout operations
 - User session persistence
 
 #### ErrorContext
+
 ```typescript
 interface ErrorContextType {
   errors: ErrorRecord[];
@@ -157,6 +164,7 @@ interface ErrorContextType {
 ```
 
 **Responsibilities**:
+
 - Global error state management
 - Error correlation and tracking
 - User-friendly error display
@@ -165,6 +173,7 @@ interface ErrorContextType {
 ### 2. Component State
 
 Local component state is managed using:
+
 - **useState** for simple state
 - **useReducer** for complex state logic
 - **useRef** for mutable references
@@ -173,6 +182,7 @@ Local component state is managed using:
 ### 3. Server State
 
 Server state management using:
+
 - **Custom hooks** for API calls
 - **SWR pattern** for data fetching
 - **Optimistic updates** for better UX
@@ -206,21 +216,25 @@ App
 ### 2. Component Types
 
 #### Page Components
+
 - **Purpose**: Route-level components
 - **Responsibilities**: Data fetching, page layout, SEO
 - **Example**: `Dashboard.tsx`, `Workflows.tsx`
 
 #### Feature Components
+
 - **Purpose**: Business logic components
 - **Responsibilities**: Feature-specific functionality
 - **Example**: `WorkflowBuilder.tsx`, `TemplateLibrary.tsx`
 
 #### UI Components
+
 - **Purpose**: Reusable interface elements
 - **Responsibilities**: Pure presentation logic
 - **Example**: `Button.tsx`, `Modal.tsx`, `Card.tsx`
 
 #### Layout Components
+
 - **Purpose**: Structural components
 - **Responsibilities**: Page structure and navigation
 - **Example**: `Layout.tsx`, `Navigation.tsx`
@@ -247,7 +261,7 @@ const WorkflowCard: React.FC<WorkflowCardProps> = ({
 
   const handleExecute = useCallback(async () => {
     if (!workflow.id) return;
-    
+
     try {
       setLoading(true);
       await onExecute(workflow.id);
@@ -278,12 +292,12 @@ export default WorkflowCard;
 // API Service Layer
 class WorkflowService {
   static async getWorkflows(): Promise<Workflow[]> {
-    const response = await apiClient.get('/api/workflows');
+    const response = await apiClient.get("/api/workflows");
     return response.data;
   }
 
   static async createWorkflow(data: CreateWorkflowData): Promise<Workflow> {
-    const response = await apiClient.post('/api/workflows', data);
+    const response = await apiClient.post("/api/workflows", data);
     return response.data;
   }
 
@@ -306,7 +320,7 @@ const useWorkflows = () => {
       setWorkflows(data);
       setError(null);
     } catch (err) {
-      setError('Failed to fetch workflows');
+      setError("Failed to fetch workflows");
     } finally {
       setLoading(false);
     }
@@ -384,19 +398,24 @@ const WorkflowBuilder = () => {
 
 ```typescript
 // Component memoization
-const WorkflowCard = React.memo<WorkflowCardProps>(({ workflow, onEdit }) => {
-  // Component implementation
-}, (prevProps, nextProps) => {
-  return prevProps.workflow.id === nextProps.workflow.id &&
-         prevProps.workflow.updatedAt === nextProps.workflow.updatedAt;
-});
+const WorkflowCard = React.memo<WorkflowCardProps>(
+  ({ workflow, onEdit }) => {
+    // Component implementation
+  },
+  (prevProps, nextProps) => {
+    return (
+      prevProps.workflow.id === nextProps.workflow.id &&
+      prevProps.workflow.updatedAt === nextProps.workflow.updatedAt
+    );
+  },
+);
 
 // Hook memoization
 const useFilteredWorkflows = (workflows: Workflow[], filter: string) => {
   return useMemo(() => {
     if (!filter) return workflows;
-    return workflows.filter(workflow => 
-      workflow.name.toLowerCase().includes(filter.toLowerCase())
+    return workflows.filter((workflow) =>
+      workflow.name.toLowerCase().includes(filter.toLowerCase()),
     );
   }, [workflows, filter]);
 };
@@ -437,16 +456,16 @@ describe('WorkflowCard', () => {
 
   it('renders workflow information correctly', () => {
     render(<WorkflowCard workflow={mockWorkflow} {...mockHandlers} />);
-    
+
     expect(screen.getByText('Test Workflow')).toBeInTheDocument();
     expect(screen.getByText('Test Description')).toBeInTheDocument();
   });
 
   it('calls onExecute when execute button is clicked', async () => {
     render(<WorkflowCard workflow={mockWorkflow} {...mockHandlers} />);
-    
+
     fireEvent.click(screen.getByText('Execute'));
-    
+
     await waitFor(() => {
       expect(mockHandlers.onExecute).toHaveBeenCalledWith('1');
     });
@@ -458,20 +477,20 @@ describe('WorkflowCard', () => {
 
 ```typescript
 // Hook testing
-import { renderHook, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
-import { useWorkflows } from '../hooks/useWorkflows';
+import { renderHook, waitFor } from "@testing-library/react";
+import { vi } from "vitest";
+import { useWorkflows } from "../hooks/useWorkflows";
 
 // Mock API
-vi.mock('../api/workflows', () => ({
+vi.mock("../api/workflows", () => ({
   WorkflowService: {
-    getWorkflows: vi.fn()
-  }
+    getWorkflows: vi.fn(),
+  },
 }));
 
-describe('useWorkflows', () => {
-  it('fetches workflows on mount', async () => {
-    const mockWorkflows = [{ id: '1', name: 'Test' }];
+describe("useWorkflows", () => {
+  it("fetches workflows on mount", async () => {
+    const mockWorkflows = [{ id: "1", name: "Test" }];
     WorkflowService.getWorkflows.mockResolvedValue(mockWorkflows);
 
     const { result } = renderHook(() => useWorkflows());
@@ -490,21 +509,21 @@ describe('useWorkflows', () => {
 
 ```typescript
 // Playwright E2E test example
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('workflow creation flow', async ({ page }) => {
-  await page.goto('/workflows');
-  
+test("workflow creation flow", async ({ page }) => {
+  await page.goto("/workflows");
+
   // Click create button
   await page.click('[data-testid="create-workflow"]');
-  
+
   // Fill form
-  await page.fill('[data-testid="workflow-name"]', 'Test Workflow');
-  await page.fill('[data-testid="workflow-description"]', 'Test Description');
-  
+  await page.fill('[data-testid="workflow-name"]', "Test Workflow");
+  await page.fill('[data-testid="workflow-description"]', "Test Description");
+
   // Submit form
   await page.click('[data-testid="submit-workflow"]');
-  
+
   // Verify navigation to builder
   await expect(page).toHaveURL(/\/workflow-builder/);
 });
@@ -529,7 +548,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Error Boundary caught an error:', error, errorInfo);
-    
+
     // Report to error tracking service
     if (this.props.enableReporting) {
       this.reportError(error, errorInfo);
@@ -570,28 +589,28 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 // Centralized API error handling
 const apiClient = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
-  timeout: 10000
+  timeout: 10000,
 });
 
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     const { response } = error;
-    
+
     if (response?.status === 401) {
       // Handle authentication errors
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+      localStorage.removeItem("token");
+      window.location.href = "/login";
     } else if (response?.status >= 500) {
       // Handle server errors
-      toast.error('Server error occurred. Please try again.');
+      toast.error("Server error occurred. Please try again.");
     } else if (response?.status === 429) {
       // Handle rate limiting
-      toast.warning('Too many requests. Please wait before trying again.');
+      toast.warning("Too many requests. Please wait before trying again.");
     }
-    
+
     return Promise.reject(error);
-  }
+  },
 );
 ```
 
@@ -603,9 +622,9 @@ apiClient.interceptors.response.use(
 
 ```typescript
 // Protected route component
-const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> = ({ 
-  children, 
-  roles 
+const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> = ({
+  children,
+  roles
 }) => {
   const { user, token, loading } = useAuth();
 
@@ -629,26 +648,26 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> 
 
 ```typescript
 // Input validation and sanitization
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 
 const sanitizeInput = (input: string): string => {
   return DOMPurify.sanitize(input, {
     ALLOWED_TAGS: [],
-    ALLOWED_ATTR: []
+    ALLOWED_ATTR: [],
   });
 };
 
 const validateWorkflowName = (name: string): ValidationResult => {
   const sanitized = sanitizeInput(name);
-  
+
   if (!sanitized || sanitized.length < 3) {
-    return { isValid: false, error: 'Name must be at least 3 characters' };
+    return { isValid: false, error: "Name must be at least 3 characters" };
   }
-  
+
   if (sanitized.length > 100) {
-    return { isValid: false, error: 'Name must be less than 100 characters' };
+    return { isValid: false, error: "Name must be less than 100 characters" };
   }
-  
+
   return { isValid: true, value: sanitized };
 };
 ```
@@ -657,7 +676,9 @@ const validateWorkflowName = (name: string): ValidationResult => {
 
 ```html
 <!-- Content Security Policy headers -->
-<meta http-equiv="Content-Security-Policy" content="
+<meta
+  http-equiv="Content-Security-Policy"
+  content="
   default-src 'self';
   script-src 'self' 'unsafe-inline' 'unsafe-eval';
   style-src 'self' 'unsafe-inline';
@@ -665,7 +686,8 @@ const validateWorkflowName = (name: string): ValidationResult => {
   connect-src 'self' https://api.openai.com https://api.anthropic.com;
   font-src 'self';
   frame-src 'none';
-">
+"
+/>
 ```
 
 ---
@@ -720,7 +742,7 @@ const WorkflowGrid: React.FC = () => {
   };
 
   return (
-    <div 
+    <div
       role="grid"
       onKeyDown={handleKeyDown}
       tabIndex={0}
@@ -746,34 +768,34 @@ const WorkflowGrid: React.FC = () => {
 
 ```typescript
 // vite.config.ts
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { resolve } from "path";
 
 export default defineConfig({
   plugins: [react()],
   build: {
-    target: 'es2020',
-    outDir: 'dist',
+    target: "es2020",
+    outDir: "dist",
     sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
-          charts: ['recharts', 'plotly.js'],
-          flow: ['reactflow']
-        }
-      }
-    }
+          vendor: ["react", "react-dom"],
+          charts: ["recharts", "plotly.js"],
+          flow: ["reactflow"],
+        },
+      },
+    },
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
-      '@components': resolve(__dirname, 'src/components'),
-      '@hooks': resolve(__dirname, 'src/hooks'),
-      '@types': resolve(__dirname, 'src/types')
-    }
-  }
+      "@": resolve(__dirname, "src"),
+      "@components": resolve(__dirname, "src/components"),
+      "@hooks": resolve(__dirname, "src/hooks"),
+      "@types": resolve(__dirname, "src/types"),
+    },
+  },
 });
 ```
 
@@ -784,17 +806,17 @@ export default defineConfig({
 interface EnvironmentConfig {
   REACT_APP_API_URL: string;
   REACT_APP_WS_URL: string;
-  REACT_APP_ENVIRONMENT: 'development' | 'staging' | 'production';
+  REACT_APP_ENVIRONMENT: "development" | "staging" | "production";
   REACT_APP_VERSION: string;
   REACT_APP_SENTRY_DSN?: string;
 }
 
 const config: EnvironmentConfig = {
-  REACT_APP_API_URL: process.env.REACT_APP_API_URL || 'http://localhost:8000',
-  REACT_APP_WS_URL: process.env.REACT_APP_WS_URL || 'ws://localhost:8000',
-  REACT_APP_ENVIRONMENT: process.env.REACT_APP_ENVIRONMENT || 'development',
-  REACT_APP_VERSION: process.env.REACT_APP_VERSION || '1.0.0',
-  REACT_APP_SENTRY_DSN: process.env.REACT_APP_SENTRY_DSN
+  REACT_APP_API_URL: process.env.REACT_APP_API_URL || "http://localhost:8000",
+  REACT_APP_WS_URL: process.env.REACT_APP_WS_URL || "ws://localhost:8000",
+  REACT_APP_ENVIRONMENT: process.env.REACT_APP_ENVIRONMENT || "development",
+  REACT_APP_VERSION: process.env.REACT_APP_VERSION || "1.0.0",
+  REACT_APP_SENTRY_DSN: process.env.REACT_APP_SENTRY_DSN,
 };
 
 export default config;

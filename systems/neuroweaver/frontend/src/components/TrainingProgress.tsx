@@ -3,7 +3,7 @@
  * Real-time training progress monitoring and visualization
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Card,
@@ -24,8 +24,8 @@ import {
   Alert,
   Paper,
   IconButton,
-  Tooltip
-} from '@mui/material';
+  Tooltip,
+} from "@mui/material";
 import {
   PlayArrow as StartIcon,
   Stop as StopIcon,
@@ -33,12 +33,20 @@ import {
   TrendingUp as MetricsIcon,
   Schedule as TimeIcon,
   Memory as ResourceIcon,
-  Error as ErrorIcon
-} from '@mui/icons-material';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-import { format } from 'date-fns';
+  Error as ErrorIcon,
+} from "@mui/icons-material";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { format } from "date-fns";
 
-import { apiClient } from '../utils/api';
+import { apiClient } from "../utils/api";
 
 interface TrainingJob {
   id: string;
@@ -72,7 +80,7 @@ interface TrainingProgressProps {
 export const TrainingProgress: React.FC<TrainingProgressProps> = ({
   jobId,
   modelId,
-  onJobComplete
+  onJobComplete,
 }) => {
   const [job, setJob] = useState<TrainingJob | null>(null);
   const [metrics, setMetrics] = useState<TrainingMetrics[]>([]);
@@ -90,13 +98,13 @@ export const TrainingProgress: React.FC<TrainingProgressProps> = ({
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    
-    if (autoRefresh && jobId && job?.status === 'training') {
+
+    if (autoRefresh && jobId && job?.status === "training") {
       interval = setInterval(() => {
         loadTrainingJob();
       }, 5000); // Refresh every 5 seconds
     }
-    
+
     return () => {
       if (interval) {
         clearInterval(interval);
@@ -106,28 +114,30 @@ export const TrainingProgress: React.FC<TrainingProgressProps> = ({
 
   const loadTrainingJob = async () => {
     if (!jobId) return;
-    
+
     try {
       setLoading(true);
-      const response = await apiClient.get(`/api/v1/automotive/training/${jobId}/status`);
+      const response = await apiClient.get(
+        `/api/v1/automotive/training/${jobId}/status`,
+      );
       const jobData = response.data;
-      
+
       setJob(jobData);
-      
+
       // Check if job completed
-      if (jobData.status === 'completed' && onJobComplete) {
+      if (jobData.status === "completed" && onJobComplete) {
         onJobComplete(jobId);
       }
-      
+
       // Load metrics history (simulated)
       if (jobData.current_epoch > 0) {
         const metricsData = generateMetricsHistory(jobData);
         setMetrics(metricsData);
       }
-      
+
       setError(null);
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to load training job');
+      setError(err.response?.data?.detail || "Failed to load training job");
     } finally {
       setLoading(false);
     }
@@ -138,63 +148,75 @@ export const TrainingProgress: React.FC<TrainingProgressProps> = ({
     const history: TrainingMetrics[] = [];
     const startLoss = 2.5;
     const endLoss = jobData.best_eval_loss || 0.5;
-    
+
     for (let epoch = 1; epoch <= jobData.current_epoch; epoch++) {
       const progress = epoch / jobData.total_epochs;
-      const trainLoss = startLoss - (startLoss - endLoss) * progress + (Math.random() - 0.5) * 0.1;
+      const trainLoss =
+        startLoss -
+        (startLoss - endLoss) * progress +
+        (Math.random() - 0.5) * 0.1;
       const evalLoss = trainLoss + (Math.random() - 0.5) * 0.2;
-      
+
       history.push({
         epoch,
         train_loss: Math.max(0.1, trainLoss),
         eval_loss: Math.max(0.1, evalLoss),
-        timestamp: new Date(Date.now() - (jobData.current_epoch - epoch) * 60000).toISOString()
+        timestamp: new Date(
+          Date.now() - (jobData.current_epoch - epoch) * 60000,
+        ).toISOString(),
       });
     }
-    
+
     return history;
   };
 
   const cancelTraining = async () => {
     if (!jobId) return;
-    
+
     try {
       await apiClient.post(`/api/v1/automotive/training/${jobId}/cancel`);
       await loadTrainingJob();
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to cancel training');
+      setError(err.response?.data?.detail || "Failed to cancel training");
     }
   };
 
   const loadLogs = async () => {
     if (!jobId) return;
-    
+
     try {
-      const response = await apiClient.get(`/api/v1/training/jobs/${jobId}/logs`);
+      const response = await apiClient.get(
+        `/api/v1/training/jobs/${jobId}/logs`,
+      );
       setLogs(response.data.logs || []);
       setLogsDialog(true);
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to load logs');
+      setError(err.response?.data?.detail || "Failed to load logs");
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'success';
-      case 'training': return 'primary';
-      case 'failed': return 'error';
-      case 'cancelled': return 'warning';
-      default: return 'default';
+      case "completed":
+        return "success";
+      case "training":
+        return "primary";
+      case "failed":
+        return "error";
+      case "cancelled":
+        return "warning";
+      default:
+        return "default";
     }
   };
 
   const formatTime = (seconds: number) => {
-    if (!seconds) return 'Unknown';
-    
+    if (!seconds) return "Unknown";
+
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m ${secs}s`;
     } else if (minutes > 0) {
@@ -212,7 +234,7 @@ export const TrainingProgress: React.FC<TrainingProgressProps> = ({
             Training Progress
           </Typography>
           <Typography color="text.secondary">
-            {jobId ? 'Loading training job...' : 'No training job selected'}
+            {jobId ? "Loading training job..." : "No training job selected"}
           </Typography>
         </CardContent>
       </Card>
@@ -231,13 +253,24 @@ export const TrainingProgress: React.FC<TrainingProgressProps> = ({
       {/* Main Progress Card */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              mb: 2,
+            }}
+          >
             <Typography variant="h6" component="h2">
               Training Progress
             </Typography>
             <Box>
               <Tooltip title="Refresh">
-                <IconButton size="small" onClick={loadTrainingJob} disabled={loading}>
+                <IconButton
+                  size="small"
+                  onClick={loadTrainingJob}
+                  disabled={loading}
+                >
                   <RefreshIcon />
                 </IconButton>
               </Tooltip>
@@ -251,7 +284,7 @@ export const TrainingProgress: React.FC<TrainingProgressProps> = ({
 
           {/* Status and Progress */}
           <Box sx={{ mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Chip
                 label={job.status.toUpperCase()}
                 color={getStatusColor(job.status)}
@@ -263,9 +296,15 @@ export const TrainingProgress: React.FC<TrainingProgressProps> = ({
               </Typography>
             </Box>
 
-            {job.status === 'training' && (
+            {job.status === "training" && (
               <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
+                  }}
+                >
                   <Typography variant="body2">
                     Epoch {job.current_epoch} of {job.total_epochs}
                   </Typography>
@@ -285,29 +324,29 @@ export const TrainingProgress: React.FC<TrainingProgressProps> = ({
           {/* Metrics Grid */}
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={3}>
-              <Paper sx={{ p: 2, textAlign: 'center' }}>
+              <Paper sx={{ p: 2, textAlign: "center" }}>
                 <Typography variant="caption" color="text.secondary">
                   Current Loss
                 </Typography>
                 <Typography variant="h6">
-                  {job.current_loss ? job.current_loss.toFixed(4) : 'N/A'}
+                  {job.current_loss ? job.current_loss.toFixed(4) : "N/A"}
                 </Typography>
               </Paper>
             </Grid>
-            
+
             <Grid item xs={12} sm={6} md={3}>
-              <Paper sx={{ p: 2, textAlign: 'center' }}>
+              <Paper sx={{ p: 2, textAlign: "center" }}>
                 <Typography variant="caption" color="text.secondary">
                   Best Eval Loss
                 </Typography>
                 <Typography variant="h6">
-                  {job.best_eval_loss ? job.best_eval_loss.toFixed(4) : 'N/A'}
+                  {job.best_eval_loss ? job.best_eval_loss.toFixed(4) : "N/A"}
                 </Typography>
               </Paper>
             </Grid>
-            
+
             <Grid item xs={12} sm={6} md={3}>
-              <Paper sx={{ p: 2, textAlign: 'center' }}>
+              <Paper sx={{ p: 2, textAlign: "center" }}>
                 <Typography variant="caption" color="text.secondary">
                   Time Remaining
                 </Typography>
@@ -316,14 +355,16 @@ export const TrainingProgress: React.FC<TrainingProgressProps> = ({
                 </Typography>
               </Paper>
             </Grid>
-            
+
             <Grid item xs={12} sm={6} md={3}>
-              <Paper sx={{ p: 2, textAlign: 'center' }}>
+              <Paper sx={{ p: 2, textAlign: "center" }}>
                 <Typography variant="caption" color="text.secondary">
                   GPU Memory
                 </Typography>
                 <Typography variant="h6">
-                  {job.gpu_memory_used ? `${job.gpu_memory_used.toFixed(1)}GB` : 'N/A'}
+                  {job.gpu_memory_used
+                    ? `${job.gpu_memory_used.toFixed(1)}GB`
+                    : "N/A"}
                 </Typography>
               </Paper>
             </Grid>
@@ -332,15 +373,13 @@ export const TrainingProgress: React.FC<TrainingProgressProps> = ({
           {/* Error Message */}
           {job.error_message && (
             <Alert severity="error" sx={{ mt: 2 }}>
-              <Typography variant="body2">
-                {job.error_message}
-              </Typography>
+              <Typography variant="body2">{job.error_message}</Typography>
             </Alert>
           )}
 
           {/* Actions */}
-          <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
-            {job.status === 'training' && (
+          <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
+            {job.status === "training" && (
               <Button
                 variant="outlined"
                 color="error"
@@ -350,7 +389,7 @@ export const TrainingProgress: React.FC<TrainingProgressProps> = ({
                 Cancel Training
               </Button>
             )}
-            
+
             <Button
               variant="outlined"
               startIcon={<MetricsIcon />}
@@ -406,9 +445,20 @@ export const TrainingProgress: React.FC<TrainingProgressProps> = ({
       >
         <DialogTitle>Training Logs</DialogTitle>
         <DialogContent>
-          <Paper sx={{ p: 2, bgcolor: 'grey.900', color: 'white', maxHeight: 400, overflow: 'auto' }}>
-            <Typography component="pre" sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
-              {logs.length > 0 ? logs.join('\n') : 'No logs available'}
+          <Paper
+            sx={{
+              p: 2,
+              bgcolor: "grey.900",
+              color: "white",
+              maxHeight: 400,
+              overflow: "auto",
+            }}
+          >
+            <Typography
+              component="pre"
+              sx={{ fontFamily: "monospace", fontSize: "0.875rem" }}
+            >
+              {logs.length > 0 ? logs.join("\n") : "No logs available"}
             </Typography>
           </Paper>
         </DialogContent>

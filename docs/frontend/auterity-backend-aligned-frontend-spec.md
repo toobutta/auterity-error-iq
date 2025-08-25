@@ -1,8 +1,8 @@
 # 🚀 Auterity Backend-Aligned Frontend Specification
 
-**Platform**: Auterity AI-Driven Workflow Automation  
-**Systems**: RelayCore (AI Routing) + NeuroWeaver (Model Management)  
-**Target**: Automotive Dealership Operations  
+**Platform**: Auterity AI-Driven Workflow Automation
+**Systems**: RelayCore (AI Routing) + NeuroWeaver (Model Management)
+**Target**: Automotive Dealership Operations
 **Date**: January 2025
 
 ---
@@ -12,13 +12,14 @@
 ### Core Dashboard APIs
 
 #### User Dashboard Endpoints
+
 ```typescript
 // GET /api/v1/dashboard/overview
 interface DashboardOverviewResponse {
   user: {
     id: string;
     name: string;
-    role: 'admin' | 'agent' | 'editor';
+    role: "admin" | "agent" | "editor";
     dealership: string;
   };
   metrics: {
@@ -34,7 +35,7 @@ interface DashboardOverviewResponse {
 interface WidgetConfigResponse {
   widgets: {
     id: string;
-    type: 'workflow-status' | 'model-performance' | 'cost-analytics';
+    type: "workflow-status" | "model-performance" | "cost-analytics";
     config: Record<string, any>;
     permissions: string[];
   }[];
@@ -42,16 +43,17 @@ interface WidgetConfigResponse {
 ```
 
 #### Workflow Management APIs
+
 ```typescript
 // GET /api/v1/workflows
 interface WorkflowListResponse {
   workflows: {
     id: string;
     name: string;
-    status: 'active' | 'paused' | 'draft';
+    status: "active" | "paused" | "draft";
     lastModified: string;
     aiModels: string[];
-    department: 'sales' | 'service' | 'parts' | 'finance';
+    department: "sales" | "service" | "parts" | "finance";
   }[];
   pagination: PaginationMeta;
 }
@@ -78,14 +80,15 @@ interface UpdateWorkflowRequest {
 ```
 
 #### AI Agent & Model Management APIs
+
 ```typescript
 // GET /api/v1/models
 interface ModelListResponse {
   models: {
     id: string;
     name: string;
-    type: 'automotive-sales' | 'service-advisor' | 'parts-specialist';
-    status: 'training' | 'deployed' | 'archived';
+    type: "automotive-sales" | "service-advisor" | "parts-specialist";
+    status: "training" | "deployed" | "archived";
     accuracy: number;
     costPerRequest: number;
     deploymentUrl?: string;
@@ -94,7 +97,7 @@ interface ModelListResponse {
 
 // POST /api/v1/models/{id}/deploy
 interface DeployModelRequest {
-  environment: 'staging' | 'production';
+  environment: "staging" | "production";
   routingWeight: number;
   maxConcurrency: number;
 }
@@ -105,7 +108,7 @@ interface AgentListResponse {
     id: string;
     name: string;
     modelId: string;
-    status: 'active' | 'idle' | 'error';
+    status: "active" | "idle" | "error";
     currentTasks: number;
     successRate: number;
   }[];
@@ -113,11 +116,12 @@ interface AgentListResponse {
 ```
 
 #### Training Data & Logs APIs
+
 ```typescript
 // POST /api/v1/training/upload
 interface TrainingUploadRequest {
   modelType: string;
-  dataFormat: 'csv' | 'json' | 'automotive-crm';
+  dataFormat: "csv" | "json" | "automotive-crm";
   file: File;
   metadata: {
     dealership: string;
@@ -131,7 +135,7 @@ interface ExecutionLogsResponse {
   logs: {
     workflowId: string;
     timestamp: string;
-    status: 'success' | 'error' | 'timeout';
+    status: "success" | "error" | "timeout";
     aiModel: string;
     responseTime: number;
     cost: number;
@@ -153,14 +157,15 @@ interface ExecutionLogsResponse {
 ### WebSocket Integration Points
 
 #### Connection Setup
+
 ```typescript
 // WebSocket connection management
 interface WebSocketConfig {
-  url: 'wss://api.auterity.com/ws';
-  authentication: 'jwt-token-in-header';
+  url: "wss://api.auterity.com/ws";
+  authentication: "jwt-token-in-header";
   reconnection: {
     maxAttempts: 5;
-    backoffStrategy: 'exponential';
+    backoffStrategy: "exponential";
   };
 }
 
@@ -174,15 +179,19 @@ interface SubscriptionChannels {
 ```
 
 #### Workflow Real-Time Events
+
 ```typescript
 // Workflow execution updates
 interface WorkflowUpdateEvent {
-  type: 'workflow.execution.started' | 'workflow.execution.completed' | 'workflow.node.executed';
+  type:
+    | "workflow.execution.started"
+    | "workflow.execution.completed"
+    | "workflow.node.executed";
   workflowId: string;
   timestamp: string;
   data: {
     nodeId?: string;
-    status: 'running' | 'completed' | 'failed';
+    status: "running" | "completed" | "failed";
     output?: any;
     metrics: {
       executionTime: number;
@@ -193,7 +202,10 @@ interface WorkflowUpdateEvent {
 
 // Live workflow editing
 interface WorkflowEditEvent {
-  type: 'workflow.node.added' | 'workflow.node.updated' | 'workflow.connection.created';
+  type:
+    | "workflow.node.added"
+    | "workflow.node.updated"
+    | "workflow.connection.created";
   workflowId: string;
   userId: string;
   changes: {
@@ -205,10 +217,11 @@ interface WorkflowEditEvent {
 ```
 
 #### Model Training Feedback
+
 ```typescript
 // Training progress events
 interface TrainingProgressEvent {
-  type: 'training.progress' | 'training.completed' | 'training.failed';
+  type: "training.progress" | "training.completed" | "training.failed";
   modelId: string;
   data: {
     epoch?: number;
@@ -222,10 +235,13 @@ interface TrainingProgressEvent {
 
 // Model deployment events
 interface DeploymentEvent {
-  type: 'deployment.started' | 'deployment.completed' | 'deployment.health_check';
+  type:
+    | "deployment.started"
+    | "deployment.completed"
+    | "deployment.health_check";
   modelId: string;
-  environment: 'staging' | 'production';
-  status: 'deploying' | 'active' | 'failed';
+  environment: "staging" | "production";
+  status: "deploying" | "active" | "failed";
   healthMetrics?: {
     responseTime: number;
     errorRate: number;
@@ -235,13 +251,14 @@ interface DeploymentEvent {
 ```
 
 #### Agent State Changes
+
 ```typescript
 // Agent status updates
 interface AgentStatusEvent {
-  type: 'agent.status_changed' | 'agent.task_assigned' | 'agent.task_completed';
+  type: "agent.status_changed" | "agent.task_assigned" | "agent.task_completed";
   agentId: string;
   data: {
-    status: 'active' | 'idle' | 'error' | 'maintenance';
+    status: "active" | "idle" | "error" | "maintenance";
     currentTask?: {
       workflowId: string;
       nodeId: string;
@@ -263,6 +280,7 @@ interface AgentStatusEvent {
 ### Prompt Submission for Agent Behavior
 
 #### Automotive-Specific Prompt Templates
+
 ```typescript
 // Prompt configuration for automotive agents
 interface AutomotivePromptConfig {
@@ -270,30 +288,30 @@ interface AutomotivePromptConfig {
   salesAgent: {
     leadQualification: {
       template: "Analyze this customer inquiry for vehicle interest: {customerMessage}. Determine: 1) Vehicle type preference, 2) Budget range, 3) Timeline, 4) Financing needs.";
-      variables: ['customerMessage'];
-      expectedOutput: 'LeadQualificationResult';
+      variables: ["customerMessage"];
+      expectedOutput: "LeadQualificationResult";
     };
-    
+
     objectionHandling: {
       template: "Customer objection: '{objection}'. Vehicle: {vehicleDetails}. Provide 3 professional responses addressing: price, features, and value proposition.";
-      variables: ['objection', 'vehicleDetails'];
-      expectedOutput: 'ObjectionResponse[]';
+      variables: ["objection", "vehicleDetails"];
+      expectedOutput: "ObjectionResponse[]";
     };
   };
-  
+
   // Service agent prompts
   serviceAgent: {
     diagnosticAssistance: {
       template: "Vehicle: {year} {make} {model}, Mileage: {mileage}. Customer complaint: '{complaint}'. Suggest diagnostic steps and potential causes.";
-      variables: ['year', 'make', 'model', 'mileage', 'complaint'];
-      expectedOutput: 'DiagnosticSuggestion';
+      variables: ["year", "make", "model", "mileage", "complaint"];
+      expectedOutput: "DiagnosticSuggestion";
     };
   };
 }
 
 // Prompt submission API
 interface PromptSubmissionRequest {
-  agentType: 'sales' | 'service' | 'parts' | 'finance';
+  agentType: "sales" | "service" | "parts" | "finance";
   promptTemplate: string;
   variables: Record<string, any>;
   context: {
@@ -313,25 +331,26 @@ interface PromptSubmissionRequest {
 ### AI Model Integration Patterns
 
 #### Model Selection Logic
+
 ```typescript
 // Frontend model selection interface
 interface ModelSelectionConfig {
   // Automatic model selection based on task
   autoSelection: {
-    taskType: 'lead-qualification' | 'service-diagnosis' | 'parts-lookup';
+    taskType: "lead-qualification" | "service-diagnosis" | "parts-lookup";
     criteria: {
-      accuracy: number;      // Minimum accuracy threshold
-      maxCost: number;       // Maximum cost per request
-      maxLatency: number;    // Maximum response time (ms)
+      accuracy: number; // Minimum accuracy threshold
+      maxCost: number; // Maximum cost per request
+      maxLatency: number; // Maximum response time (ms)
     };
     fallbackChain: string[]; // Ordered list of fallback models
   };
-  
+
   // Manual model override
   manualOverride: {
     modelId: string;
     reason: string;
-    duration: 'session' | 'workflow' | 'permanent';
+    duration: "session" | "workflow" | "permanent";
   };
 }
 
@@ -360,6 +379,7 @@ interface ModelPerformanceData {
 ### AI Response Consumption
 
 #### Structured AI Response Format
+
 ```typescript
 // Standardized AI response structure
 interface AIResponse {
@@ -368,7 +388,7 @@ interface AIResponse {
   responseTime: number;
   cost: number;
   confidence: number;
-  
+
   // Main response content
   content: {
     text: string;
@@ -376,15 +396,15 @@ interface AIResponse {
     suggestions?: string[];
     nextActions?: {
       action: string;
-      priority: 'high' | 'medium' | 'low';
+      priority: "high" | "medium" | "low";
       automated: boolean;
     }[];
   };
-  
+
   // Automotive-specific fields
   automotive: {
-    department: 'sales' | 'service' | 'parts' | 'finance';
-    customerImpact: 'high' | 'medium' | 'low';
+    department: "sales" | "service" | "parts" | "finance";
+    customerImpact: "high" | "medium" | "low";
     followUpRequired: boolean;
     crmIntegration?: {
       updateCustomerRecord: boolean;
@@ -392,7 +412,7 @@ interface AIResponse {
       updateOpportunity?: any;
     };
   };
-  
+
   // Metadata for frontend processing
   metadata: {
     processingSteps: string[];
@@ -409,6 +429,7 @@ interface AIResponse {
 ### Role-Based Access Control (RBAC)
 
 #### Permission Structure
+
 ```typescript
 // Hierarchical permission system
 interface AuterityPermissions {
@@ -420,35 +441,35 @@ interface AuterityPermissions {
       viewAllWorkflows: boolean;
       manageBilling: boolean;
     };
-    
+
     manager: {
       createWorkflows: boolean;
       deployModels: boolean;
       viewDepartmentData: boolean;
       manageAgents: boolean;
     };
-    
+
     agent: {
       executeWorkflows: boolean;
       viewAssignedTasks: boolean;
       accessCustomerData: boolean;
     };
-    
+
     editor: {
       editWorkflows: boolean;
       testModels: boolean;
       viewPerformanceMetrics: boolean;
     };
   };
-  
+
   // Department-specific permissions
   departments: {
-    sales: ['lead-management', 'inventory-access', 'pricing-tools'];
-    service: ['diagnostic-tools', 'parts-ordering', 'scheduling'];
-    parts: ['inventory-management', 'vendor-access', 'pricing'];
-    finance: ['credit-tools', 'payment-processing', 'reporting'];
+    sales: ["lead-management", "inventory-access", "pricing-tools"];
+    service: ["diagnostic-tools", "parts-ordering", "scheduling"];
+    parts: ["inventory-management", "vendor-access", "pricing"];
+    finance: ["credit-tools", "payment-processing", "reporting"];
   };
-  
+
   // Data access permissions
   dataAccess: {
     customerPII: boolean;
@@ -470,6 +491,7 @@ interface PermissionChecker {
 ### Session & Token Management
 
 #### JWT Integration
+
 ```typescript
 // Token management for frontend
 interface TokenManager {
@@ -480,7 +502,7 @@ interface TokenManager {
     tokenExpiry: number;
     autoRefresh: boolean;
   };
-  
+
   // AWS Cognito integration
   cognitoConfig: {
     userPoolId: string;
@@ -488,7 +510,7 @@ interface TokenManager {
     region: string;
     identityPoolId: string;
   };
-  
+
   // Token validation
   validation: {
     validateToken: () => Promise<boolean>;
@@ -508,16 +530,16 @@ interface SessionState {
     department: string;
     permissions: AuterityPermissions;
   };
-  
+
   session: {
     isAuthenticated: boolean;
     loginTime: string;
     lastActivity: string;
     sessionTimeout: number;
   };
-  
+
   preferences: {
-    theme: 'light' | 'dark';
+    theme: "light" | "dark";
     defaultDashboard: string;
     notifications: boolean;
   };
@@ -531,6 +553,7 @@ interface SessionState {
 ### Recommended Architecture: Zustand + React Query
 
 #### Global State Structure
+
 ```typescript
 // Main application state using Zustand
 interface AuterityAppState {
@@ -543,18 +566,18 @@ interface AuterityAppState {
     logout: () => void;
     refreshSession: () => Promise<void>;
   };
-  
+
   // UI state
   ui: {
     sidebarOpen: boolean;
-    activeSystem: 'relaycore' | 'neuroweaver';
-    theme: 'light' | 'dark';
+    activeSystem: "relaycore" | "neuroweaver";
+    theme: "light" | "dark";
     notifications: Notification[];
     setSidebarOpen: (open: boolean) => void;
     switchSystem: (system: string) => void;
     addNotification: (notification: Notification) => void;
   };
-  
+
   // Canvas/workflow state (separate store)
   workflow: {
     activeWorkflowId: string | null;
@@ -576,7 +599,7 @@ interface WorkflowCanvasState {
     draggedElement: string | null;
     isConnecting: boolean;
   };
-  
+
   // Node operations
   nodes: {
     add: (node: WorkflowNode) => void;
@@ -584,7 +607,7 @@ interface WorkflowCanvasState {
     delete: (nodeId: string) => void;
     duplicate: (nodeId: string) => void;
   };
-  
+
   // Connection operations
   connections: {
     create: (from: string, to: string) => void;
@@ -595,20 +618,21 @@ interface WorkflowCanvasState {
 ```
 
 #### React Query Integration
+
 ```typescript
 // API data fetching with React Query
 interface QueryKeys {
-  workflows: ['workflows', filters?: WorkflowFilters];
-  models: ['models', type?: string];
-  agents: ['agents', status?: string];
-  metrics: ['metrics', timeRange: string];
-  logs: ['logs', workflowId: string];
+  workflows: ["workflows", filters?: WorkflowFilters];
+  models: ["models", type?: string];
+  agents: ["agents", status?: string];
+  metrics: ["metrics", timeRange: string];
+  logs: ["logs", workflowId: string];
 }
 
 // Custom hooks for data fetching
 const useWorkflows = (filters?: WorkflowFilters) => {
   return useQuery({
-    queryKey: ['workflows', filters],
+    queryKey: ["workflows", filters],
     queryFn: () => api.workflows.list(filters),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -616,7 +640,7 @@ const useWorkflows = (filters?: WorkflowFilters) => {
 
 const useModelMetrics = (modelId: string) => {
   return useQuery({
-    queryKey: ['metrics', modelId],
+    queryKey: ["metrics", modelId],
     queryFn: () => api.models.getMetrics(modelId),
     refetchInterval: 30000, // 30 seconds
   });
@@ -703,6 +727,7 @@ src/
 ### TypeScript Type Definitions
 
 #### Core API Types
+
 ```typescript
 // types/api.ts
 export interface APIResponse<T> {
@@ -723,13 +748,13 @@ export interface PaginationMeta {
 // types/workflow.ts
 export interface WorkflowNode {
   id: string;
-  type: 'trigger' | 'action' | 'condition' | 'ai-process';
+  type: "trigger" | "action" | "condition" | "ai-process";
   position: { x: number; y: number };
   data: {
     label: string;
     config: Record<string, any>;
     aiModel?: string;
-    department?: 'sales' | 'service' | 'parts' | 'finance';
+    department?: "sales" | "service" | "parts" | "finance";
   };
 }
 
@@ -745,8 +770,12 @@ export interface WorkflowConnection {
 export interface AIModel {
   id: string;
   name: string;
-  type: 'automotive-sales' | 'service-advisor' | 'parts-specialist' | 'finance-assistant';
-  status: 'training' | 'deployed' | 'archived';
+  type:
+    | "automotive-sales"
+    | "service-advisor"
+    | "parts-specialist"
+    | "finance-assistant";
+  status: "training" | "deployed" | "archived";
   version: string;
   accuracy: number;
   costPerRequest: number;
@@ -774,7 +803,7 @@ export interface Customer {
   preferences: {
     vehicleType: string[];
     budgetRange: [number, number];
-    communicationMethod: 'email' | 'phone' | 'text';
+    communicationMethod: "email" | "phone" | "text";
   };
   history: {
     purchases: VehiclePurchase[];
@@ -791,25 +820,26 @@ export interface Vehicle {
   model: string;
   trim: string;
   price: number;
-  status: 'available' | 'sold' | 'reserved';
+  status: "available" | "sold" | "reserved";
   features: string[];
   images: string[];
 }
 ```
 
 #### Custom Hook Examples
+
 ```typescript
 // hooks/useWorkflows.ts
 export const useWorkflows = (filters?: WorkflowFilters) => {
   const query = useQuery({
-    queryKey: ['workflows', filters],
+    queryKey: ["workflows", filters],
     queryFn: () => workflowAPI.list(filters),
   });
 
   const createWorkflow = useMutation({
     mutationFn: workflowAPI.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['workflows'] });
+      queryClient.invalidateQueries({ queryKey: ["workflows"] });
     },
   });
 
@@ -817,7 +847,7 @@ export const useWorkflows = (filters?: WorkflowFilters) => {
     mutationFn: ({ id, data }: { id: string; data: UpdateWorkflowRequest }) =>
       workflowAPI.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['workflows'] });
+      queryClient.invalidateQueries({ queryKey: ["workflows"] });
     },
   });
 
@@ -840,11 +870,11 @@ export const useWebSocket = (channels: string[]) => {
       auth: { token: getAuthToken() },
     });
 
-    newSocket.on('connect', () => setIsConnected(true));
-    newSocket.on('disconnect', () => setIsConnected(false));
+    newSocket.on("connect", () => setIsConnected(true));
+    newSocket.on("disconnect", () => setIsConnected(false));
 
-    channels.forEach(channel => {
-      newSocket.emit('subscribe', channel);
+    channels.forEach((channel) => {
+      newSocket.emit("subscribe", channel);
     });
 
     setSocket(newSocket);
@@ -852,12 +882,15 @@ export const useWebSocket = (channels: string[]) => {
     return () => newSocket.close();
   }, [channels]);
 
-  const subscribe = useCallback((channel: string, handler: (data: any) => void) => {
-    if (socket) {
-      socket.on(channel, handler);
-      return () => socket.off(channel, handler);
-    }
-  }, [socket]);
+  const subscribe = useCallback(
+    (channel: string, handler: (data: any) => void) => {
+      if (socket) {
+        socket.on(channel, handler);
+        return () => socket.off(channel, handler);
+      }
+    },
+    [socket],
+  );
 
   return { socket, isConnected, subscribe };
 };
@@ -870,69 +903,72 @@ export const useWebSocket = (channels: string[]) => {
 ### Backend Requirements Frontend Must Wait On
 
 #### 1. Model Training Engine Routes
+
 ```typescript
 // PENDING: Training pipeline API endpoints
 interface PendingTrainingAPIs {
   // Custom model training for automotive use cases
-  '/api/v1/training/automotive/start': {
-    status: 'not-implemented';
-    requirement: 'Custom training pipeline for automotive datasets';
-    impact: 'Cannot implement custom model training UI';
-    workaround: 'Use pre-trained models only';
+  "/api/v1/training/automotive/start": {
+    status: "not-implemented";
+    requirement: "Custom training pipeline for automotive datasets";
+    impact: "Cannot implement custom model training UI";
+    workaround: "Use pre-trained models only";
   };
-  
+
   // Training data validation and preprocessing
-  '/api/v1/training/validate-dataset': {
-    status: 'not-implemented';
-    requirement: 'Dataset validation for automotive data formats';
-    impact: 'Cannot validate uploaded training data';
-    workaround: 'Client-side validation only';
+  "/api/v1/training/validate-dataset": {
+    status: "not-implemented";
+    requirement: "Dataset validation for automotive data formats";
+    impact: "Cannot validate uploaded training data";
+    workaround: "Client-side validation only";
   };
 }
 ```
 
 #### 2. Advanced Routing Engine
+
 ```typescript
 // PENDING: Intelligent routing features
 interface PendingRoutingFeatures {
   // Cost-based routing optimization
   costOptimizedRouting: {
-    status: 'partial-implementation';
-    requirement: 'Real-time cost calculation and model selection';
-    impact: 'Cannot show accurate cost predictions';
-    workaround: 'Static cost estimates';
+    status: "partial-implementation";
+    requirement: "Real-time cost calculation and model selection";
+    impact: "Cannot show accurate cost predictions";
+    workaround: "Static cost estimates";
   };
-  
+
   // Performance-based routing
   performanceRouting: {
-    status: 'not-implemented';
-    requirement: 'Dynamic routing based on model performance metrics';
-    impact: 'Cannot implement smart model fallbacks';
-    workaround: 'Manual fallback configuration';
+    status: "not-implemented";
+    requirement: "Dynamic routing based on model performance metrics";
+    impact: "Cannot implement smart model fallbacks";
+    workaround: "Manual fallback configuration";
   };
 }
 ```
 
 #### 3. Automotive Integration APIs
+
 ```typescript
 // PENDING: Dealership system integrations
 interface PendingIntegrations {
   // DMS (Dealership Management System) integration
   dmsIntegration: {
-    systems: ['Reynolds & Reynolds', 'CDK Global', 'DealerTrack'];
-    status: 'not-implemented';
-    requirement: 'Real-time customer and inventory data sync';
-    impact: 'Cannot access live dealership data';
-    workaround: 'Mock data for development';
+    systems: ["Reynolds & Reynolds", "CDK Global", "DealerTrack"];
+    status: "not-implemented";
+    requirement: "Real-time customer and inventory data sync";
+    impact: "Cannot access live dealership data";
+    workaround: "Mock data for development";
   };
-  
+
   // CRM integration
   crmIntegration: {
-    systems: ['Salesforce Automotive', 'VinSolutions', 'DealerSocket'];
-    status: 'not-implemented';
-    requirement: 'Customer interaction history and lead management';
-    impact: 'Cannot sync customer interactions';
-    workaround: 'Standalone customer management';
+    systems: ["Salesforce Automotive", "VinSolutions", "DealerSocket"];
+    status: "not-implemented";
+    requirement: "Customer interaction history and lead management";
+    impact: "Cannot sync customer interactions";
+    workaround: "Standalone customer management";
   };
 }
 ```
@@ -940,6 +976,7 @@ interface PendingIntegrations {
 ### Stubbing Strategy for Development
 
 #### Mock Data Services
+
 ```typescript
 // services/mocks/mockData.ts
 export const mockServices = {
@@ -948,27 +985,27 @@ export const mockServices = {
     await delay(2000); // Simulate processing time
     return {
       executionId: generateId(),
-      status: 'completed',
+      status: "completed",
       results: generateMockResults(workflowId),
-      cost: Math.random() * 0.50,
+      cost: Math.random() * 0.5,
       responseTime: 1500 + Math.random() * 1000,
     };
   },
-  
+
   // Mock model training
   trainModel: async (config: TrainingConfig) => {
     return {
       jobId: generateId(),
-      status: 'started',
+      status: "started",
       estimatedCompletion: new Date(Date.now() + 30 * 60 * 1000),
     };
   },
-  
+
   // Mock automotive data
   getCustomerData: async (customerId: string) => {
     return generateMockCustomer(customerId);
   },
-  
+
   // Mock DMS integration
   getDMSData: async (query: any) => {
     await delay(500);
@@ -984,7 +1021,7 @@ export const mockWebSocketEvents = {
     const interval = setInterval(() => {
       progress += Math.random() * 10;
       callback({
-        type: 'training.progress',
+        type: "training.progress",
         jobId,
         data: {
           progress: Math.min(progress, 100),
@@ -992,11 +1029,11 @@ export const mockWebSocketEvents = {
           loss: 1.0 - (progress / 100) * 0.8,
         },
       });
-      
+
       if (progress >= 100) {
         clearInterval(interval);
         callback({
-          type: 'training.completed',
+          type: "training.completed",
           jobId,
           data: { finalAccuracy: 0.89, deploymentReady: true },
         });
@@ -1007,32 +1044,34 @@ export const mockWebSocketEvents = {
 ```
 
 #### Development Environment Configuration
+
 ```typescript
 // config/development.ts
 export const developmentConfig = {
   // API endpoints
   api: {
-    baseURL: process.env.NODE_ENV === 'development' 
-      ? 'http://localhost:8000/api/v1'
-      : 'https://api.auterity.com/api/v1',
+    baseURL:
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:8000/api/v1"
+        : "https://api.auterity.com/api/v1",
     timeout: 10000,
     retries: 3,
   },
-  
+
   // Feature flags for incomplete backend features
   features: {
-    customModelTraining: false,        // Enable when training API is ready
-    realTimeCostOptimization: false,   // Enable when routing engine is complete
-    dmsIntegration: false,             // Enable when DMS APIs are implemented
-    advancedAnalytics: false,          // Enable when analytics backend is ready
+    customModelTraining: false, // Enable when training API is ready
+    realTimeCostOptimization: false, // Enable when routing engine is complete
+    dmsIntegration: false, // Enable when DMS APIs are implemented
+    advancedAnalytics: false, // Enable when analytics backend is ready
   },
-  
+
   // Mock data configuration
   mocks: {
-    enabled: process.env.NODE_ENV === 'development',
-    latency: 500,                      // Simulate network latency
-    errorRate: 0.05,                   // 5% error rate for testing
-    dataSize: 'medium',                // small | medium | large dataset sizes
+    enabled: process.env.NODE_ENV === "development",
+    latency: 500, // Simulate network latency
+    errorRate: 0.05, // 5% error rate for testing
+    dataSize: "medium", // small | medium | large dataset sizes
   },
 };
 ```
@@ -1044,6 +1083,7 @@ export const developmentConfig = {
 ### For Bolt/V0.dev/Replit Development
 
 #### 1. Start with Core Components
+
 ```bash
 # Priority 1: Authentication and layout
 - Implement login/logout flow with JWT
@@ -1062,26 +1102,28 @@ export const developmentConfig = {
 ```
 
 #### 2. Mock-First Development Approach
+
 ```typescript
 // Start with comprehensive mocks
 const DEVELOPMENT_PHASE = {
-  phase1: 'Use mocks for all API calls',
-  phase2: 'Replace mocks with real APIs as backend becomes available',
-  phase3: 'Add error handling and edge cases',
-  phase4: 'Performance optimization and testing',
+  phase1: "Use mocks for all API calls",
+  phase2: "Replace mocks with real APIs as backend becomes available",
+  phase3: "Add error handling and edge cases",
+  phase4: "Performance optimization and testing",
 };
 ```
 
 #### 3. Component Library Priority
+
 ```typescript
 // Build these components first (highest impact)
 const PRIORITY_COMPONENTS = [
-  'AuthenticationFlow',      // Critical for access
-  'DashboardLayout',         // Main application shell
-  'WorkflowCanvas',          // Core functionality
-  'ModelSelector',           // AI integration
-  'MetricsDisplay',          // Business value demonstration
-  'NotificationSystem',      // User feedback
+  "AuthenticationFlow", // Critical for access
+  "DashboardLayout", // Main application shell
+  "WorkflowCanvas", // Core functionality
+  "ModelSelector", // AI integration
+  "MetricsDisplay", // Business value demonstration
+  "NotificationSystem", // User feedback
 ];
 ```
 

@@ -12,27 +12,32 @@ Continuously monitor project health metrics and alert when critical thresholds a
 ## Health Metrics Monitored
 
 ### Security Metrics
+
 - Dependency vulnerabilities (npm audit)
 - Outdated packages with known security issues
 - Missing security headers in API responses
 
 ### Code Quality Metrics
+
 - TypeScript compilation errors
 - Linting violations (frontend and backend)
 - Test coverage percentage
 - Failed test count
 
 ### Performance Metrics
+
 - Bundle size (target: <1MB)
 - Build time (target: <2 minutes)
 - Test execution time (target: <30 seconds)
 
 ### Dependency Health
+
 - Outdated dependencies (>6 months old)
 - Deprecated packages
 - License compatibility issues
 
 ## Implementation
+
 ```bash
 echo "🏥 Running project health check..."
 
@@ -158,17 +163,20 @@ fi
 ## Alert Thresholds
 
 ### Critical (Exit Code 2)
+
 - Any security vulnerabilities
 - Build failures
-- >50% test failures
+- > 50% test failures
 
 ### High Priority (Exit Code 1)
-- >5 TypeScript errors
-- >10 linting errors
-- >5 failed tests
+
+- > 5 TypeScript errors
+- > 10 linting errors
+- > 5 failed tests
 - Bundle size >2MB
 
 ### Medium Priority (Exit Code 0)
+
 - <5 TypeScript errors
 - <10 linting errors
 - Bundle size 1-2MB
@@ -177,6 +185,7 @@ fi
 ## Integration with Development Workflow
 
 ### Pre-commit Hook Integration
+
 ```bash
 # Add to .git/hooks/pre-commit
 #!/bin/bash
@@ -188,6 +197,7 @@ fi
 ```
 
 ### CI/CD Integration
+
 ```yaml
 # GitHub Actions workflow
 - name: Project Health Check
@@ -196,6 +206,7 @@ fi
 ```
 
 ## Benefits
+
 - Early detection of critical issues
 - Automated quality gate enforcement
 - Trend tracking for project health

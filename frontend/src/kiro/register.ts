@@ -1,5 +1,5 @@
 // Kiro Module Registration
-import { onErrorEvent } from './hooks/error-intelligence.hook';
+import { onErrorEvent } from "./hooks/error-intelligence.hook";
 
 export interface KiroModule {
   name: string;
@@ -9,7 +9,7 @@ export interface KiroModule {
 
 export const kiroModules: KiroModule[] = [
   {
-    name: 'error-intelligence',
+    name: "error-intelligence",
     hook: onErrorEvent,
     enabled: true,
   },

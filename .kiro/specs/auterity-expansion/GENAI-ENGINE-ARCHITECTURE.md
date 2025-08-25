@@ -32,17 +32,20 @@
 ## 📋 Integration Principles
 
 ### **1. Clean API Separation**
+
 - **Auterity Product Layer**: Customer-facing UI, business logic, user management
 - **GenAI Engine Layer**: Agent orchestration, protocol handling, execution
 - **Communication**: REST API + WebSocket only, no direct code sharing
 
 ### **2. MIT License Compliance**
+
 - **Fork Strategy**: Fork GenAI AgentOS to Auterity organization
 - **Contribution Requirement**: All engine improvements contributed back to upstream
 - **License Protection**: Auterity product layer remains proprietary
 - **Engine Isolation**: GenAI engine runs in separate containers
 
 ### **3. Modular Development**
+
 - **Engine Enhancements**: Developed in forked GenAI AgentOS repository
 - **Product Features**: Developed in Auterity repository
 - **Integration Points**: Well-defined API contracts
@@ -51,6 +54,7 @@
 ## 🔌 API Integration Contracts
 
 ### **Engine → Product Communication**
+
 ```yaml
 # Engine Status API
 GET /engine/status
@@ -67,6 +71,7 @@ Messages: { "type": "progress", "data": {...} }
 ```
 
 ### **Product → Engine Communication**
+
 ```yaml
 # Workflow Registration
 POST /engine/workflows/register
@@ -81,6 +86,7 @@ Response: { "agents": [{"id": "uuid", "protocol": "mcp", "capabilities": [...]}]
 ## 🚀 Deployment Architecture
 
 ### **Container Strategy**
+
 ```yaml
 # docker-compose.yml
 services:
@@ -89,22 +95,22 @@ services:
     ports: ["3000:3000"]
     environment:
       - ENGINE_API_URL=http://genai-engine:8001
-  
+
   auterity-backend:
     build: ./backend
     ports: ["8000:8000"]
     depends_on: [auterity-db, genai-engine]
-  
+
   genai-engine:
     build: ./genai-agentos-fork
     ports: ["8001:8001"]
     depends_on: [engine-db, redis, celery]
-    
+
   auterity-db:
     image: postgres:15
     environment:
       - POSTGRES_DB=auterity
-      
+
   engine-db:
     image: postgres:15
     environment:
@@ -112,6 +118,7 @@ services:
 ```
 
 ### **Development Workflow**
+
 ```bash
 # 1. Fork GenAI AgentOS
 git clone https://github.com/genai-works-org/genai-agentos.git
@@ -137,6 +144,7 @@ cd ../auterity-unified
 ## 🔄 Contribution Strategy
 
 ### **Upstream Contributions Required**
+
 - **Performance optimizations** in GenAI router
 - **New protocol support** (automotive-specific)
 - **Enhanced monitoring** capabilities
@@ -144,6 +152,7 @@ cd ../auterity-unified
 - **Bug fixes** and stability improvements
 
 ### **Auterity-Specific (No Contribution)**
+
 - **Business logic** and workflow management
 - **User interface** and customer experience
 - **Authentication** and user management
@@ -151,6 +160,7 @@ cd ../auterity-unified
 - **White-label** customization
 
 ### **Contribution Process**
+
 1. **Develop in fork**: All engine work in forked repository
 2. **Test isolation**: Ensure changes don't break upstream compatibility
 3. **Create upstream PR**: Submit improvements to original project
@@ -160,18 +170,21 @@ cd ../auterity-unified
 ## 📊 Benefits of This Architecture
 
 ### **Legal Compliance**
+
 - ✅ **MIT License Respected**: All engine code remains MIT
 - ✅ **Proprietary Protection**: Auterity product layer stays proprietary
 - ✅ **Contribution Compliance**: Required upstream contributions maintained
 - ✅ **Clean Separation**: No license contamination between layers
 
 ### **Technical Benefits**
+
 - 🔧 **Modularity**: Independent development and deployment
 - 🚀 **Scalability**: Engine can scale independently of product layer
 - 🛡️ **Isolation**: Engine failures don't crash product layer
 - 🔄 **Upgrades**: Engine updates without product layer changes
 
 ### **Business Benefits**
+
 - 💼 **IP Protection**: Core business logic remains proprietary
 - 🤝 **Community Value**: Contributions improve upstream project
 - 📈 **Market Position**: Leverage proven open-source infrastructure

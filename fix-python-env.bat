@@ -19,6 +19,6 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 
 echo Python environment fixed successfully!
-echo Active Python: 
+echo Active Python:
 python --version
 echo Virtual environment: %VIRTUAL_ENV%

@@ -4,8 +4,6 @@ import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from openai import APIError, RateLimitError
-
 from app.services.ai_service import (
     AIModelType,
     AIResponse,
@@ -15,6 +13,7 @@ from app.services.ai_service import (
     get_ai_service,
     set_ai_service,
 )
+from openai import APIError, RateLimitError
 
 
 class TestPromptTemplate:

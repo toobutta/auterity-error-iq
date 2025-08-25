@@ -30,17 +30,17 @@ export interface RequestContext {
   conversation_id?: string;
   user_role?: string;
   domain?: string;
-  priority?: 'low' | 'medium' | 'high';
+  priority?: "low" | "medium" | "high";
   automotive_context?: AutomotiveContext;
   [key: string]: any;
 }
 
 export interface AutomotiveContext {
   dealership_id?: string;
-  customer_type?: 'new' | 'existing' | 'service';
+  customer_type?: "new" | "existing" | "service";
   vehicle_info?: VehicleInfo;
-  service_type?: 'sales' | 'service' | 'parts' | 'finance';
-  urgency?: 'low' | 'medium' | 'high' | 'critical';
+  service_type?: "sales" | "service" | "parts" | "finance";
+  urgency?: "low" | "medium" | "high" | "critical";
 }
 
 export interface VehicleInfo {
@@ -72,7 +72,7 @@ export interface RoutingPreferences {
 export interface CostConstraints {
   max_cost: number;
   budget_remaining?: number;
-  cost_optimization?: 'aggressive' | 'balanced' | 'quality_first';
+  cost_optimization?: "aggressive" | "balanced" | "quality_first";
   billing_account?: string;
 }
 
@@ -102,13 +102,26 @@ export interface SteeringRule {
 
 export interface RuleCondition {
   field: string;
-  operator: 'equals' | 'contains' | 'starts_with' | 'ends_with' | 'greater_than' | 'less_than' | 'in' | 'not_in';
+  operator:
+    | "equals"
+    | "contains"
+    | "starts_with"
+    | "ends_with"
+    | "greater_than"
+    | "less_than"
+    | "in"
+    | "not_in";
   value: any;
   case_sensitive?: boolean;
 }
 
 export interface RuleAction {
-  type: 'route_to_provider' | 'route_to_model' | 'set_cost_limit' | 'add_context' | 'require_approval';
+  type:
+    | "route_to_provider"
+    | "route_to_model"
+    | "set_cost_limit"
+    | "add_context"
+    | "require_approval";
   parameters: Record<string, any>;
 }
 
@@ -135,7 +148,7 @@ export interface CostOptimizationResult {
   optimized_decision: RoutingDecision;
   cost_savings: number;
   optimization_applied: string[];
-  quality_impact: 'none' | 'minimal' | 'moderate' | 'significant';
+  quality_impact: "none" | "minimal" | "moderate" | "significant";
 }
 
 export interface ProviderStatus {

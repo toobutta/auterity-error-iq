@@ -5,58 +5,58 @@
 
 // Core Enums
 export enum AITool {
-  AMAZON_Q = 'amazon-q',
-  CURSOR_IDE = 'cursor-ide', 
-  CLINE = 'cline',
-  KIRO = 'kiro'
+  AMAZON_Q = "amazon-q",
+  CURSOR_IDE = "cursor-ide",
+  CLINE = "cline",
+  KIRO = "kiro",
 }
 
 export enum BlockStatus {
-  PLANNED = 'planned',
-  IN_PROGRESS = 'in-progress',
-  COMPLETED = 'completed',
-  BLOCKED = 'blocked',
-  FAILED = 'failed'
+  PLANNED = "planned",
+  IN_PROGRESS = "in-progress",
+  COMPLETED = "completed",
+  BLOCKED = "blocked",
+  FAILED = "failed",
 }
 
 export enum Priority {
-  CRITICAL = 'critical',
-  HIGH = 'high',
-  MEDIUM = 'medium',
-  LOW = 'low'
+  CRITICAL = "critical",
+  HIGH = "high",
+  MEDIUM = "medium",
+  LOW = "low",
 }
 
 export enum QualityGateType {
-  SECURITY = 'security',
-  PERFORMANCE = 'performance',
-  INTEGRATION = 'integration',
-  CODE_QUALITY = 'code-quality',
-  ACCESSIBILITY = 'accessibility',
-  TYPESCRIPT_COMPLIANCE = 'typescript-compliance'
+  SECURITY = "security",
+  PERFORMANCE = "performance",
+  INTEGRATION = "integration",
+  CODE_QUALITY = "code-quality",
+  ACCESSIBILITY = "accessibility",
+  TYPESCRIPT_COMPLIANCE = "typescript-compliance",
 }
 
 export enum QualityGateStatus {
-  PENDING = 'pending',
-  RUNNING = 'running',
-  PASSED = 'passed',
-  FAILED = 'failed',
-  BLOCKED = 'blocked'
+  PENDING = "pending",
+  RUNNING = "running",
+  PASSED = "passed",
+  FAILED = "failed",
+  BLOCKED = "blocked",
 }
 
 export enum ErrorSeverity {
-  CRITICAL = 'critical',    // Blocks all development
-  HIGH = 'high',           // Blocks current stream
-  MEDIUM = 'medium',       // Requires attention
-  LOW = 'low'             // Can be deferred
+  CRITICAL = "critical", // Blocks all development
+  HIGH = "high", // Blocks current stream
+  MEDIUM = "medium", // Requires attention
+  LOW = "low", // Can be deferred
 }
 
 export enum ErrorCategory {
-  SECURITY = 'security',
-  INTEGRATION = 'integration',
-  PERFORMANCE = 'performance',
-  QUALITY = 'quality',
-  DEPENDENCY = 'dependency',
-  TYPESCRIPT = 'typescript'
+  SECURITY = "security",
+  INTEGRATION = "integration",
+  PERFORMANCE = "performance",
+  QUALITY = "quality",
+  DEPENDENCY = "dependency",
+  TYPESCRIPT = "typescript",
 }
 
 // Core Interfaces
@@ -82,7 +82,7 @@ export interface DevelopmentBlock {
 export interface BlockInput {
   id: string;
   name: string;
-  type: 'file' | 'data' | 'config' | 'dependency';
+  type: "file" | "data" | "config" | "dependency";
   description: string;
   required: boolean;
   source?: string;
@@ -92,7 +92,7 @@ export interface BlockInput {
 export interface BlockOutput {
   id: string;
   name: string;
-  type: 'file' | 'data' | 'artifact' | 'report';
+  type: "file" | "data" | "artifact" | "report";
   description: string;
   target?: string;
   validation?: ValidationRule[];
@@ -101,13 +101,13 @@ export interface BlockOutput {
 export interface SuccessCriteria {
   id: string;
   description: string;
-  type: 'automated' | 'manual';
+  type: "automated" | "manual";
   validation: string; // validation logic or test reference
   weight: number; // 0-1, importance weight
 }
 
 export interface ValidationRule {
-  type: 'schema' | 'format' | 'custom';
+  type: "schema" | "format" | "custom";
   rule: string;
   errorMessage: string;
 }
@@ -138,7 +138,7 @@ export interface QualityCriteria {
 export interface AutomatedCheck {
   id: string;
   name: string;
-  type: 'lint' | 'test' | 'security' | 'performance' | 'integration';
+  type: "lint" | "test" | "security" | "performance" | "integration";
   command: string;
   timeout: number;
   retries: number;
@@ -215,7 +215,7 @@ export interface StreamProgress {
 
 export interface Blocker {
   id: string;
-  type: 'dependency' | 'resource' | 'quality' | 'integration' | 'external';
+  type: "dependency" | "resource" | "quality" | "integration" | "external";
   severity: ErrorSeverity;
   description: string;
   affectedBlocks: string[];
@@ -226,13 +226,13 @@ export interface Blocker {
 }
 
 export interface QualityMetrics {
-  codeCoverage: number;          // Target: >90%
-  testPassRate: number;          // Target: >95%
+  codeCoverage: number; // Target: >90%
+  testPassRate: number; // Target: >95%
   securityVulnerabilities: number; // Target: 0 critical/high
-  performanceRegression: number;  // Target: <5%
-  integrationFailures: number;   // Target: <2%
-  codeQualityScore: number;      // Target: >8.5/10
-  typeScriptCompliance: number;  // Target: 100%
+  performanceRegression: number; // Target: <5%
+  integrationFailures: number; // Target: <2%
+  codeQualityScore: number; // Target: >8.5/10
+  typeScriptCompliance: number; // Target: 100%
 }
 
 export interface TimelineStatus {
@@ -246,8 +246,8 @@ export interface TimelineStatus {
 
 export interface Risk {
   id: string;
-  type: 'schedule' | 'quality' | 'resource' | 'technical' | 'external';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  type: "schedule" | "quality" | "resource" | "technical" | "external";
+  severity: "low" | "medium" | "high" | "critical";
   probability: number; // 0-1
   impact: number; // 0-1
   description: string;
@@ -257,7 +257,11 @@ export interface Risk {
 
 export interface Recommendation {
   id: string;
-  type: 'optimization' | 'risk-mitigation' | 'quality-improvement' | 'resource-allocation';
+  type:
+    | "optimization"
+    | "risk-mitigation"
+    | "quality-improvement"
+    | "resource-allocation";
   priority: Priority;
   description: string;
   expectedBenefit: string;
@@ -278,7 +282,7 @@ export interface ToolSpecialization {
 
 export interface Capability {
   name: string;
-  proficiency: 'expert' | 'proficient' | 'basic';
+  proficiency: "expert" | "proficient" | "basic";
   blockTypes: string[];
   estimatedVelocity: number; // blocks per hour for this capability
 }
@@ -354,7 +358,7 @@ export interface AssignmentContext {
 
 export interface Conflict {
   id: string;
-  type: 'resource' | 'dependency' | 'quality' | 'timeline';
+  type: "resource" | "dependency" | "quality" | "timeline";
   severity: ErrorSeverity;
   description: string;
   affectedBlocks: string[];
@@ -364,7 +368,7 @@ export interface Conflict {
 
 export interface Resolution {
   conflictId: string;
-  strategy: 'reorder' | 'reassign' | 'split' | 'merge' | 'escalate';
+  strategy: "reorder" | "reassign" | "split" | "merge" | "escalate";
   description: string;
   implementedAt: Date;
   impact: ResolutionImpact;
@@ -374,12 +378,12 @@ export interface ResolutionImpact {
   timelineChange: number; // hours
   resourceChange: number; // percentage
   qualityImpact: string;
-  riskLevel: 'low' | 'medium' | 'high';
+  riskLevel: "low" | "medium" | "high";
 }
 
 export interface Issue {
   id: string;
-  type: 'blocker' | 'quality' | 'resource' | 'integration';
+  type: "blocker" | "quality" | "resource" | "integration";
   severity: ErrorSeverity;
   description: string;
   context: any;
@@ -389,7 +393,7 @@ export interface Issue {
 
 export interface EscalationResponse {
   issueId: string;
-  action: 'resolve' | 'reassign' | 'defer' | 'escalate_further';
+  action: "resolve" | "reassign" | "defer" | "escalate_further";
   description: string;
   assignedTo: AITool;
   expectedResolution: Date;

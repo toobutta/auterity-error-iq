@@ -3,26 +3,27 @@
 from decimal import Decimal
 from typing import Dict, List
 
-from pydantic import BaseSettings, Field
+from pydantic import Field
+from pydantic_settings import BaseSettings
 
 
 class SaaSConfig(BaseSettings):
     """SaaS configuration settings."""
 
     # Stripe Configuration
-    STRIPE_SECRET_KEY: str = Field(..., env="STRIPE_SECRET_KEY")
-    STRIPE_PUBLISHABLE_KEY: str = Field(..., env="STRIPE_PUBLISHABLE_KEY")
-    STRIPE_WEBHOOK_SECRET: str = Field(..., env="STRIPE_WEBHOOK_SECRET")
+    STRIPE_SECRET_KEY: str = Field(default="", env="STRIPE_SECRET_KEY")
+    STRIPE_PUBLISHABLE_KEY: str = Field(default="", env="STRIPE_PUBLISHABLE_KEY")
+    STRIPE_WEBHOOK_SECRET: str = Field(default="", env="STRIPE_WEBHOOK_SECRET")
 
     # Stripe Price IDs for different plans
-    STRIPE_PRICE_ID_STARTER: str = Field(..., env="STRIPE_PRICE_ID_STARTER")
-    STRIPE_PRICE_ID_PROFESSIONAL: str = Field(..., env="STRIPE_PRICE_ID_PROFESSIONAL")
-    STRIPE_PRICE_ID_ENTERPRISE: str = Field(..., env="STRIPE_PRICE_ID_ENTERPRISE")
+    STRIPE_PRICE_ID_STARTER: str = Field(default="", env="STRIPE_PRICE_ID_STARTER")
+    STRIPE_PRICE_ID_PROFESSIONAL: str = Field(default="", env="STRIPE_PRICE_ID_PROFESSIONAL")
+    STRIPE_PRICE_ID_ENTERPRISE: str = Field(default="", env="STRIPE_PRICE_ID_ENTERPRISE")
     STRIPE_PRICE_ID_WHITE_LABEL_STARTER: str = Field(
-        ..., env="STRIPE_PRICE_ID_WHITE_LABEL_STARTER"
+        default="", env="STRIPE_PRICE_ID_WHITE_LABEL_STARTER"
     )
     STRIPE_PRICE_ID_WHITE_LABEL_ENTERPRISE: str = Field(
-        ..., env="STRIPE_PRICE_ID_WHITE_LABEL_ENTERPRISE"
+        default="", env="STRIPE_PRICE_ID_WHITE_LABEL_ENTERPRISE"
     )
 
     # Subscription Plans Configuration

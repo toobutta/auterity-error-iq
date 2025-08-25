@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 
 interface SystemAlert {
   id: string;
   message: string;
-  severity: 'info' | 'warning' | 'critical';
+  severity: "info" | "warning" | "critical";
   timestamp: number;
 }
 
@@ -12,22 +12,33 @@ interface AlertPanelProps {
   onClearAlerts: () => void;
 }
 
-export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, onClearAlerts }) => {
+export const AlertPanel: React.FC<AlertPanelProps> = ({
+  alerts,
+  onClearAlerts,
+}) => {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'critical': return 'border-red-500 bg-red-900';
-      case 'warning': return 'border-yellow-500 bg-yellow-900';
-      case 'info': return 'border-blue-500 bg-blue-900';
-      default: return 'border-gray-500 bg-gray-900';
+      case "critical":
+        return "border-red-500 bg-red-900";
+      case "warning":
+        return "border-yellow-500 bg-yellow-900";
+      case "info":
+        return "border-blue-500 bg-blue-900";
+      default:
+        return "border-gray-500 bg-gray-900";
     }
   };
 
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
-      case 'critical': return '🔴';
-      case 'warning': return '🟡';
-      case 'info': return '🔵';
-      default: return '⚪';
+      case "critical":
+        return "🔴";
+      case "warning":
+        return "🟡";
+      case "info":
+        return "🔵";
+      default:
+        return "⚪";
     }
   };
 
@@ -44,11 +55,9 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, onClearAlerts })
           </button>
         )}
       </div>
-      
+
       {alerts.length === 0 ? (
-        <div className="text-gray-400 text-center py-4">
-          No active alerts
-        </div>
+        <div className="text-gray-400 text-center py-4">No active alerts</div>
       ) : (
         <div className="space-y-3 max-h-64 overflow-y-auto">
           {alerts.map((alert) => (
@@ -57,7 +66,9 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, onClearAlerts })
               className={`border rounded p-3 ${getSeverityColor(alert.severity)}`}
             >
               <div className="flex items-start gap-2">
-                <span className="text-lg">{getSeverityIcon(alert.severity)}</span>
+                <span className="text-lg">
+                  {getSeverityIcon(alert.severity)}
+                </span>
                 <div className="flex-1">
                   <div className="text-sm text-white">{alert.message}</div>
                   <div className="text-xs text-gray-300 mt-1">

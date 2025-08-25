@@ -1,10 +1,10 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
-import WorkflowBuilder from '../WorkflowBuilder';
-import * as workflowApi from '../../api/workflows';
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { vi } from "vitest";
+import WorkflowBuilder from "../WorkflowBuilder";
+import * as workflowApi from "../../api/workflows";
 
 // Mock the workflow API with all required functions
-vi.mock('../../api/workflows', () => ({
+vi.mock("../../api/workflows", () => ({
   createWorkflow: vi.fn(),
   updateWorkflow: vi.fn(),
   getWorkflow: vi.fn(),
@@ -21,7 +21,7 @@ vi.mock('../../api/workflows', () => ({
 }));
 
 // Mock ReactFlow
-vi.mock('reactflow', () => ({
+vi.mock("reactflow", () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="react-flow">{children}</div>
@@ -29,48 +29,56 @@ vi.mock('reactflow', () => ({
   Background: () => <div data-testid="background" />,
   Controls: () => <div data-testid="controls" />,
   MiniMap: () => <div data-testid="minimap" />,
-  Panel: ({ children }: { children: React.ReactNode }) => <div data-testid="panel">{children}</div>,
+  Panel: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="panel">{children}</div>
+  ),
   useNodesState: () => [[], vi.fn(), vi.fn()],
   useEdgesState: () => [[], vi.fn(), vi.fn()],
   addEdge: vi.fn(),
 }));
 
-describe('WorkflowBuilder', () => {
+describe("WorkflowBuilder", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders workflow builder interface', () => {
+  it("renders workflow builder interface", () => {
     render(<WorkflowBuilder />);
 
-    expect(screen.getByPlaceholderText('Workflow Name')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Workflow Description')).toBeInTheDocument();
-    expect(screen.getByText('Add Nodes')).toBeInTheDocument();
-    expect(screen.getByText('Save Workflow')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Workflow Name")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Workflow Description"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Add Nodes")).toBeInTheDocument();
+    expect(screen.getByText("Save Workflow")).toBeInTheDocument();
   });
 
-  it('allows adding different node types', () => {
+  it("allows adding different node types", () => {
     render(<WorkflowBuilder />);
 
-    expect(screen.getByText('Start Node')).toBeInTheDocument();
-    expect(screen.getByText('AI Process')).toBeInTheDocument();
-    expect(screen.getByText('End Node')).toBeInTheDocument();
+    expect(screen.getByText("Start Node")).toBeInTheDocument();
+    expect(screen.getByText("AI Process")).toBeInTheDocument();
+    expect(screen.getByText("End Node")).toBeInTheDocument();
   });
 
-  it('updates workflow name and description', () => {
+  it("updates workflow name and description", () => {
     render(<WorkflowBuilder />);
 
-    const nameInput = screen.getByPlaceholderText('Workflow Name');
-    const descriptionInput = screen.getByPlaceholderText('Workflow Description');
+    const nameInput = screen.getByPlaceholderText("Workflow Name");
+    const descriptionInput = screen.getByPlaceholderText(
+      "Workflow Description",
+    );
 
-    fireEvent.change(nameInput, { target: { value: 'Test Workflow' } });
-    fireEvent.change(descriptionInput, { target: { value: 'Test Description' } });
+    fireEvent.change(nameInput, { target: { value: "Test Workflow" } });
+    fireEvent.change(descriptionInput, {
+      target: { value: "Test Description" },
+    });
 
-    expect(nameInput).toHaveValue('Test Workflow');
-    expect(descriptionInput).toHaveValue('Test Description');
+    expect(nameInput).toHaveValue("Test Workflow");
+    expect(descriptionInput).toHaveValue("Test Description");
   });
 
-  it('shows validation errors when workflow is invalid', async () => {
+  it("shows validation errors when workflow is invalid", async () => {
     render(<WorkflowBuilder />);
 
     // The default workflow should have validation errors (no connections)
@@ -79,22 +87,22 @@ describe('WorkflowBuilder', () => {
     });
   });
 
-  it('disables save button when there are validation errors', async () => {
+  it("disables save button when there are validation errors", async () => {
     render(<WorkflowBuilder />);
 
-    const saveButton = screen.getByText('Save Workflow');
+    const saveButton = screen.getByText("Save Workflow");
 
     await waitFor(() => {
       expect(saveButton).toBeDisabled();
     });
   });
 
-  it('calls createWorkflow when saving new workflow', async () => {
+  it("calls createWorkflow when saving new workflow", async () => {
     const mockCreateWorkflow = vi.mocked(workflowApi.createWorkflow);
     mockCreateWorkflow.mockResolvedValue({
-      id: '1',
-      name: 'Test Workflow',
-      description: 'Test Description',
+      id: "1",
+      name: "Test Workflow",
+      description: "Test Description",
       steps: [],
       connections: [],
     });
@@ -103,7 +111,7 @@ describe('WorkflowBuilder', () => {
     render(<WorkflowBuilder onSave={onSave} />);
 
     // Mock a valid workflow state (this would normally be set by user interactions)
-    const saveButton = screen.getByText('Save Workflow');
+    const saveButton = screen.getByText("Save Workflow");
 
     // For this test, we'll assume the workflow becomes valid
     // In a real scenario, the user would add nodes and connections
@@ -113,18 +121,18 @@ describe('WorkflowBuilder', () => {
     // since the component validates the workflow before saving
   });
 
-  it('loads existing workflow when workflowId is provided', async () => {
+  it("loads existing workflow when workflowId is provided", async () => {
     const mockGetWorkflow = vi.mocked(workflowApi.getWorkflow);
     mockGetWorkflow.mockResolvedValue({
-      id: '1',
-      name: 'Existing Workflow',
-      description: 'Existing Description',
+      id: "1",
+      name: "Existing Workflow",
+      description: "Existing Description",
       steps: [
         {
-          id: 'start-1',
-          type: 'start',
-          name: 'Start',
-          description: 'Start node',
+          id: "start-1",
+          type: "start",
+          name: "Start",
+          description: "Start node",
           config: {},
           position: { x: 100, y: 100 },
         },
@@ -135,20 +143,20 @@ describe('WorkflowBuilder', () => {
     render(<WorkflowBuilder workflowId="1" />);
 
     await waitFor(() => {
-      expect(mockGetWorkflow).toHaveBeenCalledWith('1');
+      expect(mockGetWorkflow).toHaveBeenCalledWith("1");
     });
   });
 
-  it('shows loading state when loading workflow', () => {
+  it("shows loading state when loading workflow", () => {
     const mockGetWorkflow = vi.mocked(workflowApi.getWorkflow);
     mockGetWorkflow.mockImplementation(() => new Promise(() => {})); // Never resolves
 
     render(<WorkflowBuilder workflowId="1" />);
 
-    expect(screen.getByText('Loading workflow...')).toBeInTheDocument();
+    expect(screen.getByText("Loading workflow...")).toBeInTheDocument();
   });
 
-  it('calls onValidationChange when validation state changes', async () => {
+  it("calls onValidationChange when validation state changes", async () => {
     const onValidationChange = vi.fn();
     render(<WorkflowBuilder onValidationChange={onValidationChange} />);
 

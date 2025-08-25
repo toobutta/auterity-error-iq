@@ -1,7 +1,7 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
-import { EventEmitter } from 'events';
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import { v4 as uuidv4 } from "uuid";
+import { EventEmitter } from "events";
 
 export interface User {
   id: string;
@@ -22,7 +22,7 @@ export interface AuthToken {
   accessToken: string;
   refreshToken: string;
   expiresIn: number;
-  tokenType: 'Bearer';
+  tokenType: "Bearer";
 }
 
 export interface SystemCredentials {
@@ -40,9 +40,10 @@ export class UnifiedAuth extends EventEmitter {
   private sessions = new Map<string, any>();
 
   constructor(
-    private jwtSecret: string = process.env.JWT_SECRET || 'your-secret-key',
-    private jwtRefreshSecret: string = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key',
-    private saltRounds: number = 12
+    private jwtSecret: string = process.env.JWT_SECRET || "your-secret-key",
+    private jwtRefreshSecret: string = process.env.JWT_REFRESH_SECRET ||
+      "your-refresh-secret-key",
+    private saltRounds: number = 12,
   ) {
     super();
     this.initializeDefaultUsers();
@@ -53,50 +54,50 @@ export class UnifiedAuth extends EventEmitter {
     // Create default admin user
     const adminUser: User = {
       id: uuidv4(),
-      email: 'admin@auterity.com',
-      username: 'admin',
-      roles: ['admin', 'user'],
-      permissions: ['read', 'write', 'delete', 'admin'],
+      email: "admin@auterity.com",
+      username: "admin",
+      roles: ["admin", "user"],
+      permissions: ["read", "write", "delete", "admin"],
       systemAccess: {
         auterity: true,
         relaycore: true,
-        neuroweaver: true
+        neuroweaver: true,
       },
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
     this.users.set(adminUser.id, adminUser);
-    console.log('Default admin user initialized');
+    console.log("Default admin user initialized");
   }
 
   private initializeSystemCredentials(): void {
     // Initialize system-to-system credentials
     const systems: SystemCredentials[] = [
       {
-        system: 'auterity',
-        username: process.env.AUTERITY_USERNAME || 'auterity_system',
-        password: process.env.AUTERITY_PASSWORD || 'default_password',
-        apiKey: process.env.AUTERITY_API_KEY
+        system: "auterity",
+        username: process.env.AUTERITY_USERNAME || "auterity_system",
+        password: process.env.AUTERITY_PASSWORD || "default_password",
+        apiKey: process.env.AUTERITY_API_KEY,
       },
       {
-        system: 'relaycore',
-        username: process.env.RELAYCORE_USERNAME || 'relaycore_system',
-        password: process.env.RELAYCORE_PASSWORD || 'default_password',
-        apiKey: process.env.RELAYCORE_API_KEY
+        system: "relaycore",
+        username: process.env.RELAYCORE_USERNAME || "relaycore_system",
+        password: process.env.RELAYCORE_PASSWORD || "default_password",
+        apiKey: process.env.RELAYCORE_API_KEY,
       },
       {
-        system: 'neuroweaver',
-        username: process.env.NEUROWEAVER_USERNAME || 'neuroweaver_system',
-        password: process.env.NEUROWEAVER_PASSWORD || 'default_password',
-        apiKey: process.env.NEUROWEAVER_API_KEY
-      }
+        system: "neuroweaver",
+        username: process.env.NEUROWEAVER_USERNAME || "neuroweaver_system",
+        password: process.env.NEUROWEAVER_PASSWORD || "default_password",
+        apiKey: process.env.NEUROWEAVER_API_KEY,
+      },
     ];
 
-    systems.forEach(creds => {
+    systems.forEach((creds) => {
       this.systemCredentials.set(creds.system, creds);
     });
 
-    console.log('System credentials initialized');
+    console.log("System credentials initialized");
   }
 
   async hashPassword(password: string): Promise<string> {
@@ -107,24 +108,27 @@ export class UnifiedAuth extends EventEmitter {
     return bcrypt.compare(password, hash);
   }
 
-  async createUser(userData: Omit<User, 'id' | 'createdAt'>): Promise<User> {
+  async createUser(userData: Omit<User, "id" | "createdAt">): Promise<User> {
     const user: User = {
       id: uuidv4(),
       ...userData,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
     this.users.set(user.id, user);
-    this.emit('user-created', user);
+    this.emit("user-created", user);
 
     console.log(`User created: ${user.username}`);
     return user;
   }
 
-  async authenticateUser(username: string, password: string): Promise<AuthToken | null> {
+  async authenticateUser(
+    username: string,
+    password: string,
+  ): Promise<AuthToken | null> {
     // Find user by username or email
     const user = Array.from(this.users.values()).find(
-      u => u.username === username || u.email === username
+      (u) => u.username === username || u.email === username,
     );
 
     if (!user) {
@@ -150,17 +154,15 @@ export class UnifiedAuth extends EventEmitter {
         email: user.email,
         roles: user.roles,
         permissions: user.permissions,
-        systemAccess: user.systemAccess
+        systemAccess: user.systemAccess,
       },
       this.jwtSecret,
-      { expiresIn: '1h' }
+      { expiresIn: "1h" },
     );
 
-    const refreshToken = jwt.sign(
-      { userId: user.id },
-      this.jwtRefreshSecret,
-      { expiresIn: '7d' }
-    );
+    const refreshToken = jwt.sign({ userId: user.id }, this.jwtRefreshSecret, {
+      expiresIn: "7d",
+    });
 
     // Store refresh token
     this.refreshTokens.set(refreshToken, user.id);
@@ -169,13 +171,13 @@ export class UnifiedAuth extends EventEmitter {
     user.lastLogin = new Date().toISOString();
     this.users.set(user.id, user);
 
-    this.emit('user-authenticated', user);
+    this.emit("user-authenticated", user);
 
     return {
       accessToken,
       refreshToken,
       expiresIn: 3600, // 1 hour
-      tokenType: 'Bearer'
+      tokenType: "Bearer",
     };
   }
 
@@ -185,13 +187,13 @@ export class UnifiedAuth extends EventEmitter {
       const userId = this.refreshTokens.get(refreshToken);
 
       if (!userId || decoded.userId !== userId) {
-        console.log('Invalid refresh token');
+        console.log("Invalid refresh token");
         return null;
       }
 
       const user = this.users.get(userId);
       if (!user) {
-        console.log('User not found for refresh token');
+        console.log("User not found for refresh token");
         return null;
       }
 
@@ -203,7 +205,7 @@ export class UnifiedAuth extends EventEmitter {
 
       return tokens;
     } catch (error) {
-      console.error('Error refreshing token:', error);
+      console.error("Error refreshing token:", error);
       return null;
     }
   }
@@ -214,22 +216,27 @@ export class UnifiedAuth extends EventEmitter {
       const user = this.users.get(decoded.userId);
 
       if (!user) {
-        console.log('User not found for token');
+        console.log("User not found for token");
         return null;
       }
 
       return user;
     } catch (error) {
-      console.error('Token verification failed:', error);
+      console.error("Token verification failed:", error);
       return null;
     }
   }
 
-  async getSystemCredentials(system: string): Promise<SystemCredentials | null> {
+  async getSystemCredentials(
+    system: string,
+  ): Promise<SystemCredentials | null> {
     return this.systemCredentials.get(system) || null;
   }
 
-  async generateSystemToken(system: string, targetSystem: string): Promise<string | null> {
+  async generateSystemToken(
+    system: string,
+    targetSystem: string,
+  ): Promise<string | null> {
     const credentials = this.systemCredentials.get(system);
     if (!credentials) {
       console.log(`No credentials found for system: ${system}`);
@@ -241,27 +248,30 @@ export class UnifiedAuth extends EventEmitter {
       {
         system,
         targetSystem,
-        permissions: ['system', 'read', 'write'],
-        type: 'system'
+        permissions: ["system", "read", "write"],
+        type: "system",
       },
       this.jwtSecret,
-      { expiresIn: '1h' }
+      { expiresIn: "1h" },
     );
 
     return systemToken;
   }
 
-  async validateSystemToken(token: string, expectedSystem: string): Promise<boolean> {
+  async validateSystemToken(
+    token: string,
+    expectedSystem: string,
+  ): Promise<boolean> {
     try {
       const decoded = jwt.verify(token, this.jwtSecret) as any;
 
-      if (decoded.type !== 'system' || decoded.system !== expectedSystem) {
+      if (decoded.type !== "system" || decoded.system !== expectedSystem) {
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('System token validation failed:', error);
+      console.error("System token validation failed:", error);
       return false;
     }
   }
@@ -272,11 +282,11 @@ export class UnifiedAuth extends EventEmitter {
       userId,
       createdAt: new Date().toISOString(),
       lastActivity: new Date().toISOString(),
-      metadata
+      metadata,
     };
 
     this.sessions.set(sessionId, session);
-    this.emit('session-created', { sessionId, session });
+    this.emit("session-created", { sessionId, session });
 
     return sessionId;
   }
@@ -297,14 +307,17 @@ export class UnifiedAuth extends EventEmitter {
 
   async destroySession(sessionId: string): Promise<void> {
     this.sessions.delete(sessionId);
-    this.emit('session-destroyed', sessionId);
+    this.emit("session-destroyed", sessionId);
   }
 
   async getUserById(userId: string): Promise<User | null> {
     return this.users.get(userId) || null;
   }
 
-  async updateUser(userId: string, updates: Partial<User>): Promise<User | null> {
+  async updateUser(
+    userId: string,
+    updates: Partial<User>,
+  ): Promise<User | null> {
     const user = this.users.get(userId);
     if (!user) {
       return null;
@@ -313,7 +326,7 @@ export class UnifiedAuth extends EventEmitter {
     const updatedUser = { ...user, ...updates };
     this.users.set(userId, updatedUser);
 
-    this.emit('user-updated', updatedUser);
+    this.emit("user-updated", updatedUser);
     return updatedUser;
   }
 
@@ -339,7 +352,7 @@ export class UnifiedAuth extends EventEmitter {
       }
     }
 
-    this.emit('user-deleted', user);
+    this.emit("user-deleted", user);
     return true;
   }
 
@@ -348,13 +361,21 @@ export class UnifiedAuth extends EventEmitter {
   }
 
   async getUserSessions(userId: string): Promise<any[]> {
-    return Array.from(this.sessions.values()).filter(session => session.userId === userId);
+    return Array.from(this.sessions.values()).filter(
+      (session) => session.userId === userId,
+    );
   }
 
   // Cross-system authentication helpers
-  async authenticateWithSystem(targetSystem: string, credentials: any): Promise<any> {
+  async authenticateWithSystem(
+    targetSystem: string,
+    credentials: any,
+  ): Promise<any> {
     // This would handle authentication with external systems
-    const systemToken = await this.generateSystemToken('integration', targetSystem);
+    const systemToken = await this.generateSystemToken(
+      "integration",
+      targetSystem,
+    );
 
     if (!systemToken) {
       throw new Error(`Cannot generate token for system: ${targetSystem}`);
@@ -365,10 +386,10 @@ export class UnifiedAuth extends EventEmitter {
       system: targetSystem,
       token: systemToken,
       authenticated: true,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
-    this.emit('cross-system-auth', authResult);
+    this.emit("cross-system-auth", authResult);
     return authResult;
   }
 
@@ -379,7 +400,9 @@ export class UnifiedAuth extends EventEmitter {
       return false;
     }
 
-    return user.permissions.includes(permission) || user.roles.includes('admin');
+    return (
+      user.permissions.includes(permission) || user.roles.includes("admin")
+    );
   }
 
   async hasRole(userId: string, role: string): Promise<boolean> {
@@ -404,11 +427,13 @@ export class UnifiedAuth extends EventEmitter {
   async cleanupExpiredTokens(): Promise<void> {
     // In a real implementation, you'd check token expiration
     // For now, just log the cleanup
-    console.log('Token cleanup completed');
-    this.emit('tokens-cleaned');
+    console.log("Token cleanup completed");
+    this.emit("tokens-cleaned");
   }
 
-  async cleanupExpiredSessions(maxAge: number = 24 * 60 * 60 * 1000): Promise<void> {
+  async cleanupExpiredSessions(
+    maxAge: number = 24 * 60 * 60 * 1000,
+  ): Promise<void> {
     const now = Date.now();
     let cleaned = 0;
 
@@ -422,7 +447,7 @@ export class UnifiedAuth extends EventEmitter {
 
     if (cleaned > 0) {
       console.log(`Cleaned up ${cleaned} expired sessions`);
-      this.emit('sessions-cleaned', cleaned);
+      this.emit("sessions-cleaned", cleaned);
     }
   }
 
@@ -433,18 +458,18 @@ export class UnifiedAuth extends EventEmitter {
       sessions: this.sessions.size,
       refreshTokens: this.refreshTokens.size,
       systems: this.systemCredentials.size,
-      status: 'healthy'
+      status: "healthy",
     };
   }
 
   // Add missing methods for integration
   async getStatus(): Promise<any> {
     return {
-      status: 'healthy',
+      status: "healthy",
       users: this.users.size,
       sessions: this.sessions.size,
       systems: this.systemCredentials.size,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 }

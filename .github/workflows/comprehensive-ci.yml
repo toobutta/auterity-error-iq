@@ -226,7 +226,7 @@ jobs:
             else
               coverage_percent=$(grep -oP 'line-rate="\K[0-9.]+' ${{ matrix.coverage-file }} | head -1 | awk '{print $1*100}')
             fi
-            
+
             if (( $(echo "$coverage_percent < 80" | bc -l) )); then
               echo "❌ Coverage ($coverage_percent%) is below required threshold (80%)"
               exit 1
@@ -339,16 +339,16 @@ jobs:
         run: |
           docker-compose up -d postgres redis
           sleep 10
-          
+
           # Start backend services
           cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
           cd ../systems/relaycore && npm start &
           cd ../neuroweaver/backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8001 &
-          
+
           # Start frontend services
           cd frontend && npm run preview &
           cd ../systems/neuroweaver/frontend && npm start &
-          
+
           # Wait for services to be ready
           sleep 30
 
@@ -389,7 +389,7 @@ jobs:
           cat > performance-test.js << EOF
           import http from 'k6/http';
           import { check, sleep } from 'k6';
-          
+
           export let options = {
             stages: [
               { duration: '2m', target: 100 },
@@ -403,14 +403,14 @@ jobs:
               http_req_failed: ['rate<0.1'],
             },
           };
-          
+
           export default function () {
             let response = http.get('http://localhost:8000/health');
             check(response, { 'status was 200': (r) => r.status == 200 });
             sleep(1);
           }
           EOF
-          
+
           # Note: In a real scenario, services would need to be running
           # k6 run performance-test.js
 
@@ -435,13 +435,13 @@ jobs:
         run: |
           # Frontend build
           cd frontend && npm ci && npm run build
-          
+
           # RelayCore build
           cd ../systems/relaycore && npm ci && npm run build
-          
+
           # NeuroWeaver frontend build
           cd ../neuroweaver/frontend && npm ci && npm run build
-          
+
           # Backend validation
           cd ../../../backend && pip install -r requirements.txt
           cd ../systems/neuroweaver/backend && pip install -r requirements.txt
@@ -478,13 +478,13 @@ jobs:
         run: |
           cat > deployment-readiness-report.md << EOF
           # Deployment Readiness Report
-          
+
           **Generated:** $(date)
           **Commit:** ${{ github.sha }}
           **Branch:** ${{ github.ref }}
-          
+
           ## Quality Gate Results
-          
+
           | Gate | Status | Details |
           |------|---------|---------|
           | Code Quality | ${{ needs.code-quality.result }} | Linting, formatting, type checking |
@@ -494,13 +494,13 @@ jobs:
           | E2E Tests | ${{ needs.e2e-tests.result }} | Full user journey validation |
           | Performance Tests | ${{ needs.performance-tests.result }} | Load and performance validation |
           | Build Validation | ${{ needs.build-validation.result }} | Build and containerization validation |
-          
+
           ## Coverage Reports
-          
+
           Coverage reports are available in the artifacts section.
-          
+
           ## Next Steps
-          
+
           $( [ "${{ needs.deployment-readiness.result }}" == "success" ] && echo "✅ **APPROVED FOR DEPLOYMENT**" || echo "❌ **DEPLOYMENT BLOCKED** - Review failed gates above" )
           EOF
 

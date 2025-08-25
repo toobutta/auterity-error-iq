@@ -10,6 +10,7 @@ disabled: false
 Run comprehensive checks before deployment to ensure everything is ready and reduce deployment failures.
 
 ## Implementation
+
 ```bash
 echo "🚀 Running pre-deployment checks..."
 
@@ -74,7 +75,7 @@ fi
 echo "🐳 Validating Docker configuration..."
 docker-compose config > /dev/null 2>&1
 DOCKER_EXIT=$?
-if [ $DOCKER_EXIT -ne 0 ]; then 
+if [ $DOCKER_EXIT -ne 0 ]; then
     echo "⚠️  Docker Compose configuration invalid"
     OVERALL_EXIT=1
 fi
@@ -107,6 +108,7 @@ exit $OVERALL_EXIT
 ```
 
 ## Benefits
+
 - Comprehensive pre-deployment validation
 - Reduces deployment failures
 - Ensures quality standards are met

@@ -1,14 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { WorkflowTesterProps } from '../../types/workflow-builder';
-import { WorkflowExecution } from '../../types/workflow';
+import React, { useState, useEffect, useCallback } from "react";
+import { WorkflowTesterProps } from "../../types/workflow-builder";
+import { WorkflowExecution } from "../../types/workflow";
 // TODO: Re-enable when needed
 // import { executeWorkflow } from '../../api/workflows';
-import { wsClient, connectToExecutionStatus, subscribeToStatusUpdates } from '../../api/websocket';
-import WorkflowExecutionResults from '../WorkflowExecutionResults';
+import {
+  wsClient,
+  connectToExecutionStatus,
+  subscribeToStatusUpdates,
+} from "../../api/websocket";
+import WorkflowExecutionResults from "../WorkflowExecutionResults";
 
 interface TestInputField {
   name: string;
-  type: 'string' | 'number' | 'boolean' | 'object';
+  type: "string" | "number" | "boolean" | "object";
   label: string;
   description?: string;
   required: boolean;
@@ -34,91 +38,91 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
     // Add common automotive workflow inputs
     fields.push(
       {
-        name: 'customer_name',
-        type: 'string',
-        label: 'Customer Name',
-        description: 'Full name of the customer',
+        name: "customer_name",
+        type: "string",
+        label: "Customer Name",
+        description: "Full name of the customer",
         required: true,
-        defaultValue: 'John Smith',
+        defaultValue: "John Smith",
       },
       {
-        name: 'customer_email',
-        type: 'string',
-        label: 'Customer Email',
-        description: 'Customer email address',
+        name: "customer_email",
+        type: "string",
+        label: "Customer Email",
+        description: "Customer email address",
         required: true,
-        defaultValue: 'john.smith@email.com',
+        defaultValue: "john.smith@email.com",
       },
       {
-        name: 'customer_phone',
-        type: 'string',
-        label: 'Customer Phone',
-        description: 'Customer phone number',
+        name: "customer_phone",
+        type: "string",
+        label: "Customer Phone",
+        description: "Customer phone number",
         required: false,
-        defaultValue: '(555) 123-4567',
+        defaultValue: "(555) 123-4567",
       },
       {
-        name: 'inquiry_type',
-        type: 'string',
-        label: 'Inquiry Type',
-        description: 'Type of customer inquiry',
+        name: "inquiry_type",
+        type: "string",
+        label: "Inquiry Type",
+        description: "Type of customer inquiry",
         required: false,
-        defaultValue: 'sales',
+        defaultValue: "sales",
       },
       {
-        name: 'budget_max',
-        type: 'number',
-        label: 'Maximum Budget',
-        description: 'Customer maximum budget',
+        name: "budget_max",
+        type: "number",
+        label: "Maximum Budget",
+        description: "Customer maximum budget",
         required: false,
         defaultValue: 35000,
       },
       {
-        name: 'vehicle_preference',
-        type: 'object',
-        label: 'Vehicle Preferences',
-        description: 'Customer vehicle preferences (JSON)',
+        name: "vehicle_preference",
+        type: "object",
+        label: "Vehicle Preferences",
+        description: "Customer vehicle preferences (JSON)",
         required: false,
         defaultValue: {
-          make: 'Toyota',
-          type: 'sedan',
-          features: ['automatic', 'bluetooth'],
+          make: "Toyota",
+          type: "sedan",
+          features: ["automatic", "bluetooth"],
         },
-      }
+      },
     );
 
     // Add specific fields based on workflow triggers
     workflow.steps.forEach((step) => {
       const stepType = step.type as string;
-      if (stepType === 'customer_inquiry') {
+      if (stepType === "customer_inquiry") {
         // Already covered by common fields
-      } else if (stepType === 'inventory_update') {
+      } else if (stepType === "inventory_update") {
         fields.push({
-          name: 'vehicle_data',
-          type: 'object',
-          label: 'Vehicle Data',
-          description: 'Vehicle information for inventory update',
+          name: "vehicle_data",
+          type: "object",
+          label: "Vehicle Data",
+          description: "Vehicle information for inventory update",
           required: true,
           defaultValue: {
-            vin: '1HGBH41JXMN109186',
-            make: 'Honda',
-            model: 'Civic',
+            vin: "1HGBH41JXMN109186",
+            make: "Honda",
+            model: "Civic",
             year: 2023,
             price: 28500,
-            status: 'available',
+            status: "available",
           },
         });
-      } else if (stepType === 'service_appointment') {
+      } else if (stepType === "service_appointment") {
         fields.push({
-          name: 'appointment_data',
-          type: 'object',
-          label: 'Appointment Data',
-          description: 'Service appointment information',
+          name: "appointment_data",
+          type: "object",
+          label: "Appointment Data",
+          description: "Service appointment information",
           required: true,
           defaultValue: {
-            service_type: 'maintenance',
-            scheduled_date: new Date().toISOString().split('T')[0],
-            vehicle_vin: '1HGBH41JXMN109186',
+            service_type: "maintenance",
+            scheduled_date: new Date().toISOString().split("T")[0],
+            vehicle_vin: "1HGBH41JXMN109186",
           },
         });
       }
@@ -148,17 +152,22 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
           await connectToExecutionStatus(executionId);
 
           const unsubscribe = subscribeToStatusUpdates((statusUpdate) => {
-            setExecution((prev) => (prev ? { ...prev, ...statusUpdate } : statusUpdate));
+            setExecution((prev) =>
+              prev ? { ...prev, ...statusUpdate } : statusUpdate,
+            );
 
-            if (statusUpdate.status === 'completed' || statusUpdate.status === 'failed') {
+            if (
+              statusUpdate.status === "completed" ||
+              statusUpdate.status === "failed"
+            ) {
               setIsRunning(false);
             }
           });
 
           return unsubscribe;
         } catch (error) {
-          console.error('Failed to connect to execution status:', error);
-          setError('Failed to connect to real-time updates');
+          console.error("Failed to connect to execution status:", error);
+          setError("Failed to connect to real-time updates");
         }
       };
 
@@ -189,7 +198,7 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
         .map((field) => field.label);
 
       if (missingFields.length > 0) {
-        throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+        throw new Error(`Missing required fields: ${missingFields.join(", ")}`);
       }
 
       // Execute workflow
@@ -197,10 +206,13 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
       setExecutionId(newExecutionId);
 
       // Add initial log
-      setLogs((prev) => [...prev, `🚀 Workflow execution started (ID: ${newExecutionId})`]);
+      setLogs((prev) => [
+        ...prev,
+        `🚀 Workflow execution started (ID: ${newExecutionId})`,
+      ]);
     } catch (error) {
-      console.error('Workflow execution failed:', error);
-      setError(error instanceof Error ? error.message : 'Execution failed');
+      console.error("Workflow execution failed:", error);
+      setError(error instanceof Error ? error.message : "Execution failed");
       setIsRunning(false);
     }
   };
@@ -208,18 +220,18 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
   const handleStop = () => {
     // TODO: Implement workflow cancellation
     setIsRunning(false);
-    setLogs((prev) => [...prev, '⏹️ Workflow execution stopped by user']);
+    setLogs((prev) => [...prev, "⏹️ Workflow execution stopped by user"]);
   };
 
   const renderInputField = (field: TestInputField) => {
     const value = testInputs[field.name];
 
     switch (field.type) {
-      case 'string':
+      case "string":
         return (
           <input
             type="text"
-            value={value || ''}
+            value={value || ""}
             onChange={(e) => handleInputChange(field.name, e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder={field.description}
@@ -227,19 +239,21 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
           />
         );
 
-      case 'number':
+      case "number":
         return (
           <input
             type="number"
-            value={value || ''}
-            onChange={(e) => handleInputChange(field.name, Number(e.target.value))}
+            value={value || ""}
+            onChange={(e) =>
+              handleInputChange(field.name, Number(e.target.value))
+            }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder={field.description}
             required={field.required}
           />
         );
 
-      case 'boolean':
+      case "boolean":
         return (
           <label className="flex items-center space-x-2">
             <input
@@ -252,10 +266,14 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
           </label>
         );
 
-      case 'object':
+      case "object":
         return (
           <textarea
-            value={typeof value === 'object' ? JSON.stringify(value, null, 2) : value || ''}
+            value={
+              typeof value === "object"
+                ? JSON.stringify(value, null, 2)
+                : value || ""
+            }
             onChange={(e) => {
               try {
                 const parsed = JSON.parse(e.target.value);
@@ -317,11 +335,15 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
               <div key={field.name}>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {field.label}
-                  {field.required && <span className="text-red-500 ml-1">*</span>}
+                  {field.required && (
+                    <span className="text-red-500 ml-1">*</span>
+                  )}
                 </label>
                 {renderInputField(field)}
                 {field.description && (
-                  <p className="text-xs text-gray-500 mt-1">{field.description}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {field.description}
+                  </p>
                 )}
               </div>
             ))}
@@ -353,7 +375,12 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
                 </>
               ) : (
                 <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -371,7 +398,12 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
                 onClick={handleStop}
                 className="w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center justify-center space-x-2"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -422,7 +454,10 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
               <div className="bg-gray-900 text-green-400 p-3 rounded-md font-mono text-xs max-h-32 overflow-y-auto">
                 {logs.map((log, index) => (
                   <div key={index} className="mb-1">
-                    <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span> {log}
+                    <span className="text-gray-500">
+                      [{new Date().toLocaleTimeString()}]
+                    </span>{" "}
+                    {log}
                   </div>
                 ))}
               </div>
@@ -456,7 +491,8 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
                 </svg>
                 <p className="text-lg font-medium">Ready to Test</p>
                 <p className="text-sm">
-                  Configure test inputs and click &quot;Execute Workflow&quot; to see results
+                  Configure test inputs and click &quot;Execute Workflow&quot;
+                  to see results
                 </p>
               </div>
             </div>

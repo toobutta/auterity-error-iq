@@ -1,12 +1,12 @@
-import React, { useEffect, useRef } from 'react';
-import { Button } from './Button';
+import React, { useEffect, useRef } from "react";
+import { Button } from "./Button";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  size?: "sm" | "md" | "lg" | "xl" | "full";
   showCloseButton?: boolean;
   closeOnOverlayClick?: boolean;
   closeOnEscape?: boolean;
@@ -19,12 +19,12 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   title,
   children,
-  size = 'md',
+  size = "md",
   showCloseButton = true,
   closeOnOverlayClick = true,
   closeOnEscape = true,
   footer,
-  className = ''
+  className = "",
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -33,16 +33,16 @@ export const Modal: React.FC<ModalProps> = ({
     if (isOpen) {
       // Store the previously focused element
       previousFocusRef.current = document.activeElement as HTMLElement;
-      
+
       // Focus the modal
       modalRef.current?.focus();
-      
+
       // Prevent body scroll
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
       // Restore body scroll
-      document.body.style.overflow = 'unset';
-      
+      document.body.style.overflow = "unset";
+
       // Restore focus to previously focused element
       if (previousFocusRef.current) {
         previousFocusRef.current.focus();
@@ -50,38 +50,38 @@ export const Modal: React.FC<ModalProps> = ({
     }
 
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (closeOnEscape && event.key === 'Escape') {
+      if (closeOnEscape && event.key === "Escape") {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
+      document.addEventListener("keydown", handleEscape);
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener("keydown", handleEscape);
     };
   }, [isOpen, closeOnEscape, onClose]);
 
   const getSizeClasses = () => {
     switch (size) {
-      case 'sm':
-        return 'max-w-md';
-      case 'lg':
-        return 'max-w-4xl';
-      case 'xl':
-        return 'max-w-6xl';
-      case 'full':
-        return 'max-w-full mx-4';
+      case "sm":
+        return "max-w-md";
+      case "lg":
+        return "max-w-4xl";
+      case "xl":
+        return "max-w-6xl";
+      case "full":
+        return "max-w-full mx-4";
       default:
-        return 'max-w-2xl';
+        return "max-w-2xl";
     }
   };
 
@@ -96,7 +96,7 @@ export const Modal: React.FC<ModalProps> = ({
   return (
     <div
       className="fixed inset-0 z-50 overflow-y-auto"
-      aria-labelledby={title ? 'modal-title' : undefined}
+      aria-labelledby={title ? "modal-title" : undefined}
       role="dialog"
       aria-modal="true"
     >
@@ -125,7 +125,10 @@ export const Modal: React.FC<ModalProps> = ({
           {(title || showCloseButton) && (
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
               {title && (
-                <h3 id="modal-title" className="text-lg font-medium text-gray-900">
+                <h3
+                  id="modal-title"
+                  className="text-lg font-medium text-gray-900"
+                >
                   {title}
                 </h3>
               )}
@@ -135,8 +138,18 @@ export const Modal: React.FC<ModalProps> = ({
                   className="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-md"
                   aria-label="Close modal"
                 >
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               )}
@@ -144,9 +157,7 @@ export const Modal: React.FC<ModalProps> = ({
           )}
 
           {/* Content */}
-          <div className="px-6 py-4">
-            {children}
-          </div>
+          <div className="px-6 py-4">{children}</div>
 
           {/* Footer */}
           {footer && (

@@ -1,6 +1,7 @@
 # [CLINE-TASK] Chart Integration and Visualization Components
 
 ## Task Overview
+
 Create enhanced chart components and visualization utilities for the three-system AI platform monitoring and analytics. Focus on reusable chart components that can display metrics from AutoMatrix, RelayCore, and NeuroWeaver systems.
 
 ## Component Specifications
@@ -8,7 +9,9 @@ Create enhanced chart components and visualization utilities for the three-syste
 ### 1. Enhanced Chart Components
 
 #### Multi-System Line Chart
+
 **File**: `frontend/src/components/charts/MultiSystemLineChart.tsx`
+
 ```typescript
 interface MultiSystemLineChartProps {
   data: Array<{
@@ -19,8 +22,8 @@ interface MultiSystemLineChartProps {
       neuroweaver?: number;
     };
   }>;
-  metric: 'requests' | 'latency' | 'errors' | 'cpu' | 'memory';
-  timeRange: '1h' | '6h' | '24h' | '7d';
+  metric: "requests" | "latency" | "errors" | "cpu" | "memory";
+  timeRange: "1h" | "6h" | "24h" | "7d";
   showLegend?: boolean;
   height?: number;
   colors?: {
@@ -37,17 +40,19 @@ export const MultiSystemLineChart: React.FC<MultiSystemLineChartProps> = ({
   showLegend = true,
   height = 300,
   colors = {
-    autmatrix: '#3B82F6',
-    relaycore: '#10B981', 
-    neuroweaver: '#8B5CF6'
-  }
+    autmatrix: "#3B82F6",
+    relaycore: "#10B981",
+    neuroweaver: "#8B5CF6",
+  },
 }) => {
   // Implementation using recharts
 };
 ```
 
 #### Real-time Metrics Chart
+
 **File**: `frontend/src/components/charts/RealTimeMetricsChart.tsx`
+
 ```typescript
 interface RealTimeMetricsChartProps {
   endpoint: string;
@@ -67,14 +72,16 @@ export const RealTimeMetricsChart: React.FC<RealTimeMetricsChartProps> = ({
   maxDataPoints = 100,
   metric,
   unit,
-  thresholds
+  thresholds,
 }) => {
   // Real-time data fetching and chart updates
 };
 ```
 
 #### Cost Analysis Chart
+
 **File**: `frontend/src/components/charts/CostAnalysisChart.tsx`
+
 ```typescript
 interface CostAnalysisChartProps {
   data: Array<{
@@ -84,7 +91,7 @@ interface CostAnalysisChartProps {
     neuroweaver: number;
     total: number;
   }>;
-  breakdown: 'daily' | 'weekly' | 'monthly';
+  breakdown: "daily" | "weekly" | "monthly";
   showProjection?: boolean;
   budget?: number;
 }
@@ -93,7 +100,7 @@ export const CostAnalysisChart: React.FC<CostAnalysisChartProps> = ({
   data,
   breakdown,
   showProjection = false,
-  budget
+  budget,
 }) => {
   // Cost visualization with budget tracking
 };
@@ -102,7 +109,9 @@ export const CostAnalysisChart: React.FC<CostAnalysisChartProps> = ({
 ### 2. Chart Utility Functions
 
 #### Chart Data Transformer
+
 **File**: `frontend/src/utils/chartUtils.ts`
+
 ```typescript
 export interface MetricDataPoint {
   timestamp: Date;
@@ -115,7 +124,7 @@ export interface ChartDataTransformer {
   transformTimeSeriesData: (data: MetricDataPoint[], groupBy: string) => any[];
   aggregateBySystem: (data: MetricDataPoint[]) => Record<string, number>;
   calculateTrends: (data: MetricDataPoint[]) => {
-    trend: 'up' | 'down' | 'stable';
+    trend: "up" | "down" | "stable";
     percentage: number;
   };
   formatForRecharts: (data: any[], xKey: string, yKeys: string[]) => any[];
@@ -123,52 +132,61 @@ export interface ChartDataTransformer {
 ```
 
 #### Performance Metrics Calculator
+
 **File**: `frontend/src/utils/performanceMetrics.ts`
+
 ```typescript
 export interface PerformanceCalculator {
   calculateAverageResponseTime: (data: MetricDataPoint[]) => number;
   calculateErrorRate: (total: number, errors: number) => number;
   calculateUptime: (healthChecks: HealthCheck[]) => number;
   calculateThroughput: (requests: number, timeWindow: number) => number;
-  detectAnomalies: (data: MetricDataPoint[], threshold: number) => MetricDataPoint[];
+  detectAnomalies: (
+    data: MetricDataPoint[],
+    threshold: number,
+  ) => MetricDataPoint[];
 }
 ```
 
 ### 3. Dashboard Integration Components
 
 #### System Comparison Dashboard
+
 **File**: `frontend/src/components/dashboards/SystemComparisonDashboard.tsx`
+
 ```typescript
 interface SystemComparisonProps {
-  systems: ['autmatrix', 'relaycore', 'neuroweaver'];
+  systems: ["autmatrix", "relaycore", "neuroweaver"];
   metrics: string[];
   timeRange: string;
-  comparisonMode: 'side-by-side' | 'overlay' | 'normalized';
+  comparisonMode: "side-by-side" | "overlay" | "normalized";
 }
 
 export const SystemComparisonDashboard: React.FC<SystemComparisonProps> = ({
   systems,
   metrics,
   timeRange,
-  comparisonMode
+  comparisonMode,
 }) => {
   // Multi-system comparison interface
 };
 ```
 
 #### Alert Visualization Component
+
 **File**: `frontend/src/components/charts/AlertVisualization.tsx`
+
 ```typescript
 interface AlertVisualizationProps {
   alerts: Array<{
     id: string;
     system: string;
-    severity: 'low' | 'medium' | 'high' | 'critical';
+    severity: "low" | "medium" | "high" | "critical";
     message: string;
     timestamp: Date;
     resolved: boolean;
   }>;
-  groupBy: 'system' | 'severity' | 'time';
+  groupBy: "system" | "severity" | "time";
   showResolved?: boolean;
 }
 ```
@@ -176,34 +194,36 @@ interface AlertVisualizationProps {
 ## API Integration Details
 
 ### Chart Data Endpoints
+
 ```typescript
 // Enhanced monitoring API for chart data
 export const chartDataApi = {
   getTimeSeriesData: (
-    systems: string[], 
-    metrics: string[], 
+    systems: string[],
+    metrics: string[],
     timeRange: string,
-    granularity: 'minute' | 'hour' | 'day'
+    granularity: "minute" | "hour" | "day",
   ): Promise<TimeSeriesData[]> => {},
-  
+
   getAggregatedMetrics: (
     systems: string[],
-    timeRange: string
+    timeRange: string,
   ): Promise<AggregatedMetrics> => {},
-  
+
   getCostBreakdown: (
     timeRange: string,
-    groupBy: 'system' | 'user' | 'model'
+    groupBy: "system" | "user" | "model",
   ): Promise<CostBreakdown[]> => {},
-  
+
   getPerformanceMetrics: (
     system: string,
-    timeRange: string
-  ): Promise<PerformanceMetrics> => {}
+    timeRange: string,
+  ): Promise<PerformanceMetrics> => {},
 };
 ```
 
 ## Styling Requirements
+
 - Consistent color scheme across all charts
 - Responsive design that works on mobile and desktop
 - Dark/light theme support
@@ -212,6 +232,7 @@ export const chartDataApi = {
 - Error states with retry functionality
 
 ## Error Handling Requirements
+
 - Network timeout handling for chart data requests
 - Graceful degradation when data is unavailable
 - Retry logic with exponential backoff
@@ -220,6 +241,7 @@ export const chartDataApi = {
 - Loading indicators during data fetching
 
 ## Performance Requirements
+
 - Efficient data updates for real-time charts
 - Memory management for large datasets
 - Lazy loading for complex visualizations
@@ -228,6 +250,7 @@ export const chartDataApi = {
 - Chart animation optimization
 
 ## Success Criteria
+
 - [ ] All chart components render correctly with sample data
 - [ ] Real-time updates work smoothly without performance issues
 - [ ] Charts are responsive and accessible
@@ -237,6 +260,7 @@ export const chartDataApi = {
 - [ ] Performance meets requirements (< 100ms render time)
 
 ## Technical Context
+
 - Build on existing chart components in `frontend/src/components/charts/`
 - Use Recharts library (already in dependencies)
 - Follow patterns from `frontend/src/components/UnifiedMonitoringDashboard.tsx`
@@ -244,6 +268,7 @@ export const chartDataApi = {
 - Use existing utility functions and hooks
 
 ## Files to Create/Modify
+
 1. `frontend/src/components/charts/MultiSystemLineChart.tsx`
 2. `frontend/src/components/charts/RealTimeMetricsChart.tsx`
 3. `frontend/src/components/charts/CostAnalysisChart.tsx`
@@ -255,6 +280,7 @@ export const chartDataApi = {
 9. `frontend/src/hooks/useChartData.ts`
 
 ## Testing Requirements
+
 - Unit tests for all chart components
 - Integration tests for data fetching
 - Visual regression tests for chart rendering
@@ -262,12 +288,15 @@ export const chartDataApi = {
 - Accessibility tests for keyboard navigation
 
 ## Priority
+
 Medium-High - Required for comprehensive monitoring and analytics
 
 ## Estimated Time
+
 8-10 hours
 
 ## Dependencies
+
 - Existing chart components and utilities
 - Monitoring API endpoints
 - Recharts library

@@ -12,7 +12,12 @@
     "test:debug": "playwright test --debug",
     "test:codegen": "playwright codegen"
   },
-  "keywords": ["e2e", "testing", "playwright", "auterity"],
+  "keywords": [
+    "e2e",
+    "testing",
+    "playwright",
+    "auterity"
+  ],
   "author": "Auterity Team",
   "license": "MIT",
   "devDependencies": {

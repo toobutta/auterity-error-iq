@@ -1,3 +1,4 @@
+from app.celery_app import celery_app
 from app.services.ai_service import AIService
 from app.services.workflow_execution_engine import WorkflowExecutionEngine
 

@@ -2,7 +2,7 @@ export interface ExecutionLogEntry {
   id: string;
   executionId: string;
   timestamp: string;
-  level: 'info' | 'warn' | 'error' | 'debug';
+  level: "info" | "warn" | "error" | "debug";
   message: string;
   stepId?: string;
   stepName?: string;
@@ -12,7 +12,7 @@ export interface ExecutionLogEntry {
 export interface ExecutionLog {
   id: string;
   timestamp: string;
-  level: 'info' | 'warn' | 'error' | 'debug';
+  level: "info" | "warn" | "error" | "debug";
   message: string;
   stepId?: string;
   stepName?: string;
@@ -20,7 +20,7 @@ export interface ExecutionLog {
 }
 
 export interface StatusUpdate {
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+  status: "pending" | "running" | "completed" | "failed" | "cancelled";
   message?: string;
   progress?: number;
   timestamp: string;

@@ -7,12 +7,14 @@ Cline has **2 CRITICAL INCOMPLETE TASKS** that must be completed immediately bef
 ## OVERDUE TASKS - COMPLETE IMMEDIATELY
 
 ### 1. 🏗️ CRITICAL: NeuroWeaver Project Structure Setup (Task 7)
+
 **File**: `cline-neuroweaver-setup-task.md`
 **Status**: IN PROGRESS - Foundation blocking other work
 **Priority**: CRITICAL - BLOCKING ALL NEUROWEAVER FEATURES
 **Estimated Time**: 12-16 hours
 
 **Required Deliverables**:
+
 - Complete FastAPI backend structure (`systems/neuroweaver/backend/`)
 - Next.js frontend with Material-UI (`systems/neuroweaver/frontend/`)
 - Docker container configuration for all services
@@ -21,12 +23,14 @@ Cline has **2 CRITICAL INCOMPLETE TASKS** that must be completed immediately bef
 - Authentication integration with unified JWT system
 
 ### 2. 🤝 HIGH: Tool Communication and Handoff System (Task 15)
+
 **File**: `cline-tool-communication-system.md`
 **Status**: IN PROGRESS - Required for tool autonomy
 **Priority**: HIGH - ENABLES AUTONOMOUS OPERATION
 **Estimated Time**: 6-8 hours
 
 **Required Deliverables**:
+
 - Direct communication channels between tools (`.kiro/communication/`)
 - Automated handoff protocols for error scenarios
 - Shared context management system
@@ -37,6 +41,7 @@ Cline has **2 CRITICAL INCOMPLETE TASKS** that must be completed immediately bef
 ## COMPLETION REQUIREMENTS
 
 ### Task 7: NeuroWeaver Setup Success Criteria
+
 - ✅ Complete project structure with all required files
 - ✅ All core services running in Docker containers
 - ✅ All API endpoints implemented and tested
@@ -48,6 +53,7 @@ Cline has **2 CRITICAL INCOMPLETE TASKS** that must be completed immediately bef
 - ✅ Ready for RelayCore connector implementation
 
 ### Task 15: Tool Communication Success Criteria
+
 - ✅ Direct tool-to-tool messaging without human intervention
 - ✅ Automated handoffs triggered by error conditions
 - ✅ Shared context maintained across all tool transitions
@@ -60,18 +66,21 @@ Cline has **2 CRITICAL INCOMPLETE TASKS** that must be completed immediately bef
 ## EXECUTION PROTOCOL
 
 ### Immediate Priority (Next 4 Hours)
+
 1. **Focus on Task 7** - NeuroWeaver foundation is blocking multiple other tasks
 2. **Complete backend structure** - FastAPI application with all required endpoints
 3. **Set up Docker containers** - All services must be containerized and running
 4. **Implement database models** - Complete schema and migrations
 
 ### Today's Deliverables (Next 12 Hours)
+
 1. **Task 7 fully completed** - All NeuroWeaver components functional
 2. **Begin Task 15** - Start tool communication system implementation
 3. **Integration testing** - Verify NeuroWeaver integrates with existing auth
 4. **Documentation updates** - Complete setup and usage documentation
 
 ### Quality Verification Steps
+
 - All Docker containers build and run successfully
 - All API endpoints respond correctly
 - Frontend components render without errors
@@ -83,6 +92,7 @@ Cline has **2 CRITICAL INCOMPLETE TASKS** that must be completed immediately bef
 ## TECHNICAL SPECIFICATIONS
 
 ### Task 7: File Structure Requirements
+
 ```
 systems/neuroweaver/backend/
 ├── app/
@@ -108,6 +118,7 @@ systems/neuroweaver/frontend/
 ```
 
 ### Task 15: Communication System Structure
+
 ```
 .kiro/communication/
 ├── tool-bridge.ts              # Main communication interface
@@ -121,6 +132,7 @@ systems/neuroweaver/frontend/
 ## INTEGRATION REQUIREMENTS
 
 ### NeuroWeaver Integration Points
+
 - **Authentication**: Must use unified JWT from Task 3
 - **Database**: PostgreSQL with separate schema
 - **API Client**: TypeScript interfaces for all endpoints
@@ -128,6 +140,7 @@ systems/neuroweaver/frontend/
 - **Monitoring**: Health checks and metrics endpoints
 
 ### Tool Communication Integration Points
+
 - **Existing Systems**: AutoMatrix, RelayCore, NeuroWeaver
 - **Error Handling**: Integration with error correlation system
 - **Monitoring**: Connection to unified monitoring dashboard
@@ -136,12 +149,14 @@ systems/neuroweaver/frontend/
 ## BLOCKING DEPENDENCIES
 
 ### Tasks Blocked by NeuroWeaver Setup (Task 7)
+
 - Task 8: NeuroWeaver model registry implementation
 - Task 9: NeuroWeaver-RelayCore performance monitoring
 - Task 13: NeuroWeaver training pipeline
 - All NeuroWeaver-related features and integrations
 
 ### Tasks Enhanced by Tool Communication (Task 15)
+
 - Improved error resolution across all systems
 - Autonomous operation without human intervention
 - Better coordination between Amazon Q and Cline
@@ -150,6 +165,7 @@ systems/neuroweaver/frontend/
 ## ESCALATION WARNING
 
 **If tasks are not completed within 24 hours:**
+
 - NeuroWeaver integration will be delayed indefinitely
 - Tool autonomy features will remain unavailable
 - Project timeline will be significantly impacted
@@ -158,6 +174,7 @@ systems/neuroweaver/frontend/
 ## SUPPORT RESOURCES
 
 ### Available Documentation
+
 - Complete task specifications with technical details
 - Existing code patterns in AutoMatrix and RelayCore
 - Docker configuration examples
@@ -165,6 +182,7 @@ systems/neuroweaver/frontend/
 - Database schema patterns
 
 ### Integration Examples
+
 - AutoMatrix backend structure: `backend/app/`
 - RelayCore service structure: `systems/relaycore/src/`
 - Existing Docker configuration: `docker-compose.yml`
@@ -173,6 +191,7 @@ systems/neuroweaver/frontend/
 ## COMPLETION REPORTING
 
 Upon completion of each task, Cline must:
+
 1. **Update task status** in main tasks.md file
 2. **Provide working demonstration** of all components
 3. **Document setup and usage** instructions

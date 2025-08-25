@@ -7,10 +7,9 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import numpy as np
+from app.services.registry import service_registry
 from fastapi import WebSocket
 from pydantic import BaseModel
-
-from app.services.registry import service_registry
 
 
 class ServiceHealthMetrics(BaseModel):
@@ -397,9 +396,9 @@ class AIServiceOrchestrator:
         ecosystem_analysis["cascade_failure_risk"] = await self._calculate_cascade_risk(
             services
         )
-        ecosystem_analysis["optimization_opportunities"] = (
-            await self._identify_optimizations(services)
-        )
+        ecosystem_analysis[
+            "optimization_opportunities"
+        ] = await self._identify_optimizations(services)
 
         return ecosystem_analysis
 

@@ -2,9 +2,9 @@
 
 ## Task Assignment
 
-**Tool**: Amazon Q (Claude 3.7)  
-**Priority**: CRITICAL  
-**Estimated Time**: 4-6 hours  
+**Tool**: Amazon Q (Claude 3.7)
+**Priority**: CRITICAL
+**Estimated Time**: 4-6 hours
 **Status**: IMMEDIATE - Required to complete Task 7
 
 ## Task Overview

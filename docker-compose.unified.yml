@@ -45,16 +45,23 @@ services:
       - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
       - SLACK_DEFAULT_CHANNEL=#alerts
       - MINIO_ENDPOINT=minio:9000
-      - MINIO_ACCESS_KEY=admin
-      - MINIO_SECRET_KEY=${MINIO_PASSWORD:-auterity123}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-admin}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-auterity123}
     depends_on:
-      - postgres
-      - redis
-      - rabbitmq
-      - kafka
-      - vault
-      - puppeteer
-      - mailhog
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      vault:
+        condition: service_started
+      puppeteer:
+        condition: service_healthy
+      mailhog:
+        condition: service_healthy
     ports:
       - "8080:8000"
     restart: unless-stopped
@@ -64,7 +71,7 @@ services:
     environment:
       - VITE_API_URL=http://localhost:8080
     ports:
-      - "3000:80"
+      - "3002:80"
     restart: unless-stopped
 
   # Databases
@@ -79,6 +86,11 @@ services:
     ports:
       - "5432:5432"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
@@ -87,6 +99,11 @@ services:
     ports:
       - "6379:6379"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
   # Message Queue
   rabbitmq:
@@ -100,6 +117,11 @@ services:
       - "5672:5672"
       - "15672:15672"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   # Event Streaming
   kafka:
@@ -110,10 +132,16 @@ services:
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     ports:
       - "9092:9092"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -123,6 +151,11 @@ services:
     ports:
       - "2181:2181"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "echo", "ruok", "|", "nc", "localhost", "2181"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   # Secrets Management
   vault:
@@ -140,19 +173,26 @@ services:
 
   # ML Tracking
   mlflow:
-    image: python:3.9-slim
+    build:
+      context: ./mlflow
+      dockerfile: Dockerfile
     command: >
-      bash -c "pip install mlflow psycopg2-binary &&
-               mlflow server --host 0.0.0.0 --port 5000 
-               --backend-store-uri postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/mlflow
-               --default-artifact-root /mlflow/artifacts"
+      mlflow server --host 0.0.0.0 --port 5000
+      --backend-store-uri postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/mlflow
+      --default-artifact-root /mlflow/artifacts
     volumes:
       - mlflow_data:/mlflow/artifacts
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     ports:
       - "5000:5000"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # Vector Database
   weaviate:
@@ -310,13 +350,13 @@ services:
           memory: 256M
 
   # Missing Services - Phase 1 Implementation
-  
+
   # Puppeteer Browser Automation - Enhanced
   puppeteer:
     image: browserless/chrome:latest
     environment:
       - CONCURRENT=10
-      - TOKEN=auterity-secure-token-2025
+      - TOKEN=${PUPPETEER_TOKEN:-auterity-secure-token-2025}
       - WORKSPACE_EXPIRE_DAYS=1
       - PREBOOT_CHROME=true
       - ENABLE_DEBUG_VIEWER=true
@@ -527,7 +567,7 @@ services:
       - /var/log:/var/log:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - promtail_positions:/tmp/positions
-    command: 
+    command:
       - '-config.file=/etc/promtail/config.yml'
       - '-server.http-listen-port=9080'
       - '-server.grpc-listen-port=9095'
@@ -555,8 +595,8 @@ services:
   minio:
     image: minio/minio:latest
     environment:
-      - MINIO_ROOT_USER=admin
-      - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD:-auterity-secure-2025}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-admin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-auterity-secure-2025}
       - MINIO_BROWSER_REDIRECT_URL=http://localhost:9001
       - MINIO_SERVER_URL=http://localhost:9000
       - MINIO_PROMETHEUS_AUTH_TYPE=public

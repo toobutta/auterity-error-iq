@@ -1,13 +1,13 @@
-import React, { useEffect, useState, Suspense, lazy } from 'react';
-import Layout from '../components/Layout';
-import { MetricCard } from '../components/MetricCard';
-import { getDashboardMetrics, DashboardMetrics } from '../api/workflows';
+import React, { useEffect, useState, Suspense, lazy } from "react";
+import Layout from "../components/Layout";
+import { MetricCard } from "../components/MetricCard";
+import { getDashboardMetrics, DashboardMetrics } from "../api/workflows";
 
 // Lazy load the PerformanceDashboard to reduce initial bundle size
 const PerformanceDashboard = lazy(() =>
-  import('../components/PerformanceDashboard').then((module) => ({
+  import("../components/PerformanceDashboard").then((module) => ({
     default: module.PerformanceDashboard,
-  }))
+  })),
 );
 
 const Dashboard: React.FC = () => {
@@ -23,8 +23,8 @@ const Dashboard: React.FC = () => {
       setMetrics(data);
       setLastUpdated(new Date());
     } catch (err) {
-      setError('Failed to load dashboard metrics');
-      console.error('Dashboard metrics error:', err);
+      setError("Failed to load dashboard metrics");
+      console.error("Dashboard metrics error:", err);
     } finally {
       setLoading(false);
     }
@@ -138,7 +138,9 @@ const Dashboard: React.FC = () => {
                 <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
                   Error loading dashboard
                 </h3>
-                <p className="text-sm text-red-700 dark:text-red-300 mt-1">{error}</p>
+                <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                  {error}
+                </p>
               </div>
             </div>
           </div>
@@ -156,23 +158,25 @@ const Dashboard: React.FC = () => {
           />
           <MetricCard
             title="Success Rate"
-            value={metrics ? formatPercentage(metrics.successRate) : '0%'}
+            value={metrics ? formatPercentage(metrics.successRate) : "0%"}
             subtitle="Last 30 days"
             trend={
               metrics && metrics.successRate > 0.85
-                ? 'up'
+                ? "up"
                 : metrics && metrics.successRate < 0.7
-                  ? 'down'
-                  : 'neutral'
+                  ? "down"
+                  : "neutral"
             }
-            trendValue={metrics ? `${metrics.totalExecutions} executions` : '0 executions'}
+            trendValue={
+              metrics ? `${metrics.totalExecutions} executions` : "0 executions"
+            }
             icon="✅"
             variant="performance"
             loading={loading}
           />
           <MetricCard
             title="Avg Execution Time"
-            value={metrics ? formatTime(metrics.averageExecutionTime) : '0ms'}
+            value={metrics ? formatTime(metrics.averageExecutionTime) : "0ms"}
             subtitle="Per workflow"
             icon="⏱️"
             variant="performance"
@@ -210,7 +214,7 @@ const Dashboard: React.FC = () => {
             title="Failed Executions"
             value={metrics?.failedExecutions ?? 0}
             subtitle="Requiring attention"
-            trend={metrics && metrics.failedExecutions > 0 ? 'down' : 'neutral'}
+            trend={metrics && metrics.failedExecutions > 0 ? "down" : "neutral"}
             icon="❌"
             variant="service"
             loading={loading}
@@ -244,8 +248,12 @@ const Dashboard: React.FC = () => {
             >
               <div className="text-2xl mr-3">⚙️</div>
               <div>
-                <h3 className="font-medium text-gray-900 dark:text-white">Create Workflow</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Build a new AI workflow</p>
+                <h3 className="font-medium text-gray-900 dark:text-white">
+                  Create Workflow
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Build a new AI workflow
+                </p>
               </div>
             </a>
             <a
@@ -254,8 +262,12 @@ const Dashboard: React.FC = () => {
             >
               <div className="text-2xl mr-3">📋</div>
               <div>
-                <h3 className="font-medium text-gray-900 dark:text-white">Browse Templates</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Use automotive templates</p>
+                <h3 className="font-medium text-gray-900 dark:text-white">
+                  Browse Templates
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Use automotive templates
+                </p>
               </div>
             </a>
             <button
@@ -264,8 +276,12 @@ const Dashboard: React.FC = () => {
             >
               <div className="text-2xl mr-3">📊</div>
               <div>
-                <h3 className="font-medium text-gray-900 dark:text-white">View Analytics</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Performance insights</p>
+                <h3 className="font-medium text-gray-900 dark:text-white">
+                  View Analytics
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Performance insights
+                </p>
               </div>
             </button>
           </div>

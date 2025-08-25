@@ -1,6 +1,6 @@
-import winston from 'winston';
-import { EventEmitter } from 'events';
-import { v4 as uuidv4 } from 'uuid';
+import winston from "winston";
+import { EventEmitter } from "events";
+import { v4 as uuidv4 } from "uuid";
 
 export interface LogEntry {
   id: string;
@@ -47,9 +47,11 @@ export class IntegrationLogger extends EventEmitter {
   private maxEntries = 10000;
 
   constructor(
-    private logLevel: string = process.env.LOG_LEVEL || 'info',
-    private enableFileLogging: boolean = process.env.ENABLE_FILE_LOGGING === 'true',
-    private enableConsoleLogging: boolean = process.env.ENABLE_CONSOLE_LOGGING !== 'false'
+    private logLevel: string = process.env.LOG_LEVEL || "info",
+    private enableFileLogging: boolean = process.env.ENABLE_FILE_LOGGING ===
+      "true",
+    private enableConsoleLogging: boolean = process.env
+      .ENABLE_CONSOLE_LOGGING !== "false",
   ) {
     super();
     this.initializeLogger();
@@ -67,11 +69,13 @@ export class IntegrationLogger extends EventEmitter {
             winston.format.timestamp(),
             winston.format.colorize(),
             winston.format.printf(({ timestamp, level, message, ...meta }) => {
-              const metaStr = Object.keys(meta).length ? JSON.stringify(meta, null, 2) : '';
+              const metaStr = Object.keys(meta).length
+                ? JSON.stringify(meta, null, 2)
+                : "";
               return `${timestamp} [${level}]: ${message} ${metaStr}`;
-            })
-          )
-        })
+            }),
+          ),
+        }),
       );
     }
 
@@ -79,38 +83,38 @@ export class IntegrationLogger extends EventEmitter {
     if (this.enableFileLogging) {
       transports.push(
         new winston.transports.File({
-          filename: 'logs/integration.log',
+          filename: "logs/integration.log",
           level: this.logLevel,
           format: winston.format.combine(
             winston.format.timestamp(),
-            winston.format.json()
+            winston.format.json(),
           ),
           maxsize: 10 * 1024 * 1024, // 10MB
-          maxFiles: 5
-        })
+          maxFiles: 5,
+        }),
       );
 
       // Error log file
       transports.push(
         new winston.transports.File({
-          filename: 'logs/integration-error.log',
-          level: 'error',
+          filename: "logs/integration-error.log",
+          level: "error",
           format: winston.format.combine(
             winston.format.timestamp(),
-            winston.format.json()
+            winston.format.json(),
           ),
           maxsize: 10 * 1024 * 1024, // 10MB
-          maxFiles: 3
-        })
+          maxFiles: 3,
+        }),
       );
     }
 
     this.logger = winston.createLogger({
       level: this.logLevel,
-      transports
+      transports,
     });
 
-    console.log('Integration logger initialized');
+    console.log("Integration logger initialized");
   }
 
   private createLogEntry(
@@ -124,7 +128,7 @@ export class IntegrationLogger extends EventEmitter {
     sessionId?: string,
     error?: Error,
     duration?: number,
-    statusCode?: number
+    statusCode?: number,
   ): LogEntry {
     const entry: LogEntry = {
       id: uuidv4(),
@@ -139,7 +143,7 @@ export class IntegrationLogger extends EventEmitter {
       sessionId,
       error,
       duration,
-      statusCode
+      statusCode,
     };
 
     return entry;
@@ -153,11 +157,24 @@ export class IntegrationLogger extends EventEmitter {
       this.logEntries = this.logEntries.slice(-this.maxEntries);
     }
 
-    this.emit('log-entry', entry);
+    this.emit("log-entry", entry);
   }
 
-  async info(system: string, component: string, message: string, data?: any, correlationId?: string): Promise<void> {
-    const entry = this.createLogEntry('info', system, component, message, data, correlationId);
+  async info(
+    system: string,
+    component: string,
+    message: string,
+    data?: any,
+    correlationId?: string,
+  ): Promise<void> {
+    const entry = this.createLogEntry(
+      "info",
+      system,
+      component,
+      message,
+      data,
+      correlationId,
+    );
     this.storeLogEntry(entry);
 
     this.logger.info(message, {
@@ -165,12 +182,25 @@ export class IntegrationLogger extends EventEmitter {
       component,
       data,
       correlationId,
-      id: entry.id
+      id: entry.id,
     });
   }
 
-  async warn(system: string, component: string, message: string, data?: any, correlationId?: string): Promise<void> {
-    const entry = this.createLogEntry('warn', system, component, message, data, correlationId);
+  async warn(
+    system: string,
+    component: string,
+    message: string,
+    data?: any,
+    correlationId?: string,
+  ): Promise<void> {
+    const entry = this.createLogEntry(
+      "warn",
+      system,
+      component,
+      message,
+      data,
+      correlationId,
+    );
     this.storeLogEntry(entry);
 
     this.logger.warn(message, {
@@ -178,12 +208,29 @@ export class IntegrationLogger extends EventEmitter {
       component,
       data,
       correlationId,
-      id: entry.id
+      id: entry.id,
     });
   }
 
-  async error(system: string, component: string, message: string, error?: Error, data?: any, correlationId?: string): Promise<void> {
-    const entry = this.createLogEntry('error', system, component, message, data, correlationId, undefined, undefined, error);
+  async error(
+    system: string,
+    component: string,
+    message: string,
+    error?: Error,
+    data?: any,
+    correlationId?: string,
+  ): Promise<void> {
+    const entry = this.createLogEntry(
+      "error",
+      system,
+      component,
+      message,
+      data,
+      correlationId,
+      undefined,
+      undefined,
+      error,
+    );
     this.storeLogEntry(entry);
 
     this.logger.error(message, {
@@ -193,12 +240,25 @@ export class IntegrationLogger extends EventEmitter {
       stack: error?.stack,
       data,
       correlationId,
-      id: entry.id
+      id: entry.id,
     });
   }
 
-  async debug(system: string, component: string, message: string, data?: any, correlationId?: string): Promise<void> {
-    const entry = this.createLogEntry('debug', system, component, message, data, correlationId);
+  async debug(
+    system: string,
+    component: string,
+    message: string,
+    data?: any,
+    correlationId?: string,
+  ): Promise<void> {
+    const entry = this.createLogEntry(
+      "debug",
+      system,
+      component,
+      message,
+      data,
+      correlationId,
+    );
     this.storeLogEntry(entry);
 
     this.logger.debug(message, {
@@ -206,7 +266,7 @@ export class IntegrationLogger extends EventEmitter {
       component,
       data,
       correlationId,
-      id: entry.id
+      id: entry.id,
     });
   }
 
@@ -219,15 +279,16 @@ export class IntegrationLogger extends EventEmitter {
     duration: number,
     userId?: string,
     correlationId?: string,
-    error?: Error
+    error?: Error,
   ): Promise<void> {
-    const level = statusCode >= 400 ? 'error' : statusCode >= 300 ? 'warn' : 'info';
+    const level =
+      statusCode >= 400 ? "error" : statusCode >= 300 ? "warn" : "info";
     const message = `HTTP ${method} ${url} - ${statusCode} (${duration}ms)`;
 
     const entry = this.createLogEntry(
       level,
       system,
-      'http',
+      "http",
       message,
       { method, url, statusCode, duration },
       correlationId,
@@ -235,26 +296,26 @@ export class IntegrationLogger extends EventEmitter {
       undefined,
       error,
       duration,
-      statusCode
+      statusCode,
     );
 
     this.storeLogEntry(entry);
 
     const logData = {
       system,
-      component: 'http',
+      component: "http",
       method,
       url,
       statusCode,
       duration,
       userId,
       correlationId,
-      id: entry.id
+      id: entry.id,
     };
 
-    if (level === 'error') {
+    if (level === "error") {
       this.logger.error(message, logData);
-    } else if (level === 'warn') {
+    } else if (level === "warn") {
       this.logger.warn(message, logData);
     } else {
       this.logger.info(message, logData);
@@ -270,36 +331,36 @@ export class IntegrationLogger extends EventEmitter {
     duration?: number,
     error?: Error,
     data?: any,
-    correlationId?: string
+    correlationId?: string,
   ): Promise<void> {
-    const level = success ? 'info' : 'error';
-    const status = success ? 'SUCCESS' : 'FAILED';
+    const level = success ? "info" : "error";
+    const status = success ? "SUCCESS" : "FAILED";
     const message = `System Integration: ${sourceSystem} -> ${targetSystem} [${operation}] - ${status}`;
 
     const entry = this.createLogEntry(
       level,
-      'integration',
-      'system-integration',
+      "integration",
+      "system-integration",
       message,
       {
         sourceSystem,
         targetSystem,
         operation,
         success,
-        ...data
+        ...data,
       },
       correlationId,
       undefined,
       undefined,
       error,
-      duration
+      duration,
     );
 
     this.storeLogEntry(entry);
 
     const logData = {
-      system: 'integration',
-      component: 'system-integration',
+      system: "integration",
+      component: "system-integration",
       sourceSystem,
       targetSystem,
       operation,
@@ -307,113 +368,121 @@ export class IntegrationLogger extends EventEmitter {
       duration,
       data,
       correlationId,
-      id: entry.id
+      id: entry.id,
     };
 
     if (success) {
       this.logger.info(message, logData);
     } else {
-      this.logger.error(message, { ...logData, error: error?.message, stack: error?.stack });
+      this.logger.error(message, {
+        ...logData,
+        error: error?.message,
+        stack: error?.stack,
+      });
     }
   }
 
   // Message bus logging
   async logMessageBus(
-    operation: 'publish' | 'subscribe' | 'request' | 'broadcast',
+    operation: "publish" | "subscribe" | "request" | "broadcast",
     routingKey: string,
     success: boolean,
     duration?: number,
     error?: Error,
     data?: any,
-    correlationId?: string
+    correlationId?: string,
   ): Promise<void> {
-    const level = success ? 'debug' : 'error';
-    const status = success ? 'SUCCESS' : 'FAILED';
+    const level = success ? "debug" : "error";
+    const status = success ? "SUCCESS" : "FAILED";
     const message = `Message Bus: ${operation.toUpperCase()} ${routingKey} - ${status}`;
 
     const entry = this.createLogEntry(
       level,
-      'integration',
-      'message-bus',
+      "integration",
+      "message-bus",
       message,
       {
         operation,
         routingKey,
         success,
-        ...data
+        ...data,
       },
       correlationId,
       undefined,
       undefined,
       error,
-      duration
+      duration,
     );
 
     this.storeLogEntry(entry);
 
     const logData = {
-      system: 'integration',
-      component: 'message-bus',
+      system: "integration",
+      component: "message-bus",
       operation,
       routingKey,
       success,
       duration,
       data,
       correlationId,
-      id: entry.id
+      id: entry.id,
     };
 
     if (success) {
       this.logger.debug(message, logData);
     } else {
-      this.logger.error(message, { ...logData, error: error?.message, stack: error?.stack });
+      this.logger.error(message, {
+        ...logData,
+        error: error?.message,
+        stack: error?.stack,
+      });
     }
   }
 
   // Cache operation logging
   async logCacheOperation(
-    operation: 'get' | 'set' | 'delete' | 'invalidate',
+    operation: "get" | "set" | "delete" | "invalidate",
     key: string,
     success: boolean,
     duration?: number,
     error?: Error,
     data?: any,
-    correlationId?: string
+    correlationId?: string,
   ): Promise<void> {
-    const level = success ? 'debug' : 'warn';
-    const status = success ? 'HIT' : operation === 'get' ? 'MISS' : 'FAILED';
+    const level = success ? "debug" : "warn";
+    const status = success ? "HIT" : operation === "get" ? "MISS" : "FAILED";
     const message = `Cache: ${operation.toUpperCase()} ${key} - ${status}`;
 
     const entry = this.createLogEntry(
       level,
-      'integration',
-      'cache',
+      "integration",
+      "cache",
       message,
       {
         operation,
         key,
         success,
-        ...data
+        ...data,
       },
       correlationId,
       undefined,
       undefined,
       error,
-      duration
+      duration,
     );
 
     this.storeLogEntry(entry);
 
     const logData = {
-      system: 'integration',
-      component: 'cache',
+      system: "integration",
+      component: "cache",
       operation,
       key,
       success,
       duration,
       data,
       correlationId,
-      id: entry.id
+      id: entry.id,
     };
 
     if (success) {
@@ -428,37 +497,48 @@ export class IntegrationLogger extends EventEmitter {
     let filtered = [...this.logEntries];
 
     if (query.system) {
-      filtered = filtered.filter(entry => entry.system === query.system);
+      filtered = filtered.filter((entry) => entry.system === query.system);
     }
 
     if (query.component) {
-      filtered = filtered.filter(entry => entry.component === query.component);
+      filtered = filtered.filter(
+        (entry) => entry.component === query.component,
+      );
     }
 
     if (query.level) {
-      filtered = filtered.filter(entry => entry.level === query.level);
+      filtered = filtered.filter((entry) => entry.level === query.level);
     }
 
     if (query.userId) {
-      filtered = filtered.filter(entry => entry.userId === query.userId);
+      filtered = filtered.filter((entry) => entry.userId === query.userId);
     }
 
     if (query.correlationId) {
-      filtered = filtered.filter(entry => entry.correlationId === query.correlationId);
+      filtered = filtered.filter(
+        (entry) => entry.correlationId === query.correlationId,
+      );
     }
 
     if (query.startDate) {
       const startDate = new Date(query.startDate);
-      filtered = filtered.filter(entry => new Date(entry.timestamp) >= startDate);
+      filtered = filtered.filter(
+        (entry) => new Date(entry.timestamp) >= startDate,
+      );
     }
 
     if (query.endDate) {
       const endDate = new Date(query.endDate);
-      filtered = filtered.filter(entry => new Date(entry.timestamp) <= endDate);
+      filtered = filtered.filter(
+        (entry) => new Date(entry.timestamp) <= endDate,
+      );
     }
 
     // Sort by timestamp (newest first)
-    filtered.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    filtered.sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    );
 
     // Apply pagination
     const offset = query.offset || 0;
@@ -470,14 +550,19 @@ export class IntegrationLogger extends EventEmitter {
   }
 
   // Get log statistics
-  async getLogStats(timeRange?: { start: string; end: string }): Promise<LogStats> {
+  async getLogStats(timeRange?: {
+    start: string;
+    end: string;
+  }): Promise<LogStats> {
     let filtered = [...this.logEntries];
 
     if (timeRange) {
       const startDate = new Date(timeRange.start);
       const endDate = new Date(timeRange.end);
-      filtered = filtered.filter(entry =>
-        new Date(entry.timestamp) >= startDate && new Date(entry.timestamp) <= endDate
+      filtered = filtered.filter(
+        (entry) =>
+          new Date(entry.timestamp) >= startDate &&
+          new Date(entry.timestamp) <= endDate,
       );
     }
 
@@ -487,12 +572,18 @@ export class IntegrationLogger extends EventEmitter {
       bySystem: {},
       byComponent: {},
       timeRange: {
-        start: timeRange?.start || new Date(filtered[filtered.length - 1]?.timestamp || Date.now()).toISOString(),
-        end: timeRange?.end || new Date(filtered[0]?.timestamp || Date.now()).toISOString()
-      }
+        start:
+          timeRange?.start ||
+          new Date(
+            filtered[filtered.length - 1]?.timestamp || Date.now(),
+          ).toISOString(),
+        end:
+          timeRange?.end ||
+          new Date(filtered[0]?.timestamp || Date.now()).toISOString(),
+      },
     };
 
-    filtered.forEach(entry => {
+    filtered.forEach((entry) => {
       // Count by level
       stats.byLevel[entry.level] = (stats.byLevel[entry.level] || 0) + 1;
 
@@ -500,7 +591,8 @@ export class IntegrationLogger extends EventEmitter {
       stats.bySystem[entry.system] = (stats.bySystem[entry.system] || 0) + 1;
 
       // Count by component
-      stats.byComponent[entry.component] = (stats.byComponent[entry.component] || 0) + 1;
+      stats.byComponent[entry.component] =
+        (stats.byComponent[entry.component] || 0) + 1;
     });
 
     return stats;
@@ -509,23 +601,29 @@ export class IntegrationLogger extends EventEmitter {
   // Get recent logs
   async getRecentLogs(limit: number = 100): Promise<LogEntry[]> {
     return [...this.logEntries]
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      )
       .slice(0, limit);
   }
 
   // Get error logs
   async getErrorLogs(limit: number = 100): Promise<LogEntry[]> {
     return [...this.logEntries]
-      .filter(entry => entry.level === 'error')
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .filter((entry) => entry.level === "error")
+      .sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      )
       .slice(0, limit);
   }
 
   // Clear logs (for testing or maintenance)
   async clearLogs(): Promise<void> {
     this.logEntries = [];
-    this.emit('logs-cleared');
-    console.log('Log entries cleared');
+    this.emit("logs-cleared");
+    console.log("Log entries cleared");
   }
 
   // Export logs
@@ -539,16 +637,16 @@ export class IntegrationLogger extends EventEmitter {
     const stats = await this.getLogStats();
 
     return {
-      status: 'healthy',
+      status: "healthy",
       entries: this.logEntries.length,
       maxEntries: this.maxEntries,
       logLevel: this.logLevel,
       transports: {
         console: this.enableConsoleLogging,
-        file: this.enableFileLogging
+        file: this.enableFileLogging,
       },
       recentStats: stats,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 
@@ -560,9 +658,9 @@ export class IntegrationLogger extends EventEmitter {
     duration: number,
     success: boolean,
     data?: any,
-    correlationId?: string
+    correlationId?: string,
   ): Promise<void> {
-    const level = success ? 'debug' : 'warn';
+    const level = success ? "debug" : "warn";
     const message = `Performance: ${operation} - ${duration}ms`;
 
     const entry = this.createLogEntry(
@@ -574,13 +672,13 @@ export class IntegrationLogger extends EventEmitter {
         operation,
         duration,
         success,
-        ...data
+        ...data,
       },
       correlationId,
       undefined,
       undefined,
       undefined,
-      duration
+      duration,
     );
 
     this.storeLogEntry(entry);
@@ -593,7 +691,7 @@ export class IntegrationLogger extends EventEmitter {
       success,
       data,
       correlationId,
-      id: entry.id
+      id: entry.id,
     };
 
     if (success) {
@@ -606,8 +704,11 @@ export class IntegrationLogger extends EventEmitter {
   // Get logs by correlation ID (useful for tracing requests)
   async getTraceLogs(correlationId: string): Promise<LogEntry[]> {
     return this.logEntries
-      .filter(entry => entry.correlationId === correlationId)
-      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+      .filter((entry) => entry.correlationId === correlationId)
+      .sort(
+        (a, b) =>
+          new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+      );
   }
 
   // Alert on high error rates
@@ -615,19 +716,20 @@ export class IntegrationLogger extends EventEmitter {
     const windowMs = windowMinutes * 60 * 1000;
     const since = new Date(Date.now() - windowMs);
 
-    const recentLogs = this.logEntries.filter(entry =>
-      new Date(entry.timestamp) >= since
+    const recentLogs = this.logEntries.filter(
+      (entry) => new Date(entry.timestamp) >= since,
     );
 
-    const errors = recentLogs.filter(entry => entry.level === 'error');
-    const errorRate = recentLogs.length > 0 ? (errors.length / recentLogs.length) * 100 : 0;
+    const errors = recentLogs.filter((entry) => entry.level === "error");
+    const errorRate =
+      recentLogs.length > 0 ? (errors.length / recentLogs.length) * 100 : 0;
 
     return {
       windowMinutes,
       totalLogs: recentLogs.length,
       errorCount: errors.length,
       errorRate: Math.round(errorRate * 100) / 100,
-      isHigh: errorRate > 5 // 5% threshold
+      isHigh: errorRate > 5, // 5% threshold
     };
   }
 }

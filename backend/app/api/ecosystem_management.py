@@ -8,6 +8,12 @@ import json
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from app.core.relay_core import MessagePriority, RelayMessage, relay_core
+from app.ml.neuro_weaver import ModelType, TrainingConfig, neuro_weaver
+
+# Import our enhanced components
+from app.services.ai_orchestrator import ai_orchestrator
+from app.services.registry import service_registry
 from fastapi import (
     APIRouter,
     BackgroundTasks,
@@ -17,13 +23,6 @@ from fastapi import (
 )
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-
-from app.core.relay_core import MessagePriority, RelayMessage, relay_core
-from app.ml.neuro_weaver import ModelType, TrainingConfig, neuro_weaver
-
-# Import our enhanced components
-from app.services.ai_orchestrator import ai_orchestrator
-from app.services.registry import service_registry
 
 router = APIRouter(prefix="/api/v2", tags=["AI Ecosystem Management"])
 
@@ -471,7 +470,9 @@ async def detect_anomalies():
                         "severity": (
                             "critical"
                             if anomaly_score > 0.8
-                            else "high" if anomaly_score > 0.6 else "medium"
+                            else "high"
+                            if anomaly_score > 0.6
+                            else "medium"
                         ),
                         "health_metrics": health_data,
                         "recommended_actions": await ai_orchestrator._generate_optimization_recommendations(
@@ -589,7 +590,9 @@ async def check_integration_health():
             "integration_health": (
                 "excellent"
                 if integration_score > 0.8
-                else "good" if integration_score > 0.5 else "needs_attention"
+                else "good"
+                if integration_score > 0.5
+                else "needs_attention"
             ),
             "integration_score": integration_score,
             "components": {

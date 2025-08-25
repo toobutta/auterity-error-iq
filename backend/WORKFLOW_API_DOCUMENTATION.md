@@ -5,12 +5,15 @@
 The Workflow Management API provides CRUD operations for managing AI-powered workflows. All endpoints require authentication via JWT token.
 
 ## Base URL
+
 ```
 /api/workflows
 ```
 
 ## Authentication
+
 All endpoints require a valid JWT token in the Authorization header:
+
 ```
 Authorization: Bearer <jwt_token>
 ```
@@ -18,11 +21,13 @@ Authorization: Bearer <jwt_token>
 ## Endpoints
 
 ### 1. Create Workflow
+
 **POST** `/api/workflows/`
 
 Creates a new workflow for the authenticated user.
 
 **Request Body:**
+
 ```json
 {
   "name": "Customer Inquiry Workflow",
@@ -32,28 +37,29 @@ Creates a new workflow for the authenticated user.
       {
         "id": "start",
         "type": "start",
-        "data": {"label": "Start"}
+        "data": { "label": "Start" }
       },
       {
         "id": "ai_process",
         "type": "ai_process",
-        "data": {"label": "AI Process", "prompt": "Process customer inquiry"}
+        "data": { "label": "AI Process", "prompt": "Process customer inquiry" }
       },
       {
         "id": "end",
         "type": "end",
-        "data": {"label": "End"}
+        "data": { "label": "End" }
       }
     ],
     "edges": [
-      {"id": "e1", "source": "start", "target": "ai_process"},
-      {"id": "e2", "source": "ai_process", "target": "end"}
+      { "id": "e1", "source": "start", "target": "ai_process" },
+      { "id": "e2", "source": "ai_process", "target": "end" }
     ]
   }
 }
 ```
 
 **Response:** `201 Created`
+
 ```json
 {
   "id": "123e4567-e89b-12d3-a456-426614174000",
@@ -68,17 +74,20 @@ Creates a new workflow for the authenticated user.
 ```
 
 ### 2. List Workflows
+
 **GET** `/api/workflows/`
 
 Retrieves a paginated list of workflows for the authenticated user.
 
 **Query Parameters:**
+
 - `page` (int, default: 1): Page number
 - `page_size` (int, default: 10, max: 100): Number of workflows per page
 - `name_filter` (string, optional): Filter workflows by name (case-insensitive)
 - `is_active` (boolean, optional): Filter by active status
 
 **Response:** `200 OK`
+
 ```json
 {
   "workflows": [
@@ -100,14 +109,17 @@ Retrieves a paginated list of workflows for the authenticated user.
 ```
 
 ### 3. Get Workflow by ID
+
 **GET** `/api/workflows/{workflow_id}`
 
 Retrieves a specific workflow by its ID.
 
 **Path Parameters:**
+
 - `workflow_id` (UUID): The workflow ID
 
 **Response:** `200 OK`
+
 ```json
 {
   "id": "123e4567-e89b-12d3-a456-426614174000",
@@ -122,14 +134,17 @@ Retrieves a specific workflow by its ID.
 ```
 
 ### 4. Update Workflow
+
 **PUT** `/api/workflows/{workflow_id}`
 
 Updates an existing workflow.
 
 **Path Parameters:**
+
 - `workflow_id` (UUID): The workflow ID
 
 **Request Body:**
+
 ```json
 {
   "name": "Updated Workflow Name",
@@ -140,6 +155,7 @@ Updates an existing workflow.
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "id": "123e4567-e89b-12d3-a456-426614174000",
@@ -154,24 +170,29 @@ Updates an existing workflow.
 ```
 
 ### 5. Delete Workflow
+
 **DELETE** `/api/workflows/{workflow_id}`
 
 Soft deletes a workflow (sets `is_active` to `false`).
 
 **Path Parameters:**
+
 - `workflow_id` (UUID): The workflow ID
 
 **Response:** `204 No Content`
 
 ### 6. Duplicate Workflow
+
 **POST** `/api/workflows/{workflow_id}/duplicate`
 
 Creates a copy of an existing workflow with a unique name.
 
 **Path Parameters:**
+
 - `workflow_id` (UUID): The workflow ID to duplicate
 
 **Response:** `201 Created`
+
 ```json
 {
   "id": "789e0123-e89b-12d3-a456-426614174002",
@@ -188,6 +209,7 @@ Creates a copy of an existing workflow with a unique name.
 ## Error Responses
 
 ### 400 Bad Request
+
 ```json
 {
   "detail": "Workflow with name 'Customer Inquiry Workflow' already exists"
@@ -195,6 +217,7 @@ Creates a copy of an existing workflow with a unique name.
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
   "detail": "Not authenticated"
@@ -202,6 +225,7 @@ Creates a copy of an existing workflow with a unique name.
 ```
 
 ### 404 Not Found
+
 ```json
 {
   "detail": "Workflow not found"
@@ -209,6 +233,7 @@ Creates a copy of an existing workflow with a unique name.
 ```
 
 ### 422 Unprocessable Entity
+
 ```json
 {
   "detail": [

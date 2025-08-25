@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from "react";
+import { sanitizeInput } from "../../utils/sanitizer";
 
 // Types for Agent Logs and Model Training
 export interface AgentLog {
@@ -8,7 +9,7 @@ export interface AgentLog {
   sessionId: string;
   timestamp: Date;
   message: string;
-  messageType: 'user' | 'assistant' | 'system' | 'error';
+  messageType: "user" | "assistant" | "system" | "error";
   modelId?: string;
   modelName?: string;
   tokens?: number;
@@ -20,7 +21,7 @@ export interface ModelTrainingJob {
   id: string;
   modelId: string;
   modelName: string;
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+  status: "pending" | "running" | "completed" | "failed" | "cancelled";
   progress: number;
   startTime: Date;
   endTime?: Date;
@@ -38,7 +39,11 @@ export interface ModelTrainingJob {
     recall?: number;
   };
   triggeredBy?: {
-    type: 'manual' | 'agent_conversation' | 'schedule' | 'performance_threshold';
+    type:
+      | "manual"
+      | "agent_conversation"
+      | "schedule"
+      | "performance_threshold";
     agentSessionId?: string;
     logId?: string;
   };
@@ -49,7 +54,7 @@ export interface CorrelationData {
   agentLog: AgentLog;
   relatedTrainingJobs: ModelTrainingJob[];
   correlation: {
-    type: 'direct' | 'indirect' | 'temporal';
+    type: "direct" | "indirect" | "temporal";
     confidence: number;
     reason: string;
   };
@@ -70,17 +75,19 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
   enableFiltering = true,
   enableSearch = true,
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterAgent, setFilterAgent] = useState('');
-  const [filterMessageType, setFilterMessageType] = useState<string>('');
-  const [sortBy, setSortBy] = useState<'timestamp' | 'agent' | 'tokens'>('timestamp');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterAgent, setFilterAgent] = useState("");
+  const [filterMessageType, setFilterMessageType] = useState<string>("");
+  const [sortBy, setSortBy] = useState<"timestamp" | "agent" | "tokens">(
+    "timestamp",
+  );
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [expandedLogs, setExpandedLogs] = useState<Set<string>>(new Set());
 
   // Get unique agents for filtering
   const uniqueAgents = useMemo(
     () => Array.from(new Set(logs.map((log) => log.agentName))).sort(),
-    [logs]
+    [logs],
   );
 
   // Filter and sort logs
@@ -89,38 +96,43 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
 
     // Apply search filter
     if (searchTerm) {
+      const sanitizedSearchTerm = sanitizeInput(searchTerm);
       filtered = filtered.filter(
         (log) =>
-          log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          log.agentName.toLowerCase().includes(searchTerm.toLowerCase())
+          log.message.toLowerCase().includes(sanitizedSearchTerm.toLowerCase()) ||
+          log.agentName.toLowerCase().includes(sanitizedSearchTerm.toLowerCase()),
       );
     }
 
     // Apply agent filter
     if (filterAgent) {
-      filtered = filtered.filter((log) => log.agentName === filterAgent);
+      const sanitizedFilterAgent = sanitizeInput(filterAgent);
+      filtered = filtered.filter((log) => log.agentName === sanitizedFilterAgent);
     }
 
     // Apply message type filter
     if (filterMessageType) {
-      filtered = filtered.filter((log) => log.messageType === filterMessageType);
+      const sanitizedFilterMessageType = sanitizeInput(filterMessageType);
+      filtered = filtered.filter(
+        (log) => log.messageType === sanitizedFilterMessageType,
+      );
     }
 
     // Sort logs
     filtered.sort((a, b) => {
       let comparison = 0;
       switch (sortBy) {
-        case 'timestamp':
+        case "timestamp":
           comparison = a.timestamp.getTime() - b.timestamp.getTime();
           break;
-        case 'agent':
+        case "agent":
           comparison = a.agentName.localeCompare(b.agentName);
           break;
-        case 'tokens':
+        case "tokens":
           comparison = (a.tokens || 0) - (b.tokens || 0);
           break;
       }
-      return sortOrder === 'desc' ? -comparison : comparison;
+      return sortOrder === "desc" ? -comparison : comparison;
     });
 
     return filtered;
@@ -136,33 +148,33 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
     setExpandedLogs(newExpanded);
   };
 
-  const getMessageTypeIcon = (type: AgentLog['messageType']) => {
+  const getMessageTypeIcon = (type: AgentLog["messageType"]) => {
     switch (type) {
-      case 'user':
-        return '👤';
-      case 'assistant':
-        return '🤖';
-      case 'system':
-        return '⚙️';
-      case 'error':
-        return '❌';
+      case "user":
+        return "👤";
+      case "assistant":
+        return "🤖";
+      case "system":
+        return "⚙️";
+      case "error":
+        return "❌";
       default:
-        return '💬';
+        return "💬";
     }
   };
 
-  const getMessageTypeColor = (type: AgentLog['messageType']) => {
+  const getMessageTypeColor = (type: AgentLog["messageType"]) => {
     switch (type) {
-      case 'user':
-        return 'text-blue-600 bg-blue-50 border-blue-200';
-      case 'assistant':
-        return 'text-green-600 bg-green-50 border-green-200';
-      case 'system':
-        return 'text-gray-600 bg-gray-50 border-gray-200';
-      case 'error':
-        return 'text-red-600 bg-red-50 border-red-200';
+      case "user":
+        return "text-blue-600 bg-blue-50 border-blue-200";
+      case "assistant":
+        return "text-green-600 bg-green-50 border-green-200";
+      case "system":
+        return "text-gray-600 bg-gray-50 border-gray-200";
+      case "error":
+        return "text-red-600 bg-red-50 border-red-200";
       default:
-        return 'text-gray-600 bg-gray-50 border-gray-200';
+        return "text-gray-600 bg-gray-50 border-gray-200";
     }
   };
 
@@ -178,7 +190,7 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
                   type="text"
                   placeholder="Search logs..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => setSearchTerm(sanitizeInput(e.target.value))}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -188,7 +200,7 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
               <>
                 <select
                   value={filterAgent}
-                  onChange={(e) => setFilterAgent(e.target.value)}
+                  onChange={(e) => setFilterAgent(sanitizeInput(e.target.value))}
                   className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 >
                   <option value="">All Agents</option>
@@ -201,7 +213,7 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
 
                 <select
                   value={filterMessageType}
-                  onChange={(e) => setFilterMessageType(e.target.value)}
+                  onChange={(e) => setFilterMessageType(sanitizeInput(e.target.value))}
                   className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 >
                   <option value="">All Types</option>
@@ -214,7 +226,7 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
                 <select
                   value={`${sortBy}-${sortOrder}`}
                   onChange={(e) => {
-                    const [field, order] = e.target.value.split('-');
+                    const [field, order] = e.target.value.split("-");
                     setSortBy(field as typeof sortBy);
                     setSortOrder(order as typeof sortOrder);
                   }}
@@ -244,8 +256,8 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
             key={log.id}
             className={`glass-card p-4 cursor-pointer transition-all duration-200 hover:shadow-lg ${
               selectedLogId === log.id
-                ? 'ring-2 ring-blue-500 bg-blue-50/50 dark:bg-blue-900/20'
-                : ''
+                ? "ring-2 ring-blue-500 bg-blue-50/50 dark:bg-blue-900/20"
+                : ""
             }`}
             onClick={() => onLogSelect?.(log)}
           >
@@ -254,7 +266,9 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
               <div
                 className={`px-2 py-1 rounded text-xs font-medium border ${getMessageTypeColor(log.messageType)}`}
               >
-                <span className="mr-1">{getMessageTypeIcon(log.messageType)}</span>
+                <span className="mr-1">
+                  {getMessageTypeIcon(log.messageType)}
+                </span>
                 {log.messageType}
               </div>
 
@@ -288,7 +302,7 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
                       }}
                       className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                     >
-                      {expandedLogs.has(log.id) ? '▼' : '▶'}
+                      {expandedLogs.has(log.id) ? "▼" : "▶"}
                     </button>
                   </div>
                 </div>
@@ -328,7 +342,9 @@ export const ConversationLogViewer: React.FC<ConversationLogViewerProps> = ({
             <div className="text-gray-500 dark:text-gray-400">
               <div className="text-4xl mb-2">📝</div>
               <div className="text-lg font-medium mb-1">No logs found</div>
-              <div className="text-sm">Try adjusting your search or filters</div>
+              <div className="text-sm">
+                Try adjusting your search or filters
+              </div>
             </div>
           </div>
         )}

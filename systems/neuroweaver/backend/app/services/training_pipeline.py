@@ -7,24 +7,29 @@ import asyncio
 import json
 import logging
 import os
-from datetime import datetime
-from typing import Dict, List, Optional, Any, Union, TYPE_CHECKING
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 # Core ML libraries with graceful fallbacks
 try:
-    import torch
-    from transformers import (
-        AutoTokenizer, AutoModelForCausalLM, TrainingArguments, Trainer,
-        DataCollatorForLanguageModeling, AutoModelForSequenceClassification
-    )
-    from peft import LoraConfig, get_peft_model, TaskType
-    from datasets import Dataset, load_dataset
-    import wandb
     import numpy as np
     import pandas as pd
+    import torch
+    import wandb
+    from datasets import Dataset, load_dataset
+    from peft import LoraConfig, TaskType, get_peft_model
     from tqdm import tqdm
+    from transformers import (
+        AutoModelForCausalLM,
+        AutoModelForSequenceClassification,
+        AutoTokenizer,
+        DataCollatorForLanguageModeling,
+        Trainer,
+        TrainingArguments,
+    )
+
     ML_AVAILABLE = True
 except ImportError as e:
     ML_AVAILABLE = False
@@ -46,7 +51,9 @@ except ImportError as e:
     pd = None
     tqdm = None
     logger = logging.getLogger(__name__)
-    logger.warning(f"ML libraries not available: {e}. Training functionality will be limited.")
+    logger.warning(
+        f"ML libraries not available: {e}. Training functionality will be limited."
+    )
 
 # YAML support
 try:
@@ -57,12 +64,13 @@ except ImportError:
 # Import core services
 from app.core.config import settings
 from app.core.logging import logger
-from app.services.model_registry import ModelRegistry, ModelInfo
+from app.services.model_registry import ModelInfo, ModelRegistry
 
 # TRL and OpenAI for RLAIF
 try:
-    from trl import PPOTrainer, PPOConfig, AutoModelForCausalLMWithValueHead
     import openai
+    from trl import AutoModelForCausalLMWithValueHead, PPOConfig, PPOTrainer
+
     TRL_AVAILABLE = True
 except ImportError as e:
     TRL_AVAILABLE = False
@@ -71,24 +79,27 @@ except ImportError as e:
     AutoModelForCausalLMWithValueHead = None
     openai = None
     logger = logging.getLogger(__name__)
-    logger.warning(f"TRL/OpenAI libraries not available: {e}. RLAIF functionality will be limited.")
+    logger.warning(
+        f"TRL/OpenAI libraries not available: {e}. RLAIF functionality will be limited."
+    )
 
 
 @dataclass
 class TrainingConfig:
     """Training configuration for QLoRA pipeline"""
+
     model_name: str
     base_model: str
     specialization: str
     dataset_path: str
     output_dir: str
-    
+
     # QLoRA parameters
     lora_r: int = 16
     lora_alpha: int = 32
     lora_dropout: float = 0.05
     target_modules: List[str] = None
-    
+
     # Training parameters
     epochs: int = 3
     learning_rate: float = 2e-4
@@ -97,18 +108,18 @@ class TrainingConfig:
     max_seq_length: int = 2048
     warmup_steps: int = 100
     weight_decay: float = 0.01
-    
+
     # RLAIF parameters
     enable_rlaif: bool = True
     feedback_model: str = "gpt-3.5-turbo"
     rlaif_threshold: float = 7.0
     rlaif_samples: int = 100
-    
+
     # Optimization
     mixed_precision: str = "bf16"
     gradient_checkpointing: bool = True
     flash_attention: bool = True
-    
+
     def __post_init__(self):
         if self.target_modules is None:
             self.target_modules = ["q_proj", "v_proj", "k_proj", "o_proj"]
@@ -135,91 +146,101 @@ def validate_trl_dependencies() -> None:
 
 class QLoRATrainer:
     """QLoRA training implementation"""
-    
+
     def __init__(self, config: TrainingConfig):
         self.config = config
         self.model_registry = ModelRegistry()
-        
+
         # Validate dependencies at initialization
         validate_ml_dependencies()
-        
+
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        
+
     async def train_model(self, job_id: str, model_id: str) -> Dict[str, Any]:
         """Execute QLoRA training pipeline"""
         try:
             logger.info(f"Starting QLoRA training for job {job_id[:50]}...")
-            
+
             # Initialize wandb if configured
             if settings.WANDB_API_KEY:
                 wandb.init(
                     project="neuroweaver-training",
                     name=f"{self.config.model_name}-{job_id}",
-                    config=self.config.__dict__
+                    config=self.config.__dict__,
                 )
-            
+
             # Load and prepare dataset
             dataset = await self._prepare_dataset()
-            
+
             # Load base model and tokenizer
             model, tokenizer = await self._load_base_model()
-            
+
             # Apply QLoRA configuration
             model = await self._apply_qlora(model)
-            
+
             # Setup training arguments
             training_args = self._get_training_arguments()
-            
+
             # Create trainer
             trainer = self._create_trainer(model, tokenizer, dataset, training_args)
-            
+
             # Execute training
             training_result = await self._execute_training(trainer, job_id)
-            
+
             # Apply RLAIF if enabled
             if self.config.enable_rlaif:
                 await self._apply_rlaif(model, tokenizer, job_id)
-            
+
             # Save final model
             final_model_path = await self._save_model(model, tokenizer)
-            
+
             # Update model registry
-            await self._update_model_status(model_id, "trained", {
-                "training_loss": training_result.get("train_loss", 0.0),
-                "eval_loss": training_result.get("eval_loss", 0.0),
-                "training_time": training_result.get("training_time", 0),
-                "model_path": final_model_path
-            })
-            
+            await self._update_model_status(
+                model_id,
+                "trained",
+                {
+                    "training_loss": training_result.get("train_loss", 0.0),
+                    "eval_loss": training_result.get("eval_loss", 0.0),
+                    "training_time": training_result.get("training_time", 0),
+                    "model_path": final_model_path,
+                },
+            )
+
             logger.info(f"QLoRA training completed for job {job_id}")
             return training_result
-            
+
         except Exception as e:
-            logger.error(f"QLoRA training failed for job {job_id[:50]}...: {str(e)[:200]}...")
-            await self._update_model_status(model_id, "training_failed", {
-                "error": str(e)[:500]  # Limit error message length
-            })
+            logger.error(
+                f"QLoRA training failed for job {job_id[:50]}...: {str(e)[:200]}..."
+            )
+            await self._update_model_status(
+                model_id,
+                "training_failed",
+                {"error": str(e)[:500]},  # Limit error message length
+            )
             raise
-    
+
     async def _prepare_dataset(self) -> Any:
         """Prepare training dataset with security validation"""
         logger.info("Preparing training dataset")
-        
+
         try:
             # Validate dataset path
             if not os.path.exists(self.config.dataset_path):
-                raise FileNotFoundError(f"Dataset not found: {self.config.dataset_path}")
-            
+                raise FileNotFoundError(
+                    f"Dataset not found: {self.config.dataset_path}"
+                )
+
             # Ensure path is within allowed directory
             safe_path = os.path.abspath(self.config.dataset_path)
             if not safe_path.startswith(os.path.abspath(settings.DATA_DIR)):
                 raise ValueError("Dataset path outside allowed directory")
-            
+
             safe_path = self.config.dataset_path
-            
-            if safe_path.endswith('.jsonl'):
+
+            if safe_path.endswith(".jsonl"):
                 data = []
-                with open(safe_path, 'r', encoding='utf-8') as f:
+                with open(safe_path, "r", encoding="utf-8") as f:
                     for line_num, line in enumerate(f, 1):
                         try:
                             data.append(json.loads(line))
@@ -228,70 +249,72 @@ class QLoRATrainer:
                             continue
                         if line_num > 100000:  # Limit dataset size
                             break
-                
+
                 if not data:
                     raise ValueError("No valid data found in dataset")
                 dataset = Dataset.from_list(data)
-                
-            elif safe_path.endswith('.csv'):
-                dataset = load_dataset('csv', data_files=safe_path)['train']
+
+            elif safe_path.endswith(".csv"):
+                dataset = load_dataset("csv", data_files=safe_path)["train"]
             else:
                 raise ValueError(f"Unsupported dataset format: {safe_path}")
-            
+
             dataset = dataset.map(self._preprocess_function, batched=True)
             return dataset
-            
+
         except (FileNotFoundError, PermissionError, ValueError) as e:
             logger.error(f"Dataset preparation failed: {str(e)[:200]}...")
             raise
-    
+
     def _preprocess_function(self, examples):
         """Preprocess dataset examples for training"""
         # Format examples for automotive specialization
         formatted_texts = []
-        
-        for i in range(len(examples.get('question', examples.get('input', [])))):
-            if 'question' in examples and 'answer' in examples:
+
+        for i in range(len(examples.get("question", examples.get("input", [])))):
+            if "question" in examples and "answer" in examples:
                 # Q&A format
                 text = f"<|system|>You are an automotive specialist assistant.<|endoftext|>"
                 text += f"<|user|>{examples['question'][i]}<|endoftext|>"
                 text += f"<|assistant|>{examples['answer'][i]}<|endoftext|>"
-            elif 'input' in examples and 'output' in examples:
+            elif "input" in examples and "output" in examples:
                 # Input/Output format
                 text = f"<|system|>You are an automotive specialist assistant.<|endoftext|>"
                 text += f"<|user|>{examples['input'][i]}<|endoftext|>"
                 text += f"<|assistant|>{examples['output'][i]}<|endoftext|>"
             else:
                 # Plain text format
-                text = examples.get('text', [''])[i]
-            
+                text = examples.get("text", [""])[i]
+
             formatted_texts.append(text)
-        
-        return {'text': formatted_texts}
-    
+
+        return {"text": formatted_texts}
+
     async def _load_base_model(self):
         """Load base model and tokenizer"""
         logger.info(f"Loading base model: {self.config.base_model[:100]}...")
-        
+
         # Load tokenizer
         tokenizer = AutoTokenizer.from_pretrained(self.config.base_model)
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
-        
+
         # Load model with appropriate settings
         model = AutoModelForCausalLM.from_pretrained(
             self.config.base_model,
-            torch_dtype=torch.bfloat16 if self.config.mixed_precision == "bf16" else torch.float16,
+            torch_dtype=torch.bfloat16
+            if self.config.mixed_precision == "bf16"
+            else torch.float16,
             device_map="auto",
-            trust_remote_code=True
+            trust_remote_code=True,
         )
-        
+
         return model, tokenizer
-    
+
     async def _apply_qlora(self, model):
         """Apply QLoRA configuration to model"""
         logger.info("Applying QLoRA configuration")
-        
+
         # Configure LoRA
         lora_config = LoraConfig(
             task_type=TaskType.CAUSAL_LM,
@@ -299,15 +322,15 @@ class QLoRATrainer:
             lora_alpha=self.config.lora_alpha,
             lora_dropout=self.config.lora_dropout,
             target_modules=self.config.target_modules,
-            bias="none"
+            bias="none",
         )
-        
+
         # Apply LoRA to model
         model = get_peft_model(model, lora_config)
         model.print_trainable_parameters()
-        
+
         return model
-    
+
     def _get_training_arguments(self) -> Any:
         """Get training arguments"""
         return TrainingArguments(
@@ -335,33 +358,30 @@ class QLoRATrainer:
             report_to="wandb" if settings.WANDB_API_KEY else None,
             max_steps=-1,
             save_total_limit=3,
-            prediction_loss_only=True
+            prediction_loss_only=True,
         )
-    
+
     def _create_trainer(self, model, tokenizer, dataset, training_args):
         """Create Hugging Face trainer"""
         # Split dataset
         train_dataset = dataset.train_test_split(test_size=0.1)
-        
+
         # Tokenize datasets
         def tokenize_function(examples):
             return tokenizer(
-                examples['text'],
+                examples["text"],
                 truncation=True,
                 padding=True,
                 max_length=self.config.max_seq_length,
-                return_tensors="pt"
+                return_tensors="pt",
             )
-        
-        train_tokenized = train_dataset['train'].map(tokenize_function, batched=True)
-        eval_tokenized = train_dataset['test'].map(tokenize_function, batched=True)
-        
+
+        train_tokenized = train_dataset["train"].map(tokenize_function, batched=True)
+        eval_tokenized = train_dataset["test"].map(tokenize_function, batched=True)
+
         # Data collator
-        data_collator = DataCollatorForLanguageModeling(
-            tokenizer=tokenizer,
-            mlm=False
-        )
-        
+        data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
+
         # Create trainer
         trainer = Trainer(
             model=model,
@@ -369,32 +389,32 @@ class QLoRATrainer:
             train_dataset=train_tokenized,
             eval_dataset=eval_tokenized,
             data_collator=data_collator,
-            tokenizer=tokenizer
+            tokenizer=tokenizer,
         )
-        
+
         return trainer
-    
+
     async def _execute_training(self, trainer, job_id: str) -> Dict[str, Any]:
         """Execute training process asynchronously"""
         logger.info(f"Starting training execution for job {job_id[:50]}...")
-        
+
         start_time = datetime.utcnow()
-        
+
         # Run blocking operations in executor to avoid blocking event loop
         loop = asyncio.get_event_loop()
         training_result = await loop.run_in_executor(None, trainer.train)
         eval_result = await loop.run_in_executor(None, trainer.evaluate)
-        
+
         end_time = datetime.utcnow()
         training_time = (end_time - start_time).total_seconds()
-        
+
         return {
             "train_loss": training_result.training_loss,
             "eval_loss": eval_result.get("eval_loss", 0.0),
             "training_time": training_time,
-            "global_step": training_result.global_step
+            "global_step": training_result.global_step,
         }
-    
+
     async def _apply_rlaif(self, model, tokenizer, job_id: str):
         """Apply RLAIF (Reinforcement Learning from AI Feedback)"""
         logger.info(f"Applying RLAIF for job {job_id}")
@@ -402,13 +422,13 @@ class QLoRATrainer:
         try:
             # Check TRL availability
             validate_trl_dependencies()
-                
+
             rlaif_trainer = RLAIFTrainer(
                 model=model,
                 tokenizer=tokenizer,
                 feedback_model=self.config.feedback_model,
                 threshold=self.config.rlaif_threshold,
-                samples=self.config.rlaif_samples
+                samples=self.config.rlaif_samples,
             )
 
             # Generate initial responses for feedback
@@ -429,23 +449,23 @@ class QLoRATrainer:
             logger.error(f"RLAIF failed for job {job_id}: {e}")
             # Continue without RLAIF if it fails
             logger.info(f"Continuing without RLAIF for job {job_id}")
-    
+
     async def _save_model(self, model, tokenizer) -> str:
         """Save trained model with path validation"""
         # Validate output directory
         safe_output_dir = os.path.abspath(self.config.output_dir)
         if not safe_output_dir.startswith(os.path.abspath(settings.MODEL_STORAGE_PATH)):
             raise ValueError("Output directory outside allowed path")
-        
+
         model_path = os.path.join(safe_output_dir, "final_model")
         os.makedirs(model_path, exist_ok=True)
-        
+
         model.save_pretrained(model_path)
         tokenizer.save_pretrained(model_path)
-        
+
         logger.info(f"Model saved to {model_path[:100]}...")
         return model_path
-    
+
     async def _update_model_status(self, model_id: str, status: str, metrics: Dict):
         """Update model status in registry"""
         model = await self.model_registry.get_model(model_id)
@@ -457,14 +477,12 @@ class QLoRATrainer:
 
 class TrainingPipelineService:
     """Main training pipeline service"""
-    
+
     def __init__(self):
         self.model_registry = ModelRegistry()
-    
+
     async def start_training_pipeline(
-        self,
-        model_id: str,
-        training_config: Dict[str, Any]
+        self, model_id: str, training_config: Dict[str, Any]
     ) -> str:
         """Start training pipeline for a model with security validation"""
         try:
@@ -473,21 +491,23 @@ class TrainingPipelineService:
                 raise ValueError("Invalid model_id")
             if not training_config or not isinstance(training_config, dict):
                 raise ValueError("Invalid training_config")
-            
+
             config = TrainingConfig(**training_config)
             trainer = QLoRATrainer(config)
-            
+
             job_id = f"train_{model_id}_{int(datetime.utcnow().timestamp())}"
-            
+
             asyncio.create_task(trainer.train_model(job_id, model_id))
-            
-            logger.info(f"Training pipeline started for model {model_id[:50]}..., job {job_id[:50]}...")
+
+            logger.info(
+                f"Training pipeline started for model {model_id[:50]}..., job {job_id[:50]}..."
+            )
             return job_id
-            
+
         except Exception as e:
             logger.error(f"Failed to start training pipeline: {str(e)[:200]}...")
             raise
-    
+
     async def get_training_progress(self, job_id: str) -> Dict[str, Any]:
         """Get training progress for a job"""
         # This would typically read from training logs or database
@@ -499,9 +519,9 @@ class TrainingPipelineService:
             "current_epoch": 2,
             "total_epochs": 3,
             "current_loss": 0.15,
-            "best_eval_loss": 0.12
+            "best_eval_loss": 0.12,
         }
-    
+
     async def cancel_training(self, job_id: str) -> bool:
         """Cancel training job"""
         # Implementation would stop the training process
@@ -512,7 +532,9 @@ class TrainingPipelineService:
 class RLAIFTrainer:
     """RLAIF (Reinforcement Learning from AI Feedback) implementation"""
 
-    def __init__(self, model, tokenizer, feedback_model: str, threshold: float, samples: int):
+    def __init__(
+        self, model, tokenizer, feedback_model: str, threshold: float, samples: int
+    ):
         self.model = model
         self.tokenizer = tokenizer
         self.feedback_model = feedback_model
@@ -539,7 +561,7 @@ class RLAIFTrainer:
         # Generate prompts for different automotive scenarios
         prompts = self._get_automotive_prompts()
 
-        for prompt in prompts[:self.samples]:
+        for prompt in prompts[: self.samples]:
             try:
                 # Generate response from the model
                 inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
@@ -550,17 +572,15 @@ class RLAIFTrainer:
                         temperature=0.7,
                         top_p=0.9,
                         do_sample=True,
-                        pad_token_id=self.tokenizer.eos_token_id
+                        pad_token_id=self.tokenizer.eos_token_id,
                     )
 
                 response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
                 response = response.replace(prompt, "").strip()
 
-                feedback_samples.append({
-                    "prompt": prompt,
-                    "response": response,
-                    "job_id": job_id
-                })
+                feedback_samples.append(
+                    {"prompt": prompt, "response": response, "job_id": job_id}
+                )
 
             except Exception as e:
                 logger.error(f"Error generating sample: {e}")
@@ -584,12 +604,13 @@ class RLAIFTrainer:
 
             # Filter high-quality samples
             high_quality_samples = [
-                sample for sample in scored_samples
-                if sample["score"] >= self.threshold
+                sample for sample in scored_samples if sample["score"] >= self.threshold
             ]
 
             if len(high_quality_samples) < 10:
-                logger.warning("Not enough high-quality samples for reward model training")
+                logger.warning(
+                    "Not enough high-quality samples for reward model training"
+                )
                 return None
 
             # Create reward model training dataset
@@ -625,7 +646,7 @@ class RLAIFTrainer:
                 optimize_cuda_cache=True,
                 target_kl=0.1,
                 ppo_epochs=4,
-                seed=42
+                seed=42,
             )
 
             # Initialize PPO trainer (simplified for this implementation)
@@ -637,23 +658,19 @@ class RLAIFTrainer:
         except Exception as e:
             logger.error(f"Error in PPO training: {e}")
 
-    async def _get_feedback_scores(self, samples: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    async def _get_feedback_scores(
+        self, samples: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """Get AI feedback scores for generated responses"""
         scored_samples = []
 
         for sample in samples:
             try:
                 score = await self._evaluate_response_quality(sample)
-                scored_samples.append({
-                    **sample,
-                    "score": score
-                })
+                scored_samples.append({**sample, "score": score})
             except Exception as e:
                 logger.error(f"Error scoring sample: {e}")
-                scored_samples.append({
-                    **sample,
-                    "score": 5.0  # Neutral score
-                })
+                scored_samples.append({**sample, "score": 5.0})  # Neutral score
 
         return scored_samples
 
@@ -665,19 +682,25 @@ class RLAIFTrainer:
                 prompt = self._create_feedback_prompt(sample)
 
                 import concurrent.futures
+
                 with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
                     future = executor.submit(
                         lambda: self.openai_client.chat.completions.create(
                             model=self.feedback_model,
                             messages=[
-                                {"role": "system", "content": "You are an expert evaluator of automotive assistant responses. Rate the response quality from 1-10 based on accuracy, helpfulness, professionalism, and relevance to automotive context."},
-                                {"role": "user", "content": prompt}
+                                {
+                                    "role": "system",
+                                    "content": "You are an expert evaluator of automotive assistant responses. Rate the response quality from 1-10 based on accuracy, helpfulness, professionalism, and relevance to automotive context.",
+                                },
+                                {"role": "user", "content": prompt},
                             ],
                             temperature=0.1,
-                            max_tokens=50
+                            max_tokens=50,
                         )
                     )
-                    response = await asyncio.get_event_loop().run_in_executor(None, future.result)
+                    response = await asyncio.get_event_loop().run_in_executor(
+                        None, future.result
+                    )
 
                 # Extract score from response
                 content = response.choices[0].message.content.strip()
@@ -715,7 +738,7 @@ Provide only the numerical score.
         import re
 
         # Look for numbers in the text
-        numbers = re.findall(r'\d+\.?\d*', text)
+        numbers = re.findall(r"\d+\.?\d*", text)
         if numbers:
             return float(numbers[0])
 
@@ -733,7 +756,7 @@ Provide only the numerical score.
 
     def _heuristic_scoring(self, sample: Dict[str, Any]) -> float:
         """Fallback heuristic scoring"""
-        response = sample['response'].lower()
+        response = sample["response"].lower()
         score = 5.0
 
         # Positive indicators
@@ -757,10 +780,12 @@ Provide only the numerical score.
         reward_data = []
 
         for sample in samples:
-            reward_data.append({
-                "text": f"{sample['prompt']}{sample['response']}",
-                "label": 1 if sample["score"] >= self.threshold else 0
-            })
+            reward_data.append(
+                {
+                    "text": f"{sample['prompt']}{sample['response']}",
+                    "label": 1 if sample["score"] >= self.threshold else 0,
+                }
+            )
 
         return Dataset.from_list(reward_data)
 
@@ -771,17 +796,17 @@ Provide only the numerical score.
         try:
             # Split dataset
             train_test = dataset.train_test_split(test_size=0.2)
-            train_dataset = train_test['train']
-            eval_dataset = train_test['test']
+            train_dataset = train_test["train"]
+            eval_dataset = train_test["test"]
 
             # Tokenize datasets
             def tokenize_function(examples):
                 return self.tokenizer(
-                    examples['text'],
+                    examples["text"],
                     truncation=True,
                     padding=True,
                     max_length=512,
-                    return_tensors="pt"
+                    return_tensors="pt",
                 )
 
             train_tokenized = train_dataset.map(tokenize_function, batched=True)
@@ -789,8 +814,7 @@ Provide only the numerical score.
 
             # Load reward model
             reward_model = AutoModelForSequenceClassification.from_pretrained(
-                "distilbert-base-uncased",
-                num_labels=2
+                "distilbert-base-uncased", num_labels=2
             )
 
             # Training arguments
@@ -805,7 +829,7 @@ Provide only the numerical score.
                 save_strategy="epoch",
                 load_best_model_at_end=True,
                 metric_for_best_model="accuracy",
-                greater_is_better=True
+                greater_is_better=True,
             )
 
             # Create trainer
@@ -814,7 +838,7 @@ Provide only the numerical score.
                 args=training_args,
                 train_dataset=train_tokenized,
                 eval_dataset=eval_tokenized,
-                tokenizer=self.tokenizer
+                tokenizer=self.tokenizer,
             )
 
             # Train model
@@ -849,5 +873,5 @@ Provide only the numerical score.
             "What's the proper way to jump start a car?",
             "How do I know if my spark plugs need replacement?",
             "What are the most common reasons for breakdowns?",
-            "How can I improve my car's performance safely?"
+            "How can I improve my car's performance safely?",
         ]

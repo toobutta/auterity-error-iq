@@ -11,7 +11,7 @@ export function cn(...classes: (string | undefined | null | false)[]): string {
 
   // Simple deduplication for Tailwind classes
   classList.forEach((cls) => {
-    cls.split(' ').forEach((singleClass) => {
+    cls.split(" ").forEach((singleClass) => {
       if (singleClass) {
         // Keep the last occurrence of conflicting classes
         classMap.set(singleClass, singleClass);
@@ -19,7 +19,7 @@ export function cn(...classes: (string | undefined | null | false)[]): string {
     });
   });
 
-  return Array.from(classMap.values()).join(' ');
+  return Array.from(classMap.values()).join(" ");
 }
 
 /**
@@ -30,7 +30,7 @@ export function formatRelativeTime(date: Date): string {
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
   if (diffInSeconds < 60) {
-    return 'just now';
+    return "just now";
   }
 
   const diffInMinutes = Math.floor(diffInSeconds / 60);
@@ -53,10 +53,10 @@ export function formatRelativeTime(date: Date): string {
     return `${diffInWeeks}w ago`;
   }
 
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
   });
 }
 
@@ -82,15 +82,17 @@ export function formatNumber(num: number): string {
 /**
  * Get modern severity styling with dark mode support
  */
-export function getSeverityStyles(severity: 'critical' | 'high' | 'medium' | 'low' | 'info') {
+export function getSeverityStyles(
+  severity: "critical" | "high" | "medium" | "low" | "info",
+) {
   const styles = {
     critical:
-      'bg-red-50 dark:bg-red-900/10 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
-    high: 'bg-orange-50 dark:bg-orange-900/10 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800',
+      "bg-red-50 dark:bg-red-900/10 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800",
+    high: "bg-orange-50 dark:bg-orange-900/10 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800",
     medium:
-      'bg-yellow-50 dark:bg-yellow-900/10 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800',
-    low: 'bg-green-50 dark:bg-green-900/10 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
-    info: 'bg-blue-50 dark:bg-blue-900/10 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+      "bg-yellow-50 dark:bg-yellow-900/10 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800",
+    low: "bg-green-50 dark:bg-green-900/10 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800",
+    info: "bg-blue-50 dark:bg-blue-900/10 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
   };
 
   return styles[severity];
@@ -99,13 +101,15 @@ export function getSeverityStyles(severity: 'critical' | 'high' | 'medium' | 'lo
 /**
  * Get severity icon (returns Unicode or emoji)
  */
-export function getSeverityIcon(severity: 'critical' | 'high' | 'medium' | 'low' | 'info'): string {
+export function getSeverityIcon(
+  severity: "critical" | "high" | "medium" | "low" | "info",
+): string {
   const icons = {
-    critical: '🔴',
-    high: '🟠',
-    medium: '🟡',
-    low: '🟢',
-    info: '🔵',
+    critical: "🔴",
+    high: "🟠",
+    medium: "🟡",
+    low: "🟢",
+    info: "🔵",
   };
 
   return icons[severity];
@@ -116,7 +120,7 @@ export function getSeverityIcon(severity: 'critical' | 'high' | 'medium' | 'low'
  */
 export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let timeoutId: NodeJS.Timeout;
 
@@ -129,7 +133,7 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 /**
  * Generate unique IDs for components
  */
-export function generateId(prefix = 'component'): string {
+export function generateId(prefix = "component"): string {
   return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
@@ -137,15 +141,15 @@ export function generateId(prefix = 'component'): string {
  * Create accessible aria labels for screen readers
  */
 export function getAriaLabel(
-  severity: 'critical' | 'high' | 'medium' | 'low' | 'info',
-  context: string
+  severity: "critical" | "high" | "medium" | "low" | "info",
+  context: string,
 ): string {
   const severityText = {
-    critical: 'Critical severity',
-    high: 'High severity',
-    medium: 'Medium severity',
-    low: 'Low severity',
-    info: 'Information',
+    critical: "Critical severity",
+    high: "High severity",
+    medium: "Medium severity",
+    low: "Low severity",
+    info: "Information",
   };
 
   return `${severityText[severity]} ${context}`;
@@ -155,17 +159,20 @@ export function getAriaLabel(
  * Modern loading state generator
  */
 export function createSkeletonClass(className?: string): string {
-  return cn('animate-pulse bg-neutral-200 dark:bg-neutral-800 rounded', className || 'h-4 w-full');
+  return cn(
+    "animate-pulse bg-neutral-200 dark:bg-neutral-800 rounded",
+    className || "h-4 w-full",
+  );
 }
 
 /**
  * Format file sizes
  */
 export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 B';
+  if (bytes === 0) return "0 B";
 
   const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const sizes = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;

@@ -1,9 +1,11 @@
 # Enterprise SSO Integration
 
 ## Overview
+
 Complete enterprise SSO authentication system with AWS Cognito, SAML 2.0, and OIDC support for AutoMatrix AI Hub.
 
 ## Features
+
 - **Dual Authentication**: Enterprise SSO + legacy JWT fallback
 - **Multi-IdP Support**: Active Directory, Azure AD, Okta, Google Workspace
 - **Role-Based Access Control**: Admin, Developer, Data Analyst, Compliance Officer
@@ -14,31 +16,37 @@ Complete enterprise SSO authentication system with AWS Cognito, SAML 2.0, and OI
 ## Quick Deployment
 
 ### 1. Deploy Infrastructure
+
 ```bash
 ./scripts/deploy-sso.sh production
 ```
 
 ### 2. Configure Environment
+
 ```bash
 cp .env.sso .env
 # Update .env with your specific values
 ```
 
 ### 3. Configure Identity Providers
+
 Access AWS Cognito Console and add your SAML/OIDC providers:
+
 - **SAML**: Upload metadata XML from your IdP
 - **OIDC**: Configure client credentials and endpoints
 
 ### 4. Update Application
+
 ```bash
 # Backend
 cd backend && pip install -r requirements.txt
 
-# Frontend  
+# Frontend
 cd frontend && npm install
 ```
 
 ## Role Mapping
+
 - **admin**: Full system access, user management, audit logs
 - **developer**: Read/write workflows, execute workflows
 - **data_analyst**: Read access, reports, data export
@@ -46,22 +54,25 @@ cd frontend && npm install
 - **user**: Basic read access
 
 ## API Endpoints
+
 - `POST /api/auth/validate` - Validate authentication token
 - `GET /api/auth/user/profile` - Get user profile
 - `POST /api/auth/logout` - Logout user
 
 ## Frontend Integration
+
 ```typescript
-import { useAuth } from './contexts/AuthContext';
+import { useAuth } from "./contexts/AuthContext";
 
 const { user, hasPermission, logout } = useAuth();
 
-if (hasPermission('manage_users')) {
+if (hasPermission("manage_users")) {
   // Show admin features
 }
 ```
 
 ## Security Features
+
 - JWT token validation with 8-hour expiry
 - Automatic token refresh
 - Secure logout with IdP session termination
@@ -69,12 +80,14 @@ if (hasPermission('manage_users')) {
 - Audit logging for all authentication events
 
 ## Monitoring
+
 - CloudTrail integration for audit logs
 - Health check endpoints
 - Authentication metrics
 - Session monitoring
 
 ## Troubleshooting
+
 1. **Token validation fails**: Check Cognito User Pool configuration
 2. **SSO redirect fails**: Verify callback URLs in IdP and Cognito
 3. **Role mapping issues**: Check custom attributes in User Pool schema

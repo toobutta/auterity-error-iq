@@ -1,6 +1,6 @@
-import { createClient, RedisClientType } from 'redis';
-import { EventEmitter } from 'events';
-import { v4 as uuidv4 } from 'uuid';
+import { createClient, RedisClientType } from "redis";
+import { EventEmitter } from "events";
+import { v4 as uuidv4 } from "uuid";
 
 export interface CacheEntry {
   key: string;
@@ -35,13 +35,13 @@ export class CrossSystemCache extends EventEmitter {
     hits: 0,
     misses: 0,
     sets: 0,
-    deletes: 0
+    deletes: 0,
   };
 
   constructor(
-    private url: string = process.env.REDIS_URL || 'redis://localhost:6379',
+    private url: string = process.env.REDIS_URL || "redis://localhost:6379",
     private localCacheSize: number = 1000,
-    private enableLocalCache: boolean = true
+    private enableLocalCache: boolean = true,
   ) {
     super();
   }
@@ -50,31 +50,30 @@ export class CrossSystemCache extends EventEmitter {
     try {
       this.client = createClient({ url: this.url });
 
-      this.client.on('error', (error) => {
-        console.error('Redis client error:', error);
+      this.client.on("error", (error) => {
+        console.error("Redis client error:", error);
         this.isConnected = false;
-        this.emit('connection-error', error);
+        this.emit("connection-error", error);
       });
 
-      this.client.on('connect', () => {
-        console.log('Connected to Redis');
+      this.client.on("connect", () => {
+        console.log("Connected to Redis");
         this.isConnected = true;
-        this.emit('connected');
+        this.emit("connected");
       });
 
-      this.client.on('disconnect', () => {
-        console.log('Disconnected from Redis');
+      this.client.on("disconnect", () => {
+        console.log("Disconnected from Redis");
         this.isConnected = false;
-        this.emit('disconnected');
+        this.emit("disconnected");
       });
 
       await this.client.connect();
-      console.log('Cross-system cache initialized successfully');
-
+      console.log("Cross-system cache initialized successfully");
     } catch (error) {
-      console.error('Failed to initialize cross-system cache:', error);
+      console.error("Failed to initialize cross-system cache:", error);
       // Fallback to local cache only
-      console.log('Using local cache fallback');
+      console.log("Using local cache fallback");
     }
   }
 
@@ -84,13 +83,17 @@ export class CrossSystemCache extends EventEmitter {
         await this.client.disconnect();
       }
       this.isConnected = false;
-      console.log('Cross-system cache disconnected');
+      console.log("Cross-system cache disconnected");
     } catch (error) {
-      console.error('Error disconnecting cache:', error);
+      console.error("Error disconnecting cache:", error);
     }
   }
 
-  async set(key: string, value: any, options: CacheOptions = {}): Promise<void> {
+  async set(
+    key: string,
+    value: any,
+    options: CacheOptions = {},
+  ): Promise<void> {
     const entry: CacheEntry = {
       key,
       value,
@@ -98,7 +101,7 @@ export class CrossSystemCache extends EventEmitter {
       tags: options.tags,
       system: options.system,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
     try {
@@ -118,7 +121,7 @@ export class CrossSystemCache extends EventEmitter {
           }
         }
 
-        this.emit('cache-set', { key, entry });
+        this.emit("cache-set", { key, entry });
       }
 
       // Store in local cache
@@ -128,10 +131,9 @@ export class CrossSystemCache extends EventEmitter {
       }
 
       this.stats.sets++;
-      this.emit('entry-set', entry);
-
+      this.emit("entry-set", entry);
     } catch (error) {
-      console.error('Error setting cache entry:', error);
+      console.error("Error setting cache entry:", error);
       // Fallback to local cache
       if (this.enableLocalCache) {
         this.localCache.set(key, entry);
@@ -146,7 +148,7 @@ export class CrossSystemCache extends EventEmitter {
         const localEntry = this.localCache.get(key);
         if (localEntry) {
           this.stats.hits++;
-          this.emit('cache-hit', { key, source: 'local' });
+          this.emit("cache-hit", { key, source: "local" });
           return localEntry.value;
         }
       }
@@ -163,17 +165,16 @@ export class CrossSystemCache extends EventEmitter {
             this.localCache.set(key, entry);
           }
 
-          this.emit('cache-hit', { key, source: 'redis' });
+          this.emit("cache-hit", { key, source: "redis" });
           return entry.value;
         }
       }
 
       this.stats.misses++;
-      this.emit('cache-miss', { key });
+      this.emit("cache-miss", { key });
       return null;
-
     } catch (error) {
-      console.error('Error getting cache entry:', error);
+      console.error("Error getting cache entry:", error);
       this.stats.misses++;
       return null;
     }
@@ -206,13 +207,12 @@ export class CrossSystemCache extends EventEmitter {
 
       if (deleted) {
         this.stats.deletes++;
-        this.emit('entry-deleted', { key });
+        this.emit("entry-deleted", { key });
       }
 
       return deleted;
-
     } catch (error) {
-      console.error('Error deleting cache entry:', error);
+      console.error("Error deleting cache entry:", error);
       // Fallback to local cache deletion
       if (this.enableLocalCache) {
         return this.localCache.delete(key);
@@ -233,11 +233,10 @@ export class CrossSystemCache extends EventEmitter {
         this.localCache.clear();
       }
 
-      this.emit('cache-cleared');
-      console.log('Cache cleared');
-
+      this.emit("cache-cleared");
+      console.log("Cache cleared");
     } catch (error) {
-      console.error('Error clearing cache:', error);
+      console.error("Error clearing cache:", error);
     }
   }
 
@@ -265,14 +264,13 @@ export class CrossSystemCache extends EventEmitter {
           }
         }
 
-        this.emit('tag-invalidated', { tag, keys: keys.length });
+        this.emit("tag-invalidated", { tag, keys: keys.length });
       }
 
       console.log(`Invalidated ${invalidated} entries for tag: ${tag}`);
       return invalidated;
-
     } catch (error) {
-      console.error('Error invalidating by tag:', error);
+      console.error("Error invalidating by tag:", error);
       return 0;
     }
   }
@@ -297,14 +295,13 @@ export class CrossSystemCache extends EventEmitter {
           }
         }
 
-        this.emit('system-invalidated', { system, keys: keys.length });
+        this.emit("system-invalidated", { system, keys: keys.length });
       }
 
       console.log(`Invalidated ${invalidated} entries for system: ${system}`);
       return invalidated;
-
     } catch (error) {
-      console.error('Error invalidating by system:', error);
+      console.error("Error invalidating by system:", error);
       return 0;
     }
   }
@@ -323,9 +320,8 @@ export class CrossSystemCache extends EventEmitter {
       }
 
       return false;
-
     } catch (error) {
-      console.error('Error checking cache existence:', error);
+      console.error("Error checking cache existence:", error);
       return false;
     }
   }
@@ -349,9 +345,8 @@ export class CrossSystemCache extends EventEmitter {
       }
 
       return null;
-
     } catch (error) {
-      console.error('Error getting cache entry:', error);
+      console.error("Error getting cache entry:", error);
       return null;
     }
   }
@@ -372,9 +367,8 @@ export class CrossSystemCache extends EventEmitter {
       }
 
       return entries;
-
     } catch (error) {
-      console.error('Error getting entries by tag:', error);
+      console.error("Error getting entries by tag:", error);
       return [];
     }
   }
@@ -395,16 +389,17 @@ export class CrossSystemCache extends EventEmitter {
       }
 
       return entries;
-
     } catch (error) {
-      console.error('Error getting entries by system:', error);
+      console.error("Error getting entries by system:", error);
       return [];
     }
   }
 
-  async setMultiple(entries: Array<{ key: string; value: any; options?: CacheOptions }>): Promise<void> {
+  async setMultiple(
+    entries: Array<{ key: string; value: any; options?: CacheOptions }>,
+  ): Promise<void> {
     const promises = entries.map(({ key, value, options }) =>
-      this.set(key, value, options)
+      this.set(key, value, options),
     );
     await Promise.all(promises);
   }
@@ -441,14 +436,15 @@ export class CrossSystemCache extends EventEmitter {
     for (const key of keys) {
       // This would typically fetch from the database or external source
       // For now, we'll just mark it as a cache warming operation
-      this.emit('cache-warming', { key });
+      this.emit("cache-warming", { key });
     }
   }
 
   // Cache statistics and monitoring
   getStats(): CacheStats {
     const totalRequests = this.stats.hits + this.stats.misses;
-    const hitRate = totalRequests > 0 ? (this.stats.hits / totalRequests) * 100 : 0;
+    const hitRate =
+      totalRequests > 0 ? (this.stats.hits / totalRequests) * 100 : 0;
 
     return {
       hits: this.stats.hits,
@@ -456,30 +452,31 @@ export class CrossSystemCache extends EventEmitter {
       sets: this.stats.sets,
       deletes: this.stats.deletes,
       size: this.localCache.size,
-      hitRate: Math.round(hitRate * 100) / 100
+      hitRate: Math.round(hitRate * 100) / 100,
     };
   }
 
   async getRedisInfo(): Promise<any> {
     if (!this.isConnected || !this.client) {
-      return { status: 'disconnected' };
+      return { status: "disconnected" };
     }
 
     try {
       const info = await this.client.info();
       const redisInfo = info as any; // Redis INFO command returns string keys
       return {
-        status: 'connected',
+        status: "connected",
         version: redisInfo.redis_version,
         uptime: redisInfo.uptime_in_seconds,
         memory: redisInfo.used_memory_human,
         connections: redisInfo.connected_clients,
-        commands: redisInfo.total_commands_processed
+        commands: redisInfo.total_commands_processed,
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error('Error getting Redis info:', error);
-      return { status: 'error', error: errorMessage };
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("Error getting Redis info:", error);
+      return { status: "error", error: errorMessage };
     }
   }
 
@@ -503,14 +500,14 @@ export class CrossSystemCache extends EventEmitter {
     const redisInfo = await this.getRedisInfo();
 
     return {
-      status: this.isConnected ? 'healthy' : 'degraded',
+      status: this.isConnected ? "healthy" : "degraded",
       redis: redisInfo,
       localCache: {
         size: this.localCache.size,
-        maxSize: this.localCacheSize
+        maxSize: this.localCacheSize,
       },
       performance: stats,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 
@@ -519,11 +516,11 @@ export class CrossSystemCache extends EventEmitter {
     const syncKey = `sync:${system}:${Date.now()}`;
     await this.set(syncKey, data, {
       ttl: 300, // 5 minutes
-      tags: ['sync', system],
-      system
+      tags: ["sync", system],
+      system,
     });
 
-    this.emit('system-sync', { system, key: syncKey });
+    this.emit("system-sync", { system, key: syncKey });
   }
 
   // Cache invalidation patterns
@@ -548,7 +545,7 @@ export class CrossSystemCache extends EventEmitter {
     try {
       return await this.client.keys(pattern);
     } catch (error) {
-      console.error('Error getting keys by pattern:', error);
+      console.error("Error getting keys by pattern:", error);
       return [];
     }
   }
@@ -567,7 +564,7 @@ export class CrossSystemCache extends EventEmitter {
       }
       return 0;
     } catch (error) {
-      console.error('Error deleting keys by pattern:', error);
+      console.error("Error deleting keys by pattern:", error);
       return 0;
     }
   }
@@ -576,11 +573,11 @@ export class CrossSystemCache extends EventEmitter {
   async getStatus(): Promise<any> {
     const stats = this.getStats();
     return {
-      status: this.isConnected ? 'healthy' : 'disconnected',
-      connection: this.isConnected ? 'connected' : 'disconnected',
+      status: this.isConnected ? "healthy" : "disconnected",
+      connection: this.isConnected ? "connected" : "disconnected",
       localCacheSize: this.localCache.size,
       stats,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 }

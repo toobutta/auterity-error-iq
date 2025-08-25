@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   AlertTriangle,
   Activity,
@@ -8,7 +8,7 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface ErrorCorrelation {
   id: string;
@@ -58,8 +58,8 @@ const ErrorCorrelationDashboard: React.FC = () => {
   const [recoveryActions, setRecoveryActions] = useState<RecoveryAction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPattern, setSelectedPattern] = useState<string>('all');
-  const [selectedSystem, setSelectedSystem] = useState<string>('all');
+  const [selectedPattern, setSelectedPattern] = useState<string>("all");
+  const [selectedSystem, setSelectedSystem] = useState<string>("all");
 
   useEffect(() => {
     fetchCorrelationData();
@@ -72,76 +72,88 @@ const ErrorCorrelationDashboard: React.FC = () => {
       setLoading(true);
 
       // Fetch correlation status
-      const statusResponse = await fetch('/api/v1/error-correlation/status');
-      if (!statusResponse.ok) throw new Error('Failed to fetch status');
+      const statusResponse = await fetch("/api/v1/error-correlation/status");
+      if (!statusResponse.ok) throw new Error("Failed to fetch status");
       const statusData = await statusResponse.json();
       setStatus(statusData);
 
       // Fetch recent correlations
-      const correlationsResponse = await fetch('/api/v1/error-correlation/correlations?limit=20');
-      if (!correlationsResponse.ok) throw new Error('Failed to fetch correlations');
+      const correlationsResponse = await fetch(
+        "/api/v1/error-correlation/correlations?limit=20",
+      );
+      if (!correlationsResponse.ok)
+        throw new Error("Failed to fetch correlations");
       const correlationsData = await correlationsResponse.json();
       setCorrelations(correlationsData.correlations);
 
       // Fetch recovery actions
-      const actionsResponse = await fetch('/api/v1/error-correlation/recovery-actions');
-      if (!actionsResponse.ok) throw new Error('Failed to fetch recovery actions');
+      const actionsResponse = await fetch(
+        "/api/v1/error-correlation/recovery-actions",
+      );
+      if (!actionsResponse.ok)
+        throw new Error("Failed to fetch recovery actions");
       const actionsData = await actionsResponse.json();
       setRecoveryActions(actionsData.recovery_actions);
 
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      setError(err instanceof Error ? err.message : "Unknown error occurred");
     } finally {
       setLoading(false);
     }
   };
 
-  const triggerManualRecovery = async (correlationId: string, actionId: string) => {
+  const triggerManualRecovery = async (
+    correlationId: string,
+    actionId: string,
+  ) => {
     try {
-      const response = await fetch(`/api/v1/error-correlation/manual-recovery/${correlationId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `/api/v1/error-correlation/manual-recovery/${correlationId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ recovery_action: actionId }),
         },
-        body: JSON.stringify({ recovery_action: actionId }),
-      });
+      );
 
-      if (!response.ok) throw new Error('Failed to trigger recovery');
+      if (!response.ok) throw new Error("Failed to trigger recovery");
 
       // Refresh data after triggering recovery
       await fetchCorrelationData();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Recovery trigger failed');
+      setError(err instanceof Error ? err.message : "Recovery trigger failed");
     }
   };
 
   const getPatternColor = (pattern: string): string => {
     const colors: Record<string, string> = {
-      cascading_failure: 'bg-red-100 text-red-800',
-      common_root_cause: 'bg-orange-100 text-orange-800',
-      dependency_failure: 'bg-yellow-100 text-yellow-800',
-      resource_exhaustion: 'bg-purple-100 text-purple-800',
-      authentication_propagation: 'bg-blue-100 text-blue-800',
-      network_partition: 'bg-green-100 text-green-800',
+      cascading_failure: "bg-red-100 text-red-800",
+      common_root_cause: "bg-orange-100 text-orange-800",
+      dependency_failure: "bg-yellow-100 text-yellow-800",
+      resource_exhaustion: "bg-purple-100 text-purple-800",
+      authentication_propagation: "bg-blue-100 text-blue-800",
+      network_partition: "bg-green-100 text-green-800",
     };
-    return colors[pattern] || 'bg-gray-100 text-gray-800';
+    return colors[pattern] || "bg-gray-100 text-gray-800";
   };
 
   const getSystemColor = (system: string): string => {
     const colors: Record<string, string> = {
-      autmatrix: 'bg-blue-500',
-      relaycore: 'bg-green-500',
-      neuroweaver: 'bg-purple-500',
+      autmatrix: "bg-blue-500",
+      relaycore: "bg-green-500",
+      neuroweaver: "bg-purple-500",
     };
-    return colors[system] || 'bg-gray-500';
+    return colors[system] || "bg-gray-500";
   };
 
   const formatPattern = (pattern: string): string => {
     return pattern
-      .split('_')
+      .split("_")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+      .join(" ");
   };
 
   const formatTimestamp = (timestamp: string): string => {
@@ -179,15 +191,21 @@ const ErrorCorrelationDashboard: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Error Correlation Dashboard</h1>
-          <p className="text-gray-600">Cross-system error analysis and automated recovery</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Error Correlation Dashboard
+          </h1>
+          <p className="text-gray-600">
+            Cross-system error analysis and automated recovery
+          </p>
         </div>
         <button
           onClick={fetchCorrelationData}
           disabled={loading}
           className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
         >
-          <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+          />
           Refresh
         </button>
       </div>
@@ -199,8 +217,12 @@ const ErrorCorrelationDashboard: React.FC = () => {
             <div className="flex items-center">
               <Activity className="w-8 h-8 text-blue-500" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Correlations</p>
-                <p className="text-2xl font-bold text-gray-900">{status.total_correlations}</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Total Correlations
+                </p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {status.total_correlations}
+                </p>
               </div>
             </div>
           </div>
@@ -209,8 +231,12 @@ const ErrorCorrelationDashboard: React.FC = () => {
             <div className="flex items-center">
               <AlertTriangle className="w-8 h-8 text-orange-500" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Active Correlations</p>
-                <p className="text-2xl font-bold text-gray-900">{status.active_correlations}</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Active Correlations
+                </p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {status.active_correlations}
+                </p>
               </div>
             </div>
           </div>
@@ -219,7 +245,9 @@ const ErrorCorrelationDashboard: React.FC = () => {
             <div className="flex items-center">
               <TrendingUp className="w-8 h-8 text-green-500" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Recovery Actions</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Recovery Actions
+                </p>
                 <p className="text-2xl font-bold text-gray-900">
                   {status.recovery_actions_executed}
                 </p>
@@ -231,7 +259,9 @@ const ErrorCorrelationDashboard: React.FC = () => {
             <div className="flex items-center">
               <Users className="w-8 h-8 text-purple-500" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Affected Systems</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Affected Systems
+                </p>
                 <p className="text-2xl font-bold text-gray-900">
                   {Object.keys(status.affected_systems).length}
                 </p>
@@ -244,21 +274,27 @@ const ErrorCorrelationDashboard: React.FC = () => {
       {/* Pattern Distribution */}
       {status && Object.keys(status.pattern_distribution).length > 0 && (
         <div className="bg-white p-6 rounded-lg shadow border">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Error Pattern Distribution</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Error Pattern Distribution
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Object.entries(status.pattern_distribution).map(([pattern, count]) => (
-              <div
-                key={pattern}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded"
-              >
-                <span
-                  className={`px-2 py-1 rounded text-xs font-medium ${getPatternColor(pattern)}`}
+            {Object.entries(status.pattern_distribution).map(
+              ([pattern, count]) => (
+                <div
+                  key={pattern}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded"
                 >
-                  {formatPattern(pattern)}
-                </span>
-                <span className="text-lg font-bold text-gray-900">{count}</span>
-              </div>
-            ))}
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-medium ${getPatternColor(pattern)}`}
+                  >
+                    {formatPattern(pattern)}
+                  </span>
+                  <span className="text-lg font-bold text-gray-900">
+                    {count}
+                  </span>
+                </div>
+              ),
+            )}
           </div>
         </div>
       )}
@@ -266,7 +302,9 @@ const ErrorCorrelationDashboard: React.FC = () => {
       {/* Recent Alerts */}
       {status && status.recent_alerts.length > 0 && (
         <div className="bg-white p-6 rounded-lg shadow border">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Alerts</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Recent Alerts
+          </h2>
           <div className="space-y-3">
             {status.recent_alerts.slice(0, 5).map((alert, index) => (
               <div
@@ -284,7 +322,9 @@ const ErrorCorrelationDashboard: React.FC = () => {
                       Confidence: {(alert.confidence * 100).toFixed(0)}%
                     </span>
                   </div>
-                  <p className="text-sm text-gray-900 mt-1">{alert.root_cause}</p>
+                  <p className="text-sm text-gray-900 mt-1">
+                    {alert.root_cause}
+                  </p>
                   <div className="flex items-center space-x-2 mt-2">
                     {alert.affected_systems.map((system) => (
                       <span
@@ -294,7 +334,7 @@ const ErrorCorrelationDashboard: React.FC = () => {
                       />
                     ))}
                     <span className="text-xs text-gray-500">
-                      {alert.affected_systems.join(', ')}
+                      {alert.affected_systems.join(", ")}
                     </span>
                   </div>
                 </div>
@@ -311,7 +351,9 @@ const ErrorCorrelationDashboard: React.FC = () => {
       {/* Correlations List */}
       <div className="bg-white p-6 rounded-lg shadow border">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Recent Correlations</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Recent Correlations
+          </h2>
           <div className="flex space-x-2">
             <select
               value={selectedPattern}
@@ -350,7 +392,10 @@ const ErrorCorrelationDashboard: React.FC = () => {
             </div>
           ) : (
             correlations.map((correlation) => (
-              <div key={correlation.id} className="border border-gray-200 rounded-lg p-4">
+              <div
+                key={correlation.id}
+                className="border border-gray-200 rounded-lg p-4"
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
@@ -363,13 +408,21 @@ const ErrorCorrelationDashboard: React.FC = () => {
                         Confidence: {(correlation.confidence * 100).toFixed(0)}%
                       </span>
                       {correlation.resolved_at ? (
-                        <CheckCircle className="w-4 h-4 text-green-500" title="Resolved" />
+                        <CheckCircle
+                          className="w-4 h-4 text-green-500"
+                          title="Resolved"
+                        />
                       ) : (
-                        <AlertTriangle className="w-4 h-4 text-orange-500" title="Active" />
+                        <AlertTriangle
+                          className="w-4 h-4 text-orange-500"
+                          title="Active"
+                        />
                       )}
                     </div>
 
-                    <p className="text-gray-900 mb-2">{correlation.root_cause}</p>
+                    <p className="text-gray-900 mb-2">
+                      {correlation.root_cause}
+                    </p>
 
                     <div className="flex items-center space-x-4 text-sm text-gray-600">
                       <div className="flex items-center space-x-1">
@@ -383,7 +436,9 @@ const ErrorCorrelationDashboard: React.FC = () => {
                         ))}
                       </div>
                       <span>Errors: {correlation.error_count}</span>
-                      <span>Created: {formatTimestamp(correlation.created_at)}</span>
+                      <span>
+                        Created: {formatTimestamp(correlation.created_at)}
+                      </span>
                     </div>
                   </div>
 
@@ -392,8 +447,11 @@ const ErrorCorrelationDashboard: React.FC = () => {
                       <select
                         onChange={(e) => {
                           if (e.target.value) {
-                            triggerManualRecovery(correlation.id, e.target.value);
-                            e.target.value = '';
+                            triggerManualRecovery(
+                              correlation.id,
+                              e.target.value,
+                            );
+                            e.target.value = "";
                           }
                         }}
                         className="px-3 py-1 border border-gray-300 rounded text-sm"
@@ -402,7 +460,9 @@ const ErrorCorrelationDashboard: React.FC = () => {
                         <option value="">Recovery Actions</option>
                         {recoveryActions
                           .filter((action) =>
-                            action.applicable_patterns.includes(correlation.pattern)
+                            action.applicable_patterns.includes(
+                              correlation.pattern,
+                            ),
                           )
                           .map((action) => (
                             <option key={action.id} value={action.id}>
@@ -422,17 +482,27 @@ const ErrorCorrelationDashboard: React.FC = () => {
       {/* Recovery Actions */}
       {recoveryActions.length > 0 && (
         <div className="bg-white p-6 rounded-lg shadow border">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Available Recovery Actions</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Available Recovery Actions
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {recoveryActions.map((action) => (
-              <div key={action.id} className="border border-gray-200 rounded-lg p-4">
+              <div
+                key={action.id}
+                className="border border-gray-200 rounded-lg p-4"
+              >
                 <h3 className="font-medium text-gray-900">{action.name}</h3>
-                <p className="text-sm text-gray-600 mt-1">{action.description}</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {action.description}
+                </p>
                 <div className="mt-2 space-y-1 text-xs text-gray-500">
                   <div>Type: {action.action_type}</div>
                   <div>Retry Count: {action.retry_count}</div>
                   <div>Timeout: {action.timeout}s</div>
-                  <div>Patterns: {action.applicable_patterns.map(formatPattern).join(', ')}</div>
+                  <div>
+                    Patterns:{" "}
+                    {action.applicable_patterns.map(formatPattern).join(", ")}
+                  </div>
                 </div>
               </div>
             ))}

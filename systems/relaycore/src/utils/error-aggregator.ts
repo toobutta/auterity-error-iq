@@ -3,8 +3,8 @@
  * Sends errors to the cross-system correlation service
  */
 
-import axios, { AxiosInstance } from 'axios';
-import { logger } from './logger';
+import axios, { AxiosInstance } from "axios";
+import { logger } from "./logger";
 
 export interface ErrorData {
   timestamp?: string;
@@ -32,13 +32,13 @@ export class ErrorAggregator {
   private client: AxiosInstance;
   private correlationServiceUrl: string;
 
-  constructor(correlationServiceUrl: string = 'http://localhost:8000') {
+  constructor(correlationServiceUrl: string = "http://localhost:8000") {
     this.correlationServiceUrl = correlationServiceUrl;
     this.client = axios.create({
       baseURL: this.correlationServiceUrl,
       timeout: 10000,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
   }
@@ -53,13 +53,18 @@ export class ErrorAggregator {
         errorData.timestamp = new Date().toISOString();
       }
 
-      const response = await this.client.post('/api/v1/error-correlation/aggregate', errorData);
-      
+      const response = await this.client.post(
+        "/api/v1/error-correlation/aggregate",
+        errorData,
+      );
+
       if (response.status === 200) {
         logger.debug(`Successfully aggregated error: ${errorData.code}`);
         return true;
       } else {
-        logger.error(`Failed to aggregate error: ${response.status} - ${response.data}`);
+        logger.error(
+          `Failed to aggregate error: ${response.status} - ${response.data}`,
+        );
         return false;
       }
     } catch (error) {
@@ -76,14 +81,14 @@ export class ErrorAggregator {
     context: AIServiceErrorContext,
     requestId?: string,
     userId?: string,
-    correlationId?: string
+    correlationId?: string,
   ): Promise<boolean> {
     try {
       const errorData: ErrorData = {
         timestamp: new Date().toISOString(),
         message: error.message,
         code: this.getErrorCode(error),
-        category: 'ai_service',
+        category: "ai_service",
         severity: this.getErrorSeverity(error),
         context: {
           ...context,
@@ -109,11 +114,11 @@ export class ErrorAggregator {
     provider: string,
     modelId: string,
     error: Error,
-    requestType: string = 'completion',
+    requestType: string = "completion",
     cost?: number,
     latency?: number,
     requestId?: string,
-    userId?: string
+    userId?: string,
   ): Promise<boolean> {
     return await this.aggregateAIServiceError(
       error,
@@ -125,7 +130,7 @@ export class ErrorAggregator {
         latency,
       },
       requestId,
-      userId
+      userId,
     );
   }
 
@@ -141,14 +146,14 @@ export class ErrorAggregator {
       cost_threshold?: number;
     },
     requestId?: string,
-    userId?: string
+    userId?: string,
   ): Promise<boolean> {
     try {
       const errorData: ErrorData = {
         timestamp: new Date().toISOString(),
         message: error.message,
         code: this.getErrorCode(error),
-        category: 'routing',
+        category: "routing",
         severity: this.getErrorSeverity(error),
         context: {
           ...routingContext,
@@ -178,14 +183,14 @@ export class ErrorAggregator {
       optimization_strategy?: string;
     },
     requestId?: string,
-    userId?: string
+    userId?: string,
   ): Promise<boolean> {
     try {
       const errorData: ErrorData = {
         timestamp: new Date().toISOString(),
         message: error.message,
         code: this.getErrorCode(error),
-        category: 'cost_optimization',
+        category: "cost_optimization",
         severity: this.getErrorSeverity(error),
         context: {
           ...costContext,
@@ -209,18 +214,23 @@ export class ErrorAggregator {
   async aggregateBatchErrors(errors: ErrorData[]): Promise<boolean> {
     try {
       // Add timestamps to errors that don't have them
-      const processedErrors = errors.map(error => ({
+      const processedErrors = errors.map((error) => ({
         ...error,
         timestamp: error.timestamp || new Date().toISOString(),
       }));
 
-      const response = await this.client.post('/api/v1/error-correlation/aggregate/batch', processedErrors);
-      
+      const response = await this.client.post(
+        "/api/v1/error-correlation/aggregate/batch",
+        processedErrors,
+      );
+
       if (response.status === 200) {
         logger.info(`Successfully aggregated batch of ${errors.length} errors`);
         return true;
       } else {
-        logger.error(`Failed to aggregate batch errors: ${response.status} - ${response.data}`);
+        logger.error(
+          `Failed to aggregate batch errors: ${response.status} - ${response.data}`,
+        );
         return false;
       }
     } catch (error) {
@@ -234,14 +244,14 @@ export class ErrorAggregator {
    */
   private getErrorCode(error: Error): string {
     // Check if error has a code property
-    if ('code' in error && typeof error.code === 'string') {
+    if ("code" in error && typeof error.code === "string") {
       return error.code;
     }
 
     // Generate code based on error type and message
     const errorType = error.constructor.name;
-    if (errorType === 'Error') {
-      return 'RELAYCORE_ERROR';
+    if (errorType === "Error") {
+      return "RELAYCORE_ERROR";
     }
 
     return `RELAYCORE_${errorType.toUpperCase()}`;
@@ -252,33 +262,37 @@ export class ErrorAggregator {
    */
   private getErrorSeverity(error: Error): string {
     const message = error.message.toLowerCase();
-    
+
     // Critical errors
-    if (message.includes('timeout') || 
-        message.includes('connection') || 
-        message.includes('network') ||
-        message.includes('unavailable')) {
-      return 'high';
+    if (
+      message.includes("timeout") ||
+      message.includes("connection") ||
+      message.includes("network") ||
+      message.includes("unavailable")
+    ) {
+      return "high";
     }
 
     // Medium severity errors
-    if (message.includes('rate limit') || 
-        message.includes('quota') || 
-        message.includes('authentication') ||
-        message.includes('authorization')) {
-      return 'medium';
+    if (
+      message.includes("rate limit") ||
+      message.includes("quota") ||
+      message.includes("authentication") ||
+      message.includes("authorization")
+    ) {
+      return "medium";
     }
 
     // Default to medium
-    return 'medium';
+    return "medium";
   }
 
   /**
    * Create correlation ID for tracking related errors
    */
   generateCorrelationId(): string {
-    const crypto = require('crypto');
-    return `relaycore_${Date.now()}_${crypto.randomUUID().replace(/-/g, '').substring(0, 9)}`;
+    const crypto = require("crypto");
+    return `relaycore_${Date.now()}_${crypto.randomUUID().replace(/-/g, "").substring(0, 9)}`;
   }
 }
 
@@ -302,11 +316,11 @@ export async function aggregateAIError(
   error: Error,
   provider: string,
   modelId: string,
-  requestType: string = 'completion',
+  requestType: string = "completion",
   cost?: number,
   latency?: number,
   requestId?: string,
-  userId?: string
+  userId?: string,
 ): Promise<boolean> {
   const aggregator = getErrorAggregator();
   return await aggregator.aggregateProviderError(
@@ -317,7 +331,7 @@ export async function aggregateAIError(
     cost,
     latency,
     requestId,
-    userId
+    userId,
   );
 }
 
@@ -333,19 +347,28 @@ export async function aggregateRoutingError(
     cost_threshold?: number;
   },
   requestId?: string,
-  userId?: string
+  userId?: string,
 ): Promise<boolean> {
   const aggregator = getErrorAggregator();
-  return await aggregator.aggregateRoutingError(error, routingContext, requestId, userId);
+  return await aggregator.aggregateRoutingError(
+    error,
+    routingContext,
+    requestId,
+    userId,
+  );
 }
 
 /**
  * Decorator for automatic error aggregation
  */
 export function autoAggregateErrors(
-  contextExtractor?: (args: any[]) => Partial<AIServiceErrorContext>
+  contextExtractor?: (args: any[]) => Partial<AIServiceErrorContext>,
 ) {
-  return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
+  return function (
+    target: any,
+    propertyName: string,
+    descriptor: PropertyDescriptor,
+  ) {
     const method = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {
@@ -364,16 +387,13 @@ export function autoAggregateErrors(
 
         // Aggregate error
         const aggregator = getErrorAggregator();
-        await aggregator.aggregateAIServiceError(
-          error as Error,
-          {
-            provider: context.provider || 'unknown',
-            model_id: context.model_id || 'unknown',
-            request_type: context.request_type || 'unknown',
-            cost: context.cost,
-            latency: context.latency,
-          }
-        );
+        await aggregator.aggregateAIServiceError(error as Error, {
+          provider: context.provider || "unknown",
+          model_id: context.model_id || "unknown",
+          request_type: context.request_type || "unknown",
+          cost: context.cost,
+          latency: context.latency,
+        });
 
         // Re-throw the original error
         throw error;
@@ -390,31 +410,33 @@ export function autoAggregateErrors(
 export function errorAggregationMiddleware() {
   return (error: Error, req: any, res: any, next: any) => {
     // Extract request context
-    const requestId = req.headers['x-request-id'] || req.id;
+    const requestId = req.headers["x-request-id"] || req.id;
     const userId = req.user?.id;
-    const correlationId = req.headers['x-correlation-id'];
+    const correlationId = req.headers["x-correlation-id"];
 
     // Aggregate error asynchronously
     const aggregator = getErrorAggregator();
-    aggregator.aggregateError({
-      message: error.message,
-      code: 'HTTP_REQUEST_ERROR',
-      category: 'api',
-      severity: 'medium',
-      context: {
-        method: req.method,
-        url: req.url,
-        status_code: res.statusCode,
-        user_agent: req.headers['user-agent'],
-        ip: req.ip,
-      },
-      stack_trace: error.stack,
-      correlation_id: correlationId,
-      request_id: requestId,
-      user_id: userId,
-    }).catch(aggregationError => {
-      logger.error(`Failed to aggregate request error: ${aggregationError}`);
-    });
+    aggregator
+      .aggregateError({
+        message: error.message,
+        code: "HTTP_REQUEST_ERROR",
+        category: "api",
+        severity: "medium",
+        context: {
+          method: req.method,
+          url: req.url,
+          status_code: res.statusCode,
+          user_agent: req.headers["user-agent"],
+          ip: req.ip,
+        },
+        stack_trace: error.stack,
+        correlation_id: correlationId,
+        request_id: requestId,
+        user_id: userId,
+      })
+      .catch((aggregationError) => {
+        logger.error(`Failed to aggregate request error: ${aggregationError}`);
+      });
 
     // Continue with normal error handling
     next(error);

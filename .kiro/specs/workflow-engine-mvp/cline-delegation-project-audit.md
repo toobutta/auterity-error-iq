@@ -1,6 +1,7 @@
 # [CLINE] Project Health Audit & Dependency Analysis
 
 ## Task Assignment
+
 - **Priority**: 🔧 MAINTENANCE - Critical project health check
 - **Model**: Cerebras Qwen-3-32b
 - **Complexity**: Low-Medium - Analysis and documentation
@@ -8,6 +9,7 @@
 - **Status**: READY FOR IMMEDIATE DELEGATION
 
 ## Task Overview
+
 Perform comprehensive project health audit focusing on dependencies, TypeScript compliance, test coverage, and code quality across the AutoMatrix AI Hub codebase.
 
 ## Audit Scope
@@ -15,6 +17,7 @@ Perform comprehensive project health audit focusing on dependencies, TypeScript 
 ### 1. Dependency Analysis
 
 #### Frontend Dependencies Audit
+
 ```bash
 # Tasks for Cline:
 1. Analyze package.json for missing dependencies
@@ -25,6 +28,7 @@ Perform comprehensive project health audit focusing on dependencies, TypeScript 
 ```
 
 #### Backend Dependencies Audit
+
 ```bash
 # Tasks for Cline:
 1. Analyze requirements.txt for security issues
@@ -36,6 +40,7 @@ Perform comprehensive project health audit focusing on dependencies, TypeScript 
 ### 2. TypeScript Compliance Check
 
 #### Frontend TypeScript Issues
+
 ```typescript
 // Areas to audit:
 1. Compilation errors and warnings
@@ -46,6 +51,7 @@ Perform comprehensive project health audit focusing on dependencies, TypeScript 
 ```
 
 #### Type Definition Completeness
+
 ```typescript
 // Check these type files:
 1. frontend/src/types/workflow.ts - Workflow-related types
@@ -57,6 +63,7 @@ Perform comprehensive project health audit focusing on dependencies, TypeScript 
 ### 3. Test Coverage Analysis
 
 #### Frontend Test Coverage
+
 ```bash
 # Analyze test coverage:
 1. Run npm test -- --coverage to get current coverage
@@ -66,6 +73,7 @@ Perform comprehensive project health audit focusing on dependencies, TypeScript 
 ```
 
 #### Backend Test Coverage
+
 ```bash
 # Analyze backend tests:
 1. Check pytest coverage reports
@@ -77,6 +85,7 @@ Perform comprehensive project health audit focusing on dependencies, TypeScript 
 ### 4. Code Quality Assessment
 
 #### Frontend Code Quality
+
 ```typescript
 // Areas to check:
 1. ESLint warnings and errors
@@ -87,6 +96,7 @@ Perform comprehensive project health audit focusing on dependencies, TypeScript 
 ```
 
 #### Backend Code Quality
+
 ```python
 # Areas to check:
 1. Flake8 linting issues
@@ -99,6 +109,7 @@ Perform comprehensive project health audit focusing on dependencies, TypeScript 
 ## Specific Analysis Tasks
 
 ### Task 1: Missing Dependencies Identification
+
 ```bash
 # Check for these common issues:
 1. Components using libraries not in package.json
@@ -108,6 +119,7 @@ Perform comprehensive project health audit focusing on dependencies, TypeScript 
 ```
 
 ### Task 2: Security Vulnerability Scan
+
 ```bash
 # Security checks:
 1. npm audit for frontend vulnerabilities
@@ -117,6 +129,7 @@ Perform comprehensive project health audit focusing on dependencies, TypeScript 
 ```
 
 ### Task 3: Bundle Size Analysis
+
 ```bash
 # Frontend bundle analysis:
 1. Current bundle size after build
@@ -127,6 +140,7 @@ Perform comprehensive project health audit focusing on dependencies, TypeScript 
 ```
 
 ### Task 4: Performance Issues Identification
+
 ```typescript
 // Performance audit areas:
 1. Unnecessary re-renders in React components
@@ -139,27 +153,33 @@ Perform comprehensive project health audit focusing on dependencies, TypeScript 
 ## Expected Deliverables
 
 ### 1. Dependency Report
+
 ```markdown
 # Dependency Audit Report
 
 ## Missing Dependencies
+
 - List of used but not declared dependencies
 - Recommended additions with versions
 
 ## Security Issues
+
 - Vulnerable packages with severity levels
 - Recommended updates or alternatives
 
 ## Unused Dependencies
+
 - Packages that can be safely removed
 - Estimated bundle size reduction
 
 ## Version Conflicts
+
 - Conflicting dependency versions
 - Resolution recommendations
 ```
 
 ### 2. TypeScript Compliance Report
+
 ```typescript
 // TypeScript Issues Summary
 interface TypeScriptAudit {
@@ -171,40 +191,48 @@ interface TypeScriptAudit {
 ```
 
 ### 3. Test Coverage Report
+
 ```markdown
 # Test Coverage Analysis
 
 ## Current Coverage
+
 - Overall coverage percentage
 - Per-component coverage breakdown
 - Critical untested areas
 
 ## Missing Tests
+
 - Components without tests
 - API endpoints without tests
 - Error scenarios not covered
 
 ## Test Quality Issues
+
 - Flaky or unreliable tests
 - Tests with poor assertions
 - Missing integration tests
 ```
 
 ### 4. Code Quality Report
+
 ```markdown
 # Code Quality Assessment
 
 ## Linting Issues
+
 - ESLint/Flake8 warnings and errors
 - Formatting inconsistencies
 - Import organization issues
 
 ## Performance Issues
+
 - Identified performance anti-patterns
 - Memory usage concerns
 - Bundle size optimization opportunities
 
 ## Accessibility Issues
+
 - Missing ARIA labels
 - Keyboard navigation problems
 - Color contrast issues
@@ -213,6 +241,7 @@ interface TypeScriptAudit {
 ## Files to Analyze
 
 ### Frontend Files
+
 ```bash
 # Key files to audit:
 1. package.json - Dependencies and scripts
@@ -223,6 +252,7 @@ interface TypeScriptAudit {
 ```
 
 ### Backend Files
+
 ```bash
 # Key files to audit:
 1. requirements.txt - Python dependencies
@@ -233,6 +263,7 @@ interface TypeScriptAudit {
 ```
 
 ### Configuration Files
+
 ```bash
 # Configuration to check:
 1. .eslintrc.json - Linting rules
@@ -244,6 +275,7 @@ interface TypeScriptAudit {
 ## Automated Checks to Run
 
 ### Frontend Checks
+
 ```bash
 # Commands for Cline to execute:
 1. npm run lint - Check linting issues
@@ -254,6 +286,7 @@ interface TypeScriptAudit {
 ```
 
 ### Backend Checks
+
 ```bash
 # Commands for Cline to execute:
 1. flake8 . - Linting check
@@ -265,18 +298,21 @@ interface TypeScriptAudit {
 ## Success Criteria
 
 ### Completeness
+
 - [ ] All major code areas audited
 - [ ] Dependencies thoroughly analyzed
 - [ ] Test coverage gaps identified
 - [ ] Security issues documented
 
 ### Actionability
+
 - [ ] Clear recommendations provided
 - [ ] Priority levels assigned to issues
 - [ ] Implementation steps outlined
 - [ ] Risk assessment included
 
 ### Documentation Quality
+
 - [ ] Issues clearly described
 - [ ] Examples provided where helpful
 - [ ] Fix recommendations specific and actionable
@@ -285,29 +321,34 @@ interface TypeScriptAudit {
 ## Priority Classification
 
 ### Critical Issues (Fix Immediately)
+
 - Security vulnerabilities
 - Compilation errors
 - Missing critical dependencies
 - Broken functionality
 
 ### High Priority (Fix Soon)
+
 - Performance issues
 - Accessibility problems
 - Test coverage gaps
 - Code quality issues
 
 ### Medium Priority (Plan for Fix)
+
 - Outdated dependencies
 - Minor linting issues
 - Documentation gaps
 - Optimization opportunities
 
 ### Low Priority (Nice to Have)
+
 - Code style improvements
 - Minor refactoring opportunities
 - Development experience enhancements
 
 ## Next Steps After Audit
+
 1. Review audit results with development team
 2. Prioritize issues based on impact and effort
 3. Create action items for critical issues

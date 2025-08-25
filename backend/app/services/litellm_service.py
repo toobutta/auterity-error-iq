@@ -10,9 +10,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import yaml
-
 import litellm
+import yaml
 from litellm import ModelResponse, acompletion
 from litellm.exceptions import APIError, RateLimitError, ServiceUnavailableError
 

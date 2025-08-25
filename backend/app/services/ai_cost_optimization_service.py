@@ -9,12 +9,11 @@ from typing import Any, Dict, List
 from uuid import UUID
 
 import numpy as np
-from sqlalchemy import and_, func
-from sqlalchemy.orm import Session
-
 from app.core.config import settings
 from app.core.saas_config import SaaSConfig
 from app.models.tenant import Tenant, UsageLog
+from sqlalchemy import and_, func
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

@@ -60,7 +60,7 @@ frontend/src/
 ## Routes Implemented
 
 - `/login` - Public login page
-- `/register` - Public registration page  
+- `/register` - Public registration page
 - `/dashboard` - Protected dashboard (default route)
 - `/workflows` - Protected workflows page
 - `/templates` - Protected templates page
@@ -69,6 +69,7 @@ frontend/src/
 ## Features
 
 ### Authentication Flow
+
 - JWT token-based authentication
 - Automatic token storage and retrieval
 - Protected route redirection to login
@@ -76,6 +77,7 @@ frontend/src/
 - Logout functionality with token cleanup
 
 ### UI/UX
+
 - Professional, clean design with Tailwind CSS
 - Responsive layout for mobile and desktop
 - Loading states and error handling
@@ -83,6 +85,7 @@ frontend/src/
 - Navigation header with user info and logout
 
 ### Development Setup
+
 - TypeScript for type safety
 - ESLint for code quality
 - Vitest for testing
@@ -105,8 +108,9 @@ frontend/src/
 ## Next Steps
 
 The frontend foundation is now ready for the implementation of:
+
 - Workflow builder interface (Task 10)
-- Workflow execution interface (Task 11) 
+- Workflow execution interface (Task 11)
 - Dashboard and analytics (Task 12)
 - Template library interface (Task 13)
 

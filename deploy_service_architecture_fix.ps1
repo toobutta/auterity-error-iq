@@ -31,7 +31,7 @@ docker-compose -f docker-compose.unified.yml down
 # Pull new images
 if (-not $SkipPull) {
     Write-Host "📥 Pulling required Docker images..." -ForegroundColor Yellow
-    
+
     $images = @(
         "browserless/chrome:latest",
         "mailhog/mailhog:latest",
@@ -43,12 +43,12 @@ if (-not $SkipPull) {
         "minio/minio:latest",
         "nginx:alpine"
     )
-    
+
     foreach ($image in $images) {
         Write-Host "   Pulling $image..." -ForegroundColor Cyan
         docker pull $image
     }
-    
+
     Write-Host "✅ Images pulled successfully" -ForegroundColor Green
 }
 
@@ -56,7 +56,7 @@ if (-not $SkipPull) {
 Write-Host "📁 Creating required directories..." -ForegroundColor Yellow
 $directories = @(
     "monitoring\promtail",
-    "monitoring\alertmanager", 
+    "monitoring\alertmanager",
     "nginx",
     "logs"
 )
@@ -106,9 +106,9 @@ function Test-ServiceHealth {
         [string]$Url,
         [int]$ExpectedCode = 200
     )
-    
+
     Write-Host "   Checking $ServiceName... " -NoNewline -ForegroundColor Cyan
-    
+
     try {
         $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 10 -ErrorAction Stop
         if ($response.StatusCode -eq $ExpectedCode) {
@@ -145,7 +145,7 @@ foreach ($check in $healthChecks) {
 Write-Host "🔍 Verifying new services..." -ForegroundColor Yellow
 
 $newServices = @(
-    "puppeteer", "mailhog", "alertmanager", "node-exporter", 
+    "puppeteer", "mailhog", "alertmanager", "node-exporter",
     "redis-exporter", "postgres-exporter", "promtail", "minio", "nginx"
 )
 
@@ -183,7 +183,7 @@ Write-Host ""
 Write-Host "🌐 Access Points:" -ForegroundColor Cyan
 $accessPoints = @(
     "Application: http://localhost:3000",
-    "API Gateway: http://localhost:8000", 
+    "API Gateway: http://localhost:8000",
     "Backend API: http://localhost:8080",
     "Grafana: http://localhost:3001",
     "Prometheus: http://localhost:9090",
@@ -202,7 +202,7 @@ Write-Host "📋 New Services Added:" -ForegroundColor Cyan
 $newServicesAdded = @(
     "Puppeteer Browser Automation",
     "MailHog SMTP Development Server",
-    "Alertmanager for Prometheus", 
+    "Alertmanager for Prometheus",
     "Node Exporter for System Metrics",
     "Redis Exporter for Redis Metrics",
     "Postgres Exporter for Database Metrics",

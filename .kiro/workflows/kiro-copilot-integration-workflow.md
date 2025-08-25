@@ -1,28 +1,35 @@
 # Kiro + VS Code + GitHub Copilot Integration Workflow
+
 ## AutoMatrix + RelayCore + TuneDev Integration Project
 
 ### Overview
+
 This workflow defines the optimal integration between Kiro AI assistant and VS Code + GitHub Copilot for the complex multi-system integration project involving AutoMatrix AI Hub, RelayCore, and TuneDev (NeuroWeaver).
 
 ### Workflow Phases
 
 ## Phase 1: Architecture Analysis & Planning (Kiro-Led)
+
 **Duration**: 2-3 days
 **Primary Tool**: Kiro
 **Secondary Tool**: VS Code (read-only)
 
 ### Day 1: System Architecture Analysis
+
 **Kiro Tasks:**
+
 1. **Analyze Integration Points**
+
    ```
    Kiro Command: "Analyze integration architecture between AutoMatrix, RelayCore, and TuneDev"
-   Files to Review: 
+   Files to Review:
    - PRD/RelayCore/integration_architecture.md
    - PRD/TuneDev/01_NeuroWeaver_Component_Architecture.md
    - backend/app/models/workflow.py
    ```
 
 2. **Identify Technical Debt Impact**
+
    ```
    Kiro Command: "Assess how 999 linting violations and 7 security vulnerabilities impact integration"
    Focus Areas:
@@ -38,8 +45,11 @@ This workflow defines the optimal integration between Kiro AI assistant and VS C
    ```
 
 ### Day 2: Component Mapping
+
 **Kiro Tasks:**
+
 1. **Map AutoMatrix Workflows to RelayCore Steering Rules**
+
    ```
    Analyze: How existing workflow nodes map to YAML steering rules
    Output: Component compatibility matrix
@@ -52,6 +62,7 @@ This workflow defines the optimal integration between Kiro AI assistant and VS C
    ```
 
 **VS Code + Copilot Tasks:**
+
 1. **Explore Codebase Structure**
    ```
    VS Code: Open workspace with all three projects
@@ -59,12 +70,15 @@ This workflow defines the optimal integration between Kiro AI assistant and VS C
    ```
 
 ## Phase 2: Quality Foundation (Kiro + Copilot Collaboration)
+
 **Duration**: 1 week
 **Primary Tool**: VS Code + Copilot
 **Secondary Tool**: Kiro (oversight)
 
 ### Week 1: Critical Issues Resolution
+
 **Morning Routine (Kiro):**
+
 1. **Daily Quality Assessment**
    ```
    Kiro Command: "Run quality checks and prioritize today's fixes"
@@ -73,7 +87,9 @@ This workflow defines the optimal integration between Kiro AI assistant and VS C
    ```
 
 **Implementation (VS Code + Copilot):**
+
 1. **Security Vulnerability Fixes**
+
    ```
    VS Code: Open package.json and requirements.txt
    Copilot Chat: "Help me fix these 7 security vulnerabilities: [list]"
@@ -81,6 +97,7 @@ This workflow defines the optimal integration between Kiro AI assistant and VS C
    ```
 
 2. **Linting Violation Cleanup**
+
    ```
    VS Code: Open backend files with violations
    Copilot: Auto-suggest fixes for Python linting issues
@@ -95,6 +112,7 @@ This workflow defines the optimal integration between Kiro AI assistant and VS C
    ```
 
 **Evening Review (Kiro):**
+
 1. **Progress Assessment**
    ```
    Kiro Command: "Review today's fixes and validate integration impact"
@@ -102,11 +120,14 @@ This workflow defines the optimal integration between Kiro AI assistant and VS C
    ```
 
 ## Phase 3: Integration Implementation (Parallel Workflow)
+
 **Duration**: 3-4 weeks
 **Tools**: Kiro (planning) + VS Code + Copilot (implementation)
 
 ### Week 1: RelayCore Integration
+
 **Monday - Architecture (Kiro):**
+
 ```
 Task: Design RelayCore HTTP proxy integration with AutoMatrix
 Output: API specification and integration patterns
@@ -114,20 +135,23 @@ Files: Create integration contracts and interfaces
 ```
 
 **Tuesday-Friday - Implementation (VS Code + Copilot):**
+
 ```
 VS Code Tasks:
 1. Create RelayCore client in AutoMatrix
    Copilot: "Generate FastAPI client for RelayCore HTTP proxy"
-   
+
 2. Implement steering rule integration
    Copilot: "Create YAML parser for RelayCore steering rules"
-   
+
 3. Add error handling integration
    Copilot: "Integrate Kiro error system with RelayCore errors"
 ```
 
 ### Week 2: TuneDev NeuroWeaver Integration
+
 **Monday - Architecture (Kiro):**
+
 ```
 Task: Design NeuroWeaver component integration
 Focus: Auto-RLAIF engine, Dynamic Inference Agent, CostGuard
@@ -135,30 +159,34 @@ Output: Component integration specifications
 ```
 
 **Tuesday-Friday - Implementation (VS Code + Copilot):**
+
 ```
 VS Code Tasks:
 1. Integrate Auto-RLAIF with workflow engine
    Copilot: "Create workflow nodes for RLAIF feedback loops"
-   
+
 2. Add Dynamic Inference Agent
    Copilot: "Implement cost-aware model selection in workflows"
-   
+
 3. Integrate CostGuard dashboard
    Copilot: "Create React components for cost monitoring"
 ```
 
 ### Week 3-4: End-to-End Integration
+
 **Daily Workflow:**
 
 **Morning Planning (Kiro - 30 minutes):**
+
 ```
 1. Review integration status
-2. Identify blockers and dependencies  
+2. Identify blockers and dependencies
 3. Plan day's implementation tasks
 4. Update integration roadmap
 ```
 
 **Implementation (VS Code + Copilot - 6 hours):**
+
 ```
 1. Feature implementation with Copilot assistance
 2. Integration testing with Copilot-generated tests
@@ -167,6 +195,7 @@ VS Code Tasks:
 ```
 
 **Evening Review (Kiro - 30 minutes):**
+
 ```
 1. Code quality assessment
 2. Integration validation
@@ -175,12 +204,16 @@ VS Code Tasks:
 ```
 
 ## Phase 4: Testing & Validation (Collaborative)
+
 **Duration**: 1 week
 **Tools**: Both Kiro and VS Code + Copilot
 
 ### Testing Strategy
+
 **Kiro Tasks:**
+
 1. **Test Plan Creation**
+
    ```
    Create comprehensive test scenarios for three-system integration
    Define acceptance criteria and validation checkpoints
@@ -193,7 +226,9 @@ VS Code Tasks:
    ```
 
 **VS Code + Copilot Tasks:**
+
 1. **Test Implementation**
+
    ```
    Copilot: "Generate integration tests for RelayCore + AutoMatrix"
    Copilot: "Create end-to-end tests for NeuroWeaver workflows"
@@ -208,11 +243,13 @@ VS Code Tasks:
 ## Daily Workflow Pattern
 
 ### Morning Startup (15 minutes)
+
 1. **Kiro**: Review overnight changes and plan day
 2. **VS Code**: Open workspace and sync with latest changes
 3. **Copilot**: Activate and review context
 
 ### Work Session Pattern (2-hour blocks)
+
 1. **Planning (Kiro - 15 minutes)**
    - Define specific task and acceptance criteria
    - Identify files and components to modify
@@ -229,6 +266,7 @@ VS Code Tasks:
    - Next task planning
 
 ### End of Day (15 minutes)
+
 1. **Kiro**: Comprehensive progress review and tomorrow's planning
 2. **VS Code**: Commit changes and update documentation
 3. **Update**: Progress tracking and stakeholder communication
@@ -236,6 +274,7 @@ VS Code Tasks:
 ## Tool-Specific Commands & Patterns
 
 ### Kiro Commands for Integration
+
 ```
 "Analyze integration between [System A] and [System B]"
 "Review code quality impact of [specific change]"
@@ -245,11 +284,12 @@ VS Code Tasks:
 ```
 
 ### VS Code + Copilot Patterns
+
 ```
 // Architecture exploration
 @workspace How do these systems integrate?
 
-// Implementation assistance  
+// Implementation assistance
 Generate FastAPI endpoint for RelayCore integration
 
 // Debugging help
@@ -265,18 +305,21 @@ Generate API documentation for this integration
 ## Success Metrics
 
 ### Daily Metrics
+
 - **Code Quality**: Linting violations reduced by 50+ per day
 - **Security**: 1-2 vulnerabilities resolved per day
 - **Integration**: 2-3 integration points completed per day
 - **Testing**: 90%+ test coverage maintained
 
 ### Weekly Metrics
+
 - **Feature Completion**: Major integration milestones achieved
 - **Quality Gates**: All quality standards maintained
 - **Documentation**: Complete specifications and guides
 - **Stakeholder Satisfaction**: Regular updates and demos
 
 ### Project Success Criteria
+
 - **Zero Security Vulnerabilities**: All 7 vulnerabilities resolved
 - **Clean Code**: All 999+ linting violations fixed
 - **Full Integration**: All three systems working together
@@ -285,11 +328,13 @@ Generate API documentation for this integration
 ## Risk Mitigation
 
 ### Technical Risks
+
 - **Complexity Overload**: Break down into smaller, manageable tasks
 - **Integration Conflicts**: Regular integration testing and validation
 - **Quality Regression**: Continuous monitoring and quality gates
 
 ### Process Risks
+
 - **Tool Context Loss**: Regular sync between Kiro and VS Code contexts
 - **Communication Gaps**: Daily reviews and progress tracking
 - **Scope Creep**: Strict adherence to defined integration scope
@@ -297,18 +342,21 @@ Generate API documentation for this integration
 ## Escalation Procedures
 
 ### When to Use Kiro
+
 - Complex architectural decisions
 - Multi-file analysis and refactoring
 - Integration strategy and planning
 - Quality assessment and validation
 
 ### When to Use VS Code + Copilot
+
 - Line-by-line code implementation
 - Debugging specific issues
 - Test creation and execution
 - Documentation generation
 
 ### When to Escalate to Human Review
+
 - Major architectural changes
 - Security-critical implementations
 - Performance bottlenecks

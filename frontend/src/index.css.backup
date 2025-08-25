@@ -11,7 +11,7 @@
     /* Typography */
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
-    
+
     /* AutoMatrix Automotive Brand Colors */
     --automotive-primary: #1e40af;
     --automotive-primary-light: #3b82f6;
@@ -22,14 +22,14 @@
     --automotive-success: #059669;
     --automotive-silver: #64748b;
     --automotive-red: #dc2626;
-    
+
     /* Semantic Colors for Automotive Context */
     --color-dealership: var(--automotive-primary);
     --color-customer: var(--automotive-accent);
     --color-inventory: var(--automotive-success);
     --color-service: #8b5cf6;
     --color-finance: #06b6d4;
-    
+
     /* Spacing Scale (8px grid) */
     --space-0: 0rem;
     --space-1: 0.125rem;  /* 2px */
@@ -43,7 +43,7 @@
     --space-10: 2.5rem;   /* 40px */
     --space-12: 3rem;     /* 48px */
     --space-16: 4rem;     /* 64px */
-    
+
     /* Border Radius Scale */
     --radius-none: 0px;
     --radius-sm: 4px;
@@ -53,7 +53,7 @@
     --radius-2xl: 24px;
     --radius-full: 9999px;
     --radius-automotive: 12px;
-    
+
     /* Enhanced Shadows for Depth */
     --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
@@ -62,12 +62,12 @@
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
     --shadow-automotive: 0 8px 25px rgba(30, 64, 175, 0.15);
     --shadow-hover: 0 12px 30px rgba(0, 0, 0, 0.15);
-    
+
     /* Animation Durations */
     --duration-fast: 150ms;
     --duration-normal: 250ms;
     --duration-slow: 350ms;
-    
+
     /* Glass Effect Variables */
     --glass-bg: rgba(255, 255, 255, 0.12);
     --glass-bg-strong: rgba(255, 255, 255, 0.20);
@@ -127,56 +127,56 @@
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
   }
-  
+
   /* Gradient backgrounds */
   .bg-gradient-primary {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   }
-  
+
   .bg-gradient-success {
     background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
   }
-  
+
   .bg-gradient-warning {
     background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
   }
-  
+
   .bg-gradient-error {
     background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
   }
-  
+
   /* Modern shadows */
   .shadow-soft {
     box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
   }
-  
+
   .shadow-glow {
     box-shadow: 0 0 20px rgba(79, 70, 229, 0.3);
   }
-  
+
   .shadow-error-glow {
     box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
   }
-  
+
   .shadow-success-glow {
     box-shadow: 0 0 20px rgba(22, 163, 74, 0.3);
   }
-  
+
   /* Hover effects */
   .hover-lift {
     transition: transform var(--duration-normal) ease, box-shadow var(--duration-normal) ease;
   }
-  
+
   .hover-lift:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
   }
-  
+
   /* Focus styles */
   .focus-ring {
     @apply focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2;
   }
-  
+
   .focus-ring-error {
     @apply focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2;
   }
@@ -188,35 +188,35 @@
   .card {
     @apply bg-white dark:bg-neutral-900 rounded-xl shadow-soft border border-neutral-200 dark:border-neutral-800 p-6;
   }
-  
+
   .card-interactive {
     @apply card hover-lift cursor-pointer transition-all duration-300;
   }
-  
+
   /* Modern form inputs */
   .input {
-    @apply w-full px-4 py-2.5 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-lg 
+    @apply w-full px-4 py-2.5 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-lg
            text-neutral-900 dark:text-neutral-100 placeholder-neutral-500 dark:placeholder-neutral-400
            transition-colors duration-200 focus-ring;
   }
-  
+
   /* Status indicators */
   .status-indicator {
     @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
   }
-  
+
   .status-critical {
     @apply status-indicator bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300;
   }
-  
+
   .status-high {
     @apply status-indicator bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-300;
   }
-  
+
   .status-medium {
     @apply status-indicator bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300;
   }
-  
+
   .status-low {
     @apply status-indicator bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300;
   }

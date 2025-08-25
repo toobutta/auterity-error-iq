@@ -6,13 +6,12 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from sqlalchemy import and_, func
-from sqlalchemy.orm import Session
-
 from app.models.auterity_expansion import TriageResult, TriageRule, TriageRuleType
 from app.models.tenant import Tenant
 from app.services.ai_service import AIService
 from app.services.vector_service import VectorService
+from sqlalchemy import and_, func
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

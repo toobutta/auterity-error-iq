@@ -14,7 +14,7 @@ export interface WorkflowApiResponse {
 export interface ExecutionApiResponse {
   id: string;
   workflow_id: string;
-  status: 'pending' | 'running' | 'completed' | 'failed';
+  status: "pending" | "running" | "completed" | "failed";
   input_data: Record<string, unknown>;
   output_data?: Record<string, unknown>;
   started_at: string;

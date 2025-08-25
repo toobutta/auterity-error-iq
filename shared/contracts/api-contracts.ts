@@ -20,7 +20,7 @@ export interface APIContract {
 export interface APIEndpoint {
   id: string;
   path: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   description: string;
   parameters: Parameter[];
   requestBody?: RequestBodySpec;
@@ -33,7 +33,7 @@ export interface APIEndpoint {
 
 export interface Parameter {
   name: string;
-  location: 'path' | 'query' | 'header' | 'cookie';
+  location: "path" | "query" | "header" | "cookie";
   type: string;
   required: boolean;
   description: string;
@@ -66,7 +66,7 @@ export interface HeaderSpec {
 }
 
 export interface AuthenticationSpec {
-  type: 'bearer' | 'basic' | 'apiKey' | 'oauth2';
+  type: "bearer" | "basic" | "apiKey" | "oauth2";
   description: string;
   scheme?: string;
   bearerFormat?: string;
@@ -91,7 +91,7 @@ export interface RateLimitSpec {
   requests: number;
   window: number; // seconds
   burst?: number;
-  scope: 'global' | 'user' | 'ip';
+  scope: "global" | "user" | "ip";
 }
 
 // Data Model Definitions
@@ -110,12 +110,12 @@ export interface DataModel {
 export interface DataModelReference {
   modelId: string;
   version: string;
-  usage: 'input' | 'output' | 'both';
+  usage: "input" | "output" | "both";
   required: boolean;
 }
 
 export interface DataRelationship {
-  type: 'oneToOne' | 'oneToMany' | 'manyToMany';
+  type: "oneToOne" | "oneToMany" | "manyToMany";
   targetModel: string;
   foreignKey: string;
   description: string;
@@ -152,10 +152,10 @@ export interface JSONSchema {
 
 export interface ValidationRule {
   field: string;
-  type: 'required' | 'format' | 'range' | 'custom';
+  type: "required" | "format" | "range" | "custom";
   rule: string;
   message: string;
-  severity: 'error' | 'warning';
+  severity: "error" | "warning";
 }
 
 // Event Schema Definitions
@@ -175,7 +175,7 @@ export interface EventMetadata {
   createdAt: Date;
   updatedAt: Date;
   category: string;
-  priority: 'low' | 'medium' | 'high' | 'critical';
+  priority: "low" | "medium" | "high" | "critical";
   retention: number; // days
   encryption: boolean;
 }
@@ -188,7 +188,7 @@ export interface EventRouting {
 
 export interface EventFilter {
   field: string;
-  operator: 'eq' | 'ne' | 'gt' | 'lt' | 'in' | 'contains';
+  operator: "eq" | "ne" | "gt" | "lt" | "in" | "contains";
   value: any;
 }
 
@@ -196,7 +196,7 @@ export interface EventFilter {
 export interface IntegrationPoint {
   id: string;
   name: string;
-  type: 'api' | 'webhook' | 'queue' | 'database' | 'file';
+  type: "api" | "webhook" | "queue" | "database" | "file";
   description: string;
   sourceSystem: string;
   targetSystem: string;
@@ -219,7 +219,7 @@ export interface IntegrationConfig {
 
 export interface RetryPolicy {
   maxAttempts: number;
-  backoffStrategy: 'linear' | 'exponential' | 'fixed';
+  backoffStrategy: "linear" | "exponential" | "fixed";
   initialDelay: number;
   maxDelay: number;
   multiplier?: number;
@@ -234,7 +234,7 @@ export interface DataMapping {
 }
 
 export interface ErrorHandlingConfig {
-  strategy: 'retry' | 'dlq' | 'ignore' | 'alert';
+  strategy: "retry" | "dlq" | "ignore" | "alert";
   maxErrors: number;
   alertThreshold: number;
   escalation: EscalationConfig[];
@@ -243,7 +243,7 @@ export interface ErrorHandlingConfig {
 export interface EscalationConfig {
   level: number;
   condition: string;
-  action: 'email' | 'slack' | 'webhook' | 'page';
+  action: "email" | "slack" | "webhook" | "page";
   target: string;
   delay: number;
 }
@@ -267,14 +267,14 @@ export interface AlertConfig {
   name: string;
   condition: string;
   threshold: number;
-  severity: 'info' | 'warning' | 'error' | 'critical';
+  severity: "info" | "warning" | "error" | "critical";
   channels: string[];
 }
 
 export interface LoggingConfig {
-  level: 'debug' | 'info' | 'warning' | 'error';
-  format: 'json' | 'text';
-  destination: 'console' | 'file' | 'syslog' | 'elasticsearch';
+  level: "debug" | "info" | "warning" | "error";
+  format: "json" | "text";
+  destination: "console" | "file" | "syslog" | "elasticsearch";
   retention: number; // days
 }
 
@@ -353,7 +353,7 @@ export interface WorkflowStepContract {
 }
 
 export interface WorkflowDependency {
-  type: 'workflow' | 'service' | 'data' | 'resource';
+  type: "workflow" | "service" | "data" | "resource";
   name: string;
   version: string;
   required: boolean;
@@ -375,14 +375,14 @@ export interface QualityGateContract {
 
 export interface QualityCriteriaContract {
   metric: string;
-  operator: 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'ne';
+  operator: "gt" | "gte" | "lt" | "lte" | "eq" | "ne";
   threshold: number;
   weight: number;
 }
 
 export interface QualityMetricContract {
   name: string;
-  type: 'coverage' | 'performance' | 'security' | 'compliance';
+  type: "coverage" | "performance" | "security" | "compliance";
   unit: string;
   target: number;
   critical: boolean;
@@ -409,15 +409,15 @@ export interface MessageTypeContract {
   type: string;
   description: string;
   schema: JSONSchema;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
+  priority: "low" | "medium" | "high" | "urgent";
   ttl: number; // seconds
 }
 
 export interface CommunicationProtocol {
   name: string;
-  type: 'sync' | 'async';
-  transport: 'http' | 'websocket' | 'queue' | 'stream';
-  encoding: 'json' | 'protobuf' | 'avro';
+  type: "sync" | "async";
+  transport: "http" | "websocket" | "queue" | "stream";
+  encoding: "json" | "protobuf" | "avro";
   compression: boolean;
 }
 

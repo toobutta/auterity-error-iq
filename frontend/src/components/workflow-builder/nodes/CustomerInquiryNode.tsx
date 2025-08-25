@@ -1,28 +1,33 @@
-import React from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
-import { NodeData } from '../../../types/workflow';
+import React from "react";
+import { Handle, Position, NodeProps } from "@xyflow/react";
+import { NodeData } from "../../../types/workflow";
 
-const CustomerInquiryNode: React.FC<NodeProps<NodeData>> = ({ data, isConnectable }) => {
+const CustomerInquiryNode: React.FC<NodeProps<NodeData>> = ({
+  data,
+  isConnectable,
+}) => {
   const hasErrors = data.validationErrors && data.validationErrors.length > 0;
 
   return (
     <div
-      className={`bg-yellow-100 border-2 ${hasErrors ? 'border-red-400' : 'border-yellow-300'} rounded-lg p-3 shadow-md min-w-[160px]`}
+      className={`bg-yellow-100 border-2 ${hasErrors ? "border-red-400" : "border-yellow-300"} rounded-lg p-3 shadow-md min-w-[160px]`}
     >
       <div className="text-center">
         <div className="w-8 h-8 bg-yellow-500 rounded-full mx-auto mb-2 flex items-center justify-center">
           <span className="text-white text-sm font-bold">📧</span>
         </div>
         <h3 className="font-bold text-yellow-800">{data.label}</h3>
-        {data.description && <p className="text-xs text-yellow-600 mt-1">{data.description}</p>}
-        {(data.config as { customerInquiry?: { sources?: string[] } })?.customerInquiry
-          ?.sources && (
+        {data.description && (
+          <p className="text-xs text-yellow-600 mt-1">{data.description}</p>
+        )}
+        {(data.config as { customerInquiry?: { sources?: string[] } })
+          ?.customerInquiry?.sources && (
           <p className="text-xs text-gray-500 mt-1">
-            Sources:{' '}
+            Sources:{" "}
             {(
-              (data.config as { customerInquiry?: { sources?: string[] } }).customerInquiry
-                ?.sources || []
-            ).join(', ')}
+              (data.config as { customerInquiry?: { sources?: string[] } })
+                .customerInquiry?.sources || []
+            ).join(", ")}
           </p>
         )}
       </div>

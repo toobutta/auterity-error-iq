@@ -10,7 +10,6 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import httpx
-
 from app.config.settings import get_settings
 
 
@@ -63,7 +62,7 @@ class SlackService:
             # Use webhook if available (simpler)
             if self.webhook_url:
                 response = await self.client.post(self.webhook_url, json=payload)
-                
+
                 if response.status_code == 200:
                     return {
                         "status": "success",
@@ -106,9 +105,9 @@ class SlackService:
         """Send formatted error alert to Slack."""
         color_map = {
             "critical": "#ff0000",  # Red
-            "high": "#ff8c00",      # Orange
-            "medium": "#ffff00",    # Yellow
-            "low": "#00ff00",       # Green
+            "high": "#ff8c00",  # Orange
+            "medium": "#ffff00",  # Yellow
+            "low": "#00ff00",  # Green
         }
 
         emoji_map = {

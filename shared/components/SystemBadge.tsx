@@ -12,7 +12,7 @@ export const SystemBadge: React.FC<SystemBadgeProps> = ({
   system,
   label,
   size = "md",
-  variant = "filled"
+  variant = "filled",
 }) => {
   const getSystemInfo = () => {
     switch (system) {
@@ -20,25 +20,25 @@ export const SystemBadge: React.FC<SystemBadgeProps> = ({
         return {
           color: AuterityDesignTokens.colors.primary.autmatrix,
           label: label || "AutoMatrix",
-          description: "Workflow Automation"
+          description: "Workflow Automation",
         };
       case "neuroweaver":
         return {
           color: AuterityDesignTokens.colors.primary.neuroweaver,
           label: label || "NeuroWeaver",
-          description: "Model Specialization"
+          description: "Model Specialization",
         };
       case "relaycore":
         return {
           color: AuterityDesignTokens.colors.primary.relaycore,
           label: label || "RelayCore",
-          description: "AI Routing Hub"
+          description: "AI Routing Hub",
         };
       default:
         return {
           color: AuterityDesignTokens.colors.status.pending,
           label: label || system,
-          description: ""
+          description: "",
         };
     }
   };
@@ -66,7 +66,9 @@ export const SystemBadge: React.FC<SystemBadgeProps> = ({
   const variantClasses = getVariantClasses(systemInfo.color.replace("#", ""));
 
   return (
-    <span className={`inline-flex items-center rounded-full font-medium ${sizeClasses} ${variantClasses}`}>
+    <span
+      className={`inline-flex items-center rounded-full font-medium ${sizeClasses} ${variantClasses}`}
+    >
       {systemInfo.label}
     </span>
   );

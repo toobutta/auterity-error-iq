@@ -15,7 +15,9 @@ This directory contains comprehensive end-to-end integration tests for the AutoM
 ### Test Categories
 
 #### 1. Complete Workflow Lifecycle (`TestCompleteWorkflowLifecycle`)
+
 Tests the full workflow from creation to execution to monitoring:
+
 - Workflow creation with validation
 - Workflow execution with AI integration
 - Execution monitoring and logging
@@ -23,21 +25,27 @@ Tests the full workflow from creation to execution to monitoring:
 - Concurrent execution testing
 
 #### 2. Template Integration (`TestTemplateIntegration`)
+
 Tests template functionality:
+
 - Template browsing and listing
 - Template preview and details
 - Template instantiation with parameters
 - Parameter validation and error handling
 
 #### 3. Authentication Integration (`TestAuthenticationIntegration`)
+
 Tests security and access control:
+
 - Unauthenticated access denial
 - Invalid token rejection
 - User workflow isolation
 - Cross-user access prevention
 
 #### 4. Performance Testing (`TestWorkflowPerformance`)
+
 Tests system performance under various conditions:
+
 - Single workflow execution performance
 - Concurrent execution load testing
 - Database performance under load
@@ -45,7 +53,9 @@ Tests system performance under various conditions:
 - API response time consistency
 
 #### 5. Scalability Testing (`TestScalabilityLimits`)
+
 Tests system behavior at scale:
+
 - Maximum concurrent executions
 - Large workflow definition handling
 - Resource usage under extreme load
@@ -55,36 +65,42 @@ Tests system behavior at scale:
 These integration tests validate all requirements from the specification:
 
 ### Requirement 1: Visual Workflow Builder
+
 - **1.1**: Drag-and-drop canvas interface ✅
 - **1.2**: Component connections ✅
 - **1.3**: Workflow persistence ✅
 - **1.4**: Validation error handling ✅
 
 ### Requirement 2: AI-Powered Execution
+
 - **2.1**: Sequential workflow execution ✅
 - **2.2**: AI model integration ✅
 - **2.3**: Successful completion handling ✅
 - **2.4**: Error logging and stopping ✅
 
 ### Requirement 3: Monitoring and Analytics
+
 - **3.1**: Execution logging with timestamps ✅
 - **3.2**: Dashboard execution history ✅
 - **3.3**: Success/failure rates and timing ✅
 - **3.4**: Error detail display ✅
 
 ### Requirement 4: Authentication and Management
+
 - **4.1**: Login credential validation ✅
 - **4.2**: Authenticated session creation ✅
 - **4.3**: Workflow-user association ✅
 - **4.4**: Session invalidation ✅
 
 ### Requirement 5: Template Library
+
 - **5.1**: Template library display ✅
 - **5.2**: Template-based workflow creation ✅
 - **5.3**: Parameter customization ✅
 - **5.4**: Required value prompting ✅
 
 ### Requirement 6: API Integration
+
 - **6.1**: Request authentication ✅
 - **6.2**: Workflow execution with ID return ✅
 - **6.3**: Status request handling ✅
@@ -95,6 +111,7 @@ These integration tests validate all requirements from the specification:
 ### Prerequisites
 
 1. **Python Environment**:
+
    ```bash
    cd backend
    python -m venv venv
@@ -163,48 +180,57 @@ pytest tests/integration/ -v --cov=app --cov-report=html
 The integration tests enforce the following performance benchmarks:
 
 ### Execution Performance
+
 - **Average workflow execution**: < 2.0 seconds
 - **Maximum execution time**: < 5.0 seconds
 - **Execution time consistency**: Standard deviation < 1.0 second
 
 ### Concurrent Load Performance
+
 - **Success rate under load**: ≥ 90%
 - **Average execution time under load**: < 3.0 seconds
 - **Throughput**: ≥ 5 executions/second
 
 ### Database Performance
+
 - **Workflow listing**: < 2.0 seconds
 - **Individual workflow retrieval**: < 0.5 seconds
 - **Large workflow handling**: < 5.0 seconds creation, < 2.0 seconds retrieval
 
 ### Memory Usage
+
 - **Memory growth under load**: < 50MB total increase
 - **Memory growth per 10 executions**: < 100MB
 
 ### API Response Times
+
 - **Average API response**: < 1.0 second
 - **Response time consistency**: Standard deviation < 0.5 seconds
 
 ## Error Scenarios Tested
 
 ### Validation Errors
+
 - Empty workflow names
 - Invalid workflow definitions
 - Missing required template parameters
 - Invalid parameter values
 
 ### Authentication Errors
+
 - Missing authentication tokens
 - Invalid/expired tokens
 - Cross-user access attempts
 
 ### Execution Errors
+
 - Non-existent workflow execution
 - AI service failures
 - Network timeouts
 - Resource exhaustion
 
 ### Performance Degradation
+
 - High concurrent load
 - Large workflow definitions
 - Memory pressure
@@ -215,11 +241,12 @@ The integration tests enforce the following performance benchmarks:
 These tests are designed to run in CI/CD pipelines:
 
 ### GitHub Actions Integration
+
 ```yaml
 - name: Run Integration Tests
   run: |
     ./scripts/run-integration-tests.sh
-    
+
 - name: Upload Test Results
   uses: actions/upload-artifact@v3
   with:
@@ -231,6 +258,7 @@ These tests are designed to run in CI/CD pipelines:
 ```
 
 ### Test Reporting
+
 - **JUnit XML**: Compatible with CI/CD systems
 - **HTML Coverage**: Detailed coverage reports
 - **Performance Metrics**: Logged for monitoring
@@ -297,18 +325,18 @@ def test_new_feature_integration(
     relevant_fixture
 ):
     """Test description explaining what this validates."""
-    
+
     # Arrange - Set up test data
     test_data = {...}
-    
+
     # Act - Perform the action being tested
     response = client.post("/api/endpoint", json=test_data, headers=authenticated_headers)
-    
+
     # Assert - Verify expected outcomes
     assert response.status_code == 200
     result = response.json()
     assert result["expected_field"] == "expected_value"
-    
+
     # Performance assertion if applicable
     # assert execution_time < threshold
 ```

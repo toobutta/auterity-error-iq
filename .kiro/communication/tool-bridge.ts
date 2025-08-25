@@ -1,7 +1,14 @@
 export interface ToolCommunicationBridge {
-  sendMessage(from: ToolType, to: ToolType, message: ToolMessage): Promise<void>;
+  sendMessage(
+    from: ToolType,
+    to: ToolType,
+    message: ToolMessage,
+  ): Promise<void>;
   receiveMessage(toolType: ToolType): Promise<ToolMessage[]>;
-  establishChannel(tool1: ToolType, tool2: ToolType): Promise<CommunicationChannel>;
+  establishChannel(
+    tool1: ToolType,
+    tool2: ToolType,
+  ): Promise<CommunicationChannel>;
   closeChannel(channelId: string): Promise<void>;
 }
 
@@ -12,12 +19,17 @@ export interface ToolMessage {
   type: MessageType;
   content: MessageContent;
   timestamp: Date;
-  priority: 'low' | 'medium' | 'high' | 'critical';
+  priority: "low" | "medium" | "high" | "critical";
   context: SharedContext;
 }
 
-export type ToolType = 'kiro' | 'cline' | 'amazon-q';
-export type MessageType = 'handoff' | 'status' | 'error' | 'solution' | 'completion';
+export type ToolType = "kiro" | "cline" | "amazon-q";
+export type MessageType =
+  | "handoff"
+  | "status"
+  | "error"
+  | "solution"
+  | "completion";
 
 export interface CommunicationChannel {
   id: string;
@@ -46,14 +58,14 @@ export interface FileContext {
   path: string;
   content: string;
   changes: FileChange[];
-  relevance: 'high' | 'medium' | 'low';
+  relevance: "high" | "medium" | "low";
 }
 
 export interface ErrorContext {
   type: string;
   message: string;
   stack?: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
   timestamp: Date;
 }
 
@@ -61,7 +73,7 @@ export interface SolutionContext {
   id: string;
   description: string;
   implementation: string;
-  status: 'pending' | 'in_progress' | 'completed' | 'failed';
+  status: "pending" | "in_progress" | "completed" | "failed";
 }
 
 export interface ProgressContext {
@@ -72,7 +84,7 @@ export interface ProgressContext {
 }
 
 export interface FileChange {
-  type: 'added' | 'modified' | 'deleted';
+  type: "added" | "modified" | "deleted";
   path: string;
   content?: string;
 }
@@ -86,32 +98,39 @@ export class ToolCommunicationBridgeImpl implements ToolCommunicationBridge {
     this.messageQueue = messageQueue;
   }
 
-  async sendMessage(from: ToolType, to: ToolType, message: ToolMessage): Promise<void> {
+  async sendMessage(
+    from: ToolType,
+    to: ToolType,
+    message: ToolMessage,
+  ): Promise<void> {
     await this.messageQueue.enqueue(message);
   }
 
   async receiveMessage(toolType: ToolType): Promise<ToolMessage[]> {
     const messages: ToolMessage[] = [];
     let message = await this.messageQueue.dequeue(toolType);
-    
+
     while (message) {
       messages.push(message);
       message = await this.messageQueue.dequeue(toolType);
     }
-    
+
     return messages;
   }
 
-  async establishChannel(tool1: ToolType, tool2: ToolType): Promise<CommunicationChannel> {
+  async establishChannel(
+    tool1: ToolType,
+    tool2: ToolType,
+  ): Promise<CommunicationChannel> {
     const channelId = `${tool1}-${tool2}-${Date.now()}`;
     const channel: CommunicationChannel = {
       id: channelId,
       tool1,
       tool2,
       establishedAt: new Date(),
-      isActive: true
+      isActive: true,
     };
-    
+
     this.channels.set(channelId, channel);
     return channel;
   }

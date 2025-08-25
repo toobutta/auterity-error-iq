@@ -89,23 +89,23 @@ class MCPServerManager:
     def __init__(self):
         self.servers: Dict[str, MCPServer] = {}
         self.tool_registry: Dict[str, str] = {}  # tool_name -> server_name
-    
+
     async def start_server(self, server_config: Dict[str, Any]) -> bool:
         """Start an MCP server process and discover its tools."""
         pass
-    
+
     async def stop_server(self, server_name: str) -> bool:
         """Stop an MCP server process."""
         pass
-    
+
     async def call_tool(self, tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """Call a tool on the appropriate MCP server."""
         pass
-    
+
     async def discover_tools(self, server_name: str) -> List[Dict[str, Any]]:
         """Discover available tools from an MCP server."""
         pass
-    
+
     def get_available_tools(self) -> List[Dict[str, Any]]:
         """Get all available tools from all servers."""
         pass
@@ -145,23 +145,23 @@ class Agent(BaseModel):
 class AgentRegistry:
     def __init__(self):
         self.agents: Dict[str, Agent] = {}
-    
+
     async def register_agent(self, agent: Agent) -> bool:
         """Register a new agent in the system."""
         pass
-    
+
     async def unregister_agent(self, agent_id: str) -> bool:
         """Remove an agent from the system."""
         pass
-    
+
     def get_agent(self, agent_id: str) -> Optional[Agent]:
         """Get agent by ID."""
         pass
-    
+
     def find_agents_by_capability(self, capability_name: str) -> List[Agent]:
         """Find agents that have a specific capability."""
         pass
-    
+
     def get_all_agents(self) -> List[Agent]:
         """Get all registered agents."""
         pass
@@ -191,7 +191,7 @@ class ProtocolHandler:
     async def send_message(self, message: ProtocolMessage) -> bool:
         """Send a message using this protocol."""
         pass
-    
+
     async def receive_message(self, agent_id: str) -> Optional[ProtocolMessage]:
         """Receive a message for an agent."""
         pass
@@ -201,19 +201,19 @@ class ProtocolManager:
         self.handlers: Dict[str, ProtocolHandler] = {}
         self.message_queue: asyncio.Queue = asyncio.Queue()
         self.subscriptions: Dict[str, List[Callable]] = {}
-    
+
     def register_protocol(self, protocol_name: str, handler: ProtocolHandler):
         """Register a protocol handler."""
         pass
-    
+
     async def send_message(self, message: ProtocolMessage) -> bool:
         """Route and send a message."""
         pass
-    
+
     async def subscribe_to_messages(self, agent_id: str, callback: Callable):
         """Subscribe to messages for an agent."""
         pass
-    
+
     async def broadcast_message(self, message: ProtocolMessage, recipients: List[str]):
         """Broadcast a message to multiple agents."""
         pass
@@ -237,23 +237,23 @@ class WorkflowContext:
         self.message_history: List[Dict[str, Any]] = []
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
-    
+
     def set_shared_data(self, key: str, value: Any):
         """Set data accessible to all agents."""
         pass
-    
+
     def get_shared_data(self, key: str) -> Any:
         """Get shared data."""
         pass
-    
+
     def set_agent_context(self, agent_id: str, context: Dict[str, Any]):
         """Set agent-specific context."""
         pass
-    
+
     def get_agent_context(self, agent_id: str) -> Dict[str, Any]:
         """Get agent-specific context."""
         pass
-    
+
     def add_message(self, message: Dict[str, Any]):
         """Add a message to the history."""
         pass
@@ -261,19 +261,19 @@ class WorkflowContext:
 class ContextManager:
     def __init__(self):
         self.contexts: Dict[str, WorkflowContext] = {}
-    
+
     async def create_context(self, workflow_id: str) -> WorkflowContext:
         """Create a new workflow context."""
         pass
-    
+
     async def get_context(self, workflow_id: str) -> Optional[WorkflowContext]:
         """Get workflow context."""
         pass
-    
+
     async def update_context(self, workflow_id: str, updates: Dict[str, Any]):
         """Update workflow context."""
         pass
-    
+
     async def delete_context(self, workflow_id: str):
         """Delete workflow context."""
         pass
@@ -301,7 +301,7 @@ class MultiAgentWorkflowExecutor:
         self.agent_registry = agent_registry
         self.protocol_manager = protocol_manager
         self.context_manager = context_manager
-    
+
     async def execute_workflow(
         self,
         workflow_definition: Dict[str, Any],
@@ -309,7 +309,7 @@ class MultiAgentWorkflowExecutor:
     ) -> Dict[str, Any]:
         """Execute a multi-agent workflow."""
         pass
-    
+
     async def execute_agent_step(
         self,
         step_config: Dict[str, Any],
@@ -317,7 +317,7 @@ class MultiAgentWorkflowExecutor:
     ) -> Dict[str, Any]:
         """Execute a single agent step."""
         pass
-    
+
     async def coordinate_agents(
         self,
         agents: List[str],
@@ -401,7 +401,7 @@ export interface MCPServer {
   command: string;
   args: string[];
   env: Record<string, string>;
-  status: 'running' | 'stopped' | 'error';
+  status: "running" | "stopped" | "error";
   tools: MCPTool[];
   createdAt: string;
   updatedAt: string;
@@ -417,10 +417,10 @@ export interface MCPTool {
 export interface Agent {
   id: string;
   name: string;
-  type: 'mcp_tool' | 'openai_model' | 'custom_agent' | 'a2a_agent';
+  type: "mcp_tool" | "openai_model" | "custom_agent" | "a2a_agent";
   capabilities: AgentCapability[];
   config: Record<string, any>;
-  status: 'active' | 'inactive' | 'error';
+  status: "active" | "inactive" | "error";
   metadata: Record<string, any>;
 }
 
@@ -453,7 +453,7 @@ export interface WorkflowContext {
 
 // Extended workflow node types
 export interface AgentWorkflowNode extends WorkflowNode {
-  agentType: 'mcp_tool' | 'openai_model' | 'custom_agent' | 'a2a_agent';
+  agentType: "mcp_tool" | "openai_model" | "custom_agent" | "a2a_agent";
   agentConfig: {
     agentId?: string;
     toolName?: string;
@@ -507,15 +507,15 @@ class MCPErrorRecovery:
     async def handle_server_failure(self, server_name: str):
         """Handle MCP server failure with restart and fallback."""
         pass
-    
+
     async def handle_tool_failure(self, tool_name: str, error: Exception):
         """Handle tool execution failure with retry and alternatives."""
         pass
-    
+
     async def handle_protocol_failure(self, message: ProtocolMessage, error: Exception):
         """Handle protocol communication failure."""
         pass
-    
+
     async def handle_context_corruption(self, workflow_id: str):
         """Handle context corruption with recovery from snapshots."""
         pass
@@ -534,15 +534,15 @@ class TestMCPServerManager:
     @pytest.fixture
     def server_manager(self):
         return MCPServerManager()
-    
+
     async def test_start_server(self, server_manager):
         """Test starting an MCP server."""
         pass
-    
+
     async def test_discover_tools(self, server_manager):
         """Test tool discovery from MCP server."""
         pass
-    
+
     async def test_call_tool(self, server_manager):
         """Test calling a tool on MCP server."""
         pass
@@ -559,11 +559,11 @@ class TestMultiAgentWorkflow:
     async def test_simple_agent_workflow(self):
         """Test a simple workflow with one agent."""
         pass
-    
+
     async def test_multi_agent_coordination(self):
         """Test coordination between multiple agents."""
         pass
-    
+
     async def test_context_sharing(self):
         """Test context sharing between agents."""
         pass
@@ -582,7 +582,7 @@ describe('AgentWorkflowBuilder', () => {
     expect(screen.getByText('MCP Tool')).toBeInTheDocument();
     expect(screen.getByText('OpenAI Model')).toBeInTheDocument();
   });
-  
+
   test('validates agent connections', () => {
     // Test protocol compatibility validation
   });
@@ -607,11 +607,11 @@ class MCPResourceManager:
         self.server_pool_size = 10
         self.max_concurrent_tools = 50
         self.context_cache_size = 1000
-    
+
     async def manage_server_resources(self):
         """Monitor and manage MCP server resources."""
         pass
-    
+
     async def optimize_agent_allocation(self):
         """Optimize agent allocation based on workload."""
         pass
@@ -627,11 +627,11 @@ class MCPSecurityManager:
     async def validate_server_config(self, config: Dict[str, Any]) -> bool:
         """Validate MCP server configuration for security."""
         pass
-    
+
     async def sanitize_tool_input(self, tool_name: str, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """Sanitize input data for MCP tools."""
         pass
-    
+
     async def audit_agent_communication(self, message: ProtocolMessage):
         """Audit agent communications for security compliance."""
         pass
@@ -679,7 +679,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 ```yaml
 # docker-compose.mcp.yml
-version: '3.8'
+version: "3.8"
 services:
   auterity-mcp:
     build:

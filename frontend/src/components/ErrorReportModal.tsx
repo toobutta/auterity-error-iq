@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { AppError, ErrorReportData } from '../types/error';
+import React, { useState } from "react";
+import { AppError, ErrorReportData } from "../types/error";
 
 interface ErrorReportModalProps {
   isOpen: boolean;
@@ -14,11 +14,11 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
   error,
   onSubmit,
 }) => {
-  const [category, setCategory] = useState('general');
-  const [feedback, setFeedback] = useState('');
-  const [reproductionSteps, setReproductionSteps] = useState('');
-  const [expectedBehavior, setExpectedBehavior] = useState('');
-  const [actualBehavior, setActualBehavior] = useState('');
+  const [category, setCategory] = useState("general");
+  const [feedback, setFeedback] = useState("");
+  const [reproductionSteps, setReproductionSteps] = useState("");
+  const [expectedBehavior, setExpectedBehavior] = useState("");
+  const [actualBehavior, setActualBehavior] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorState, setErrorState] = useState<string | null>(null);
 
@@ -59,15 +59,21 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
       ></div>
 
       <div className="relative z-10 w-full max-w-3xl rounded-lg bg-white p-6 shadow-xl">
-        <h2 className="mb-4 text-xl font-bold">Report Error: {error.message}</h2>
+        <h2 className="mb-4 text-xl font-bold">
+          Report Error: {error.message}
+        </h2>
 
         {errorState && (
-          <div className="mb-4 rounded-md bg-red-50 p-3 text-red-700">{errorState}</div>
+          <div className="mb-4 rounded-md bg-red-50 p-3 text-red-700">
+            {errorState}
+          </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Error Category</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Error Category
+            </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -82,7 +88,9 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">User Feedback</label>
+            <label className="block text-sm font-medium text-gray-700">
+              User Feedback
+            </label>
             <textarea
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
@@ -93,7 +101,9 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Reproduction Steps</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Reproduction Steps
+            </label>
             <textarea
               value={reproductionSteps}
               onChange={(e) => setReproductionSteps(e.target.value)}
@@ -105,7 +115,9 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Expected Behavior</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Expected Behavior
+              </label>
               <textarea
                 value={expectedBehavior}
                 onChange={(e) => setExpectedBehavior(e.target.value)}
@@ -116,7 +128,9 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Actual Behavior</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Actual Behavior
+              </label>
               <textarea
                 value={actualBehavior}
                 onChange={(e) => setActualBehavior(e.target.value)}
@@ -142,7 +156,7 @@ const ErrorReportModal: React.FC<ErrorReportModalProps> = ({
               className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
               disabled={isLoading}
             >
-              {isLoading ? 'Submitting...' : 'Submit Report'}
+              {isLoading ? "Submitting..." : "Submit Report"}
             </button>
           </div>
         </form>

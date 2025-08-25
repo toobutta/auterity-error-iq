@@ -10,10 +10,11 @@
 **Return Conditions:** When test infrastructure is stable and tests can execute
 
 **Files Involved:**
+
 - frontend/package.json
 - frontend/vite.config.ts
 - frontend/src/setupTests.ts
-- All test files in frontend/src/components/__tests__/
+- All test files in frontend/src/components/**tests**/
 - All test files in frontend/src/tests/
 
 **Priority:** High
@@ -22,6 +23,7 @@
 ## Problem Analysis
 
 ### Critical Error Pattern
+
 ```
 Error: Cannot find module '/Users/.../frontend/node_modules/@vitest/snapshot/node_modules/pretty-format/build/index.js'
 ```
@@ -29,12 +31,14 @@ Error: Cannot find module '/Users/.../frontend/node_modules/@vitest/snapshot/nod
 This error occurs 22 times, indicating a fundamental dependency resolution issue with vitest's internal dependencies.
 
 ### Root Cause Analysis Needed
+
 1. **Dependency Conflict**: Vitest version 0.34.6 may have incompatible internal dependencies
 2. **Module Resolution**: pretty-format module missing from @vitest/snapshot package
 3. **Node.js Version Compatibility**: Running Node.js v22.17.1 may have compatibility issues
 4. **Package Lock Issues**: npm install may have created inconsistent dependency tree
 
 ### Current Configuration State
+
 - **Vitest Version**: 0.34.6 (downgraded from 1.0.0 due to conflicts)
 - **Node Memory**: Increased to 4096MB via NODE_OPTIONS
 - **Test Environment**: jsdom with global setup
@@ -43,18 +47,21 @@ This error occurs 22 times, indicating a fundamental dependency resolution issue
 ## Debugging Strategy Required
 
 ### Phase 1: Dependency Analysis
+
 1. Analyze current package.json and package-lock.json
 2. Check vitest internal dependency tree
 3. Identify conflicting or missing dependencies
 4. Verify Node.js compatibility with current vitest version
 
 ### Phase 2: Resolution Options
+
 1. **Option A**: Fix current vitest 0.34.6 installation
 2. **Option B**: Upgrade to stable vitest 1.x with proper dependencies
 3. **Option C**: Clean install with dependency resolution
 4. **Option D**: Alternative test runner if vitest proves problematic
 
 ### Phase 3: Verification
+
 1. Ensure all 250 tests can be discovered and loaded
 2. Verify mock configurations work correctly
 3. Test memory management improvements
@@ -63,17 +70,20 @@ This error occurs 22 times, indicating a fundamental dependency resolution issue
 ## Expected Deliverables
 
 ### 1. Working Test Infrastructure
+
 - All tests discoverable and executable
 - No module resolution errors
 - Proper mock configurations
 - Memory optimization working
 
 ### 2. Configuration Files
+
 - Updated package.json with correct dependencies
 - Optimized vite.config.ts for testing
 - Enhanced setupTests.ts with proper global setup
 
 ### 3. Documentation
+
 - Root cause analysis of the dependency issues
 - Solution explanation and rationale
 - Prevention strategies for future dependency conflicts
@@ -81,18 +91,21 @@ This error occurs 22 times, indicating a fundamental dependency resolution issue
 ## Technical Context
 
 ### Current Test Statistics (Before Fix)
+
 - **Total Tests**: 250 (estimated)
 - **Test Files**: 22 files
 - **Errors**: 22 unhandled dependency errors
 - **Status**: Cannot execute any tests
 
 ### Target Test Statistics (After Fix)
+
 - **Total Tests**: 250 discoverable and executable
 - **Failed Tests**: Address the original 35 failing tests
 - **Memory Issues**: Resolved JS heap out of memory errors
 - **Mock Issues**: All API mocks working correctly
 
 ### Environment Details
+
 - **OS**: macOS (darwin)
 - **Node.js**: v22.17.1
 - **Package Manager**: npm
@@ -100,6 +113,7 @@ This error occurs 22 times, indicating a fundamental dependency resolution issue
 - **Test Framework**: Vitest (needs fixing)
 
 ## Success Metrics
+
 - ✅ Zero dependency resolution errors
 - ✅ All test files discoverable
 - ✅ Test execution completes without crashes
@@ -108,6 +122,7 @@ This error occurs 22 times, indicating a fundamental dependency resolution issue
 - ✅ Coverage reporting functional (if possible)
 
 ## Escalation Conditions
+
 - If vitest cannot be fixed, recommend alternative test framework
 - If Node.js version incompatibility, recommend version downgrade
 - If fundamental architecture issues, escalate back to Kiro for strategy

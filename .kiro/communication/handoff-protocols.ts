@@ -105,10 +105,10 @@ export class HandoffProtocolManager {
   }
 
   getProtocolsForCapability(
-    capability: ModelCapability["type"]
+    capability: ModelCapability["type"],
   ): HandoffProtocol[] {
     return Array.from(this.protocols.values()).filter((protocol) =>
-      protocol.requiredCapabilities.includes(capability)
+      protocol.requiredCapabilities.includes(capability),
     );
   }
 
@@ -117,7 +117,7 @@ export class HandoffProtocolManager {
     contextId: string,
     sourceModel: string,
     targetModel: string,
-    triggerData: any
+    triggerData: any,
   ): Promise<string> {
     const protocol = this.protocols.get(protocolId);
     if (!protocol) {
@@ -212,7 +212,7 @@ export class HandoffProtocolManager {
 
   private async executeStep(
     step: HandoffStep,
-    handoff: ActiveHandoff
+    handoff: ActiveHandoff,
   ): Promise<void> {
     // Implement step execution logic
     console.log(`Executing step: ${step.name} for handoff ${handoff.id}`);
@@ -224,7 +224,7 @@ export class HandoffProtocolManager {
   private async handleStepFailure(
     step: HandoffStep,
     handoff: ActiveHandoff,
-    error: any
+    error: any,
   ): Promise<void> {
     const protocol = this.protocols.get(handoff.protocolId)!;
 
@@ -235,7 +235,7 @@ export class HandoffProtocolManager {
       // Apply retry policy
       const delay = this.calculateRetryDelay(
         protocol.handoffProcedure.retryPolicy,
-        handoff.retryCount
+        handoff.retryCount,
       );
       await new Promise((resolve) => setTimeout(resolve, delay));
 
@@ -248,7 +248,7 @@ export class HandoffProtocolManager {
 
   private calculateRetryDelay(
     retryPolicy: RetryPolicy,
-    retryCount: number
+    retryCount: number,
   ): number {
     return retryPolicy.initialDelay;
   }

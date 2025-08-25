@@ -3,9 +3,6 @@
 from datetime import datetime, timedelta
 
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
-
 from app.auth import (
     authenticate_user,
     create_access_token,
@@ -16,6 +13,8 @@ from app.auth import (
 from app.database import get_db
 from app.main import app
 from app.models.user import User
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
 from tests.conftest import override_get_db
 
 client = TestClient(app)

@@ -1,13 +1,13 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { BrowserRouter } from 'react-router-dom';
-import Workflows from '../../pages/Workflows';
-import { ErrorProvider } from '../../contexts/ErrorContext';
-import { AuthProvider } from '../../contexts/AuthContext';
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { BrowserRouter } from "react-router-dom";
+import Workflows from "../../pages/Workflows";
+import { ErrorProvider } from "../../contexts/ErrorContext";
+import { AuthProvider } from "../../contexts/AuthContext";
 
 // Mock the API modules with all required exports
-vi.mock('../../api/workflows', () => ({
+vi.mock("../../api/workflows", () => ({
   getWorkflows: vi.fn(),
   executeWorkflow: vi.fn(),
   getExecution: vi.fn(),
@@ -31,7 +31,11 @@ interface WorkflowExecutionFormProps {
 
 interface ExecutionStatusProps {
   executionId: string;
-  onComplete?: (execution: { id: string; status: string; workflowId: string }) => void;
+  onComplete?: (execution: {
+    id: string;
+    status: string;
+    workflowId: string;
+  }) => void;
 }
 
 interface WorkflowExecutionResultsProps {
@@ -40,7 +44,11 @@ interface WorkflowExecutionResultsProps {
 }
 
 interface WorkflowExecutionHistoryProps {
-  onExecutionSelect?: (execution: { id: string; workflowId: string; status: string }) => void;
+  onExecutionSelect?: (execution: {
+    id: string;
+    workflowId: string;
+    status: string;
+  }) => void;
 }
 
 interface WorkflowErrorDisplayProps {
@@ -49,11 +57,11 @@ interface WorkflowErrorDisplayProps {
 }
 
 // Mock the child components to focus on integration
-vi.mock('../../components/WorkflowExecutionForm', () => ({
+vi.mock("../../components/WorkflowExecutionForm", () => ({
   default: ({ onExecutionStart, className }: WorkflowExecutionFormProps) => (
     <div data-testid="workflow-execution-form" className={className}>
       <button
-        onClick={() => onExecutionStart?.('test-execution-id')}
+        onClick={() => onExecutionStart?.("test-execution-id")}
         data-testid="start-execution-btn"
       >
         Start Execution
@@ -62,13 +70,17 @@ vi.mock('../../components/WorkflowExecutionForm', () => ({
   ),
 }));
 
-vi.mock('../../components/ExecutionStatus', () => ({
+vi.mock("../../components/ExecutionStatus", () => ({
   default: ({ executionId, onComplete }: ExecutionStatusProps) => (
     <div data-testid="execution-status">
       <span>Execution ID: {executionId}</span>
       <button
         onClick={() =>
-          onComplete?.({ id: executionId, status: 'completed', workflowId: 'test-workflow' })
+          onComplete?.({
+            id: executionId,
+            status: "completed",
+            workflowId: "test-workflow",
+          })
         }
         data-testid="complete-execution-btn"
       >
@@ -78,7 +90,7 @@ vi.mock('../../components/ExecutionStatus', () => ({
   ),
 }));
 
-vi.mock('../../components/WorkflowExecutionResults', () => ({
+vi.mock("../../components/WorkflowExecutionResults", () => ({
   default: ({ executionId, workflowId }: WorkflowExecutionResultsProps) => (
     <div data-testid="execution-results">
       <span>Results for execution: {executionId}</span>
@@ -87,15 +99,15 @@ vi.mock('../../components/WorkflowExecutionResults', () => ({
   ),
 }));
 
-vi.mock('../../components/WorkflowExecutionHistory', () => ({
+vi.mock("../../components/WorkflowExecutionHistory", () => ({
   default: ({ onExecutionSelect }: WorkflowExecutionHistoryProps) => (
     <div data-testid="execution-history">
       <button
         onClick={() =>
           onExecutionSelect?.({
-            id: 'history-execution-id',
-            workflowId: 'history-workflow-id',
-            status: 'completed',
+            id: "history-execution-id",
+            workflowId: "history-workflow-id",
+            status: "completed",
           })
         }
         data-testid="select-history-execution-btn"
@@ -106,12 +118,12 @@ vi.mock('../../components/WorkflowExecutionHistory', () => ({
   ),
 }));
 
-vi.mock('../../components/WorkflowErrorDisplay', () => ({
+vi.mock("../../components/WorkflowErrorDisplay", () => ({
   default: ({ executionId, onRetrySuccess }: WorkflowErrorDisplayProps) => (
     <div data-testid="error-display">
       <span>Error for execution: {executionId}</span>
       <button
-        onClick={() => onRetrySuccess?.('retry-execution-id')}
+        onClick={() => onRetrySuccess?.("retry-execution-id")}
         data-testid="retry-execution-btn"
       >
         Retry Execution
@@ -126,124 +138,130 @@ const renderWithProviders = (component: React.ReactElement) => {
       <AuthProvider>
         <ErrorProvider>{component}</ErrorProvider>
       </AuthProvider>
-    </BrowserRouter>
+    </BrowserRouter>,
   );
 };
 
-describe('Workflow Execution Interface', () => {
+describe("Workflow Execution Interface", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders the workflow execution interface with tabs', () => {
+  it("renders the workflow execution interface with tabs", () => {
     renderWithProviders(<Workflows />);
 
-    expect(screen.getByText('Workflow Execution')).toBeInTheDocument();
-    expect(screen.getByText('Execute Workflow')).toBeInTheDocument();
-    expect(screen.getByText('Execution History')).toBeInTheDocument();
+    expect(screen.getByText("Workflow Execution")).toBeInTheDocument();
+    expect(screen.getByText("Execute Workflow")).toBeInTheDocument();
+    expect(screen.getByText("Execution History")).toBeInTheDocument();
   });
 
-  it('shows execution form by default', () => {
+  it("shows execution form by default", () => {
     renderWithProviders(<Workflows />);
 
-    expect(screen.getByTestId('workflow-execution-form')).toBeInTheDocument();
-    expect(screen.getByText('Start New Execution')).toBeInTheDocument();
+    expect(screen.getByTestId("workflow-execution-form")).toBeInTheDocument();
+    expect(screen.getByText("Start New Execution")).toBeInTheDocument();
   });
 
-  it('switches to execution status when execution starts', async () => {
+  it("switches to execution status when execution starts", async () => {
     renderWithProviders(<Workflows />);
 
-    const startButton = screen.getByTestId('start-execution-btn');
+    const startButton = screen.getByTestId("start-execution-btn");
     fireEvent.click(startButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId('execution-status')).toBeInTheDocument();
-      expect(screen.getByText('Execution ID: test-execution-id')).toBeInTheDocument();
+      expect(screen.getByTestId("execution-status")).toBeInTheDocument();
+      expect(
+        screen.getByText("Execution ID: test-execution-id"),
+      ).toBeInTheDocument();
     });
   });
 
-  it('shows execution results when execution completes', async () => {
+  it("shows execution results when execution completes", async () => {
     renderWithProviders(<Workflows />);
 
     // Start execution
-    const startButton = screen.getByTestId('start-execution-btn');
+    const startButton = screen.getByTestId("start-execution-btn");
     fireEvent.click(startButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId('execution-status')).toBeInTheDocument();
+      expect(screen.getByTestId("execution-status")).toBeInTheDocument();
     });
 
     // Complete execution
-    const completeButton = screen.getByTestId('complete-execution-btn');
+    const completeButton = screen.getByTestId("complete-execution-btn");
     fireEvent.click(completeButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId('execution-results')).toBeInTheDocument();
-      expect(screen.getByText('Results for execution: test-execution-id')).toBeInTheDocument();
+      expect(screen.getByTestId("execution-results")).toBeInTheDocument();
+      expect(
+        screen.getByText("Results for execution: test-execution-id"),
+      ).toBeInTheDocument();
     });
   });
 
-  it('switches to history tab and shows history component', async () => {
+  it("switches to history tab and shows history component", async () => {
     renderWithProviders(<Workflows />);
 
-    const historyTab = screen.getByText('Execution History');
+    const historyTab = screen.getByText("Execution History");
     fireEvent.click(historyTab);
 
     await waitFor(() => {
-      expect(screen.getByTestId('execution-history')).toBeInTheDocument();
+      expect(screen.getByTestId("execution-history")).toBeInTheDocument();
     });
   });
 
-  it('allows selecting execution from history', async () => {
+  it("allows selecting execution from history", async () => {
     renderWithProviders(<Workflows />);
 
     // Switch to history tab
-    const historyTab = screen.getByText('Execution History');
+    const historyTab = screen.getByText("Execution History");
     fireEvent.click(historyTab);
 
     await waitFor(() => {
-      expect(screen.getByTestId('execution-history')).toBeInTheDocument();
+      expect(screen.getByTestId("execution-history")).toBeInTheDocument();
     });
 
     // Select execution from history
-    const selectButton = screen.getByTestId('select-history-execution-btn');
+    const selectButton = screen.getByTestId("select-history-execution-btn");
     fireEvent.click(selectButton);
 
     await waitFor(() => {
       // Should switch back to execute tab and show results
-      expect(screen.getByTestId('execution-results')).toBeInTheDocument();
-      expect(screen.getByText('Results for execution: history-execution-id')).toBeInTheDocument();
+      expect(screen.getByTestId("execution-results")).toBeInTheDocument();
+      expect(
+        screen.getByText("Results for execution: history-execution-id"),
+      ).toBeInTheDocument();
     });
   });
 
-  it('provides new execution button when viewing results', async () => {
+  it("provides new execution button when viewing results", async () => {
     renderWithProviders(<Workflows />);
 
     // Start and complete execution
-    const startButton = screen.getByTestId('start-execution-btn');
+    const startButton = screen.getByTestId("start-execution-btn");
     fireEvent.click(startButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId('execution-status')).toBeInTheDocument();
+      expect(screen.getByTestId("execution-status")).toBeInTheDocument();
     });
 
-    const completeButton = screen.getByTestId('complete-execution-btn');
+    const completeButton = screen.getByTestId("complete-execution-btn");
     fireEvent.click(completeButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId('execution-results')).toBeInTheDocument();
+      expect(screen.getByTestId("execution-results")).toBeInTheDocument();
     });
 
     // Should have "Start New Execution" button
-    const newExecutionButton = screen.getByText('Start New Execution');
+    const newExecutionButton = screen.getByText("Start New Execution");
     expect(newExecutionButton).toBeInTheDocument();
 
     // Click it to reset to form
     fireEvent.click(newExecutionButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId('workflow-execution-form')).toBeInTheDocument();
-      expect(screen.getByText('Start New Execution')).toBeInTheDocument();
+      expect(screen.getByTestId("workflow-execution-form")).toBeInTheDocument();
+      expect(screen.getByText("Start New Execution")).toBeInTheDocument();
     });
   });
 });

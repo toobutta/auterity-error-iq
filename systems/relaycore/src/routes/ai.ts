@@ -3,13 +3,13 @@
  * Handles AI request routing, model selection, and cost optimization
  */
 
-import { Router, Request, Response } from 'express';
-import { ProviderManager } from '../services/provider-manager';
-import { SteeringRulesEngine } from '../services/steering-rules';
-import { CostOptimizer } from '../services/cost-optimizer';
-import { MetricsCollector } from '../services/metrics-collector';
-import { logger } from '../utils/logger';
-import { AIRequest, AIResponse, RoutingDecision } from '../models/request';
+import { Router, Request, Response } from "express";
+import { ProviderManager } from "../services/provider-manager";
+import { SteeringRulesEngine } from "../services/steering-rules";
+import { CostOptimizer } from "../services/cost-optimizer";
+import { MetricsCollector } from "../services/metrics-collector";
+import { logger } from "../utils/logger";
+import { AIRequest, AIResponse, RoutingDecision } from "../models/request";
 
 const router = Router();
 const providerManager = new ProviderManager();
@@ -21,7 +21,7 @@ const metricsCollector = new MetricsCollector();
  * POST /api/v1/ai/chat
  * Route AI chat requests through optimal provider
  */
-router.post('/chat', async (req: Request, res: Response) => {
+router.post("/chat", async (req: Request, res: Response) => {
   const startTime = Date.now();
   let requestId: string | undefined;
 
@@ -33,30 +33,45 @@ router.post('/chat', async (req: Request, res: Response) => {
       routing_preferences: req.body.routing_preferences || {},
       cost_constraints: req.body.cost_constraints || { max_cost: 1.0 },
       user_id: req.user?.id,
-      system_source: req.body.system_source || 'unknown'
+      system_source: req.body.system_source || "unknown",
     };
 
     requestId = aiRequest.id;
-    logger.info(`Processing AI request ${requestId} from ${aiRequest.system_source}`);
+    logger.info(
+      `Processing AI request ${requestId} from ${aiRequest.system_source}`,
+    );
 
     // Apply steering rules for routing decision
-    const routingDecision: RoutingDecision = await steeringEngine.determineRouting(aiRequest);
+    const routingDecision: RoutingDecision =
+      await steeringEngine.determineRouting(aiRequest);
     logger.info(`Routing decision for ${requestId}:`, routingDecision);
 
     // Apply cost optimization
-    const optimizedDecision = await costOptimizer.optimizeRouting(routingDecision, aiRequest.cost_constraints);
-    
+    const optimizedDecision = await costOptimizer.optimizeRouting(
+      routingDecision,
+      aiRequest.cost_constraints,
+    );
+
     // Route request to selected provider
-    const aiResponse: AIResponse = await providerManager.routeRequest(aiRequest, optimizedDecision);
+    const aiResponse: AIResponse = await providerManager.routeRequest(
+      aiRequest,
+      optimizedDecision,
+    );
 
     // Calculate metrics
     const latency = Date.now() - startTime;
     aiResponse.latency = latency;
 
     // Collect metrics
-    await metricsCollector.recordRequest(aiRequest, aiResponse, optimizedDecision);
+    await metricsCollector.recordRequest(
+      aiRequest,
+      aiResponse,
+      optimizedDecision,
+    );
 
-    logger.info(`AI request ${requestId} completed in ${latency}ms using ${aiResponse.model_used}`);
+    logger.info(
+      `AI request ${requestId} completed in ${latency}ms using ${aiResponse.model_used}`,
+    );
 
     res.json({
       success: true,
@@ -65,10 +80,9 @@ router.post('/chat', async (req: Request, res: Response) => {
         selected_provider: optimizedDecision.provider,
         selected_model: optimizedDecision.model,
         cost_estimate: optimizedDecision.estimated_cost,
-        reasoning: optimizedDecision.reasoning
-      }
+        reasoning: optimizedDecision.reasoning,
+      },
     });
-
   } catch (error) {
     const latency = Date.now() - startTime;
     logger.error(`AI request ${requestId} failed after ${latency}ms:`, error);
@@ -81,10 +95,13 @@ router.post('/chat', async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       error: {
-        message: 'AI request processing failed',
-        details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined,
-        request_id: requestId
-      }
+        message: "AI request processing failed",
+        details:
+          process.env.NODE_ENV === "development"
+            ? (error as Error).message
+            : undefined,
+        request_id: requestId,
+      },
     });
   }
 });
@@ -93,7 +110,7 @@ router.post('/chat', async (req: Request, res: Response) => {
  * POST /api/v1/ai/batch
  * Process multiple AI requests in batch
  */
-router.post('/batch', async (req: Request, res: Response) => {
+router.post("/batch", async (req: Request, res: Response) => {
   try {
     const requests: AIRequest[] = req.body.requests || [];
     const results: (AIResponse | { error: string })[] = [];
@@ -106,10 +123,21 @@ router.post('/batch', async (req: Request, res: Response) => {
       const batch = requests.slice(i, i + batchSize);
       const batchPromises = batch.map(async (request) => {
         try {
-          const routingDecision = await steeringEngine.determineRouting(request);
-          const optimizedDecision = await costOptimizer.optimizeRouting(routingDecision, request.cost_constraints);
-          const response = await providerManager.routeRequest(request, optimizedDecision);
-          await metricsCollector.recordRequest(request, response, optimizedDecision);
+          const routingDecision =
+            await steeringEngine.determineRouting(request);
+          const optimizedDecision = await costOptimizer.optimizeRouting(
+            routingDecision,
+            request.cost_constraints,
+          );
+          const response = await providerManager.routeRequest(
+            request,
+            optimizedDecision,
+          );
+          await metricsCollector.recordRequest(
+            request,
+            response,
+            optimizedDecision,
+          );
           return response;
         } catch (error) {
           logger.error(`Batch request ${request.id} failed:`, error);
@@ -126,19 +154,21 @@ router.post('/batch', async (req: Request, res: Response) => {
       data: {
         results,
         total_processed: requests.length,
-        successful: results.filter(r => !('error' in r)).length,
-        failed: results.filter(r => 'error' in r).length
-      }
+        successful: results.filter((r) => !("error" in r)).length,
+        failed: results.filter((r) => "error" in r).length,
+      },
     });
-
   } catch (error) {
-    logger.error('Batch processing failed:', error);
+    logger.error("Batch processing failed:", error);
     res.status(500).json({
       success: false,
       error: {
-        message: 'Batch processing failed',
-        details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
-      }
+        message: "Batch processing failed",
+        details:
+          process.env.NODE_ENV === "development"
+            ? (error as Error).message
+            : undefined,
+      },
     });
   }
 });
@@ -147,18 +177,18 @@ router.post('/batch', async (req: Request, res: Response) => {
  * GET /api/v1/ai/providers
  * Get available AI providers and their status
  */
-router.get('/providers', async (req: Request, res: Response) => {
+router.get("/providers", async (req: Request, res: Response) => {
   try {
     const providers = await providerManager.getAvailableProviders();
     res.json({
       success: true,
-      data: providers
+      data: providers,
     });
   } catch (error) {
-    logger.error('Failed to get providers:', error);
+    logger.error("Failed to get providers:", error);
     res.status(500).json({
       success: false,
-      error: { message: 'Failed to retrieve providers' }
+      error: { message: "Failed to retrieve providers" },
     });
   }
 });

@@ -22,10 +22,10 @@ else
     uvicorn app.main:app --host 0.0.0.0 --port 8001 &
     SERVER_PID=$!
     sleep 3
-    
+
     # Export the OpenAPI spec
     curl -s http://localhost:8001/openapi.json > ../docs/api-spec.json
-    
+
     # Kill the temporary server
     kill $SERVER_PID 2>/dev/null
 fi

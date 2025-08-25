@@ -1,20 +1,20 @@
-import React, { useEffect, useState, Suspense, lazy, useCallback } from 'react';
-import { useWebSocketLogs } from '../hooks/useWebSocketLogs';
+import React, { useEffect, useState, Suspense, lazy, useCallback } from "react";
+import { useWebSocketLogs } from "../hooks/useWebSocketLogs";
 
 // Lazy load chart components to reduce initial bundle size
 const LineChart = lazy(() =>
-  import('./charts/LineChart').then((module) => ({
+  import("./charts/LineChart").then((module) => ({
     default: module.LineChart,
-  }))
+  })),
 );
 const BarChart = lazy(() =>
-  import('./charts/BarChart').then((module) => ({
+  import("./charts/BarChart").then((module) => ({
     default: module.BarChart,
-  }))
+  })),
 );
 
 interface SystemMetrics {
-  system: 'autmatrix' | 'relaycore' | 'neuroweaver';
+  system: "autmatrix" | "relaycore" | "neuroweaver";
   timestamp: Date;
   usage: {
     requests: number;
@@ -39,11 +39,11 @@ interface SystemMetrics {
 interface Alert {
   id: string;
   system: string;
-  type: 'error' | 'warning' | 'info';
+  type: "error" | "warning" | "info";
   message: string;
   timestamp: Date;
   acknowledged: boolean;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
 }
 
 interface AlertSettings {
@@ -63,8 +63,10 @@ interface UnifiedMonitoringDashboardProps {
   refreshInterval?: number;
 }
 
-export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProps> = ({
-  className = '',
+export const UnifiedMonitoringDashboard: React.FC<
+  UnifiedMonitoringDashboardProps
+> = ({
+  className = "",
   refreshInterval = 30000, // 30 seconds
 }) => {
   const [metrics, setMetrics] = useState<SystemMetrics[]>([]);
@@ -83,11 +85,11 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'usage' | 'costs' | 'performance' | 'alerts'
-  >('overview');
+    "overview" | "usage" | "costs" | "performance" | "alerts"
+  >("overview");
   const [selectedSystem, setSelectedSystem] = useState<
-    'all' | 'autmatrix' | 'relaycore' | 'neuroweaver'
-  >('all');
+    "all" | "autmatrix" | "relaycore" | "neuroweaver"
+  >("all");
   const [showAlertSettings, setShowAlertSettings] = useState(false);
 
   // Use WebSocket for real-time updates
@@ -96,10 +98,10 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
   // Generate mock data for demonstration
   const generateMockMetrics = useCallback((): SystemMetrics[] => {
     const now = new Date();
-    const systems: ('autmatrix' | 'relaycore' | 'neuroweaver')[] = [
-      'autmatrix',
-      'relaycore',
-      'neuroweaver',
+    const systems: ("autmatrix" | "relaycore" | "neuroweaver")[] = [
+      "autmatrix",
+      "relaycore",
+      "neuroweaver",
     ];
     const data: SystemMetrics[] = [];
 
@@ -136,16 +138,21 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
 
   // Generate mock alerts
   const generateMockAlerts = useCallback((): Alert[] => {
-    const systems = ['AutoMatrix', 'RelayCore', 'NeuroWeaver'];
-    const types: Alert['type'][] = ['error', 'warning', 'info'];
-    const severities: Alert['severity'][] = ['low', 'medium', 'high', 'critical'];
+    const systems = ["AutoMatrix", "RelayCore", "NeuroWeaver"];
+    const types: Alert["type"][] = ["error", "warning", "info"];
+    const severities: Alert["severity"][] = [
+      "low",
+      "medium",
+      "high",
+      "critical",
+    ];
     const messages = [
-      'High CPU usage detected',
-      'Response time threshold exceeded',
-      'Budget usage approaching limit',
-      'Model deployment completed',
-      'Authentication service degraded',
-      'Database connection pool exhausted',
+      "High CPU usage detected",
+      "Response time threshold exceeded",
+      "Budget usage approaching limit",
+      "Model deployment completed",
+      "Authentication service degraded",
+      "Database connection pool exhausted",
     ];
 
     return Array.from({ length: 10 }, (_, i) => ({
@@ -176,8 +183,8 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
       setMetrics(mockMetrics);
       setAlerts(mockAlerts);
     } catch (err) {
-      setError('Failed to load monitoring data');
-      console.error('Monitoring data error:', err);
+      setError("Failed to load monitoring data");
+      console.error("Monitoring data error:", err);
     } finally {
       setLoading(false);
     }
@@ -191,15 +198,21 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
 
   // Filter metrics by selected system
   const filteredMetrics =
-    selectedSystem === 'all' ? metrics : metrics.filter((m) => m.system === selectedSystem);
+    selectedSystem === "all"
+      ? metrics
+      : metrics.filter((m) => m.system === selectedSystem);
 
   // Calculate aggregate statistics
   const aggregateStats = {
-    totalRequests: filteredMetrics.reduce((sum, m) => sum + m.usage.requests, 0),
+    totalRequests: filteredMetrics.reduce(
+      (sum, m) => sum + m.usage.requests,
+      0,
+    ),
     totalCosts: filteredMetrics.reduce((sum, m) => sum + m.costs.total, 0),
     avgResponseTime:
       filteredMetrics.length > 0
-        ? filteredMetrics.reduce((sum, m) => sum + m.usage.responseTime, 0) / filteredMetrics.length
+        ? filteredMetrics.reduce((sum, m) => sum + m.usage.responseTime, 0) /
+          filteredMetrics.length
         : 0,
     avgErrorRate:
       filteredMetrics.length > 0
@@ -207,27 +220,40 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
           filteredMetrics.length
         : 0,
     activeAlerts: alerts.filter((a) => !a.acknowledged).length,
-    criticalAlerts: alerts.filter((a) => a.severity === 'critical' && !a.acknowledged).length,
+    criticalAlerts: alerts.filter(
+      (a) => a.severity === "critical" && !a.acknowledged,
+    ).length,
   };
 
   const tabs = [
-    { id: 'overview' as const, label: 'Overview', icon: '📊' },
-    { id: 'usage' as const, label: 'Usage', icon: '📈' },
-    { id: 'costs' as const, label: 'Costs', icon: '💰' },
-    { id: 'performance' as const, label: 'Performance', icon: '⚡' },
-    { id: 'alerts' as const, label: 'Alerts', icon: '🚨', badge: aggregateStats.activeAlerts },
+    { id: "overview" as const, label: "Overview", icon: "📊" },
+    { id: "usage" as const, label: "Usage", icon: "📈" },
+    { id: "costs" as const, label: "Costs", icon: "💰" },
+    { id: "performance" as const, label: "Performance", icon: "⚡" },
+    {
+      id: "alerts" as const,
+      label: "Alerts",
+      icon: "🚨",
+      badge: aggregateStats.activeAlerts,
+    },
   ];
 
   const systems = [
-    { id: 'all' as const, label: 'All Systems', color: 'bg-gray-500' },
-    { id: 'autmatrix' as const, label: 'AutoMatrix', color: 'bg-blue-500' },
-    { id: 'relaycore' as const, label: 'RelayCore', color: 'bg-green-500' },
-    { id: 'neuroweaver' as const, label: 'NeuroWeaver', color: 'bg-purple-500' },
+    { id: "all" as const, label: "All Systems", color: "bg-gray-500" },
+    { id: "autmatrix" as const, label: "AutoMatrix", color: "bg-blue-500" },
+    { id: "relaycore" as const, label: "RelayCore", color: "bg-green-500" },
+    {
+      id: "neuroweaver" as const,
+      label: "NeuroWeaver",
+      color: "bg-purple-500",
+    },
   ];
 
   if (loading) {
     return (
-      <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}>
+      <div
+        className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}
+      >
         <div className="animate-pulse" data-testid="loading-skeleton">
           <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -243,10 +269,14 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
 
   if (error) {
     return (
-      <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}>
+      <div
+        className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}
+      >
         <div className="text-center py-12">
           <div className="text-red-500 text-4xl mb-4">⚠️</div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Monitoring Data</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            Error Loading Monitoring Data
+          </h3>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={fetchMetrics}
@@ -269,7 +299,9 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
       <div className="px-6 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Unified Monitoring Dashboard</h2>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Unified Monitoring Dashboard
+            </h2>
             <p className="text-sm text-gray-600 mt-1">
               Real-time monitoring across AutoMatrix, RelayCore, and NeuroWeaver
               {!isConnected && (
@@ -284,7 +316,12 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
               onClick={() => setShowAlertSettings(!showAlertSettings)}
               className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="h-4 w-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -305,7 +342,12 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
               disabled={loading}
               className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
-              <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="h-4 w-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -322,7 +364,9 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
       {/* System Filter */}
       <div className="px-6 py-3 bg-gray-50 border-b border-gray-200">
         <div className="flex items-center space-x-4">
-          <span className="text-sm font-medium text-gray-700">Filter by system:</span>
+          <span className="text-sm font-medium text-gray-700">
+            Filter by system:
+          </span>
           <div className="flex space-x-2">
             {systems.map((system) => (
               <button
@@ -331,10 +375,12 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
                 className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                   selectedSystem === system.id
                     ? `${system.color} text-white`
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                 }`}
               >
-                <div className={`w-2 h-2 rounded-full mr-2 ${system.color}`}></div>
+                <div
+                  className={`w-2 h-2 rounded-full mr-2 ${system.color}`}
+                ></div>
                 {system.label}
               </button>
             ))}
@@ -352,8 +398,8 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap relative ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
                 <span className="mr-2">{tab.icon}</span>
@@ -371,22 +417,26 @@ export const UnifiedMonitoringDashboard: React.FC<UnifiedMonitoringDashboardProp
 
       {/* Content */}
       <div className="p-6">
-        {activeTab === 'overview' && (
+        {activeTab === "overview" && (
           <OverviewTab
             metrics={filteredMetrics}
             stats={aggregateStats}
             alerts={alerts.slice(0, 5)}
           />
         )}
-        {activeTab === 'usage' && <UsageTab metrics={filteredMetrics} />}
-        {activeTab === 'costs' && <CostsTab metrics={filteredMetrics} />}
-        {activeTab === 'performance' && <PerformanceTab metrics={filteredMetrics} />}
-        {activeTab === 'alerts' && (
+        {activeTab === "usage" && <UsageTab metrics={filteredMetrics} />}
+        {activeTab === "costs" && <CostsTab metrics={filteredMetrics} />}
+        {activeTab === "performance" && (
+          <PerformanceTab metrics={filteredMetrics} />
+        )}
+        {activeTab === "alerts" && (
           <AlertsTab
             alerts={alerts}
             onAcknowledge={(alertId) => {
               setAlerts((prev) =>
-                prev.map((a) => (a.id === alertId ? { ...a, acknowledged: true } : a))
+                prev.map((a) =>
+                  a.id === alertId ? { ...a, acknowledged: true } : a,
+                ),
               );
             }}
           />
@@ -431,12 +481,16 @@ const OverviewTab: React.FC<{
 
       <div className="bg-green-50 rounded-lg p-4">
         <div className="text-sm font-medium text-green-900">Total Costs</div>
-        <div className="text-2xl font-bold text-green-600">${stats.totalCosts.toFixed(2)}</div>
+        <div className="text-2xl font-bold text-green-600">
+          ${stats.totalCosts.toFixed(2)}
+        </div>
         <div className="text-xs text-green-700 mt-1">Last 24 hours</div>
       </div>
 
       <div className="bg-yellow-50 rounded-lg p-4">
-        <div className="text-sm font-medium text-yellow-900">Avg Response Time</div>
+        <div className="text-sm font-medium text-yellow-900">
+          Avg Response Time
+        </div>
         <div className="text-2xl font-bold text-yellow-600">
           {Math.round(stats.avgResponseTime)}ms
         </div>
@@ -445,8 +499,12 @@ const OverviewTab: React.FC<{
 
       <div className="bg-red-50 rounded-lg p-4">
         <div className="text-sm font-medium text-red-900">Active Alerts</div>
-        <div className="text-2xl font-bold text-red-600">{stats.activeAlerts}</div>
-        <div className="text-xs text-red-700 mt-1">{stats.criticalAlerts} critical</div>
+        <div className="text-2xl font-bold text-red-600">
+          {stats.activeAlerts}
+        </div>
+        <div className="text-xs text-red-700 mt-1">
+          {stats.criticalAlerts} critical
+        </div>
       </div>
     </div>
 
@@ -462,15 +520,17 @@ const OverviewTab: React.FC<{
             <div className="flex items-center space-x-3">
               <div
                 className={`w-2 h-2 rounded-full ${
-                  alert.type === 'error'
-                    ? 'bg-red-500'
-                    : alert.type === 'warning'
-                      ? 'bg-yellow-500'
-                      : 'bg-blue-500'
+                  alert.type === "error"
+                    ? "bg-red-500"
+                    : alert.type === "warning"
+                      ? "bg-yellow-500"
+                      : "bg-blue-500"
                 }`}
               ></div>
               <div>
-                <div className="text-sm font-medium text-gray-900">{alert.message}</div>
+                <div className="text-sm font-medium text-gray-900">
+                  {alert.message}
+                </div>
                 <div className="text-xs text-gray-500">
                   {alert.system} • {alert.timestamp.toLocaleTimeString()}
                 </div>
@@ -478,13 +538,13 @@ const OverviewTab: React.FC<{
             </div>
             <span
               className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                alert.severity === 'critical'
-                  ? 'bg-red-100 text-red-800'
-                  : alert.severity === 'high'
-                    ? 'bg-orange-100 text-orange-800'
-                    : alert.severity === 'medium'
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : 'bg-gray-100 text-gray-800'
+                alert.severity === "critical"
+                  ? "bg-red-100 text-red-800"
+                  : alert.severity === "high"
+                    ? "bg-orange-100 text-orange-800"
+                    : alert.severity === "medium"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-gray-100 text-gray-800"
               }`}
             >
               {alert.severity}
@@ -501,15 +561,31 @@ const UsageTab: React.FC<{ metrics: SystemMetrics[] }> = ({ metrics }) => (
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <div className="bg-gray-50 rounded-lg p-4">
       <h3 className="text-sm font-medium text-gray-900 mb-4">Request Volume</h3>
-      <Suspense fallback={<div className="h-80 bg-gray-200 rounded animate-pulse"></div>}>
-        <LineChart data={metrics} type="usage" aria-label="Request volume over time" />
+      <Suspense
+        fallback={
+          <div className="h-80 bg-gray-200 rounded animate-pulse"></div>
+        }
+      >
+        <LineChart
+          data={metrics}
+          type="usage"
+          aria-label="Request volume over time"
+        />
       </Suspense>
     </div>
 
     <div className="bg-gray-50 rounded-lg p-4">
       <h3 className="text-sm font-medium text-gray-900 mb-4">Active Users</h3>
-      <Suspense fallback={<div className="h-80 bg-gray-200 rounded animate-pulse"></div>}>
-        <BarChart data={metrics.slice(-12)} type="usage" aria-label="Active users comparison" />
+      <Suspense
+        fallback={
+          <div className="h-80 bg-gray-200 rounded animate-pulse"></div>
+        }
+      >
+        <BarChart
+          data={metrics.slice(-12)}
+          type="usage"
+          aria-label="Active users comparison"
+        />
       </Suspense>
     </div>
   </div>
@@ -520,33 +596,65 @@ const CostsTab: React.FC<{ metrics: SystemMetrics[] }> = ({ metrics }) => (
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <div className="bg-gray-50 rounded-lg p-4">
       <h3 className="text-sm font-medium text-gray-900 mb-4">Cost Trends</h3>
-      <Suspense fallback={<div className="h-80 bg-gray-200 rounded animate-pulse"></div>}>
-        <LineChart data={metrics} type="costs" aria-label="Cost trends over time" />
+      <Suspense
+        fallback={
+          <div className="h-80 bg-gray-200 rounded animate-pulse"></div>
+        }
+      >
+        <LineChart
+          data={metrics}
+          type="costs"
+          aria-label="Cost trends over time"
+        />
       </Suspense>
     </div>
 
     <div className="bg-gray-50 rounded-lg p-4">
       <h3 className="text-sm font-medium text-gray-900 mb-4">Budget Usage</h3>
-      <Suspense fallback={<div className="h-80 bg-gray-200 rounded animate-pulse"></div>}>
-        <BarChart data={metrics.slice(-12)} type="costs" aria-label="Budget usage comparison" />
+      <Suspense
+        fallback={
+          <div className="h-80 bg-gray-200 rounded animate-pulse"></div>
+        }
+      >
+        <BarChart
+          data={metrics.slice(-12)}
+          type="costs"
+          aria-label="Budget usage comparison"
+        />
       </Suspense>
     </div>
   </div>
 );
 
 // Performance Tab Component
-const PerformanceTab: React.FC<{ metrics: SystemMetrics[] }> = ({ metrics }) => (
+const PerformanceTab: React.FC<{ metrics: SystemMetrics[] }> = ({
+  metrics,
+}) => (
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <div className="bg-gray-50 rounded-lg p-4">
       <h3 className="text-sm font-medium text-gray-900 mb-4">Response Time</h3>
-      <Suspense fallback={<div className="h-80 bg-gray-200 rounded animate-pulse"></div>}>
-        <LineChart data={metrics} type="performance" aria-label="Response time over time" />
+      <Suspense
+        fallback={
+          <div className="h-80 bg-gray-200 rounded animate-pulse"></div>
+        }
+      >
+        <LineChart
+          data={metrics}
+          type="performance"
+          aria-label="Response time over time"
+        />
       </Suspense>
     </div>
 
     <div className="bg-gray-50 rounded-lg p-4">
-      <h3 className="text-sm font-medium text-gray-900 mb-4">System Resources</h3>
-      <Suspense fallback={<div className="h-80 bg-gray-200 rounded animate-pulse"></div>}>
+      <h3 className="text-sm font-medium text-gray-900 mb-4">
+        System Resources
+      </h3>
+      <Suspense
+        fallback={
+          <div className="h-80 bg-gray-200 rounded animate-pulse"></div>
+        }
+      >
         <BarChart
           data={metrics.slice(-12)}
           type="performance"
@@ -567,28 +675,34 @@ const AlertsTab: React.FC<{
       <div
         key={alert.id}
         className={`p-4 rounded-lg border-l-4 ${
-          alert.type === 'error'
-            ? 'bg-red-50 border-red-400'
-            : alert.type === 'warning'
-              ? 'bg-yellow-50 border-yellow-400'
-              : 'bg-blue-50 border-blue-400'
-        } ${alert.acknowledged ? 'opacity-60' : ''}`}
+          alert.type === "error"
+            ? "bg-red-50 border-red-400"
+            : alert.type === "warning"
+              ? "bg-yellow-50 border-yellow-400"
+              : "bg-blue-50 border-blue-400"
+        } ${alert.acknowledged ? "opacity-60" : ""}`}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div
               className={`text-2xl ${
-                alert.type === 'error'
-                  ? 'text-red-500'
-                  : alert.type === 'warning'
-                    ? 'text-yellow-500'
-                    : 'text-blue-500'
+                alert.type === "error"
+                  ? "text-red-500"
+                  : alert.type === "warning"
+                    ? "text-yellow-500"
+                    : "text-blue-500"
               }`}
             >
-              {alert.type === 'error' ? '🚨' : alert.type === 'warning' ? '⚠️' : 'ℹ️'}
+              {alert.type === "error"
+                ? "🚨"
+                : alert.type === "warning"
+                  ? "⚠️"
+                  : "ℹ️"}
             </div>
             <div>
-              <div className="text-sm font-medium text-gray-900">{alert.message}</div>
+              <div className="text-sm font-medium text-gray-900">
+                {alert.message}
+              </div>
               <div className="text-xs text-gray-500">
                 {alert.system} • {alert.timestamp.toLocaleString()}
               </div>
@@ -597,13 +711,13 @@ const AlertsTab: React.FC<{
           <div className="flex items-center space-x-2">
             <span
               className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                alert.severity === 'critical'
-                  ? 'bg-red-100 text-red-800'
-                  : alert.severity === 'high'
-                    ? 'bg-orange-100 text-orange-800'
-                    : alert.severity === 'medium'
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : 'bg-gray-100 text-gray-800'
+                alert.severity === "critical"
+                  ? "bg-red-100 text-red-800"
+                  : alert.severity === "high"
+                    ? "bg-orange-100 text-orange-800"
+                    : alert.severity === "medium"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-gray-100 text-gray-800"
               }`}
             >
               {alert.severity}
@@ -632,7 +746,9 @@ const AlertSettingsModal: React.FC<{
   <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
     <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
       <div className="mt-3">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Alert Settings</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">
+          Alert Settings
+        </h3>
 
         <div className="space-y-4">
           <div>
@@ -648,7 +764,9 @@ const AlertSettingsModal: React.FC<{
                 }
                 className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
               />
-              <span className="ml-2 text-sm text-gray-700">Email notifications</span>
+              <span className="ml-2 text-sm text-gray-700">
+                Email notifications
+              </span>
             </label>
           </div>
 
@@ -665,15 +783,21 @@ const AlertSettingsModal: React.FC<{
                 }
                 className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
               />
-              <span className="ml-2 text-sm text-gray-700">Slack notifications</span>
+              <span className="ml-2 text-sm text-gray-700">
+                Slack notifications
+              </span>
             </label>
           </div>
 
           <div className="space-y-2">
-            <h4 className="text-sm font-medium text-gray-900">Alert Thresholds</h4>
+            <h4 className="text-sm font-medium text-gray-900">
+              Alert Thresholds
+            </h4>
 
             <div>
-              <label className="block text-xs text-gray-700">Error Rate (%)</label>
+              <label className="block text-xs text-gray-700">
+                Error Rate (%)
+              </label>
               <input
                 type="number"
                 value={settings.thresholds.errorRate}
@@ -691,7 +815,9 @@ const AlertSettingsModal: React.FC<{
             </div>
 
             <div>
-              <label className="block text-xs text-gray-700">Response Time (ms)</label>
+              <label className="block text-xs text-gray-700">
+                Response Time (ms)
+              </label>
               <input
                 type="number"
                 value={settings.thresholds.responseTime}
@@ -709,7 +835,9 @@ const AlertSettingsModal: React.FC<{
             </div>
 
             <div>
-              <label className="block text-xs text-gray-700">Budget Usage (%)</label>
+              <label className="block text-xs text-gray-700">
+                Budget Usage (%)
+              </label>
               <input
                 type="number"
                 value={settings.thresholds.budgetUsage}

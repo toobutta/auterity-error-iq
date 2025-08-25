@@ -1,5 +1,5 @@
-import React from 'react';
-import { cn } from '../lib/utils';
+import React from "react";
+import { cn } from "../lib/utils";
 
 // Modern landing page showcasing the sleek UI
 const ModernLandingPage: React.FC = () => {
@@ -31,7 +31,7 @@ const ModernLandingPage: React.FC = () => {
               <p className="text-xl md:text-2xl text-neutral-600 dark:text-neutral-300 max-w-3xl mx-auto leading-relaxed">
                 Intelligent error monitoring and resolution platform with
                 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold">
-                  {' '}
+                  {" "}
                   real-time insights
                 </span>
               </p>
@@ -54,7 +54,9 @@ const ModernLandingPage: React.FC = () => {
                 <div className="text-white/80">Uptime Guarantee</div>
               </div>
               <div className="glass rounded-2xl p-6 border border-white/20">
-                <div className="text-3xl font-bold text-white mb-2">&lt;2ms</div>
+                <div className="text-3xl font-bold text-white mb-2">
+                  &lt;2ms
+                </div>
                 <div className="text-white/80">Response Time</div>
               </div>
               <div className="glass rounded-2xl p-6 border border-white/20">
@@ -74,7 +76,8 @@ const ModernLandingPage: React.FC = () => {
               Modern Error Monitoring
             </h2>
             <p className="text-xl text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              Experience the next generation of error tracking with our sleek, intelligent platform
+              Experience the next generation of error tracking with our sleek,
+              intelligent platform
             </p>
           </div>
 
@@ -82,30 +85,36 @@ const ModernLandingPage: React.FC = () => {
             {/* Feature 1 */}
             <div className="glass rounded-2xl p-8 border border-white/20 hover:border-white/40 transition-all duration-300 hover-lift">
               <div className="text-4xl mb-4">🔍</div>
-              <h3 className="text-xl font-bold text-white mb-4">Smart Detection</h3>
+              <h3 className="text-xl font-bold text-white mb-4">
+                Smart Detection
+              </h3>
               <p className="text-white/80 leading-relaxed">
-                AI-powered error detection that learns from your patterns and prevents issues before
-                they impact users.
+                AI-powered error detection that learns from your patterns and
+                prevents issues before they impact users.
               </p>
             </div>
 
             {/* Feature 2 */}
             <div className="glass rounded-2xl p-8 border border-white/20 hover:border-white/40 transition-all duration-300 hover-lift">
               <div className="text-4xl mb-4">⚡</div>
-              <h3 className="text-xl font-bold text-white mb-4">Real-time Alerts</h3>
+              <h3 className="text-xl font-bold text-white mb-4">
+                Real-time Alerts
+              </h3>
               <p className="text-white/80 leading-relaxed">
-                Instant notifications across multiple channels with intelligent routing and
-                escalation policies.
+                Instant notifications across multiple channels with intelligent
+                routing and escalation policies.
               </p>
             </div>
 
             {/* Feature 3 */}
             <div className="glass rounded-2xl p-8 border border-white/20 hover:border-white/40 transition-all duration-300 hover-lift">
               <div className="text-4xl mb-4">📊</div>
-              <h3 className="text-xl font-bold text-white mb-4">Advanced Analytics</h3>
+              <h3 className="text-xl font-bold text-white mb-4">
+                Advanced Analytics
+              </h3>
               <p className="text-white/80 leading-relaxed">
-                Comprehensive dashboards with trends, patterns, and actionable insights for
-                continuous improvement.
+                Comprehensive dashboards with trends, patterns, and actionable
+                insights for continuous improvement.
               </p>
             </div>
           </div>
@@ -128,7 +137,9 @@ const ModernLandingPage: React.FC = () => {
           <div className="glass rounded-3xl p-8 border border-white/20 shadow-2xl">
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">System Overview</h3>
+                <h3 className="text-lg font-semibold text-white">
+                  System Overview
+                </h3>
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                   <span className="text-sm text-white/80">Live</span>
@@ -171,8 +182,12 @@ const ModernLandingPage: React.FC = () => {
                       </span>
                       <span className="text-white/60 text-sm">ERR-001</span>
                     </div>
-                    <div className="text-white">Database connection timeout in checkout flow</div>
-                    <div className="text-white/60 text-sm">34 occurrences • 2 min ago</div>
+                    <div className="text-white">
+                      Database connection timeout in checkout flow
+                    </div>
+                    <div className="text-white/60 text-sm">
+                      34 occurrences • 2 min ago
+                    </div>
                   </div>
                   <div className="text-white/60">→</div>
                 </div>
@@ -186,8 +201,12 @@ const ModernLandingPage: React.FC = () => {
                       </span>
                       <span className="text-white/60 text-sm">ERR-002</span>
                     </div>
-                    <div className="text-white">Memory leak detected in user session handler</div>
-                    <div className="text-white/60 text-sm">12 occurrences • 5 min ago</div>
+                    <div className="text-white">
+                      Memory leak detected in user session handler
+                    </div>
+                    <div className="text-white/60 text-sm">
+                      12 occurrences • 5 min ago
+                    </div>
                   </div>
                   <div className="text-white/60">→</div>
                 </div>

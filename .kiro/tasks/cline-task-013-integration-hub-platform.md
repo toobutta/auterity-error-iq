@@ -7,14 +7,17 @@
 **Estimated Effort**: 16-20 hours (comprehensive integration platform)
 
 ## EXECUTIVE SUMMARY
+
 Build comprehensive Integration Hub Platform connecting AutoMatrix with major automotive dealership systems including CRM (Salesforce, HubSpot, DealerSocket), DMS (Reynolds & Reynolds, CDK Global, Dealertrack), inventory management, and financial systems with real-time data synchronization.
 
 ## BUSINESS CONTEXT
+
 Automotive dealerships use multiple disconnected systems for customer management, inventory, sales, service, and finance. The Integration Hub Platform bridges these systems, enabling seamless data flow and automated workflows across the entire dealership ecosystem, providing significant competitive advantage and operational efficiency.
 
 ## PRE-DEVELOPMENT ANALYSIS TASKS FOR CLINE
 
 ### 1. Existing API Infrastructure Assessment (30 minutes)
+
 ```bash
 # Analyze current API client patterns
 find frontend/src/api/ -name "*.ts" -exec echo "=== {} ===" \; -exec head -15 {} \;
@@ -30,6 +33,7 @@ find backend/app/ -name "*.py" -exec grep -l "webhook\|callback" {} \;
 ```
 
 ### 2. Data Synchronization Infrastructure (20 minutes)
+
 ```bash
 # Check for existing sync mechanisms
 grep -r "sync\|synchroniz" backend/app/ --include="*.py"
@@ -45,6 +49,7 @@ grep -r "retry\|error.*handling" backend/app/ --include="*.py"
 ```
 
 ### 3. Third-Party API Documentation Analysis (30 minutes)
+
 ```bash
 # Check for existing third-party integrations
 find . -name "*.md" -exec grep -l "API\|integration\|CRM\|DMS" {} \;
@@ -57,6 +62,7 @@ grep -r "rate.*limit\|throttle" backend/app/ --include="*.py"
 ```
 
 ### 4. Real-Time Event System Assessment (15 minutes)
+
 ```bash
 # Check for WebSocket infrastructure
 find backend/ -name "*.py" -exec grep -l "websocket\|WebSocket" {} \;
@@ -73,6 +79,7 @@ grep -r "notification\|alert" backend/app/ --include="*.py"
 ### 1. Core Integration Framework
 
 #### Integration Connector Base Class
+
 ```typescript
 // Frontend integration types
 interface IntegrationConnector {
@@ -88,23 +95,23 @@ interface IntegrationConnector {
   dataMapping: DataMapping[];
 }
 
-type IntegrationType = 
-  | 'crm' 
-  | 'dms' 
-  | 'inventory' 
-  | 'financial' 
-  | 'marketing' 
-  | 'service' 
-  | 'parts' 
-  | 'accounting';
+type IntegrationType =
+  | "crm"
+  | "dms"
+  | "inventory"
+  | "financial"
+  | "marketing"
+  | "service"
+  | "parts"
+  | "accounting";
 
-type ConnectionStatus = 
-  | 'connected' 
-  | 'disconnected' 
-  | 'error' 
-  | 'syncing' 
-  | 'configuring' 
-  | 'testing';
+type ConnectionStatus =
+  | "connected"
+  | "disconnected"
+  | "error"
+  | "syncing"
+  | "configuring"
+  | "testing";
 
 interface ConnectorConfiguration {
   apiEndpoint: string;
@@ -116,7 +123,7 @@ interface ConnectorConfiguration {
 }
 
 interface AuthenticationConfig {
-  type: 'oauth2' | 'api_key' | 'basic' | 'jwt' | 'custom';
+  type: "oauth2" | "api_key" | "basic" | "jwt" | "custom";
   credentials: Record<string, string>;
   refreshToken?: string;
   expiresAt?: Date;
@@ -125,17 +132,23 @@ interface AuthenticationConfig {
 
 interface SyncSettings {
   frequency: SyncFrequency;
-  direction: 'bidirectional' | 'inbound' | 'outbound';
+  direction: "bidirectional" | "inbound" | "outbound";
   batchSize: number;
   retryAttempts: number;
   conflictResolution: ConflictResolution;
 }
 
-type SyncFrequency = 'real-time' | 'hourly' | 'daily' | 'weekly' | 'manual';
-type ConflictResolution = 'source_wins' | 'target_wins' | 'manual' | 'merge' | 'skip';
+type SyncFrequency = "real-time" | "hourly" | "daily" | "weekly" | "manual";
+type ConflictResolution =
+  | "source_wins"
+  | "target_wins"
+  | "manual"
+  | "merge"
+  | "skip";
 ```
 
 #### Data Mapping and Transformation
+
 ```typescript
 interface DataMapping {
   id: string;
@@ -152,19 +165,19 @@ interface DataTransformation {
   validation?: ValidationRule[];
 }
 
-type TransformationType = 
-  | 'format_date' 
-  | 'format_currency' 
-  | 'format_phone' 
-  | 'normalize_text' 
-  | 'lookup_value' 
-  | 'calculate' 
-  | 'concatenate' 
-  | 'split' 
-  | 'custom_function';
+type TransformationType =
+  | "format_date"
+  | "format_currency"
+  | "format_phone"
+  | "normalize_text"
+  | "lookup_value"
+  | "calculate"
+  | "concatenate"
+  | "split"
+  | "custom_function";
 
 interface ValidationRule {
-  type: 'required' | 'format' | 'range' | 'custom';
+  type: "required" | "format" | "range" | "custom";
   parameters: Record<string, any>;
   errorMessage: string;
 }
@@ -175,7 +188,10 @@ class DataSynchronizationEngine {
   private syncQueue: SyncJob[] = [];
   private isProcessing = false;
 
-  async syncData(connectorId: string, options: SyncOptions = {}): Promise<SyncResult> {
+  async syncData(
+    connectorId: string,
+    options: SyncOptions = {},
+  ): Promise<SyncResult> {
     const connector = this.connectors.get(connectorId);
     if (!connector) {
       throw new Error(`Connector ${connectorId} not found`);
@@ -185,14 +201,14 @@ class DataSynchronizationEngine {
       id: generateId(),
       connectorId,
       startTime: new Date(),
-      status: 'pending',
+      status: "pending",
       options,
       progress: 0,
-      errors: []
+      errors: [],
     };
 
     this.syncQueue.push(syncJob);
-    
+
     if (!this.isProcessing) {
       this.processSyncQueue();
     }
@@ -205,15 +221,15 @@ class DataSynchronizationEngine {
 
     while (this.syncQueue.length > 0) {
       const job = this.syncQueue.shift()!;
-      
+
       try {
         await this.executeSyncJob(job);
       } catch (error) {
-        job.status = 'failed';
+        job.status = "failed";
         job.errors.push({
           message: error.message,
           timestamp: new Date(),
-          code: 'SYNC_ERROR'
+          code: "SYNC_ERROR",
         });
       }
     }
@@ -223,24 +239,33 @@ class DataSynchronizationEngine {
 
   private async executeSyncJob(job: SyncJob): Promise<void> {
     const connector = this.connectors.get(job.connectorId)!;
-    job.status = 'running';
+    job.status = "running";
 
     // Fetch data from source
     const sourceData = await this.fetchSourceData(connector, job.options);
     job.progress = 25;
 
     // Transform data
-    const transformedData = await this.transformData(sourceData, connector.configuration.fieldMappings);
+    const transformedData = await this.transformData(
+      sourceData,
+      connector.configuration.fieldMappings,
+    );
     job.progress = 50;
 
     // Validate data
-    const validationResults = await this.validateData(transformedData, connector.configuration);
+    const validationResults = await this.validateData(
+      transformedData,
+      connector.configuration,
+    );
     job.progress = 75;
 
     // Sync to target
-    const syncResults = await this.syncToTarget(validationResults.validData, connector);
+    const syncResults = await this.syncToTarget(
+      validationResults.validData,
+      connector,
+    );
     job.progress = 100;
-    job.status = 'completed';
+    job.status = "completed";
     job.endTime = new Date();
     job.results = syncResults;
   }
@@ -250,6 +275,7 @@ class DataSynchronizationEngine {
 ### 2. CRM Integration Components
 
 #### Salesforce Connector
+
 ```tsx
 interface SalesforceConnectorProps {
   connector: IntegrationConnector;
@@ -257,39 +283,44 @@ interface SalesforceConnectorProps {
   onTest: (connector: IntegrationConnector) => Promise<TestResult>;
 }
 
-const SalesforceConnector: React.FC<SalesforceConnectorProps> = ({ 
-  connector, 
-  onUpdate, 
-  onTest 
+const SalesforceConnector: React.FC<SalesforceConnectorProps> = ({
+  connector,
+  onUpdate,
+  onTest,
 }) => {
   const [isConfiguring, setIsConfiguring] = useState(false);
   const [testResult, setTestResult] = useState<TestResult | null>(null);
 
   const handleOAuthFlow = useCallback(async () => {
-    const authUrl = `https://login.salesforce.com/services/oauth2/authorize?` +
+    const authUrl =
+      `https://login.salesforce.com/services/oauth2/authorize?` +
       `response_type=code&` +
       `client_id=${connector.configuration.authentication.credentials.clientId}&` +
-      `redirect_uri=${encodeURIComponent(window.location.origin + '/integrations/salesforce/callback')}&` +
+      `redirect_uri=${encodeURIComponent(window.location.origin + "/integrations/salesforce/callback")}&` +
       `scope=api refresh_token`;
 
-    const popup = window.open(authUrl, 'salesforce-auth', 'width=600,height=600');
-    
+    const popup = window.open(
+      authUrl,
+      "salesforce-auth",
+      "width=600,height=600",
+    );
+
     return new Promise<AuthenticationResult>((resolve, reject) => {
       const checkClosed = setInterval(() => {
         if (popup?.closed) {
           clearInterval(checkClosed);
-          reject(new Error('Authentication cancelled'));
+          reject(new Error("Authentication cancelled"));
         }
       }, 1000);
 
-      window.addEventListener('message', (event) => {
+      window.addEventListener("message", (event) => {
         if (event.origin !== window.location.origin) return;
-        
-        if (event.data.type === 'salesforce-auth-success') {
+
+        if (event.data.type === "salesforce-auth-success") {
           clearInterval(checkClosed);
           popup?.close();
           resolve(event.data.result);
-        } else if (event.data.type === 'salesforce-auth-error') {
+        } else if (event.data.type === "salesforce-auth-error") {
           clearInterval(checkClosed);
           popup?.close();
           reject(new Error(event.data.error));
@@ -309,13 +340,15 @@ const SalesforceConnector: React.FC<SalesforceConnectorProps> = ({
             </div>
             <div>
               <h3 className="font-medium">Salesforce CRM</h3>
-              <p className="text-sm text-gray-600">Customer relationship management</p>
+              <p className="text-sm text-gray-600">
+                Customer relationship management
+              </p>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2">
-            <StatusIndicator 
-              status={connector.status === 'connected' ? 'healthy' : 'error'} 
+            <StatusIndicator
+              status={connector.status === "connected" ? "healthy" : "error"}
               label={connector.status}
             />
             <button
@@ -332,16 +365,21 @@ const SalesforceConnector: React.FC<SalesforceConnectorProps> = ({
       {isConfiguring && (
         <div className="p-4 border-b bg-gray-50">
           <h4 className="font-medium mb-4">Salesforce Configuration</h4>
-          
+
           {/* Authentication Section */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Authentication</label>
-              {connector.configuration.authentication.credentials.accessToken ? (
+              <label className="block text-sm font-medium mb-2">
+                Authentication
+              </label>
+              {connector.configuration.authentication.credentials
+                .accessToken ? (
                 <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded">
                   <div className="flex items-center space-x-2">
                     <CheckCircleIcon className="w-5 h-5 text-green-600" />
-                    <span className="text-sm text-green-800">Connected to Salesforce</span>
+                    <span className="text-sm text-green-800">
+                      Connected to Salesforce
+                    </span>
                   </div>
                   <button
                     onClick={() => handleDisconnect()}
@@ -363,13 +401,19 @@ const SalesforceConnector: React.FC<SalesforceConnectorProps> = ({
 
             {/* Sync Settings */}
             <div>
-              <label className="block text-sm font-medium mb-2">Sync Settings</label>
+              <label className="block text-sm font-medium mb-2">
+                Sync Settings
+              </label>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Sync Frequency</label>
+                  <label className="block text-xs text-gray-600 mb-1">
+                    Sync Frequency
+                  </label>
                   <select
                     value={connector.configuration.syncSettings.frequency}
-                    onChange={(e) => updateSyncFrequency(e.target.value as SyncFrequency)}
+                    onChange={(e) =>
+                      updateSyncFrequency(e.target.value as SyncFrequency)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
                   >
                     <option value="real-time">Real-time</option>
@@ -378,9 +422,11 @@ const SalesforceConnector: React.FC<SalesforceConnectorProps> = ({
                     <option value="manual">Manual</option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Sync Direction</label>
+                  <label className="block text-xs text-gray-600 mb-1">
+                    Sync Direction
+                  </label>
                   <select
                     value={connector.configuration.syncSettings.direction}
                     onChange={(e) => updateSyncDirection(e.target.value as any)}
@@ -396,7 +442,9 @@ const SalesforceConnector: React.FC<SalesforceConnectorProps> = ({
 
             {/* Field Mapping */}
             <div>
-              <label className="block text-sm font-medium mb-2">Field Mapping</label>
+              <label className="block text-sm font-medium mb-2">
+                Field Mapping
+              </label>
               <FieldMappingEditor
                 mappings={connector.configuration.fieldMappings}
                 sourceSchema={salesforceSchema}
@@ -414,10 +462,12 @@ const SalesforceConnector: React.FC<SalesforceConnectorProps> = ({
           <div>
             <div className="text-sm text-gray-600">Last Sync</div>
             <div className="font-medium">
-              {connector.lastSync ? formatDistanceToNow(connector.lastSync) + ' ago' : 'Never'}
+              {connector.lastSync
+                ? formatDistanceToNow(connector.lastSync) + " ago"
+                : "Never"}
             </div>
           </div>
-          
+
           <div className="flex space-x-2">
             <button
               onClick={() => testConnection()}
@@ -436,10 +486,12 @@ const SalesforceConnector: React.FC<SalesforceConnectorProps> = ({
 
         {/* Test Results */}
         {testResult && (
-          <div className={`
+          <div
+            className={`
             p-3 rounded text-sm
-            ${testResult.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}
-          `}>
+            ${testResult.success ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}
+          `}
+          >
             {testResult.success ? (
               <div className="flex items-center space-x-2">
                 <CheckCircleIcon size={16} />
@@ -487,17 +539,41 @@ const SalesforceConnector: React.FC<SalesforceConnectorProps> = ({
 ### 3. DMS Integration Components
 
 #### Reynolds & Reynolds Connector
+
 ```tsx
-const ReynoldsConnector: React.FC<DMSConnectorProps> = ({ connector, onUpdate }) => {
+const ReynoldsConnector: React.FC<DMSConnectorProps> = ({
+  connector,
+  onUpdate,
+}) => {
   const [isConfiguring, setIsConfiguring] = useState(false);
   const [availableModules, setAvailableModules] = useState<DMSModule[]>([]);
 
   const dmsModules: DMSModule[] = [
-    { id: 'sales', name: 'Sales Management', description: 'Vehicle sales and customer data' },
-    { id: 'service', name: 'Service Management', description: 'Service appointments and history' },
-    { id: 'parts', name: 'Parts Management', description: 'Parts inventory and orders' },
-    { id: 'accounting', name: 'Accounting', description: 'Financial transactions and reporting' },
-    { id: 'inventory', name: 'Vehicle Inventory', description: 'New and used vehicle inventory' }
+    {
+      id: "sales",
+      name: "Sales Management",
+      description: "Vehicle sales and customer data",
+    },
+    {
+      id: "service",
+      name: "Service Management",
+      description: "Service appointments and history",
+    },
+    {
+      id: "parts",
+      name: "Parts Management",
+      description: "Parts inventory and orders",
+    },
+    {
+      id: "accounting",
+      name: "Accounting",
+      description: "Financial transactions and reporting",
+    },
+    {
+      id: "inventory",
+      name: "Vehicle Inventory",
+      description: "New and used vehicle inventory",
+    },
   ];
 
   return (
@@ -511,12 +587,14 @@ const ReynoldsConnector: React.FC<DMSConnectorProps> = ({ connector, onUpdate })
             </div>
             <div>
               <h3 className="font-medium">Reynolds & Reynolds DMS</h3>
-              <p className="text-sm text-gray-600">Dealership management system</p>
+              <p className="text-sm text-gray-600">
+                Dealership management system
+              </p>
             </div>
           </div>
-          
-          <StatusIndicator 
-            status={connector.status === 'connected' ? 'healthy' : 'error'} 
+
+          <StatusIndicator
+            status={connector.status === "connected" ? "healthy" : "error"}
             label={connector.status}
           />
         </div>
@@ -531,9 +609,10 @@ const ReynoldsConnector: React.FC<DMSConnectorProps> = ({ connector, onUpdate })
               key={module.id}
               className={`
                 p-3 border rounded cursor-pointer transition-colors
-                ${connector.configuration.enabledModules?.includes(module.id)
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:bg-gray-50'
+                ${
+                  connector.configuration.enabledModules?.includes(module.id)
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:bg-gray-50"
                 }
               `}
               onClick={() => toggleModule(module.id)}
@@ -541,11 +620,17 @@ const ReynoldsConnector: React.FC<DMSConnectorProps> = ({ connector, onUpdate })
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium text-sm">{module.name}</div>
-                  <div className="text-xs text-gray-600">{module.description}</div>
+                  <div className="text-xs text-gray-600">
+                    {module.description}
+                  </div>
                 </div>
                 <input
                   type="checkbox"
-                  checked={connector.configuration.enabledModules?.includes(module.id) || false}
+                  checked={
+                    connector.configuration.enabledModules?.includes(
+                      module.id,
+                    ) || false
+                  }
                   onChange={() => toggleModule(module.id)}
                   className="rounded"
                 />
@@ -558,10 +643,10 @@ const ReynoldsConnector: React.FC<DMSConnectorProps> = ({ connector, onUpdate })
       {/* Data Sync Configuration */}
       <div className="p-4 border-t">
         <h4 className="font-medium mb-3">Data Synchronization</h4>
-        
+
         <div className="space-y-4">
           {connector.configuration.enabledModules?.map((moduleId) => {
-            const module = dmsModules.find(m => m.id === moduleId);
+            const module = dmsModules.find((m) => m.id === moduleId);
             return (
               <div key={moduleId} className="border rounded p-3">
                 <div className="flex items-center justify-between mb-2">
@@ -573,20 +658,23 @@ const ReynoldsConnector: React.FC<DMSConnectorProps> = ({ connector, onUpdate })
                     Configure
                   </button>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div>
                     <span className="text-gray-600">Last Sync:</span>
                     <span className="ml-1">
-                      {connector.moduleStats?.[moduleId]?.lastSync 
-                        ? formatDistanceToNow(connector.moduleStats[moduleId].lastSync) + ' ago'
-                        : 'Never'
-                      }
+                      {connector.moduleStats?.[moduleId]?.lastSync
+                        ? formatDistanceToNow(
+                            connector.moduleStats[moduleId].lastSync,
+                          ) + " ago"
+                        : "Never"}
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-600">Records:</span>
-                    <span className="ml-1">{connector.moduleStats?.[moduleId]?.recordCount || 0}</span>
+                    <span className="ml-1">
+                      {connector.moduleStats?.[moduleId]?.recordCount || 0}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -602,6 +690,7 @@ const ReynoldsConnector: React.FC<DMSConnectorProps> = ({ connector, onUpdate })
 ### 4. Real-Time Data Synchronization
 
 #### Sync Monitoring Dashboard
+
 ```tsx
 const SyncMonitoringDashboard: React.FC = () => {
   const [activeSyncs, setActiveSyncs] = useState<SyncJob[]>([]);
@@ -611,28 +700,30 @@ const SyncMonitoringDashboard: React.FC = () => {
   // Real-time sync updates via WebSocket
   useEffect(() => {
     const ws = new WebSocket(`${process.env.REACT_APP_WS_URL}/sync-monitor`);
-    
+
     ws.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      
+
       switch (message.type) {
-        case 'sync_started':
-          setActiveSyncs(prev => [...prev, message.job]);
+        case "sync_started":
+          setActiveSyncs((prev) => [...prev, message.job]);
           break;
-        case 'sync_progress':
-          setActiveSyncs(prev => 
-            prev.map(job => 
-              job.id === message.jobId 
+        case "sync_progress":
+          setActiveSyncs((prev) =>
+            prev.map((job) =>
+              job.id === message.jobId
                 ? { ...job, progress: message.progress }
-                : job
-            )
+                : job,
+            ),
           );
           break;
-        case 'sync_completed':
-          setActiveSyncs(prev => prev.filter(job => job.id !== message.jobId));
-          setSyncHistory(prev => [message.job, ...prev.slice(0, 49)]);
+        case "sync_completed":
+          setActiveSyncs((prev) =>
+            prev.filter((job) => job.id !== message.jobId),
+          );
+          setSyncHistory((prev) => [message.job, ...prev.slice(0, 49)]);
           break;
-        case 'sync_metrics':
+        case "sync_metrics":
           setSyncMetrics(message.metrics);
           break;
       }
@@ -686,21 +777,25 @@ const SyncMonitoringDashboard: React.FC = () => {
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                    <span className="font-medium text-sm">{job.connectorName}</span>
-                    <span className="text-xs text-gray-600">{job.operation}</span>
+                    <span className="font-medium text-sm">
+                      {job.connectorName}
+                    </span>
+                    <span className="text-xs text-gray-600">
+                      {job.operation}
+                    </span>
                   </div>
                   <span className="text-xs text-gray-600">
                     {formatDistanceToNow(job.startTime)} ago
                   </span>
                 </div>
-                
+
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                     className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${job.progress}%` }}
                   />
                 </div>
-                
+
                 <div className="flex justify-between text-xs text-gray-600 mt-1">
                   <span>{job.progress}% complete</span>
                   <span>{job.recordsProcessed || 0} records processed</span>
@@ -748,12 +843,15 @@ const SyncMonitoringDashboard: React.FC = () => {
                   <td className="px-4 py-2">
                     <StatusBadge status={job.status} />
                   </td>
-                  <td className="px-4 py-2 text-sm">{job.recordsProcessed || 0}</td>
                   <td className="px-4 py-2 text-sm">
-                    {job.endTime && job.startTime 
-                      ? formatDuration(job.endTime.getTime() - job.startTime.getTime())
-                      : '-'
-                    }
+                    {job.recordsProcessed || 0}
+                  </td>
+                  <td className="px-4 py-2 text-sm">
+                    {job.endTime && job.startTime
+                      ? formatDuration(
+                          job.endTime.getTime() - job.startTime.getTime(),
+                        )
+                      : "-"}
                   </td>
                   <td className="px-4 py-2 text-sm">
                     {formatDistanceToNow(job.startTime)} ago
@@ -774,6 +872,7 @@ const SyncMonitoringDashboard: React.FC = () => {
 ### Phase 1: Foundation and Framework (Week 1 - 40 hours)
 
 #### Days 1-2: Core Integration Framework (16 hours)
+
 1. **Integration Architecture Setup** (4 hours)
    - Create base integration connector interfaces
    - Set up data synchronization engine
@@ -790,6 +889,7 @@ const SyncMonitoringDashboard: React.FC = () => {
    - Create sync monitoring and logging system
 
 #### Days 3-4: CRM Integrations (16 hours)
+
 1. **Salesforce Integration** (8 hours)
    - Implement OAuth2 authentication flow
    - Create Salesforce API client with rate limiting
@@ -806,6 +906,7 @@ const SyncMonitoringDashboard: React.FC = () => {
    - Add lead and customer synchronization
 
 #### Day 5: Testing and Integration (8 hours)
+
 1. **Unit Testing** (4 hours)
    - Test integration connectors with mock APIs
    - Validate data transformation and mapping logic
@@ -819,6 +920,7 @@ const SyncMonitoringDashboard: React.FC = () => {
 ### Phase 2: DMS and Advanced Features (Week 2 - 40 hours)
 
 #### Days 6-7: DMS Integrations (16 hours)
+
 1. **Reynolds & Reynolds Integration** (8 hours)
    - Implement R&R DMS API integration
    - Create module-based sync configuration
@@ -835,6 +937,7 @@ const SyncMonitoringDashboard: React.FC = () => {
    - Add compliance and audit logging
 
 #### Days 8-9: Advanced Sync Features (16 hours)
+
 1. **Conflict Resolution System** (8 hours)
    - Implement intelligent conflict detection
    - Create manual and automatic resolution strategies
@@ -851,6 +954,7 @@ const SyncMonitoringDashboard: React.FC = () => {
    - Create error notification and alerting system
 
 #### Day 10: Monitoring and Analytics (8 hours)
+
 1. **Sync Monitoring Dashboard** (4 hours)
    - Create real-time sync monitoring interface
    - Build sync history and analytics
@@ -864,6 +968,7 @@ const SyncMonitoringDashboard: React.FC = () => {
 ### Phase 3: Enterprise Features and Polish (Week 3 - 20 hours)
 
 #### Days 11-12: Enterprise Features (16 hours)
+
 1. **Multi-Tenant Support** (8 hours)
    - Implement tenant-specific configurations
    - Add role-based access control for integrations
@@ -880,6 +985,7 @@ const SyncMonitoringDashboard: React.FC = () => {
    - Create compliance reporting
 
 #### Day 13: Final Testing and Documentation (4 hours)
+
 1. **End-to-End Testing** (2 hours)
    - Test complete integration workflows
    - Validate all connector types
@@ -891,6 +997,7 @@ const SyncMonitoringDashboard: React.FC = () => {
    - Prepare deployment documentation
 
 ## SUCCESS CRITERIA CHECKLIST
+
 - [ ] 5+ major CRM integrations (Salesforce, HubSpot, DealerSocket, etc.)
 - [ ] 3+ major DMS integrations (Reynolds & Reynolds, CDK Global, Dealertrack)
 - [ ] Real-time data synchronization with <2 second latency
@@ -906,6 +1013,7 @@ const SyncMonitoringDashboard: React.FC = () => {
 - [ ] 95%+ test coverage including integration tests
 
 ## QUALITY GATES
+
 - **Performance**: <2s response time, support for 10K+ records per sync
 - **Reliability**: 99.9% sync accuracy, automatic error recovery
 - **Security**: Encrypted credentials, audit logging, compliance controls
@@ -913,6 +1021,7 @@ const SyncMonitoringDashboard: React.FC = () => {
 - **Testing**: 95%+ coverage with real API integration tests
 
 ## DEPENDENCIES & INTEGRATION
+
 - **Backend API**: Integration endpoints and webhook handlers
 - **Authentication**: OAuth2, API key, and JWT authentication systems
 - **Database**: Integration configuration and sync history storage
@@ -920,13 +1029,16 @@ const SyncMonitoringDashboard: React.FC = () => {
 - **Background Jobs**: Celery or similar for async processing
 
 ## CONTEXT FILES TO REFERENCE
+
 - `backend/app/api/` - Existing API patterns and authentication
 - `frontend/src/api/` - API client patterns and error handling
 - `shared/types/` - Shared type definitions for consistency
 - `backend/app/models/` - Database models for integration data
 
 ## HANDBACK CRITERIA
+
 Task is complete when:
+
 1. All major CRM and DMS integrations functional with real APIs
 2. Real-time synchronization working with WebSocket updates
 3. Data mapping and transformation engine operational

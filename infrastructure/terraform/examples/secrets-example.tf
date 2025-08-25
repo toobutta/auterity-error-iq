@@ -30,14 +30,14 @@ module "secrets" {
   aws_region     = "us-west-2"
   environment    = "production"
   project_name   = "auterity"
-  
+
   initial_secret_values = {
     OPENAI_API_KEY    = var.openai_api_key,
     ANTHROPIC_API_KEY = var.anthropic_api_key,
     DATABASE_PASSWORD = var.database_password,
     JWT_SECRET        = random_password.jwt_secret.result
   }
-  
+
   enable_rotation = true
   rotation_days   = 30
   eks_role_name   = "auterity-eks-node-role"  # This would typically come from your EKS module

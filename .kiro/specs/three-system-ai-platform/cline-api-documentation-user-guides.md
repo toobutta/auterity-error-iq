@@ -2,9 +2,9 @@
 
 ## Task Assignment
 
-**Tool**: Cline  
-**Priority**: Medium-High  
-**Estimated Time**: 6-8 hours  
+**Tool**: Cline
+**Priority**: Medium-High
+**Estimated Time**: 6-8 hours
 **Status**: Ready for Implementation (After Tasks 7, 15, 12 completion)
 
 ## Task Overview
@@ -116,14 +116,14 @@ const swaggerOptions = {
       description: `
         RelayCore is an intelligent AI request routing service that optimizes model selection
         based on cost, performance, and specialization requirements.
-        
+
         ## Features
         - Intelligent model selection and routing
         - Cost optimization and budget management
         - Performance monitoring and analytics
         - Support for multiple AI providers (OpenAI, Anthropic, Custom Models)
         - Real-time request logging and metrics
-        
+
         ## Routing Logic
         RelayCore uses YAML-based routing rules to determine the optimal model for each request
         based on factors like:
@@ -346,13 +346,11 @@ AutoMatrix is an AI-powered workflow automation platform designed specifically f
 ### Creating Your First Workflow
 
 1. **Access the Workflow Builder**
-
    - Navigate to the Workflows section in the main menu
    - Click "Create New Workflow"
    - Choose from a template or start from scratch
 
 2. **Design Your Workflow**
-
    - Drag and drop components from the toolbox
    - Connect components to define the execution flow
    - Configure each component's settings
@@ -441,14 +439,12 @@ AutoMatrix includes pre-built templates for common automotive workflows:
 ### Best Practices
 
 1. **Prompt Engineering**
-
    - Use clear, specific prompts
    - Include relevant context variables
    - Test prompts with sample data
    - Monitor AI response quality
 
 2. **Error Handling**
-
    - Add fallback steps for AI failures
    - Include human review checkpoints
    - Set up alert notifications
@@ -582,7 +578,7 @@ async function createWorkflow(token, workflowData) {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   return response.data;
@@ -642,7 +638,7 @@ async function executeWorkflow(token, workflowId, variables) {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   return response.data;
@@ -669,7 +665,7 @@ async function sendAIRequest(token, requestData) {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   return response.data;
@@ -702,7 +698,7 @@ async function getCostAnalysis(token, timeframe) {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
 
   return response.data;
@@ -726,7 +722,7 @@ async function runInference(token, modelId, inferenceData) {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   return response.data;
@@ -749,7 +745,7 @@ const inferenceData = {
 const inference = await runInference(
   token,
   "automotive-sales-v1",
-  inferenceData
+  inferenceData,
 );
 ```
 
@@ -773,7 +769,7 @@ async function getModelDetails(token, modelId) {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
 
   return response.data;
@@ -801,7 +797,7 @@ export class AutoMatrixSDK {
 
   async executeWorkflow(
     workflowId: string,
-    variables: Record<string, any>
+    variables: Record<string, any>,
   ): Promise<Execution> {
     // Implementation
   }
@@ -919,7 +915,7 @@ async function registerWebhook(token, webhookData) {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   return response.data;

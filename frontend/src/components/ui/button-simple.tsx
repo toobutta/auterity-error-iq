@@ -1,29 +1,33 @@
-import React, { forwardRef } from 'react';
-import { cn } from '../../lib/utils';
+import React, { forwardRef } from "react";
+import { cn } from "../../lib/utils";
 
 // Button variant styles
 const buttonVariants = {
   variant: {
-    default: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500',
-    destructive: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+    default:
+      "bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500",
+    destructive: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
     outline:
-      'border border-neutral-200 bg-white hover:bg-neutral-50 hover:text-neutral-900 focus:ring-primary-500',
-    secondary: 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200 focus:ring-neutral-500',
-    ghost: 'hover:bg-neutral-100 hover:text-neutral-900 focus:ring-neutral-500',
-    link: 'text-primary-600 underline-offset-4 hover:underline focus:ring-primary-500',
+      "border border-neutral-200 bg-white hover:bg-neutral-50 hover:text-neutral-900 focus:ring-primary-500",
+    secondary:
+      "bg-neutral-100 text-neutral-900 hover:bg-neutral-200 focus:ring-neutral-500",
+    ghost: "hover:bg-neutral-100 hover:text-neutral-900 focus:ring-neutral-500",
+    link: "text-primary-600 underline-offset-4 hover:underline focus:ring-primary-500",
     // Error-IQ specific variants
-    critical: 'bg-severity-critical text-white hover:bg-red-700 focus:ring-red-500',
-    success: 'bg-success text-white hover:bg-green-700 focus:ring-green-500',
+    critical:
+      "bg-severity-critical text-white hover:bg-red-700 focus:ring-red-500",
+    success: "bg-success text-white hover:bg-green-700 focus:ring-green-500",
   },
   size: {
-    default: 'h-10 px-4 py-2',
-    sm: 'h-9 px-3 text-sm',
-    lg: 'h-11 px-8 text-lg',
-    icon: 'h-10 w-10 p-0',
+    default: "h-10 px-4 py-2",
+    sm: "h-9 px-3 text-sm",
+    lg: "h-11 px-8 text-lg",
+    icon: "h-10 w-10 p-0",
   },
 };
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: keyof typeof buttonVariants.variant;
   size?: keyof typeof buttonVariants.size;
   loading?: boolean;
@@ -35,8 +39,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       className,
-      variant = 'default',
-      size = 'default',
+      variant = "default",
+      size = "default",
       loading,
       leftIcon,
       rightIcon,
@@ -44,10 +48,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       disabled,
       ...props
     },
-    ref
+    ref,
   ) => {
     const baseClasses =
-      'inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50';
+      "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
     const variantClasses = buttonVariants.variant[variant];
     const sizeClasses = buttonVariants.size[size];
 
@@ -81,9 +85,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {!loading && rightIcon && <span className="ml-2">{rightIcon}</span>}
       </button>
     );
-  }
+  },
 );
 
-Button.displayName = 'Button';
+Button.displayName = "Button";
 
 export { Button };

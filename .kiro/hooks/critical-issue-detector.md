@@ -13,30 +13,35 @@ Automatically detect critical issues that could block production deployment and 
 ## Critical Issue Categories
 
 ### 🔒 Security Issues (CRITICAL)
+
 - Dependency vulnerabilities (moderate or higher)
 - Exposed API keys or secrets
 - Insecure authentication patterns
 - Missing security headers
 
 ### 🐛 Functionality Breaking Issues (CRITICAL)
+
 - TypeScript compilation errors
 - Undefined variable references
 - Import/export errors
 - Missing required dependencies
 
 ### 🧪 Test Infrastructure Issues (HIGH)
+
 - Failed test count >10% of total
 - Test execution memory errors
 - Missing test coverage for critical paths
 - Broken mock configurations
 
 ### 📦 Performance Issues (MEDIUM)
+
 - Bundle size >2MB
 - Build time >5 minutes
 - Memory leaks in components
 - Inefficient database queries
 
 ## Implementation
+
 ```bash
 #!/bin/bash
 
@@ -54,7 +59,7 @@ if [[ "$CHANGED_FILE" == *"package.json"* ]]; then
     cd frontend
     AUDIT_OUTPUT=$(npm audit --audit-level=moderate --json 2>/dev/null)
     VULN_COUNT=$(echo "$AUDIT_OUTPUT" | jq -r '.metadata.vulnerabilities.moderate + .metadata.vulnerabilities.high + .metadata.vulnerabilities.critical' 2>/dev/null || echo "0")
-    
+
     if [ "$VULN_COUNT" -gt 0 ]; then
         CRITICAL_ISSUES+=("🔒 $VULN_COUNT security vulnerabilities detected")
         ISSUE_COUNT=$((ISSUE_COUNT + 1))
@@ -68,11 +73,11 @@ if [[ "$CHANGED_FILE" == *".ts"* ]] || [[ "$CHANGED_FILE" == *".tsx"* ]]; then
     cd frontend
     TS_CHECK=$(npx tsc --noEmit --skipLibCheck 2>&1)
     TS_ERROR_COUNT=$(echo "$TS_CHECK" | grep -c "error TS" || echo "0")
-    
+
     if [ "$TS_ERROR_COUNT" -gt 0 ]; then
         CRITICAL_ISSUES+=("📝 $TS_ERROR_COUNT TypeScript compilation errors")
         ISSUE_COUNT=$((ISSUE_COUNT + 1))
-        
+
         # Show first few errors for context
         echo "$TS_CHECK" | head -5
     fi
@@ -87,7 +92,7 @@ if [[ "$CHANGED_FILE" == *".py"* ]]; then
         CRITICAL_ISSUES+=("🐍 Python syntax error in $CHANGED_FILE")
         ISSUE_COUNT=$((ISSUE_COUNT + 1))
     fi
-    
+
     # Check for undefined names
     cd backend
     UNDEFINED_NAMES=$(python -m flake8 --select=F821 "$CHANGED_FILE" 2>/dev/null | wc -l)
@@ -121,7 +126,7 @@ if [[ "$CHANGED_FILE" == *".ts"* ]] || [[ "$CHANGED_FILE" == *".tsx"* ]] || [[ "
     if grep -E "import.*from ['\"]\.\.?/.*['\"]" "$CHANGED_FILE" | grep -v "\.tsx\?$\|\.jsx\?$" >/dev/null; then
         HIGH_ISSUES+=("📦 Potential missing file extension in imports")
     fi
-    
+
     # Check for unused imports (basic check)
     IMPORTS=$(grep -E "^import.*from" "$CHANGED_FILE" | sed -E "s/import[[:space:]]*\{?[[:space:]]*([^}]*)\}?.*/\1/" | tr ',' '\n' | sed 's/[[:space:]]//g' | grep -v "^$")
     for import in $IMPORTS; do
@@ -134,13 +139,13 @@ fi
 # Test File Quality Check
 if [[ "$CHANGED_FILE" == *".test."* ]] || [[ "$CHANGED_FILE" == *".spec."* ]]; then
     echo "🧪 Checking test file quality..."
-    
+
     # Check for 'any' types in test files
     ANY_COUNT=$(grep -c ": any\|as any" "$CHANGED_FILE" 2>/dev/null || echo "0")
     if [ "$ANY_COUNT" -gt 0 ]; then
         HIGH_ISSUES+=("🧪 $ANY_COUNT 'any' types in test file - reduces type safety")
     fi
-    
+
     # Check for missing test descriptions
     if ! grep -q "describe\|it\|test" "$CHANGED_FILE"; then
         HIGH_ISSUES+=("🧪 Test file missing test cases")
@@ -156,7 +161,7 @@ if [ "$ISSUE_COUNT" -gt 0 ] || [ "${#HIGH_ISSUES[@]}" -gt 0 ]; then
     echo "Critical Issues: ${#CRITICAL_ISSUES[@]}"
     echo "High Priority Issues: ${#HIGH_ISSUES[@]}"
     echo ""
-    
+
     if [ "${#CRITICAL_ISSUES[@]}" -gt 0 ]; then
         echo "🔴 CRITICAL ISSUES (Fix Immediately):"
         for issue in "${CRITICAL_ISSUES[@]}"; do
@@ -164,7 +169,7 @@ if [ "$ISSUE_COUNT" -gt 0 ] || [ "${#HIGH_ISSUES[@]}" -gt 0 ]; then
         done
         echo ""
     fi
-    
+
     if [ "${#HIGH_ISSUES[@]}" -gt 0 ]; then
         echo "🟡 HIGH PRIORITY ISSUES (Fix Soon):"
         for issue in "${HIGH_ISSUES[@]}"; do
@@ -172,7 +177,7 @@ if [ "$ISSUE_COUNT" -gt 0 ] || [ "${#HIGH_ISSUES[@]}" -gt 0 ]; then
         done
         echo ""
     fi
-    
+
     # Provide actionable recommendations
     echo "💡 RECOMMENDED ACTIONS:"
     if [[ " ${CRITICAL_ISSUES[*]} " =~ "security vulnerabilities" ]]; then
@@ -187,7 +192,7 @@ if [ "$ISSUE_COUNT" -gt 0 ] || [ "${#HIGH_ISSUES[@]}" -gt 0 ]; then
     if [[ " ${CRITICAL_ISSUES[*]} " =~ "secret" ]]; then
         echo "  - Move secrets to environment variables or .env files"
     fi
-    
+
     echo ""
     echo "🔗 For detailed guidance, see: .kiro/specs/workflow-engine-mvp/CURRENT-PROJECT-STATUS.md"
 fi
@@ -204,9 +209,11 @@ fi
 ## Integration with Development Workflow
 
 ### File Save Trigger
+
 This hook runs automatically when files are saved, providing immediate feedback on critical issues.
 
 ### Supported File Types
+
 - **TypeScript/JavaScript**: `.ts`, `.tsx`, `.js`, `.jsx`
 - **Python**: `.py`
 - **Configuration**: `package.json`, `requirements.txt`
@@ -215,23 +222,27 @@ This hook runs automatically when files are saved, providing immediate feedback 
 ### Alert Levels
 
 #### 🔴 Critical (Blocks Development)
+
 - Security vulnerabilities
 - Compilation errors
 - Syntax errors
 - Exposed secrets
 
 #### 🟡 High Priority (Should Fix Soon)
+
 - Type safety issues
 - Import problems
 - Test quality issues
 - Performance concerns
 
 #### 🟢 Medium Priority (Improvement Opportunities)
+
 - Code style issues
 - Documentation gaps
 - Optimization opportunities
 
 ## Benefits
+
 - **Immediate Feedback**: Catch critical issues as soon as they're introduced
 - **Production Safety**: Prevent deployment-blocking issues from accumulating
 - **Developer Productivity**: Fix issues early when context is fresh

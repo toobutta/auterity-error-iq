@@ -1,17 +1,17 @@
-import { vi } from 'vitest';
-import { createAppError } from '../../utils/errorUtils';
-import { ErrorSeverity } from '../../types/error';
+import { vi } from "vitest";
+import { createAppError } from "../../utils/errorUtils";
+import { ErrorSeverity } from "../../types/error";
 
 // Mock the error utils
 export const mockAppError = createAppError(
-  'TEST_ERROR',
-  'Test error message',
+  "TEST_ERROR",
+  "Test error message",
   {
-    component: 'TestComponent',
+    component: "TestComponent",
   },
-  'Test error details',
+  "Test error details",
   ErrorSeverity.MEDIUM,
-  'test-execution-id'
+  "test-execution-id",
 );
 
 // Mock functions

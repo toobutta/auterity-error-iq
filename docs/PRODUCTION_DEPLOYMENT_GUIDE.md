@@ -1,59 +1,70 @@
 .support teamhe or contact tion g sectshootintroubleto the refer ons, t or questisupporditional r adn!
 
-Fooductioing in prrunnb is now trix AI HuMa Autoourtions!** 🎉 Yatulagrngs
+Fooductioing in prrunnb is now trix AI HuMa Autoourtions!\*\* 🎉 Yatulagrngs
 
-**Concurity settiarden send h: Review at**urity audiSecres
-6. **tore proceduTest rescation**: fickup verim
-5. **Baplatforam to the rd your teboaning**: OnraiUser t
-4. **adcted loe under experformancalidate peing**: Vad test. **Loations
-3k notificemail/Slacigure ts**: Confaleronitoring *Set up mer
-2. *rv to the ser domainsint youDNS**: Po**Configure 
+**Concurity settiarden send h: Review at**urity audiSecres 6. **tore proceduTest rescation**: fickup verim 5. **Baplatforam to the rd your teboaning**: OnraiUser t 4. **adcted loe under experformancalidate peing**: Vad test. **Loations
+3k notificemail/Slacigure ts**: Confaleronitoring *Set up mer 2. *rv to the ser domainsint youDNS**: Po**Configure
+
 1. ployment
-Deeps After Next St
+   Deeps After Next St
+
 ---
 
 ## imal range
+
 0% opt0-8zation**: 6m Utili*Syste *elayCore
 -a Rimized vincy**: Opticiest Eff*AI Co *0%
--: ≥ 8n**tioSatisfac
+-: ≥ 8n\*\*tioSatisfac
+
 - **User ate**: ≥ 85%w Success R
-- **Workfloness KPIsBusi
+- \*\*Workfloness KPIsBusi
 
 ### euery tim*: < 500ms qormance*se Perfba
+
 - **Dataate**: < 1%or R
-- **Errverage5s a: < 2.se Time** **Respon9.9%
--**: ≥ 9
-- **Uptimeal KPIs## Technic
-#cs
-ccess Metri
+- **Errverage5s a: < 2.se Time** **Respon9.9% -**: ≥ 9
+- \*\*Uptimeal KPIs## Technic
+  #cs
+  ccess Metri
 
 ## Sung reviewity planni Capacates
+
 -ncy upd- Dependeeck
- ch renewaltificatecer
+ch renewaltificatecer
+
 - SSL hlyMont
+
 ### fication
+
 veriBackup view
+
 - rformance re check
 - Peesupdat- Security ekly
-We
+  We
 
 ### tiong rotaring
+
 - Loonito check mHealth
--  (2:00 AM)ackups Automated b### Daily
--hedule
+- (2:00 AM)ackups Automated b### Daily
+  -hedule
 
 intenance Sc
 
-## Mamain.comourdopport@yport**: suGeneral Supcom
-- **n.ourdomaiity@y securty Issues**:**Securiom
-- ourdomain.ces**: ops@ysuchnical IsTets
-- ** Contacport
+## Mamain.comourdopport@yport\*\*: suGeneral Supcom
+
+- **n.ourdomaiity@y securty Issues**:\*\*Securiom
+- ourdomain.ces\*\*: ops@ysuchnical IsTets
+- \*\* Contacport
+
 ### Supfana`
+
 ometheus graose logs prker-compgs**: `doc LoMonitoring **
--es`logs postgrker-compose **: `docogs**Database Lginx/`
+-es`logs postgrker-compose **: `docogs\*\*Database Lginx/`
+
 - g/nar/lo/vtainer at `nx con: Inside ngiginx Logs**`
 - **Nvice]se logs [serr-compo `dockeogs**:on Lati
-- **Applicons Locati
+- \*\*Applicons Locati
+
 ### Log`
 
 ``=1le backend --scal up -d.prod.ym-composee -f dockeromposr-cy
@@ -62,10 +73,13 @@ docke if necessar# Scale downkend
 ver-bacd neuroweakenact b restard.ymlose.procompf docker-compose -r-kervices
 doc sesivey-intent memor
 
-# RestarMemUsage}}"Perc}}\t{{..CPU{{}}\t{.Containerble {mat "taats --forster 
+# RestarMemUsage}}"Perc}}\t{{..CPU{{}}\t{.Containerble {mat "taats --forster
+
 dock service usage byeck memorysh
+
 # Chbage
-```Usah Memory # Hig
+
+````Usah Memory # Hig
 
 ###
 ```tart nginxresse.prod.yml er-compodock-f -compose ckere update
@@ -79,41 +93,59 @@ olidcate vartifi
 # Check cees
 ```bashte Issu Certifica
 #### SSLckend
-```
+````
+
 gres bapoststart rese.prod.yml ker-compompose -f docr-coion
 dockeconnecttabase Reset daes
 
 # gs postgrloe.prod.yml -compose -f dockerosmpr-cogs
+
 dockedatabase lo
+
 # Check gres
- postisready -U pg_ postgresecprod.yml ex-compose. dockerompose -fs
+
+postisready -U pg\_ postgresecprod.yml ex-compose. dockerompose -fs
 docker-ctu stak databaseh
+
 # Checues
+
 ```basn Issionecte Con## Databas]
+
 ```
 
 ##vice-namet [ser.yml restarpose.prod-comckermpose -f dodocker-corvice
- seticrt problemasta
+seticrt problemasta
+
 # Reer stats
+
 ock
-dusageresource 
+dusageresource
+
 # Check ame]
+
 ervice-ns [sod.yml logse.prcker-compoe -f doker-composce logs
 docvierCheck s``bash
-# 
-`ingNot StartServices 
+
+#
+
+`ingNot StartServices
+
 #### ssues
- Imong
+
+Imong
 
 ### Comtinoooublesh Trg
 
 ##trackinnd cost I usage a
+
 - AI APingtornce moniperformaase query s
 - Databalertation e utiliz Resourc
--eus via Promethckingme traponse tiing
+  -eus via Promethckingme traponse tiing
 - Resitoronance M
+
 ### Perform
-```
+
+````
  statse
 dockerce usag resournitor2
 
@@ -152,20 +184,25 @@ ctions entabase conneity
 - All ityurSecork  Netwns
 
 ###nsideratioCo# Security -d
-```
+````
 
-#p  urod.yml.pker-composese -f docpo
+#p urod.yml.pker-composese -f docpo
 docker-comesart servic# Stolumes)
 r v Docke.gz files toact .tar (extr volumes
+
 # Restoregine_prod
+
 rkflow_entgres -d wosql -U pos\
-  ppostgres c -T yml exese.prod.r-compo -f dockeompose  docker-c.gz | \
+ ppostgres c -T yml exese.prod.r-compo -f dockeompose docker-c.gz | \
 TAMP.sql_TIMESe_backupkups/databas -c bacgunzipdatabase
 
-# Restore  down
+# Restore down
+
 od.yml-compose.prse -f dockerr-compokevices
 doc ser
+
 # Stops
+
 ```bashProcesery ovec
 ### Rtificates
 cerL SSiles
@@ -175,13 +212,17 @@ tabase dumstgreSQL da
 - Pop Contents Backu
 ```
 
-###tab -.sh" | cronackupix/scripts/b/autmatrpath/to* * * /"0 2 on)
+###tab -.sh" | cronackupix/scripts/b/autmatrpath/to\* \* \* /"0 2 on)
 echo ckups (cr daily bat up
+
 # Seackup.sh
+
 /scripts/bckup
 .nual ba ma
+
 # Runashkups
-```bac BAutomated# 
+
+```bac BAutomated#
 ##overy
 nd Rec
 ## Backup a``
@@ -195,31 +236,34 @@ dockeer logscontainh
 # View f -sk usage
 dCheck ditats
 
-# 
+#
 docker sm resources View syste`bash
 #mands
 ``g Com## Monitorin
 ```
 
-#;"ine_prod'))_engorkflowse_size('wabaty(pg_datetT pg_size_prECEL "Sine_prod -cflow_engorktgres -d w psql -U pos postgresml execprod.ye.omposcker-ce -f doosmpcoze
+#;"ine_prod'))\_engorkflowse_size('wabaty(pg_datetT pg_size_prECEL "Sine_prod -cflow_engorktgres -d w psql -U pos postgresml execprod.ye.omposcker-ce -f doosmpcoze
 docker-database si
 
 # View p.shipts/backuscratabase
+
 ./Backup d head
 
 # upgrade&& alembic d backend grations
+
 c mi Rund
 
 #e_prolow_engin workf postgres -dsql -Uostgres p pexecod.yml prr-compose.dockeose -f docker-compdatabase
 
 # Access `bash
+
 ``tgemenatabase Mana# D```
 
 ##p -d
 e.prod.yml uompos-f docker-c-compose ockerhe
 d --no-cacild bue.prod.ymlker-composocompose -f d
 docker-cpulldeploy
-git and redate  Up
+git and redate Up
 
 #d.yml down.proker-composeoccompose -f des
 docker-servicStop all # =3
@@ -228,14 +272,21 @@ ackendd --scale bod.yml up -ompose.prdocker-c-f er-compose rvice
 dockcale a see]
 
 # Snamice-estart [serve.prod.yml rocker-composmpose -f docker-co service
+
 dtart a
+
 # Res
+
 ame] [service-nlogs -fml pose.prod.y docker-comcompose -fr-ckeice logs
 doiew serv
+
 # V ps
+
 mlrod.y.pomposef docker-c-compose -tus
 dockerservice staall View sh
+
 # nt
+
 ```baemeag Service Man###ands
 
 gement Comm
@@ -256,20 +307,24 @@ Servion roduct P URLs
 ###Service
 ## inx
 ```
+
 start ng rerod.ymlr-compose.pf dockepose --comerbash
 dock
-``` NginxrtResta
-#### 6.2 
+
+```NginxrtResta
+#### 6.2
 ```
+
 pem;rivkey.domain.com/papi.yourssl/etc/nginx/ /eye_katficl_certi.pem;
 sslchaincom/fulain.urdomssl/api.yoginx//ntcrtificate /e;
 ssl_ceomain.comme api.yourdx
 server_nagin
 ```ns: namein domaupdatex.conf` and nginx/nginn
-Edit `iguratioConfe Nginx  6.1 Updat
+Edit `iguratioConfe Nginx 6.1 Updat
 ####iguration
-ncer Conf BalaLoad## Step 6: 
-```
+ncer Conf BalaLoad## Step 6:
+
+````
 
 #ame }}'lertn.aelsLab .Groupx Alert: {{oMatrit: 'Autbjec
     sum'urdomain.co@yoo: 'ops
@@ -289,7 +344,7 @@ EdiAlerre 5.2 Configu
 /localh: http:/ager***Alertmanin123)
 - *adm003 (admin/localhost:3// http:*:Grafana***90
 - ocalhost:90tp://l: htrometheus***Phboards
-- *itoring DasAccess Mon 5.1 
+- *itoring DasAccess Mon 5.1
 ####g Setup
 onitorin: M Step 5###``
 
@@ -298,16 +353,17 @@ onitorin: M Step 5###``
 .th check healmprehensive co
 # Run ps
 rod.yml-compose.p dockerose -fomp
-docker-csstatuvice ser# Check 
+docker-csstatuvice ser# Check
 ```bash
 eploymenty D 4.2 Verif
-```
+````
 
 ####
-sleep 60tices to star for servWait#  up -d
+
+sleep 60tices to star for servWait# up -d
 
 od.ymlse.procker-compoose -f der-compices
-dockall serv# Deploy 
+dockall serv# Deploy
 
 cache-no- -ldbuise.prod.yml compof docker- -mposeker-co
 docages imctiondu Build pro``bash
@@ -317,7 +373,8 @@ docages imctiondu Build pro``bash
 oymenDepln uctiop 4: Prod# Ste
 
 ##
-```-c "\dt"ne_prod flow_engiorkgres -d wostpsql -U p postgres yml execose.prod.-compse -f dockerpo-comh
+
+````-c "\dt"ne_prod flow_engiorkgres -d wostpsql -U p postgres yml execose.prod.-compse -f dockerpo-comh
 dockerase
 ```basify Datab Ver
 
@@ -339,13 +396,15 @@ alizitiIn 3.1 ####
 
 base Setupata: D
 ### Step 3
-```
-inx/ssl/./ngmi) oami):$(whoawhwn -R $(do chosl/*/
-sunginx/spem ./e/*/privkey.pt/livletsencryp /etc/do c/
-sunx/ssl/*.pem ./ngi/*/fullchainencrypt/liveetc/letso cp /y
+````
+
+inx/ssl/./ngmi) oami):$(whoawhwn -R $(do chosl/_/
+sunginx/spem ./e/_/privkey.pt/livletsencryp /etc/do c/
+sunx/ssl/_.pem ./ngi/_/fullchainencrypt/liveetc/letso cp /y
 sud directores to nginxficatpy certim
 
 # Cocodomain.ournitoring.ye -d mondalontonly --startbot cercom
+
 sudo ceyourdomain.ls-api.de-d molone y --standatbot certonlom
 sudo ceromain.c.yourde -d modelsdalonly --stantonot cercertbdo com
 suomain.elay.yourdndalone -d rrtonly --startbot ceom
@@ -353,12 +412,15 @@ sudo ce.cainapp.yourdom -d andaloney --stbot certonl
 sudo certmain.comi.yourdo -d apalonend--staot certonly ertbmain
 sudo c each doficates forte certi
 
-# GeneramacOS       # tbot   all cerbrew inst or
+# GeneramacOS # tbot all cerbrew inst or
+
 bian
-#buntu/Detbot  # Ul ceret instal
-sudo apt-grtbot firstceInstall 
+#buntu/Detbot # Ul ceret instal
+sudo apt-grtbot firstceInstall
+
 # bashction)
-```Produicates (crypt Certif Let's En# Option B:
+
+````Produicates (crypt Certif Let's En# Option B:
 
 ###ption 1
 ```hoose oetup.sh
@@ -424,12 +486,15 @@ ironment Con Step 1: Env##up
 `/scripts/de```bash
 .ploy
  3. De
-```
+````
 
 ###sficated certi-signefor self 1 ose optionup.sh
+
 # Chosl-setipts/s
+
 ./scrnt)
-```bashevelopmes (DteL CertificaSS Generate 
+
+````bashevelopmes (DteL CertificaSS Generate
 
 ### 2.tings
 ```th your setn.local wiioductenv.pro
@@ -464,16 +529,17 @@ ended 1 8GB, Recomm**: Minimum **RAM macOS
 
 ### Systeequisites
 ## Prerm
-ysteyment sd deploning andel traimozed li**: SpeciauroWeaverNeb  
-- ** huationost optimizing and coutAI rCore**: 
+ysteyment sd deploning andel traimozed li**: SpeciauroWeaverNeb
+- ** huationost optimizing and coutAI rCore**:
 - **Relayn platformautomatiore workflow atrix**: Co
 - **AutoMems:
 egrated systof three intconsists atform The pltion. oduc Hub to prtrix AIoying AutoMans for deplp instructiosteep-by-des ste proviguidew
 
-This 
+This
 
-## Overviy ✅adoduction Re:** Pr**Status 
-:** 1.0 ersion025  
+## Overviy ✅adoduction Re:** Pr**Status
+:** 1.0 ersion025
 **V 31, 2uary** Jan**Generated:
 ment Guide
  DeployionuctI Hub - ProdtoMatrix A# Au
+````

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from "react";
 import {
   ReactFlow,
   Background,
@@ -10,14 +10,14 @@ import {
   Panel,
   useReactFlow,
   ReactFlowProvider,
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 
-import { StartNode } from './nodes/StartNode';
-import { AIProcessNode } from './nodes/AIProcessNode';
-import { EndNode } from './nodes/EndNode';
-import { Template, TemplateParameter } from '../types/template';
-import { NodeData, WorkflowStep } from '../types/workflow';
+import { StartNode } from "./nodes/StartNode";
+import { AIProcessNode } from "./nodes/AIProcessNode";
+import { EndNode } from "./nodes/EndNode";
+import { Template, TemplateParameter } from "../types/template";
+import { NodeData, WorkflowStep } from "../types/workflow";
 
 const nodeTypes: NodeTypes = {
   start: StartNode,
@@ -31,16 +31,16 @@ interface TemplatePreviewModalProps {
   onClose: () => void;
   onInstantiate: (
     template: Template,
-    parameterValues: { [key: string]: string | number | boolean }
+    parameterValues: { [key: string]: string | number | boolean },
   ) => void;
   onCompare?: (template: Template) => void;
 }
 
 // Enhanced workflow visualization component with better UX
-const WorkflowVisualization: React.FC<{ nodes: Node<NodeData>[]; edges: Edge[] }> = ({
-  nodes,
-  edges,
-}) => {
+const WorkflowVisualization: React.FC<{
+  nodes: Node<NodeData>[];
+  edges: Edge[];
+}> = ({ nodes, edges }) => {
   const reactFlowInstance = useReactFlow();
 
   useEffect(() => {
@@ -67,14 +67,19 @@ const WorkflowVisualization: React.FC<{ nodes: Node<NodeData>[]; edges: Edge[] }
       defaultViewport={{ x: 0, y: 0, zoom: 1 }}
     >
       <Background color="#f1f5f9" gap={20} size={1} />
-      <Controls showInteractive={false} showZoom={true} showFitView={true} position="top-left" />
+      <Controls
+        showInteractive={false}
+        showZoom={true}
+        showFitView={true}
+        position="top-left"
+      />
       <MiniMap
         nodeColor="#e2e8f0"
         maskColor="rgba(0, 0, 0, 0.1)"
         position="bottom-right"
         style={{
-          backgroundColor: '#f8fafc',
-          border: '1px solid #e2e8f0',
+          backgroundColor: "#f8fafc",
+          border: "1px solid #e2e8f0",
         }}
       />
 
@@ -106,18 +111,22 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
   onInstantiate,
   onCompare,
 }) => {
-  const [activeTab, setActiveTab] = useState<'preview' | 'parameters' | 'details'>('preview');
+  const [activeTab, setActiveTab] = useState<
+    "preview" | "parameters" | "details"
+  >("preview");
   const [parameterValues, setParameterValues] = useState<{
     [key: string]: string | number | boolean;
   }>({});
-  const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
+  const [validationErrors, setValidationErrors] = useState<{
+    [key: string]: string;
+  }>({});
 
   // Initialize parameter values with defaults when template changes
   useEffect(() => {
     if (template) {
       const initialValues: { [key: string]: string | number | boolean } = {};
       template.parameters.forEach((param) => {
-        initialValues[param.name] = param.defaultValue ?? '';
+        initialValues[param.name] = param.defaultValue ?? "";
       });
       setParameterValues(initialValues);
       setValidationErrors({});
@@ -130,17 +139,19 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
       return { nodes: [], edges: [] };
     }
 
-    const flowNodes: Node<NodeData>[] = template.definition.steps.map((step: WorkflowStep) => ({
-      id: step.id,
-      type: step.type,
-      position: step.position,
-      data: {
-        label: step.name,
-        description: step.description,
+    const flowNodes: Node<NodeData>[] = template.definition.steps.map(
+      (step: WorkflowStep) => ({
+        id: step.id,
         type: step.type,
-        config: step.config,
-      },
-    }));
+        position: step.position,
+        data: {
+          label: step.name,
+          description: step.description,
+          type: step.type,
+          config: step.config,
+        },
+      }),
+    );
 
     const flowEdges: Edge[] = (template.definition.connections || []).map(
       (conn: {
@@ -155,7 +166,7 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
         target: conn.target,
         label: conn.label,
         animated: true,
-      })
+      }),
     );
 
     return { nodes: flowNodes, edges: flowEdges };
@@ -163,24 +174,33 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
 
   const validateParameter = (
     param: TemplateParameter,
-    value: string | number | boolean
+    value: string | number | boolean,
   ): string | null => {
-    if (param.isRequired && (!value || value === '')) {
+    if (param.isRequired && (!value || value === "")) {
       return `${param.name} is required`;
     }
 
-    if (value && param.parameterType === 'number' && isNaN(Number(value))) {
+    if (value && param.parameterType === "number" && isNaN(Number(value))) {
       return `${param.name} must be a valid number`;
     }
 
     if (param.validationRules) {
-      if (param.validationRules.minLength && value.length < param.validationRules.minLength) {
+      if (
+        param.validationRules.minLength &&
+        value.length < param.validationRules.minLength
+      ) {
         return `${param.name} must be at least ${param.validationRules.minLength} characters`;
       }
-      if (param.validationRules.maxLength && value.length > param.validationRules.maxLength) {
+      if (
+        param.validationRules.maxLength &&
+        value.length > param.validationRules.maxLength
+      ) {
         return `${param.name} must be no more than ${param.validationRules.maxLength} characters`;
       }
-      if (param.validationRules.pattern && !new RegExp(param.validationRules.pattern).test(value)) {
+      if (
+        param.validationRules.pattern &&
+        !new RegExp(param.validationRules.pattern).test(value)
+      ) {
         return `${param.name} format is invalid`;
       }
     }
@@ -188,7 +208,10 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
     return null;
   };
 
-  const handleParameterChange = (paramName: string, value: string | number | boolean) => {
+  const handleParameterChange = (
+    paramName: string,
+    value: string | number | boolean,
+  ) => {
     setParameterValues((prev) => ({ ...prev, [paramName]: value }));
 
     // Clear validation error for this parameter
@@ -229,27 +252,32 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
   };
 
   const renderParameterInput = (param: TemplateParameter) => {
-    const value = parameterValues[param.name] ?? '';
+    const value = parameterValues[param.name] ?? "";
     const error = validationErrors[param.name];
 
     switch (param.parameterType) {
-      case 'boolean':
+      case "boolean":
         return (
           <div className="flex items-center">
             <input
               type="checkbox"
               id={param.name}
               checked={Boolean(value)}
-              onChange={(e) => handleParameterChange(param.name, e.target.checked)}
+              onChange={(e) =>
+                handleParameterChange(param.name, e.target.checked)
+              }
               className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
             />
-            <label htmlFor={param.name} className="ml-2 block text-sm text-gray-900">
+            <label
+              htmlFor={param.name}
+              className="ml-2 block text-sm text-gray-900"
+            >
               {param.description || param.name}
             </label>
           </div>
         );
 
-      case 'number':
+      case "number":
         return (
           <input
             type="number"
@@ -257,26 +285,26 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
             value={value}
             onChange={(e) => handleParameterChange(param.name, e.target.value)}
             className={`mt-1 block w-full border rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${
-              error ? 'border-red-300' : 'border-gray-300'
+              error ? "border-red-300" : "border-gray-300"
             }`}
             placeholder={param.description}
           />
         );
 
-      case 'array':
+      case "array":
         return (
           <textarea
             id={param.name}
-            value={Array.isArray(value) ? value.join('\n') : value}
+            value={Array.isArray(value) ? value.join("\n") : value}
             onChange={(e) =>
               handleParameterChange(
                 param.name,
-                e.target.value.split('\n').filter((v) => v.trim())
+                e.target.value.split("\n").filter((v) => v.trim()),
               )
             }
             rows={3}
             className={`mt-1 block w-full border rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${
-              error ? 'border-red-300' : 'border-gray-300'
+              error ? "border-red-300" : "border-gray-300"
             }`}
             placeholder="Enter one item per line"
           />
@@ -290,7 +318,7 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
             value={value}
             onChange={(e) => handleParameterChange(param.name, e.target.value)}
             className={`mt-1 block w-full border rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${
-              error ? 'border-red-300' : 'border-gray-300'
+              error ? "border-red-300" : "border-gray-300"
             }`}
             placeholder={param.description}
           />
@@ -317,8 +345,12 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
           <div className="bg-white px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-medium text-gray-900">{template.name}</h3>
-                <p className="text-sm text-gray-500 mt-1">{template.description}</p>
+                <h3 className="text-lg font-medium text-gray-900">
+                  {template.name}
+                </h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  {template.description}
+                </p>
               </div>
               <div className="flex items-center space-x-2">
                 {onCompare && (
@@ -333,7 +365,12 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                   onClick={onClose}
                   className="text-gray-400 hover:text-gray-600 focus:outline-none"
                 >
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -348,14 +385,16 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
             {/* Tabs */}
             <div className="mt-4">
               <nav className="flex space-x-8">
-                {['preview', 'parameters', 'details'].map((tab) => (
+                {["preview", "parameters", "details"].map((tab) => (
                   <button
                     key={tab}
-                    onClick={() => setActiveTab(tab as 'preview' | 'parameters' | 'details')}
+                    onClick={() =>
+                      setActiveTab(tab as "preview" | "parameters" | "details")
+                    }
                     className={`py-2 px-1 border-b-2 font-medium text-sm ${
                       activeTab === tab
-                        ? 'border-indigo-500 text-indigo-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        ? "border-indigo-500 text-indigo-600"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                     }`}
                   >
                     {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -366,11 +405,13 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
           </div>
 
           {/* Content */}
-          <div className="bg-white px-6 py-4" style={{ height: '600px' }}>
-            {activeTab === 'preview' && (
+          <div className="bg-white px-6 py-4" style={{ height: "600px" }}>
+            {activeTab === "preview" && (
               <div className="h-full flex flex-col">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-sm font-medium text-gray-900">Workflow Visualization</h4>
+                  <h4 className="text-sm font-medium text-gray-900">
+                    Workflow Visualization
+                  </h4>
                   <div className="flex items-center space-x-2 text-xs text-gray-500">
                     <div className="flex items-center space-x-1">
                       <div className="w-3 h-3 bg-green-100 border border-green-300 rounded"></div>
@@ -407,7 +448,9 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                         />
                       </svg>
-                      <h3 className="mt-2 text-sm font-medium text-gray-900">No workflow steps</h3>
+                      <h3 className="mt-2 text-sm font-medium text-gray-900">
+                        No workflow steps
+                      </h3>
                       <p className="mt-1 text-sm text-gray-500">
                         This template doesn&apos;t have a visual workflow.
                       </p>
@@ -417,15 +460,19 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
               </div>
             )}
 
-            {activeTab === 'parameters' && (
+            {activeTab === "parameters" && (
               <div className="h-full overflow-y-auto">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-sm font-medium text-gray-900">Template Parameters</h4>
+                  <h4 className="text-sm font-medium text-gray-900">
+                    Template Parameters
+                  </h4>
                   {template.parameters.length > 0 && (
                     <div className="text-xs text-gray-500">
-                      {template.parameters.filter((p) => p.isRequired).length} required,{' '}
+                      {template.parameters.filter((p) => p.isRequired).length}{" "}
+                      required,{" "}
                       {template.parameters.length -
-                        template.parameters.filter((p) => p.isRequired).length}{' '}
+                        template.parameters.filter((p) => p.isRequired)
+                          .length}{" "}
                       optional
                     </div>
                   )}
@@ -455,7 +502,8 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                 ) : (
                   <div className="space-y-6">
                     {/* Required parameters first */}
-                    {template.parameters.filter((p) => p.isRequired).length > 0 && (
+                    {template.parameters.filter((p) => p.isRequired).length >
+                      0 && (
                       <div>
                         <h5 className="text-xs font-medium text-gray-900 uppercase tracking-wide mb-3">
                           Required Parameters
@@ -476,9 +524,13 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                                   <span className="text-red-500 ml-1">*</span>
                                 </label>
                                 {param.description && (
-                                  <p className="text-xs text-gray-600 mt-1">{param.description}</p>
+                                  <p className="text-xs text-gray-600 mt-1">
+                                    {param.description}
+                                  </p>
                                 )}
-                                <div className="mt-2">{renderParameterInput(param)}</div>
+                                <div className="mt-2">
+                                  {renderParameterInput(param)}
+                                </div>
                                 {validationErrors[param.name] && (
                                   <p className="text-red-600 text-xs mt-1 flex items-center">
                                     <svg
@@ -502,7 +554,8 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                     )}
 
                     {/* Optional parameters */}
-                    {template.parameters.filter((p) => !p.isRequired).length > 0 && (
+                    {template.parameters.filter((p) => !p.isRequired).length >
+                      0 && (
                       <div>
                         <h5 className="text-xs font-medium text-gray-900 uppercase tracking-wide mb-3">
                           Optional Parameters
@@ -522,9 +575,13 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                                   {param.name}
                                 </label>
                                 {param.description && (
-                                  <p className="text-xs text-gray-600 mt-1">{param.description}</p>
+                                  <p className="text-xs text-gray-600 mt-1">
+                                    {param.description}
+                                  </p>
                                 )}
-                                <div className="mt-2">{renderParameterInput(param)}</div>
+                                <div className="mt-2">
+                                  {renderParameterInput(param)}
+                                </div>
                                 {validationErrors[param.name] && (
                                   <p className="text-red-600 text-xs mt-1 flex items-center">
                                     <svg
@@ -551,9 +608,11 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
               </div>
             )}
 
-            {activeTab === 'details' && (
+            {activeTab === "details" && (
               <div className="h-full overflow-y-auto">
-                <h4 className="text-sm font-medium text-gray-900 mb-4">Template Details</h4>
+                <h4 className="text-sm font-medium text-gray-900 mb-4">
+                  Template Details
+                </h4>
                 <div className="space-y-6">
                   {/* Basic Information */}
                   <div className="bg-gray-50 rounded-lg p-4">
@@ -562,34 +621,39 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                     </h5>
                     <dl className="space-y-3">
                       <div className="flex justify-between">
-                        <dt className="text-sm font-medium text-gray-500">Category</dt>
+                        <dt className="text-sm font-medium text-gray-500">
+                          Category
+                        </dt>
                         <dd className="text-sm text-gray-900">
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              template.category === 'sales'
-                                ? 'bg-blue-100 text-blue-800'
-                                : template.category === 'service'
-                                  ? 'bg-green-100 text-green-800'
-                                  : template.category === 'parts'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-gray-100 text-gray-800'
+                              template.category === "sales"
+                                ? "bg-blue-100 text-blue-800"
+                                : template.category === "service"
+                                  ? "bg-green-100 text-green-800"
+                                  : template.category === "parts"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-gray-100 text-gray-800"
                             }`}
                           >
-                            {template.category.charAt(0).toUpperCase() + template.category.slice(1)}
+                            {template.category.charAt(0).toUpperCase() +
+                              template.category.slice(1)}
                           </span>
                         </dd>
                       </div>
                       <div className="flex justify-between">
-                        <dt className="text-sm font-medium text-gray-500">Status</dt>
+                        <dt className="text-sm font-medium text-gray-500">
+                          Status
+                        </dt>
                         <dd>
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                               template.isActive
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-red-100 text-red-800'
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
                             }`}
                           >
-                            {template.isActive ? 'Active' : 'Inactive'}
+                            {template.isActive ? "Active" : "Inactive"}
                           </span>
                         </dd>
                       </div>
@@ -603,30 +667,40 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                     </h5>
                     <dl className="space-y-3">
                       <div className="flex justify-between">
-                        <dt className="text-sm font-medium text-gray-500">Total Steps</dt>
-                        <dd className="text-sm text-gray-900 font-medium">{nodes.length}</dd>
+                        <dt className="text-sm font-medium text-gray-500">
+                          Total Steps
+                        </dt>
+                        <dd className="text-sm text-gray-900 font-medium">
+                          {nodes.length}
+                        </dd>
                       </div>
                       <div className="flex justify-between">
-                        <dt className="text-sm font-medium text-gray-500">Connections</dt>
-                        <dd className="text-sm text-gray-900 font-medium">{edges.length}</dd>
+                        <dt className="text-sm font-medium text-gray-500">
+                          Connections
+                        </dt>
+                        <dd className="text-sm text-gray-900 font-medium">
+                          {edges.length}
+                        </dd>
                       </div>
                       <div className="flex justify-between">
-                        <dt className="text-sm font-medium text-gray-500">Complexity</dt>
+                        <dt className="text-sm font-medium text-gray-500">
+                          Complexity
+                        </dt>
                         <dd className="text-sm text-gray-900">
                           <span
                             className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                               nodes.length <= 3
-                                ? 'bg-green-100 text-green-800'
+                                ? "bg-green-100 text-green-800"
                                 : nodes.length <= 6
-                                  ? 'bg-yellow-100 text-yellow-800'
-                                  : 'bg-red-100 text-red-800'
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-red-100 text-red-800"
                             }`}
                           >
                             {nodes.length <= 3
-                              ? 'Simple'
+                              ? "Simple"
                               : nodes.length <= 6
-                                ? 'Medium'
-                                : 'Complex'}
+                                ? "Medium"
+                                : "Complex"}
                           </span>
                         </dd>
                       </div>
@@ -640,38 +714,54 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                     </h5>
                     <dl className="space-y-3">
                       <div className="flex justify-between">
-                        <dt className="text-sm font-medium text-gray-500">Total Parameters</dt>
+                        <dt className="text-sm font-medium text-gray-500">
+                          Total Parameters
+                        </dt>
                         <dd className="text-sm text-gray-900 font-medium">
                           {template.parameters.length}
                         </dd>
                       </div>
                       <div className="flex justify-between">
-                        <dt className="text-sm font-medium text-gray-500">Required</dt>
+                        <dt className="text-sm font-medium text-gray-500">
+                          Required
+                        </dt>
                         <dd className="text-sm text-gray-900 font-medium text-red-600">
-                          {template.parameters.filter((p) => p.isRequired).length}
+                          {
+                            template.parameters.filter((p) => p.isRequired)
+                              .length
+                          }
                         </dd>
                       </div>
                       <div className="flex justify-between">
-                        <dt className="text-sm font-medium text-gray-500">Optional</dt>
+                        <dt className="text-sm font-medium text-gray-500">
+                          Optional
+                        </dt>
                         <dd className="text-sm text-gray-900 font-medium text-gray-600">
-                          {template.parameters.filter((p) => !p.isRequired).length}
+                          {
+                            template.parameters.filter((p) => !p.isRequired)
+                              .length
+                          }
                         </dd>
                       </div>
                     </dl>
                     {template.parameters.length > 0 && (
                       <div className="mt-3 pt-3 border-t border-purple-200">
-                        <div className="text-xs text-gray-600 mb-2">Parameter Types:</div>
+                        <div className="text-xs text-gray-600 mb-2">
+                          Parameter Types:
+                        </div>
                         <div className="flex flex-wrap gap-1">
-                          {Array.from(new Set(template.parameters.map((p) => p.parameterType))).map(
-                            (type) => (
-                              <span
-                                key={type}
-                                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800"
-                              >
-                                {type}
-                              </span>
-                            )
-                          )}
+                          {Array.from(
+                            new Set(
+                              template.parameters.map((p) => p.parameterType),
+                            ),
+                          ).map((type) => (
+                            <span
+                              key={type}
+                              className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800"
+                            >
+                              {type}
+                            </span>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -684,27 +774,37 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                     </h5>
                     <dl className="space-y-3">
                       <div>
-                        <dt className="text-sm font-medium text-gray-500">Created</dt>
+                        <dt className="text-sm font-medium text-gray-500">
+                          Created
+                        </dt>
                         <dd className="mt-1 text-sm text-gray-900">
-                          {new Date(template.createdAt).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
+                          {new Date(template.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            },
+                          )}
                         </dd>
                       </div>
                       <div>
-                        <dt className="text-sm font-medium text-gray-500">Last Updated</dt>
+                        <dt className="text-sm font-medium text-gray-500">
+                          Last Updated
+                        </dt>
                         <dd className="mt-1 text-sm text-gray-900">
-                          {new Date(template.updatedAt).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
+                          {new Date(template.updatedAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            },
+                          )}
                         </dd>
                       </div>
                     </dl>
@@ -716,7 +816,8 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                       Usage Recommendations
                     </h5>
                     <div className="space-y-2 text-sm text-gray-700">
-                      {template.parameters.filter((p) => p.isRequired).length === 0 ? (
+                      {template.parameters.filter((p) => p.isRequired)
+                        .length === 0 ? (
                         <div className="flex items-start space-x-2">
                           <svg
                             className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0"
@@ -729,7 +830,9 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                               clipRule="evenodd"
                             />
                           </svg>
-                          <span>Ready to use immediately - no configuration required</span>
+                          <span>
+                            Ready to use immediately - no configuration required
+                          </span>
                         </div>
                       ) : (
                         <div className="flex items-start space-x-2">
@@ -744,7 +847,10 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                               clipRule="evenodd"
                             />
                           </svg>
-                          <span>Requires configuration before use - review parameters tab</span>
+                          <span>
+                            Requires configuration before use - review
+                            parameters tab
+                          </span>
                         </div>
                       )}
                       {nodes.length > 6 && (
@@ -760,7 +866,9 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                               clipRule="evenodd"
                             />
                           </svg>
-                          <span>Complex workflow - may take longer to execute</span>
+                          <span>
+                            Complex workflow - may take longer to execute
+                          </span>
                         </div>
                       )}
                       <div className="flex items-start space-x-2">
@@ -775,7 +883,10 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                             clipRule="evenodd"
                           />
                         </svg>
-                        <span>Best suited for {template.category} department workflows</span>
+                        <span>
+                          Best suited for {template.category} department
+                          workflows
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -793,13 +904,15 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                   <div className="flex items-center space-x-1">
                     <div
                       className={`w-2 h-2 rounded-full ${
-                        Object.keys(validationErrors).length === 0 ? 'bg-green-500' : 'bg-red-500'
+                        Object.keys(validationErrors).length === 0
+                          ? "bg-green-500"
+                          : "bg-red-500"
                       }`}
                     ></div>
                     <span className="text-gray-600">
                       {Object.keys(validationErrors).length === 0
-                        ? 'Ready to create'
-                        : 'Configuration needed'}
+                        ? "Ready to create"
+                        : "Configuration needed"}
                     </span>
                   </div>
                 )}
@@ -829,10 +942,18 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                 )}
                 <button
                   onClick={handleInstantiate}
-                  disabled={!template.isActive || Object.keys(validationErrors).length > 0}
+                  disabled={
+                    !template.isActive ||
+                    Object.keys(validationErrors).length > 0
+                  }
                   className="px-6 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
                 >
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -846,11 +967,11 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
             </div>
 
             {/* Help text */}
-            {activeTab === 'parameters' && template.parameters.length > 0 && (
+            {activeTab === "parameters" && template.parameters.length > 0 && (
               <div className="mt-3 pt-3 border-t border-gray-200">
                 <p className="text-xs text-gray-500">
-                  💡 Tip: Required parameters are highlighted in red. You can always modify these
-                  values later in the workflow builder.
+                  💡 Tip: Required parameters are highlighted in red. You can
+                  always modify these values later in the workflow builder.
                 </p>
               </div>
             )}

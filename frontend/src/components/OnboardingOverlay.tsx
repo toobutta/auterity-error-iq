@@ -1,28 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const onboardingSteps = [
   {
-    title: 'Welcome to Auterity Unified!',
+    title: "Welcome to Auterity Unified!",
     description:
-      'This platform lets you build, monitor, and optimize AI workflows with ease. Let’s take a quick tour!',
+      "This platform lets you build, monitor, and optimize AI workflows with ease. Let’s take a quick tour!",
   },
   {
-    title: 'Dashboard Overview',
-    description: 'Monitor workflow health, execution stats, and agent/server status in real time.',
-  },
-  {
-    title: 'Workflow Builder',
+    title: "Dashboard Overview",
     description:
-      'Use the visual builder to create, edit, and test workflows with drag-and-drop simplicity.',
+      "Monitor workflow health, execution stats, and agent/server status in real time.",
   },
   {
-    title: 'Notifications & Quick Actions',
+    title: "Workflow Builder",
     description:
-      'Get instant feedback and take action directly from the notification center and dashboard.',
+      "Use the visual builder to create, edit, and test workflows with drag-and-drop simplicity.",
   },
   {
-    title: 'Need Help?',
-    description: 'Access documentation, support, and tips anytime from the help menu.',
+    title: "Notifications & Quick Actions",
+    description:
+      "Get instant feedback and take action directly from the notification center and dashboard.",
+  },
+  {
+    title: "Need Help?",
+    description:
+      "Access documentation, support, and tips anytime from the help menu.",
   },
 ];
 

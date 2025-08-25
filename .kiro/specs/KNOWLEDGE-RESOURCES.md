@@ -1,6 +1,6 @@
 # 📚 KIRO KNOWLEDGE RESOURCES - AutoMatrix AI Hub
 
-**Last Updated:** January 31, 2025  
+**Last Updated:** January 31, 2025
 **Purpose:** Comprehensive knowledge base for future development and maintenance
 
 ---
@@ -8,9 +8,11 @@
 ## 🎯 PROJECT OVERVIEW
 
 ### What is AutoMatrix AI Hub?
+
 AutoMatrix AI Hub is a **workflow automation platform** designed specifically for automotive dealerships. The MVP demonstrates core AI-powered workflow capabilities through a streamlined interface, enabling dealerships to automate repetitive processes without technical expertise.
 
 ### Current Status
+
 - **Phase:** MVP Complete - Critical Issues Resolution
 - **Functionality:** 95% complete with all core features implemented
 - **Quality Status:** Requires critical fixes before production deployment
@@ -21,6 +23,7 @@ AutoMatrix AI Hub is a **workflow automation platform** designed specifically fo
 ## 🏗️ ARCHITECTURE & TECHNOLOGY
 
 ### Technology Stack
+
 ```yaml
 Backend:
   Framework: FastAPI (Python 3.11+)
@@ -46,6 +49,7 @@ Development:
 ```
 
 ### Project Structure
+
 ```
 AutoMatrix-AI-Hub/
 ├── backend/                 # FastAPI backend application
@@ -80,6 +84,7 @@ AutoMatrix-AI-Hub/
 ## 🔧 DEVELOPMENT WORKFLOW
 
 ### Environment Setup
+
 ```bash
 # Clone repository
 git clone <repository-url>
@@ -103,6 +108,7 @@ uvicorn app.main:app --reload  # Development server on port 8000
 ```
 
 ### Quality Assurance Commands
+
 ```bash
 # Frontend quality checks
 cd frontend
@@ -121,6 +127,7 @@ alembic upgrade head    # Apply database migrations
 ```
 
 ### Development Best Practices
+
 1. **Code Quality**: All code must pass linting and type checking
 2. **Testing**: Maintain 90%+ test coverage for new features
 3. **Documentation**: Update documentation for all API changes
@@ -132,40 +139,42 @@ alembic upgrade head    # Apply database migrations
 ## 📋 COMPONENT LIBRARY
 
 ### Core Components (Implemented)
+
 ```typescript
 // Workflow Management
-WorkflowBuilder.tsx          // Visual drag-and-drop workflow designer
-WorkflowExecutionForm.tsx    // Dynamic form generation for workflow inputs
-WorkflowExecutionResults.tsx // Results display with syntax highlighting
-WorkflowExecutionHistory.tsx // History with filtering and pagination
-ExecutionStatus.tsx          // Real-time execution status monitoring
-ExecutionLogViewer.tsx       // Detailed execution log viewer
+WorkflowBuilder.tsx; // Visual drag-and-drop workflow designer
+WorkflowExecutionForm.tsx; // Dynamic form generation for workflow inputs
+WorkflowExecutionResults.tsx; // Results display with syntax highlighting
+WorkflowExecutionHistory.tsx; // History with filtering and pagination
+ExecutionStatus.tsx; // Real-time execution status monitoring
+ExecutionLogViewer.tsx; // Detailed execution log viewer
 
 // Template System
-TemplateLibrary.tsx          // Template browsing and search interface
-TemplateCard.tsx             // Individual template preview cards
-TemplateInstantiationForm.tsx // Template to workflow conversion
-TemplatePreviewModal.tsx     // Detailed template preview modal
-TemplateComparison.tsx       // Side-by-side template comparison
+TemplateLibrary.tsx; // Template browsing and search interface
+TemplateCard.tsx; // Individual template preview cards
+TemplateInstantiationForm.tsx; // Template to workflow conversion
+TemplatePreviewModal.tsx; // Detailed template preview modal
+TemplateComparison.tsx; // Side-by-side template comparison
 
 // Dashboard & Analytics
-Dashboard.tsx                // Main dashboard with key metrics
-PerformanceDashboard.tsx     // Performance analytics and charts
-LineChart.tsx / BarChart.tsx // Reusable chart components
+Dashboard.tsx; // Main dashboard with key metrics
+PerformanceDashboard.tsx; // Performance analytics and charts
+LineChart.tsx / BarChart.tsx; // Reusable chart components
 
 // Error Handling & Recovery
-ErrorBoundary.tsx            // Global error boundary component
-ErrorContext.tsx             // Error state management context
-WorkflowErrorDisplay.tsx     // Workflow-specific error handling
-ErrorReportModal.tsx         // User error reporting interface
-ErrorRecoveryGuide.tsx       // Step-by-step recovery assistance
+ErrorBoundary.tsx; // Global error boundary component
+ErrorContext.tsx; // Error state management context
+WorkflowErrorDisplay.tsx; // Workflow-specific error handling
+ErrorReportModal.tsx; // User error reporting interface
+ErrorRecoveryGuide.tsx; // Step-by-step recovery assistance
 
 // Authentication & Layout
-Layout.tsx                   // Main application layout
-AuthContext.tsx              // Authentication state management
+Layout.tsx; // Main application layout
+AuthContext.tsx; // Authentication state management
 ```
 
 ### API Integration Patterns
+
 ```typescript
 // API Client Structure
 api/
@@ -180,7 +189,7 @@ import { workflowsApi } from '../api/workflows';
 
 const MyComponent = () => {
   const [workflows, setWorkflows] = useState([]);
-  
+
   useEffect(() => {
     const fetchWorkflows = async () => {
       try {
@@ -196,6 +205,7 @@ const MyComponent = () => {
 ```
 
 ### State Management Patterns
+
 ```typescript
 // Context-based state management
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -204,7 +214,7 @@ const ErrorContext = createContext<ErrorContextType | undefined>(undefined);
 // Custom hooks for state access
 const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
 };
 
@@ -212,7 +222,7 @@ const useAuth = () => {
 const MyComponent = () => {
   const { user, login, logout } = useAuth();
   const { reportError } = useErrorHandler();
-  
+
   // Component logic
 };
 ```
@@ -224,6 +234,7 @@ const MyComponent = () => {
 ### Current Critical Issues (Must Fix Before Production)
 
 #### 1. Security Vulnerabilities (CRITICAL 🔴)
+
 ```bash
 Issue: 7 moderate security vulnerabilities in frontend dependencies
 Impact: Exposes application to potential security attacks
@@ -237,6 +248,7 @@ npm test                     # Validate functionality
 ```
 
 #### 2. Backend Code Quality Crisis (CRITICAL 🔴)
+
 ```bash
 Issue: 500+ linting violations making codebase unmaintainable
 Impact: Prevents reliable maintenance and development
@@ -250,6 +262,7 @@ python -m flake8 .          # Check remaining violations
 ```
 
 #### 3. Test Infrastructure Problems (HIGH 🟡)
+
 ```bash
 Issue: 35 failed tests out of 250 total (14% failure rate)
 Impact: Unreliable development workflow and CI/CD pipeline
@@ -262,6 +275,7 @@ npm run test:coverage       # Generate coverage report
 ```
 
 #### 4. Bundle Size Optimization (MEDIUM 🟡)
+
 ```bash
 Issue: 1.5MB bundle size impacts user experience
 Impact: Slow loading times and poor performance
@@ -274,6 +288,7 @@ npm run build              # Build optimized version
 ```
 
 ### Resolution Strategy
+
 1. **Sequential Execution**: Fix issues in dependency order
 2. **Quality Gates**: Validate each fix before proceeding
 3. **Rollback Plans**: Maintain git branches for easy rollback
@@ -286,32 +301,40 @@ npm run build              # Build optimized version
 ### Tool Selection Guidelines
 
 #### Cline (Development Implementation)
+
 **Best For:**
+
 - Component development with clear specifications
 - Code quality fixes and refactoring
 - Test infrastructure repair
 - Bundle optimization and performance improvements
 
 **Model Recommendations:**
+
 - **Cerebras Qwen-3-32b**: Fast, efficient for standard development tasks
 - **Cerebras llama-3.3-70b**: Complex logic and form handling
 - **Claude-3.5-Sonnet**: Advanced analysis and architecture decisions
 
 #### Amazon Q (AWS & Enterprise Features)
+
 **Best For:**
+
 - AWS architecture and deployment planning
 - Enterprise authentication (SSO, SAML, OIDC)
 - Security and compliance implementation
 - Infrastructure as Code development
 
 **Strengths:**
+
 - Deep AWS service knowledge
 - Enterprise authentication expertise
 - Security best practices
 - Cost optimization strategies
 
 #### Kiro (Architecture & Strategy)
+
 **Best For:**
+
 - System architecture decisions
 - Complex state management
 - UX/UI design choices
@@ -319,28 +342,33 @@ npm run build              # Build optimized version
 - Performance optimization strategy
 
 ### Task Specification Requirements
+
 ```markdown
 # Task Specification Template
 
 ## Task Overview
+
 - **Task Name**: Clear, descriptive name
 - **Priority**: Critical/High/Medium/Low
 - **Estimated Time**: Realistic time estimate
 - **Complexity**: Low/Medium/High assessment
 
 ## Technical Requirements
+
 - **Files to Create/Modify**: Specific file paths
 - **API Integration**: Required endpoints and data flow
 - **Dependencies**: Prerequisites and blockers
 - **Success Criteria**: Measurable acceptance criteria
 
 ## Implementation Details
+
 - **Component Interface**: TypeScript interfaces
 - **Styling Requirements**: Tailwind classes and responsive design
 - **Error Handling**: Specific error scenarios to handle
 - **Testing Requirements**: Unit and integration test expectations
 
 ## Quality Standards
+
 - **TypeScript**: Strict typing, no 'any' types
 - **Accessibility**: ARIA labels, keyboard navigation
 - **Performance**: Bundle size impact, optimization requirements
@@ -352,6 +380,7 @@ npm run build              # Build optimized version
 ## 🔍 MONITORING & MAINTENANCE
 
 ### Health Monitoring Metrics
+
 ```yaml
 Security:
   - Dependency vulnerabilities: 0 (currently 7)
@@ -375,6 +404,7 @@ Reliability:
 ```
 
 ### Automated Quality Gates
+
 ```bash
 # Pre-commit hooks
 npm audit                    # Security check
@@ -389,6 +419,7 @@ docker build .              # Container build
 ```
 
 ### Maintenance Schedule
+
 - **Daily**: Automated security scans and dependency checks
 - **Weekly**: Code quality review and test coverage analysis
 - **Monthly**: Performance optimization and bundle size review
@@ -399,6 +430,7 @@ docker build .              # Container build
 ## 📖 LEARNING RESOURCES
 
 ### Key Documentation
+
 - **FastAPI**: https://fastapi.tiangolo.com/
 - **React 18**: https://react.dev/
 - **TypeScript**: https://www.typescriptlang.org/docs/
@@ -407,12 +439,14 @@ docker build .              # Container build
 - **Vitest**: https://vitest.dev/
 
 ### Best Practices References
+
 - **React Patterns**: https://reactpatterns.com/
 - **TypeScript Best Practices**: https://typescript-eslint.io/
 - **API Design**: https://restfulapi.net/
 - **Security Guidelines**: https://owasp.org/
 
 ### Troubleshooting Guides
+
 - **Common TypeScript Errors**: Fix 'any' types, missing imports
 - **Test Failures**: Mock configuration, memory issues
 - **Build Issues**: Dependency conflicts, bundle optimization
@@ -423,24 +457,28 @@ docker build .              # Container build
 ## 🚀 FUTURE ROADMAP
 
 ### Phase 1: Critical Fixes (Weeks 1-2)
+
 - ✅ Security vulnerability resolution
 - ✅ Backend code quality improvements
 - ✅ Test infrastructure repair
 - ✅ Bundle size optimization
 
 ### Phase 2: Enterprise Features (Weeks 3-4)
+
 - 🚀 Enterprise SSO implementation
 - 🚀 Production AWS deployment
 - 🚀 Advanced monitoring and logging
 - 🚀 Performance optimization
 
 ### Phase 3: Advanced Features (Months 2-3)
+
 - 📋 Multi-tenant architecture
 - 📋 Advanced workflow templates
 - 📋 Integration marketplace
 - 📋 Mobile application
 
 ### Phase 4: Scale & Optimize (Months 4-6)
+
 - 📋 Microservices architecture
 - 📋 Advanced analytics and reporting
 - 📋 AI model fine-tuning
@@ -451,6 +489,7 @@ docker build .              # Container build
 ## 💡 SUCCESS PATTERNS
 
 ### What Works Well
+
 1. **Component-based Architecture**: Modular, reusable components
 2. **TypeScript Integration**: Strong typing prevents runtime errors
 3. **Context-based State Management**: Clean, predictable state flow
@@ -458,6 +497,7 @@ docker build .              # Container build
 5. **Automated Quality Checks**: Consistent code quality standards
 
 ### Common Pitfalls to Avoid
+
 1. **Excessive 'any' Types**: Reduces TypeScript benefits
 2. **Large Bundle Sizes**: Impacts user experience
 3. **Inconsistent Error Handling**: Confuses users
@@ -465,6 +505,7 @@ docker build .              # Container build
 5. **Security Vulnerabilities**: Exposes application to attacks
 
 ### Development Velocity Tips
+
 1. **Use Existing Patterns**: Follow established component patterns
 2. **Leverage Type Definitions**: Reuse existing TypeScript interfaces
 3. **Implement Error Boundaries**: Graceful error handling

@@ -1,4 +1,3 @@
-
 # AutoMatrix AI Hub – Terraform Starter
 
 ## Provider Setup
@@ -61,4 +60,3 @@ output "db_endpoint" {
   value = aws_db_instance.automatrix_postgres.endpoint
 }
 ```
-

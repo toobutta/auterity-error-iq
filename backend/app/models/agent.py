@@ -5,11 +5,10 @@ SQLAlchemy models for Agent and AgentCapability.
 import enum
 import uuid
 
+from app.models.base import Base
 from sqlalchemy import JSON, Boolean, Column, DateTime, Enum, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-
-from app.models.base import Base
 
 
 class AgentType(enum.Enum):

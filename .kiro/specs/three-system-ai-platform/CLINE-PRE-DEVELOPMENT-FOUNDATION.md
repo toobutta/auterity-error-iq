@@ -1,6 +1,7 @@
 # [CLINE-TASK] Pre-Development Foundation Setup
 
 ## Task Assignment
+
 **Assigned Tool**: Cline
 **Priority**: High
 **Estimated Time**: 6-8 hours
@@ -8,11 +9,13 @@
 **Dependencies**: None (foundational task)
 
 ## Task Overview
+
 Perform comprehensive pre-development analysis and preparation for the three-system AI platform integration. This foundational task will analyze existing code, identify integration points, prepare development templates, and create the groundwork for seamless development execution.
 
 ## Scope Definition
 
 ### Systems to Analyze
+
 1. **AutoMatrix** (Current workspace root)
    - Backend: FastAPI Python application (`backend/`)
    - Frontend: React TypeScript application (`frontend/`)
@@ -36,6 +39,7 @@ Perform comprehensive pre-development analysis and preparation for the three-sys
 ### Phase 1: Code Analysis and Inventory (2-3 hours)
 
 #### 1.1 Dependency Analysis
+
 - **AutoMatrix Dependencies**:
   - Analyze `backend/requirements.txt` for Python dependencies
   - Analyze `frontend/package.json` for Node.js dependencies
@@ -55,6 +59,7 @@ Perform comprehensive pre-development analysis and preparation for the three-sys
   - Document model training dependencies
 
 #### 1.2 API Interface Analysis
+
 - **AutoMatrix APIs**:
   - Document existing endpoints in `backend/app/api/`
   - Analyze authentication patterns in `backend/app/auth.py`
@@ -74,6 +79,7 @@ Perform comprehensive pre-development analysis and preparation for the three-sys
   - Identify deployment and inference endpoints
 
 #### 1.3 Database Schema Analysis
+
 - **Current Schema Review**:
   - Analyze existing AutoMatrix models
   - Review migration files in `backend/alembic/versions/`
@@ -89,6 +95,7 @@ Perform comprehensive pre-development analysis and preparation for the three-sys
 ### Phase 2: Integration Point Identification (1-2 hours)
 
 #### 2.1 Authentication Integration
+
 - **Current Implementation Analysis**:
   - Review JWT implementation in `backend/app/auth.py`
   - Analyze user models in `backend/app/models/user.py`
@@ -102,6 +109,7 @@ Perform comprehensive pre-development analysis and preparation for the three-sys
   - Document SSO integration points
 
 #### 2.2 API Communication Patterns
+
 - **Current Patterns**:
   - Analyze existing API client patterns
   - Review error handling in `backend/app/middleware/`
@@ -117,6 +125,7 @@ Perform comprehensive pre-development analysis and preparation for the three-sys
 ### Phase 3: Development Template Creation (2-3 hours)
 
 #### 3.1 Component Templates
+
 - **React Component Templates**:
   - Create base component templates following existing patterns
   - Design integration component templates for cross-system UI
@@ -130,6 +139,7 @@ Perform comprehensive pre-development analysis and preparation for the three-sys
   - Create monitoring and metrics collection templates
 
 #### 3.2 Configuration Templates
+
 - **Environment Configuration**:
   - Create unified environment variable templates
   - Design Docker configuration templates for multi-system deployment
@@ -145,6 +155,7 @@ Perform comprehensive pre-development analysis and preparation for the three-sys
 ### Phase 4: Quality Assurance Preparation (1 hour)
 
 #### 4.1 Testing Strategy
+
 - **Current Test Analysis**:
   - Review existing test patterns in `backend/tests/`
   - Analyze frontend test setup
@@ -158,6 +169,7 @@ Perform comprehensive pre-development analysis and preparation for the three-sys
   - Plan performance testing approaches
 
 #### 4.2 Code Quality Standards
+
 - **Current Standards Review**:
   - Analyze existing linting configurations
   - Review TypeScript strict mode settings
@@ -173,18 +185,21 @@ Perform comprehensive pre-development analysis and preparation for the three-sys
 ## Technical Context
 
 ### Current Architecture Patterns
+
 - **Backend**: FastAPI with async/await, SQLAlchemy ORM, JWT authentication
 - **Frontend**: React 18 with TypeScript, Vite build system, Tailwind CSS
 - **Database**: PostgreSQL with Alembic migrations
 - **Containerization**: Docker and Docker Compose for development
 
 ### Integration Requirements
+
 - **Authentication**: Unified JWT-based authentication across all systems
 - **Communication**: HTTP-based service-to-service communication
 - **Monitoring**: Unified monitoring dashboard with real-time updates
 - **Data Sharing**: Shared database schemas and cross-system data access
 
 ### Key Files to Analyze
+
 - `backend/app/main.py` - AutoMatrix FastAPI entry point
 - `systems/relaycore/src/index.ts` - RelayCore Express entry point
 - `systems/neuroweaver/backend/app/main.py` - NeuroWeaver FastAPI entry point
@@ -194,30 +209,35 @@ Perform comprehensive pre-development analysis and preparation for the three-sys
 ## Deliverables
 
 ### 1. Analysis Reports
+
 - **Dependency Analysis Report**: Complete inventory of all dependencies with compatibility matrix
 - **API Integration Report**: Detailed mapping of all API endpoints and integration points
 - **Database Schema Report**: Current schema analysis with extension recommendations
 - **Authentication Integration Report**: Cross-system authentication requirements and implementation plan
 
 ### 2. Development Templates
+
 - **Component Templates**: Ready-to-use React component templates for integration features
 - **API Client Templates**: Service communication templates with error handling
 - **Configuration Templates**: Environment, Docker, and deployment configuration templates
 - **Testing Templates**: Integration test templates and mock service implementations
 
 ### 3. Implementation Roadmap
+
 - **Development Sequence**: Recommended order of implementation tasks
 - **Dependency Resolution**: Plan for resolving version conflicts and compatibility issues
 - **Integration Milestones**: Key integration points and validation checkpoints
 - **Quality Gates**: Testing and validation requirements for each phase
 
 ### 4. Documentation Framework
+
 - **API Documentation Templates**: Standardized API documentation format
 - **Integration Guides**: Step-by-step integration implementation guides
 - **Troubleshooting Guides**: Common issues and resolution procedures
 - **Deployment Guides**: Multi-system deployment and configuration guides
 
 ## Success Criteria
+
 - [ ] Complete dependency analysis with compatibility matrix
 - [ ] All API integration points identified and documented
 - [ ] Development templates created and validated
@@ -228,6 +248,7 @@ Perform comprehensive pre-development analysis and preparation for the three-sys
 - [ ] All deliverables reviewed and approved for development readiness
 
 ## Quality Standards
+
 - **Code Analysis**: 100% of existing code patterns documented
 - **Template Quality**: All templates follow existing project conventions
 - **Documentation**: Clear, actionable documentation for all deliverables
@@ -236,7 +257,9 @@ Perform comprehensive pre-development analysis and preparation for the three-sys
 - **Security**: Security considerations documented for all integration points
 
 ## Handoff Instructions
+
 After completion:
+
 1. **Status Report**: Comprehensive summary of all analysis findings
 2. **Template Validation**: Demonstrate all templates work with existing codebase
 3. **Implementation Readiness**: Confirm all prerequisites are met for development
@@ -244,6 +267,7 @@ After completion:
 5. **Risk Assessment**: Document any identified risks or blockers
 
 ## Files to Create/Modify
+
 - `.kiro/analysis/dependency-matrix.md` - Dependency compatibility analysis
 - `.kiro/analysis/api-integration-map.md` - API integration documentation
 - `.kiro/templates/components/` - React component templates
@@ -254,9 +278,11 @@ After completion:
 - `.kiro/docs/integration-guides/` - Integration documentation
 
 ## Priority Justification
+
 This is a foundational task that must be completed before any integration development can begin. It provides the essential analysis, templates, and roadmap needed for efficient and successful development execution.
 
 ## Time Estimate Breakdown
+
 - **Dependency Analysis**: 2 hours
 - **API Integration Analysis**: 2 hours
 - **Template Creation**: 3 hours

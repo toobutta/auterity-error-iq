@@ -37,11 +37,11 @@ export const AuthApi = {
         lastName: "User",
         role: "user",
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
+        updatedAt: new Date().toISOString(),
+      },
     };
   },
-  
+
   register: async (userData: RegisterRequest): Promise<AuthResponse> => {
     // Implementation would be replaced with actual API call
     return {
@@ -53,16 +53,16 @@ export const AuthApi = {
         lastName: userData.lastName,
         role: "user",
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
+        updatedAt: new Date().toISOString(),
+      },
     };
   },
-  
+
   logout: async (): Promise<void> => {
     // Implementation would be replaced with actual API call
     return Promise.resolve();
   },
-  
+
   getCurrentUser: async (): Promise<User> => {
     // Implementation would be replaced with actual API call
     return {
@@ -72,8 +72,7 @@ export const AuthApi = {
       lastName: "User",
       role: "user",
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
-  }
+  },
 };
-

@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { cn } from '../../lib/utils';
+import * as React from "react";
+import { cn } from "../../lib/utils";
 
 export interface ModalProps {
   isOpen: boolean;
@@ -7,8 +7,8 @@ export interface ModalProps {
   children: React.ReactNode;
   title?: string;
   description?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
-  variant?: 'default' | 'glass' | 'centered';
+  size?: "sm" | "md" | "lg" | "xl" | "full";
+  variant?: "default" | "glass" | "centered";
   closeOnOverlayClick?: boolean;
   closeOnEscape?: boolean;
   showCloseButton?: boolean;
@@ -21,8 +21,8 @@ const Modal: React.FC<ModalProps> = ({
   children,
   title,
   description,
-  size = 'md',
-  variant = 'default',
+  size = "md",
+  variant = "default",
   closeOnOverlayClick = true,
   closeOnEscape = true,
   showCloseButton = true,
@@ -35,13 +35,13 @@ const Modal: React.FC<ModalProps> = ({
     if (!closeOnEscape || !isOpen) return;
 
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         onClose();
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, closeOnEscape, onClose]);
 
   // Handle focus trap
@@ -52,14 +52,14 @@ const Modal: React.FC<ModalProps> = ({
     if (!modal) return;
 
     const focusableElements = modal.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     ) as NodeListOf<HTMLElement>;
 
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
 
     const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
+      if (e.key !== "Tab") return;
 
       if (e.shiftKey) {
         if (document.activeElement === firstElement) {
@@ -74,41 +74,41 @@ const Modal: React.FC<ModalProps> = ({
       }
     };
 
-    modal.addEventListener('keydown', handleTabKey);
+    modal.addEventListener("keydown", handleTabKey);
     firstElement?.focus();
 
     return () => {
-      modal.removeEventListener('keydown', handleTabKey);
+      modal.removeEventListener("keydown", handleTabKey);
     };
   }, [isOpen]);
 
   // Prevent body scroll when modal is open
   React.useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
   if (!isOpen) return null;
 
   const sizeClasses = {
-    sm: 'max-w-md',
-    md: 'max-w-lg',
-    lg: 'max-w-2xl',
-    xl: 'max-w-4xl',
-    full: 'max-w-full m-4',
+    sm: "max-w-md",
+    md: "max-w-lg",
+    lg: "max-w-2xl",
+    xl: "max-w-4xl",
+    full: "max-w-full m-4",
   };
 
   const variantClasses = {
-    default: 'bg-white dark:bg-neutral-900 shadow-2xl',
-    glass: 'glass backdrop-blur-xl',
-    centered: 'bg-white dark:bg-neutral-900 shadow-2xl',
+    default: "bg-white dark:bg-neutral-900 shadow-2xl",
+    glass: "glass backdrop-blur-xl",
+    centered: "bg-white dark:bg-neutral-900 shadow-2xl",
   };
 
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -129,16 +129,16 @@ const Modal: React.FC<ModalProps> = ({
       <div
         ref={modalRef}
         className={cn(
-          'relative w-full rounded-2xl border border-neutral-200 dark:border-neutral-800',
-          'transform transition-all duration-300 animate-in zoom-in-95 slide-in-from-bottom-8',
+          "relative w-full rounded-2xl border border-neutral-200 dark:border-neutral-800",
+          "transform transition-all duration-300 animate-in zoom-in-95 slide-in-from-bottom-8",
           sizeClasses[size],
           variantClasses[variant],
-          className
+          className,
         )}
         role="dialog"
         aria-modal="true"
-        aria-labelledby={title ? 'modal-title' : undefined}
-        aria-describedby={description ? 'modal-description' : undefined}
+        aria-labelledby={title ? "modal-title" : undefined}
+        aria-describedby={description ? "modal-description" : undefined}
       >
         {/* Close button */}
         {showCloseButton && (
@@ -147,7 +147,12 @@ const Modal: React.FC<ModalProps> = ({
             className="absolute right-4 top-4 z-10 rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 transition-colors"
             aria-label="Close modal"
           >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -194,7 +199,12 @@ export interface ModalHeaderProps {
 }
 
 const ModalHeader: React.FC<ModalHeaderProps> = ({ children, className }) => (
-  <div className={cn('border-b border-neutral-200 dark:border-neutral-800 px-6 py-4', className)}>
+  <div
+    className={cn(
+      "border-b border-neutral-200 dark:border-neutral-800 px-6 py-4",
+      className,
+    )}
+  >
     {children}
   </div>
 );
@@ -205,7 +215,7 @@ export interface ModalBodyProps {
 }
 
 const ModalBody: React.FC<ModalBodyProps> = ({ children, className }) => (
-  <div className={cn('p-6', className)}>{children}</div>
+  <div className={cn("p-6", className)}>{children}</div>
 );
 
 export interface ModalFooterProps {
@@ -214,7 +224,12 @@ export interface ModalFooterProps {
 }
 
 const ModalFooter: React.FC<ModalFooterProps> = ({ children, className }) => (
-  <div className={cn('border-t border-neutral-200 dark:border-neutral-800 px-6 py-4', className)}>
+  <div
+    className={cn(
+      "border-t border-neutral-200 dark:border-neutral-800 px-6 py-4",
+      className,
+    )}
+  >
     {children}
   </div>
 );
@@ -226,14 +241,18 @@ export interface ErrorDetailModalProps {
   error?: {
     id: string;
     message: string;
-    severity: 'critical' | 'high' | 'medium' | 'low';
+    severity: "critical" | "high" | "medium" | "low";
     stackTrace?: string;
     timestamp: Date;
     affectedUsers?: number;
   };
 }
 
-const ErrorDetailModal: React.FC<ErrorDetailModalProps> = ({ isOpen, onClose, error }) => {
+const ErrorDetailModal: React.FC<ErrorDetailModalProps> = ({
+  isOpen,
+  onClose,
+  error,
+}) => {
   if (!error) return null;
 
   return (
@@ -252,7 +271,7 @@ const ErrorDetailModal: React.FC<ErrorDetailModalProps> = ({ isOpen, onClose, er
               {error.message}
             </h3>
             <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-              Occurred on {error.timestamp.toLocaleDateString()} at{' '}
+              Occurred on {error.timestamp.toLocaleDateString()} at{" "}
               {error.timestamp.toLocaleTimeString()}
             </p>
           </div>
@@ -285,10 +304,10 @@ const ErrorDetailModal: React.FC<ErrorDetailModalProps> = ({ isOpen, onClose, er
   );
 };
 
-Modal.displayName = 'Modal';
-ModalHeader.displayName = 'ModalHeader';
-ModalBody.displayName = 'ModalBody';
-ModalFooter.displayName = 'ModalFooter';
-ErrorDetailModal.displayName = 'ErrorDetailModal';
+Modal.displayName = "Modal";
+ModalHeader.displayName = "ModalHeader";
+ModalBody.displayName = "ModalBody";
+ModalFooter.displayName = "ModalFooter";
+ErrorDetailModal.displayName = "ErrorDetailModal";
 
 export { Modal, ModalHeader, ModalBody, ModalFooter, ErrorDetailModal };

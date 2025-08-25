@@ -3,7 +3,8 @@ MCP Orchestration Platform Scaffold
 Handles registration, orchestration, and lifecycle management of model contexts.
 """
 
-from typing import Dict, Any
+from typing import Any, Dict
+
 
 class MCPRegistry:
     def __init__(self):
@@ -19,6 +20,7 @@ class MCPRegistry:
     def list_services(self):
         return list(self.services.keys())
 
+
 class MCPOrchestrator:
     def __init__(self, registry: MCPRegistry):
         self.registry = registry
@@ -27,10 +29,13 @@ class MCPOrchestrator:
         # Placeholder for orchestration logic
         return {"workflow": workflow, "status": "orchestrated"}
 
+
 # Example usage
 if __name__ == "__main__":
     registry = MCPRegistry()
     orchestrator = MCPOrchestrator(registry)
-    registry.register_service("ai-model-1", {"type": "openai", "endpoint": "/api/ai-model-1"})
+    registry.register_service(
+        "ai-model-1", {"type": "openai", "endpoint": "/api/ai-model-1"}
+    )
     print(registry.list_services())
     print(orchestrator.orchestrate({"steps": ["ai-model-1"]}))

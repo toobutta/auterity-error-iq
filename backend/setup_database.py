@@ -13,10 +13,9 @@ backend_dir = Path(__file__).parent
 sys.path.insert(0, str(backend_dir))
 
 try:
+    from app.models import Base
     from sqlalchemy import create_engine, text
     from sqlalchemy.exc import OperationalError
-
-    from app.models import Base
 except ImportError as e:
     print(f"Import error: {e}")
     print("Please ensure all dependencies are installed:")

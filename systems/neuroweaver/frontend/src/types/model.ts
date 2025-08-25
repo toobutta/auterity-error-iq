@@ -17,15 +17,15 @@ export interface Model {
   training_config?: TrainingConfig;
 }
 
-export type ModelStatus = 
-  | 'registered'
-  | 'training'
-  | 'trained'
-  | 'deploying'
-  | 'deployed'
-  | 'training_failed'
-  | 'deployment_failed'
-  | 'stopped';
+export type ModelStatus =
+  | "registered"
+  | "training"
+  | "trained"
+  | "deploying"
+  | "deployed"
+  | "training_failed"
+  | "deployment_failed"
+  | "stopped";
 
 export interface PerformanceMetrics {
   accuracy?: number;
@@ -97,7 +97,7 @@ export interface TrainingRequest {
 
 export interface TrainingData {
   dataset_path: string;
-  format: 'jsonl' | 'csv' | 'parquet';
+  format: "jsonl" | "csv" | "parquet";
   input_column: string;
   output_column: string;
   preprocessing?: {
@@ -137,7 +137,7 @@ export interface InferenceResponse {
 export interface Specialization {
   name: string;
   description: string;
-  status: 'available' | 'development' | 'deprecated';
+  status: "available" | "development" | "deprecated";
   use_cases: string[];
   example_prompts: string[];
   performance_benchmarks?: PerformanceMetrics;
@@ -167,7 +167,7 @@ export interface MetricsData {
 export interface TrainingJob {
   id: string;
   model_id: string;
-  status: 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';
+  status: "queued" | "running" | "completed" | "failed" | "cancelled";
   progress: number;
   started_at?: string;
   completed_at?: string;

@@ -91,7 +91,7 @@ CREATE INDEX IF NOT EXISTS idx_cost_history_timestamp ON cost_history(timestamp)
 
 -- Insert default steering rules
 INSERT INTO steering_rules (name, description, conditions, actions, priority, enabled) VALUES
-('Automotive Context Routing', 'Route automotive-related requests to NeuroWeaver', 
+('Automotive Context Routing', 'Route automotive-related requests to NeuroWeaver',
  '[{"field": "context.automotive_context", "operator": "exists", "value": true}]',
  '[{"type": "route_to_provider", "parameters": {"provider": "neuroweaver", "model": "automotive-specialist-v1"}}]',
  10, true),

@@ -3,6 +3,7 @@
 ## Setup
 
 Run the Git hooks setup (required for all contributors):
+
 ```bash
 ./.githooks/setup.sh
 ```
@@ -10,6 +11,7 @@ Run the Git hooks setup (required for all contributors):
 ## Commit Standards
 
 All commits must follow conventional commits format:
+
 ```
 type(scope): subject
 

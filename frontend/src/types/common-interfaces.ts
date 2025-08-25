@@ -81,7 +81,7 @@ export interface Edge {
  */
 export interface ExecutionResult {
   id: string;
-  status: 'success' | 'error' | 'running' | 'pending';
+  status: "success" | "error" | "running" | "pending";
   startTime: string;
   endTime?: string;
   outputs: Record<string, unknown>;
@@ -105,7 +105,7 @@ export interface ExecutionError {
  */
 export interface LogEntry {
   timestamp: string;
-  level: 'info' | 'warn' | 'error' | 'debug';
+  level: "info" | "warn" | "error" | "debug";
   message: string;
   context?: Record<string, unknown>;
 }
@@ -161,7 +161,7 @@ export interface SearchParams {
   filters?: Record<string, string | number | boolean | null>;
   sort?: {
     field: string;
-    direction: 'asc' | 'desc';
+    direction: "asc" | "desc";
   };
   page?: number;
   pageSize?: number;
