@@ -1,6 +1,6 @@
 
 
-# Comprehensive Parallel AI Prompt for AI Metadata Captur
+# Comprehensive Parallel AI Prompt for AI Metadata Capture
 
 e
 

@@ -1,6 +1,6 @@
 
 
-# ETL Requirements & Useful Querie
+# ETL Requirements & Useful Queries
 
 s
 

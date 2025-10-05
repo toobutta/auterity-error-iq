@@ -1,6 +1,6 @@
 
 
-# Reverse-Engineered Coverage Map (to catch gap
+# Reverse-Engineered Coverage Map (to catch gaps
 
 s
 

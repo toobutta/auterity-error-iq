@@ -261,12 +261,7 @@ const getGarbageCollectionTime = (): number => {
 };
 
 const measureEventLoopLag = (): number => {
-  const start = performance.now();
-  setTimeout(() => {
-    const lag = performance.now() - start - 0; // 0ms timeout
-    // In a real implementation, you'd store this value
-    console.log('Event loop lag:', lag);
-  }, 0);
+  // Event loop lag measurement not implemented in this build
   return 0; // Placeholder
 };
 
@@ -276,7 +271,7 @@ export const PerformanceMonitor: React.FC<{
   onMetricsUpdate?: (metrics: PerformanceMetrics) => void;
   enableConsoleLogging?: boolean;
 }> = ({ children, onMetricsUpdate, enableConsoleLogging = false }) => {
-  const { getMetrics, startMonitoring, recordMetric } = usePerformanceMonitor();
+  const { getMetrics, startMonitoring } = usePerformanceMonitor();
 
   useEffect(() => {
     const cleanup = startMonitoring();
@@ -287,6 +282,8 @@ export const PerformanceMonitor: React.FC<{
       onMetricsUpdate?.(metrics);
 
       if (enableConsoleLogging) {
+        // optional debug logging enabled by prop
+        // eslint-disable-next-line no-console
         console.log('Performance Metrics:', metrics);
       }
     }, 10000); // Report every 10 seconds
@@ -347,9 +344,7 @@ export const performanceUtils = {
   },
 
   // Lazy loading utility
-  lazyLoad: <T>(
-    factory: () => Promise<T>
-  ): (() => Promise<T>) => {
+  lazyLoad: function<T>(factory: () => Promise<T>): (() => Promise<T>) {
     let promise: Promise<T> | null = null;
     return () => {
       if (!promise) {

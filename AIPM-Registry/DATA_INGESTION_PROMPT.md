@@ -1,6 +1,6 @@
 
 
-# Final Parallel AI Prompt (copy-past
+# Final Parallel AI Prompt (copy-paste
 
 e
 

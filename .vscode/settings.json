@@ -20,7 +20,7 @@
     "**/__pycache__": true,
     "**/node_modules": true
   },
-  "git.inputValidationSubjectLength": 50,
+  "git.inputValidationSubjectLength": 72,
   
   // Commit Message Template for AI Generation
   "aiCommitMessage.rules": {

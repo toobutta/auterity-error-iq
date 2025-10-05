@@ -252,7 +252,7 @@ export const GitPanel: React.FC<GitPanelProps> = ({
                 {commit.sha.substring(0, 7)}
               </div>
               <div className="commit-date text-xs text-gray-500">
-                {new Date(commit.createdAt).toLocaleDateString()}
+                {new Date(commit.date).toLocaleDateString()}
               </div>
             </div>
             <div className="commit-message text-sm mb-2">

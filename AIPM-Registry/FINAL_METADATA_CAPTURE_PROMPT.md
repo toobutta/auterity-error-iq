@@ -1,6 +1,6 @@
 
 
-# AI Metadata Project — Final Parallel AI Prompt for Metadata Captur
+# AI Metadata Project — Final Parallel AI Prompt for Metadata Capture
 
 e
 

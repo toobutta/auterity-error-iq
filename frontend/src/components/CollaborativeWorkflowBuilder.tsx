@@ -655,7 +655,7 @@ export const CollaborativeWorkflowBuilder: React.FC<CollaborativeWorkflowBuilder
         {/* Comments Panel */}
         <CommentPanel
           comments={comments.filter(comment => comment.nodeId === selectedNodeId)}
-          onAddComment={(content) => selectedNodeId && addComment(selectedNodeId, content)}
+          onAddComment={addComment}
           selectedNodeId={selectedNodeId}
         />
       </div>

@@ -1,6 +1,6 @@
 
 
-# Capture Checklist & API Schem
+# Capture Checklist & API Schema
 
 a
 

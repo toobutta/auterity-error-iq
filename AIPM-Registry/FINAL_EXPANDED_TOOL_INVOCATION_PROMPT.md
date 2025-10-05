@@ -1,6 +1,6 @@
 
 
-# AI Metadata Project — Final Expanded Tool & Function Invocation Research Promp
+# AI Metadata Project — Final Expanded Tool & Function Invocation Research Prompt
 
 t
 

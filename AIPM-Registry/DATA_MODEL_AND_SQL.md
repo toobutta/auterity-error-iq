@@ -1,6 +1,6 @@
 
 
-# Core Data Model & SQL DD
+# Core Data Model & SQL DDL
 
 L
 
