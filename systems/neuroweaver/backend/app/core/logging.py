@@ -30,5 +30,10 @@ def setup_logging(level: str = "INFO") -> logging.Logger:
     return logger
 
 
+def get_logger(name: str) -> logging.Logger:
+    """Get a logger instance for the given name"""
+    return logging.getLogger(f"neuroweaver.{name}")
+
+
 # Create default logger
 logger = setup_logging()

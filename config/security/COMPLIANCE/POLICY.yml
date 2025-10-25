@@ -1,0 +1,32 @@
+# License Compliance Policy
+
+allowed_licenses:
+  - MIT
+  - Apache-2.0
+  - BSD-2-Clause
+  - BSD-3-Clause
+  - ISC
+  - MPL-2.0
+
+prohibited_licenses:
+  - GPL-2.0
+  - GPL-3.0
+  - AGPL-3.0
+  - SSPL-1.0
+  - BUSL-1.1
+
+warn_on_licenses:
+  - LGPL-2.1
+  - LGPL-3.0
+
+review_required:
+  - CC-BY-SA-4.0
+  - ODbL-1.0
+
+fail_on:
+  - prohibited_licenses
+  - missing_license_info
+
+warn_on:
+  - warn_on_licenses
+  - outdated_dependencies

@@ -1,445 +1,678 @@
-# Contributing to Auterity Platform
 
-[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/toobutta/auterity-error-iq/issues)
-[![GitHub Issues](https://img.shields.io/github/issues/toobutta/auterity-error-iq)](https://github.com/toobutta/auterity-error-iq/issues)
 
-We welcome contributions to the Auterity platform! This guide will help you get started with contributing to our open-source components.
+# Contributing to Auterity Unified AI Platfor
 
-## 🎯 **Component-Specific Guidelines**
+m
 
-The Auterity platform consists of several open-source components. Choose the component you'd like to contribute to:
+#
 
-| Component          | Focus Area                     | Language     | Guidelines                                                              |
-| ------------------ | ------------------------------ | ------------ | ----------------------------------------------------------------------- |
-| **RelayCore**      | AI routing & cost optimization | TypeScript   | [RelayCore Contributing](docs/components/relaycore/CONTRIBUTING.md)     |
-| **NeuroWeaver**    | ML model management            | Python/React | [NeuroWeaver Contributing](docs/components/neuroweaver/CONTRIBUTING.md) |
-| **AutoMatrix**     | Workflow automation            | Python/React | [AutoMatrix Contributing](docs/components/autmatrix/CONTRIBUTING.md)    |
-| **Shared Library** | UI components & utilities      | TypeScript   | [Shared Contributing](docs/components/shared/CONTRIBUTING.md)           |
+# Welcome!
 
-## 🚀 **Quick Start for Contributors**
+🎉
 
-### **1. Fork and Clone**
+Thank you for your interest in contributing to the Auterity Unified AI Platform. This document provides guidelines and information for contributors.
+
+#
+
+# Table of Content
+
+s
+
+- [Code of Conduct]
+
+(
+
+#code-of-conduct
+
+)
+
+- [Getting Started]
+
+(
+
+#getting-started
+
+)
+
+- [Development Workflow]
+
+(
+
+#development-workflow
+
+)
+
+- [Coding Standards]
+
+(
+
+#coding-standards
+
+)
+
+- [Testing Guidelines]
+
+(
+
+#testing-guidelines
+
+)
+
+- [Commit Guidelines]
+
+(
+
+#commit-guidelines
+
+)
+
+- [Pull Request Process]
+
+(
+
+#pull-request-process
+
+)
+
+- [Reporting Issues]
+
+(
+
+#reporting-issue
+
+s
+
+)
+
+#
+
+# Code of Conduc
+
+t
+
+This project follows a code of conduct to ensure a welcoming environment for all contributors. By participating, you agree to:
+
+- Be respectful and inclusiv
+
+e
+
+- Focus on constructive feedbac
+
+k
+
+- Accept responsibility and apologize for mistake
+
+s
+
+- Show empathy towards other community member
+
+s
+
+#
+
+# Getting Starte
+
+d
+
+#
+
+## Prerequisite
+
+s
+
+- Node.js 18.x or high
+
+e
+
+r
+
+- npm 8.x or high
+
+e
+
+r
+
+- Python 3.12 or higher (for backend developmen
+
+t
+
+)
+
+- Gi
+
+t
+
+#
+
+## Development Setu
+
+p
+
+1. **Fork the repositor
+
+y
+
+* *
+
 
 ```bash
-# Fork the repository on GitHub
-# Then clone your fork
-git clone https://github.com/YOUR_USERNAME/auterity-error-iq.git
-cd auterity-error-iq
+   git clone https://github.com/your-username/auterity-error-iq.git
+
+   cd auterity-error-iq
+
+
+
 ```
 
-### **2. Set Up Development Environment**
+2. **Install dependencie
 
-```bash
-# Install dependencies for all components
-npm install                    # Root dependencies
-cd frontend && npm install     # Frontend dependencies
-cd ../systems/relaycore && npm install  # RelayCore dependencies
-cd ../../backend && pip install -r requirements.txt  # Backend dependencies
+s
+
+* *
+
+
 ```
 
-### **3. Create Feature Branch**
+bash
+   npm install
+   cd frontend && npm install && cd ..
+   cd apps/workflow-studio && npm install && cd ..
 
-```bash
-# Use component-specific branch naming
-git checkout -b feature/relaycore-cost-optimization
-git checkout -b feature/neuroweaver-automotive-templates
-git checkout -b feature/autmatrix-workflow-builder
-git checkout -b feature/shared-component-library
+
+
 ```
 
-## 📋 **Contribution Types**
+3. **Set up environment variable
 
-### **🐛 Bug Fixes**
+s
 
-- Fix existing functionality issues
-- Improve error handling
-- Resolve performance problems
-- **Label**: `bug`, `component:name`
+* *
 
-### **✨ New Features**
 
-- Add new functionality
-- Enhance existing features
-- Implement feature requests
-- **Label**: `enhancement`, `component:name`
-
-### **📚 Documentation**
-
-- Improve component documentation
-- Add code examples
-- Update API references
-- **Label**: `documentation`, `component:name`
-
-### **🧪 Testing**
-
-- Add unit tests
-- Improve test coverage
-- Add integration tests
-- **Label**: `testing`, `component:name`
-
-### **🔧 Infrastructure**
-
-- Improve build processes
-- Enhance CI/CD pipelines
-- Update deployment configurations
-- **Label**: `infrastructure`, `component:name`
-
-## 🏷️ **Issue Labels and Component Tags**
-
-When creating issues or pull requests, use these labels:
-
-### **Component Labels** (Required)
-
-- `component:relaycore` - RelayCore AI router
-- `component:neuroweaver` - NeuroWeaver ML platform
-- `component:autmatrix` - AutoMatrix workflow engine
-- `component:shared` - Shared library components
-- `component:integration` - Cross-system integration
-
-### **Type Labels**
-
-- `bug` - Something isn't working
-- `enhancement` - New feature or request
-- `documentation` - Improvements or additions to docs
-- `testing` - Related to testing
-- `infrastructure` - Build, CI/CD, deployment
-- `security` - Security-related issues
-
-### **Priority Labels**
-
-- `priority:critical` - Critical issues blocking functionality
-- `priority:high` - Important issues affecting users
-- `priority:medium` - Standard improvements
-- `priority:low` - Nice-to-have enhancements
-
-### **Status Labels**
-
-- `status:needs-review` - Ready for review
-- `status:in-progress` - Currently being worked on
-- `status:blocked` - Blocked by dependencies
-- `status:ready-to-merge` - Approved and ready
-
-## 🔄 **Development Workflow**
-
-### **1. Issue Creation**
-
-```markdown
-# Use issue templates
-
-- Bug Report Template
-- Feature Request Template
-- Documentation Improvement Template
-- Component-Specific Templates
 ```
 
-### **2. Development Process**
+bash
+   cp .env.example .env
 
-```bash
-# 1. Assign yourself to the issue
-# 2. Create feature branch
-git checkout -b feature/component-description
 
-# 3. Make changes following component guidelines
-# 4. Add tests for your changes
-# 5. Update documentation
-# 6. Run quality checks
+# Edit .env with your configuration
+
+
+
 ```
 
-### **3. Quality Checks**
+4. **Start development server
 
-```bash
-# Frontend (AutoMatrix, NeuroWeaver frontend, Shared)
-npm run lint                   # ESLint checks
-npm run type-check            # TypeScript validation
-npm test                      # Unit tests
-npm run test:coverage         # Coverage report
+s
 
-# Backend (AutoMatrix, NeuroWeaver backend)
-black .                       # Code formatting
-isort .                       # Import organization
-flake8 .                      # Linting
-pytest                        # Unit tests
+* *
 
-# RelayCore (TypeScript/Node.js)
-npm run lint                  # ESLint checks
-npm run type-check           # TypeScript validation
-npm test                     # Unit tests
-npm run test:integration     # Integration tests
+
 ```
 
-### **4. Pull Request Process**
+bash
+   npm run dev
 
-```markdown
-# PR Template includes:
 
-- Component affected
-- Description of changes
-- Testing performed
-- Breaking changes (if any)
-- Related issues
 ```
 
-## 📝 **Code Standards**
+#
 
-### **General Standards**
+# Development Workflo
 
-- **Clear, descriptive commit messages**
-- **Comprehensive test coverage (>90%)**
-- **Updated documentation for changes**
-- **No breaking changes without discussion**
-- **Security-first approach**
+w
 
-### **TypeScript/JavaScript (RelayCore, Frontend)**
+#
 
-```typescript
-// Use strict TypeScript
-interface ComponentProps {
-  id: string;
-  name: string;
-  optional?: boolean;
-}
+##
 
-// Prefer functional components
-const MyComponent: React.FC<ComponentProps> = ({
-  id,
-  name,
-  optional = false,
-}) => {
-  // Component implementation
-};
+ 1. Choose an Issu
 
-// Use proper error handling
-try {
-  const result = await apiCall();
-  return result;
-} catch (error) {
-  logger.error("API call failed", { error, context });
-  throw new ComponentError("Failed to process request", error);
-}
+e
+
+- Check [GitHub Issues](https://github.com/toobutta/auterity-error-iq/issues) for open task
+
+s
+
+- Comment on the issue to indicate you're working on i
+
+t
+
+- Wait for maintainer assignmen
+
+t
+
+#
+
+##
+
+ 2. Create a Feature Branc
+
+h
+
 ```
 
-### **Python (Backend, NeuroWeaver)**
+bash
+git checkout -b feature/your-feature-nam
 
-```python
-# Use type hints
-from typing import List, Optional, Dict, Any
+e
 
-def process_workflow(
-    workflow_id: str,
-    steps: List[Dict[str, Any]],
-    context: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
-    """Process workflow with given steps and context."""
-    # Implementation
-    pass
+# or
 
-# Use proper error handling
-try:
-    result = await process_request(data)
-    return result
-except ValidationError as e:
-    logger.error(f"Validation failed: {e}")
-    raise HTTPException(status_code=400, detail=str(e))
-except Exception as e:
-    logger.error(f"Unexpected error: {e}")
-    raise HTTPException(status_code=500, detail="Internal server error")
+git checkout -b fix/issue-number-descriptio
+
+n
+
 ```
 
-## 🧪 **Testing Guidelines**
+#
 
-### **Unit Tests**
+##
 
-```typescript
-// Frontend/RelayCore
-describe("ComponentName", () => {
-  it("should handle valid input correctly", () => {
-    const result = processInput("valid-input");
-    expect(result).toBe("expected-output");
-  });
+ 3. Make Change
 
-  it("should throw error for invalid input", () => {
-    expect(() => processInput("invalid")).toThrow("Invalid input");
-  });
-});
+s
+
+- Follow the coding standards belo
+
+w
+
+- Write tests for new functionalit
+
+y
+
+- Update documentation as neede
+
+d
+
+- Ensure all tests pas
+
+s
+
+#
+
+##
+
+ 4. Commit Change
+
+s
+
 ```
 
-```python
-# Backend/NeuroWeaver
-import pytest
+bash
+git add .
+git commit -m "feat: add new feature description
 
-def test_workflow_execution():
-    """Test workflow execution with valid data."""
-    workflow = create_test_workflow()
-    result = execute_workflow(workflow)
-    assert result.status == 'completed'
-    assert len(result.steps) == 3
+"
 
-def test_workflow_validation_error():
-    """Test workflow validation with invalid data."""
-    with pytest.raises(ValidationError):
-        create_workflow({'invalid': 'data'})
 ```
 
-### **Integration Tests**
+#
 
-```bash
-# Test cross-component integration
-npm run test:integration        # Frontend integration
-pytest tests/integration/      # Backend integration
+##
+
+ 5. Push and Create Pull Reques
+
+t
+
 ```
 
-## 📚 **Documentation Standards**
+bash
+git push origin feature/your-feature-nam
 
-### **Code Documentation**
+e
 
-````typescript
-/**
- * Routes AI requests to optimal providers based on cost and performance.
- *
- * @param request - The AI request containing prompt and context
- * @param options - Routing options including budget constraints
- * @returns Promise resolving to AI response with metadata
- *
- * @example
- * ```typescript
- * const response = await routeAIRequest({
- *   prompt: "Explain quantum computing",
- *   taskType: "explanation"
- * }, {
- *   budgetLimit: 0.10
- * });
- * ```
- */
-async function routeAIRequest(
-  request: AIRequest,
-  options: RoutingOptions,
-): Promise<AIResponse> {
-  // Implementation
-}
-````
-
-### **API Documentation**
-
-````markdown
-## POST /api/v1/ai/route
-
-Routes an AI request to the optimal provider.
-
-### Request Body
-
-```json
-{
-  "prompt": "string",
-  "taskType": "explanation|generation|analysis",
-  "context": {
-    "domain": "automotive",
-    "userId": "user123"
-  }
-}
 ```
-````
+Then create a pull request on GitHub.
 
-### Response
+#
 
-```json
-{
-  "response": "AI generated response...",
-  "metadata": {
-    "modelUsed": "gpt-3.5-turbo",
-    "cost": 0.002,
-    "latencyMs": 1250
-  }
-}
+# Coding Standard
+
+s
+
+#
+
+## TypeScript/JavaScript
+
+- Use TypeScript for all new cod
+
+e
+
+- Strict type checking enable
+
+d
+
+- ESLint configuration must pas
+
+s
+
+- Prettier formatting require
+
+d
+
+- Maximum line length: 100 character
+
+s
+
+#
+
+## Python (Backend)
+
+- Black code formattin
+
+g
+
+- isort import sortin
+
+g
+
+- Type hints require
+
+d
+
+- Docstrings for all function
+
+s
+
+#
+
+## File Naming
+
+- Use kebab-case for files: `user-profile.tsx
+
+`
+
+- Use PascalCase for components: `UserProfile.tsx
+
+`
+
+- Use camelCase for utilities: `formatDate.ts
+
+`
+
+#
+
+## Commit Messages
+
+Follow conventional commits:
+
 ```
 
-````
+feat: add new feature
+fix: resolve bug in user authentication
+docs: update API documentation
+style: format code with prettier
+refactor: restructure user service
+test: add unit tests for login component
+chore: update dependencies
 
-## 🔒 **Security Guidelines**
+```
 
-### **Security Requirements**
-- **No hardcoded secrets or API keys**
-- **Input validation for all user data**
-- **Proper error handling without information leakage**
-- **Secure authentication and authorization**
-- **Regular dependency updates**
+#
 
-### **Security Review Process**
-```bash
-# Run security scans
-npm audit                      # Frontend security scan
-safety check                  # Python security scan
-bandit -r backend/            # Python security linting
-````
+# Testing Guideline
 
-## 🎯 **Component-Specific Contribution Areas**
+s
 
-### **RelayCore Contributions**
+#
 
-- **AI Provider Integrations**: Add new AI providers
-- **Cost Optimization**: Improve routing algorithms
-- **Performance Monitoring**: Enhance metrics collection
-- **Plugin Development**: Create IDE integrations
+## Test Coverage
 
-### **NeuroWeaver Contributions**
+- Minimum 80% code coverage require
 
-- **Training Pipelines**: Improve AutoRLAIF implementation
-- **Vertical Kits**: Add industry-specific templates
-- **Model Registry**: Enhance model management
-- **Performance Monitoring**: Add ML-specific metrics
+d
 
-### **AutoMatrix Contributions**
+- All new features must include test
 
-- **Workflow Builder**: Enhance visual editor
-- **Template System**: Add workflow templates
-- **Execution Engine**: Improve performance and reliability
-- **Integration Points**: Add external service connectors
+s
 
-### **Shared Library Contributions**
+- Integration tests for API endpoint
 
-- **UI Components**: Add reusable React components
-- **Design System**: Enhance design tokens and themes
-- **Utility Functions**: Add cross-system utilities
-- **API Clients**: Improve type-safe API integration
+s
 
-## 🏆 **Recognition**
+- E2E tests for critical user flow
 
-### **Contributor Recognition**
+s
 
-- **Contributors listed in CONTRIBUTORS.md**
-- **GitHub contributor badges**
-- **Component-specific acknowledgments**
-- **Community highlights for significant contributions**
+#
 
-### **Maintainer Path**
+## Running Tests
 
-Active contributors may be invited to become component maintainers with:
+```
 
-- **Review permissions for component PRs**
-- **Issue triage responsibilities**
-- **Release planning participation**
-- **Community engagement leadership**
+bash
 
-## 📞 **Getting Help**
+# Frontend unit tests
 
-### **Communication Channels**
+cd frontend && npm run test:coverage
 
-- **GitHub Issues**: [Create an issue](https://github.com/toobutta/auterity-error-iq/issues)
-- **GitHub Discussions**: [Join discussions](https://github.com/toobutta/auterity-error-iq/discussions)
-- **Component Documentation**: [Component docs](docs/components/README.md)
+# Backend tests
 
-### **Mentorship**
+cd backend && python -m pytest --cov=. --cov-report=htm
 
-New contributors can request mentorship by:
+l
 
-1. Creating an issue with `help-wanted` label
-2. Joining GitHub discussions
-3. Commenting on existing issues
-4. Reaching out to component maintainers
+# Integration tests
 
-## 📄 **License**
+npm run test:integration
 
-By contributing to Auterity, you agree that your contributions will be licensed under the MIT License.
+# E2E tests
 
----
+npm run test:e2e
 
-**Thank you for contributing to the Auterity platform! 🚀**
+```
+
+#
+
+## Test Structure
+
+```
+
+src/
+  components/
+    Button/
+      Button.tsx
+      Button.test.tsx
+      Button.stories.tsx
+  services/
+    apiService.ts
+    apiService.test.ts
+
+```
+
+#
+
+# Pull Request Proces
+
+s
+
+#
+
+## Before Submitting
+
+- [ ] Code follows project style guideline
+
+s
+
+- [ ] Self-review complete
+
+d
+
+- [ ] No console.log or debug statement
+
+s
+
+- [ ] Security considerations addresse
+
+d
+
+- [ ] Tests pass locall
+
+y
+
+- [ ] Documentation update
+
+d
+
+- [ ] Commit messages follow guideline
+
+s
+
+#
+
+## PR Template
+
+Use the provided PR template with:
+
+- Clear description of change
+
+s
+
+- Type of change (bug fix, feature, etc.
+
+)
+
+- Testing complete
+
+d
+
+- Breaking changes note
+
+d
+
+- Screenshots for UI change
+
+s
+
+#
+
+## Review Process
+
+1. Automated checks must pas
+
+s
+
+2. At least one maintainer review require
+
+d
+
+3. Address review feedbac
+
+k
+
+4. Squash commits before merg
+
+e
+
+5. Delete feature branch after merg
+
+e
+
+#
+
+# Reporting Issue
+
+s
+
+#
+
+## Bug Reports
+
+- Use the bug report templat
+
+e
+
+- Include steps to reproduc
+
+e
+
+- Provide environment detail
+
+s
+
+- Attach screenshots/log
+
+s
+
+#
+
+## Feature Requests
+
+- Use the feature request templat
+
+e
+
+- Describe the problem you're solvin
+
+g
+
+- Explain your proposed solutio
+
+n
+
+- Consider alternative approache
+
+s
+
+#
+
+## Security Issues
+
+- **DO NOT
+
+* * create public issues for security vulnerabilitie
+
+s
+
+- Email security@auterity.com directl
+
+y
+
+- Include detailed reproduction step
+
+s
+
+#
+
+# Recognitio
+
+n
+
+Contributors are recognized through:
+
+- GitHub contributor statistic
+
+s
+
+- Mention in release note
+
+s
+
+- Attribution in documentatio
+
+n
+
+- Community recognitio
+
+n
+
+#
+
+# Getting Hel
+
+p
+
+- **Documentation**: [docs/](./docs/
+
+)
+
+- **Discussions**: [GitHub Discussions](https://github.com/toobutta/auterity-error-iq/discussions
+
+)
+
+- **Issues**: [GitHub Issues](https://github.com/toobutta/auterity-error-iq/issues
+
+)
+
+Thank you for contributing to Auterity! 🚀

@@ -1,0 +1,294 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: auterity-backend
+    url: http://backend:8000
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - OPTIONS
+          headers:
+            - Accept
+            - Accept-Version
+            - Content-Length
+            - Content-MD5
+            - Content-Type
+            - Date
+            - Authorization
+          exposed_headers:
+            - X-Auth-Token
+          credentials: true
+          max_age: 3600
+      - name: rate-limiting
+        config:
+          minute: 100
+          hour: 1000
+          policy: local
+
+  - name: auterity-frontend
+    url: http://frontend:3000
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - "*"
+
+  - name: vllm-service
+    url: http://vllm-server:8001
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+            - OPTIONS
+          headers:
+            - Accept
+            - Accept-Version
+            - Content-Length
+            - Content-MD5
+            - Content-Type
+            - Date
+            - Authorization
+          credentials: true
+          max_age: 3600
+      - name: rate-limiting
+        config:
+          minute: 60
+          hour: 1000
+          policy: local
+      - name: request-size-limiting
+        config:
+          allowed_payload_size: 50 * 1024 * 1024  # 50MB for large prompts
+
+  - name: langgraph-service
+    url: http://langgraph-service:8002
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - OPTIONS
+          headers:
+            - Accept
+            - Accept-Version
+            - Content-Length
+            - Content-MD5
+            - Content-Type
+            - Date
+            - Authorization
+          credentials: true
+          max_age: 3600
+      - name: rate-limiting
+        config:
+          minute: 100
+          hour: 2000
+          policy: local
+      - name: request-size-limiting
+        config:
+          allowed_payload_size: 10 * 1024 * 1024  # 10MB for workflow definitions
+
+  - name: crewai-service
+    url: http://crewai-service:8003
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - OPTIONS
+          headers:
+            - Accept
+            - Accept-Version
+            - Content-Length
+            - Content-MD5
+            - Content-Type
+            - Date
+            - Authorization
+          credentials: true
+          max_age: 3600
+      - name: rate-limiting
+        config:
+          minute: 50
+          hour: 1000
+          policy: local
+      - name: request-size-limiting
+        config:
+          allowed_payload_size: 5 * 1024 * 1024  # 5MB for crew configurations
+
+routes:
+  - name: api-route
+    service: auterity-backend
+    paths:
+      - /api
+    strip_path: true
+
+  - name: app-route
+    service: auterity-frontend
+    paths:
+      - /
+    strip_path: false
+
+  - name: vllm-generate-route
+    service: vllm-service
+    paths:
+      - /api/v1/ai/vllm/generate
+      - /api/v1/ai/vllm/v1/generate
+    methods:
+      - POST
+    strip_path: false
+
+  - name: vllm-metrics-route
+    service: vllm-service
+    paths:
+      - /api/v1/ai/vllm/metrics
+      - /api/v1/ai/vllm/v1/metrics
+    methods:
+      - GET
+    strip_path: false
+
+  - name: vllm-health-route
+    service: vllm-service
+    paths:
+      - /api/v1/ai/vllm/health
+      - /api/v1/ai/vllm/
+    methods:
+      - GET
+    strip_path: false
+
+  - name: vllm-models-route
+    service: vllm-service
+    paths:
+      - /api/v1/ai/vllm/models
+      - /api/v1/ai/vllm/v1/models
+    methods:
+      - GET
+      - POST
+    strip_path: false
+
+  # LangGraph Service Routes
+  - name: langgraph-workflows-route
+    service: langgraph-service
+    paths:
+      - /api/v1/ai/langgraph/workflows
+    methods:
+      - GET
+      - POST
+    strip_path: false
+
+  - name: langgraph-workflow-route
+    service: langgraph-service
+    paths:
+      - /api/v1/ai/langgraph/workflows/{workflow_id}
+    methods:
+      - GET
+      - PUT
+      - DELETE
+    strip_path: false
+
+  - name: langgraph-execute-route
+    service: langgraph-service
+    paths:
+      - /api/v1/ai/langgraph/workflows/{workflow_id}/execute
+    methods:
+      - POST
+    strip_path: false
+
+  - name: langgraph-metrics-route
+    service: langgraph-service
+    paths:
+      - /api/v1/ai/langgraph/metrics
+    methods:
+      - GET
+    strip_path: false
+
+  - name: langgraph-health-route
+    service: langgraph-service
+    paths:
+      - /api/v1/ai/langgraph/health
+      - /api/v1/ai/langgraph/
+    methods:
+      - GET
+    strip_path: false
+
+  # CrewAI Service Routes
+  - name: crewai-crews-route
+    service: crewai-service
+    paths:
+      - /api/v1/ai/crewai/crews
+    methods:
+      - GET
+      - POST
+    strip_path: false
+
+  - name: crewai-crew-route
+    service: crewai-service
+    paths:
+      - /api/v1/ai/crewai/crews/{crew_id}
+    methods:
+      - GET
+      - PUT
+      - DELETE
+    strip_path: false
+
+  - name: crewai-execute-route
+    service: crewai-service
+    paths:
+      - /api/v1/ai/crewai/crews/{crew_id}/execute
+    methods:
+      - POST
+    strip_path: false
+
+  - name: crewai-agents-route
+    service: crewai-service
+    paths:
+      - /api/v1/ai/crewai/agents
+    methods:
+      - GET
+    strip_path: false
+
+  - name: crewai-metrics-route
+    service: crewai-service
+    paths:
+      - /api/v1/ai/crewai/metrics
+    methods:
+      - GET
+    strip_path: false
+
+  - name: crewai-health-route
+    service: crewai-service
+    paths:
+      - /api/v1/ai/crewai/health
+      - /api/v1/ai/crewai/
+    methods:
+      - GET
+    strip_path: false
+
+consumers:
+  - username: default-user
+    keyauth_credentials:
+      - key: default-api-key
+
+plugins:
+  - name: prometheus
+    config:
+      per_consumer: true

@@ -23,7 +23,8 @@ const sdk = new NodeSDK({
 
 export const initializeTracing = () => {
   sdk.start();
-  console.log("OpenTelemetry tracing initialized for RelayCore");
+
 };
 
 export default sdk;
+

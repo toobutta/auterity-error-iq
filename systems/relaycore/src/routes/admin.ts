@@ -43,3 +43,4 @@ router.get("/api/config", (req: Request, res: Response) => {
 });
 
 export { router as adminRoutes };
+

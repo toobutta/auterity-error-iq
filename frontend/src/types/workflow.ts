@@ -52,7 +52,7 @@ export interface NodeConfig extends Record<string, unknown> {
   [key: string]: unknown;
 }
 
-export interface NodeData {
+export interface NodeData extends Record<string, unknown> {
   label: string;
   description?: string;
   type: WorkflowStep["type"];
@@ -75,3 +75,5 @@ export interface WorkflowExecutionError {
   timestamp: string;
   context?: Record<string, unknown>;
 }
+
+

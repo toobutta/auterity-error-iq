@@ -1,0 +1,117 @@
+{
+  "id": "automotive-lead-qualification",
+  "name": "Automotive Lead Qualification Workflow",
+  "description": "Automated lead scoring and qualification for automotive dealerships using AI analysis of customer inquiries and behavior patterns",
+  "industry": "automotive",
+  "category": "sales",
+  "workflow": {
+    "name": "Lead Qualification Process",
+    "description": "Qualifies leads based on budget, timeline, and vehicle preferences",
+    "steps": [
+      {
+        "id": "start-inquiry",
+        "type": "start",
+        "name": "Customer Inquiry",
+        "description": "Initial customer contact via website, phone, or email",
+        "config": {},
+        "position": { "x": 100, "y": 100 }
+      },
+      {
+        "id": "ai-lead-score",
+        "type": "ai_process",
+        "name": "AI Lead Scoring",
+        "description": "Analyzes customer data to generate lead score (0-100)",
+        "config": {
+          "model": "lead-scoring-v2",
+          "threshold": 70
+        },
+        "position": { "x": 300, "y": 100 }
+      },
+      {
+        "id": "budget-check",
+        "type": "condition",
+        "name": "Budget Analysis",
+        "description": "Evaluates customer's budget range and financing needs",
+        "config": {
+          "conditions": [
+            { "field": "budget", "operator": "gte", "value": 25000 }
+          ]
+        },
+        "position": { "x": 500, "y": 100 }
+      },
+      {
+        "id": "qualified-followup",
+        "type": "action",
+        "name": "Qualified Lead Follow-up",
+        "description": "Sends personalized follow-up with vehicle recommendations",
+        "config": {
+          "template": "qualified-lead-email",
+          "priority": "high"
+        },
+        "position": { "x": 700, "y": 50 }
+      },
+      {
+        "id": "nurture-campaign",
+        "type": "action",
+        "name": "Nurture Campaign",
+        "description": "Adds to email nurture sequence for future engagement",
+        "config": {
+          "campaign": "automotive-nurture",
+          "frequency": "weekly"
+        },
+        "position": { "x": 700, "y": 150 }
+      },
+      {
+        "id": "end-process",
+        "type": "end",
+        "name": "Process Complete",
+        "description": "Lead qualification process finished",
+        "config": {},
+        "position": { "x": 900, "y": 100 }
+      }
+    ],
+    "connections": [
+      {
+        "id": "start-to-ai",
+        "source": "start-inquiry",
+        "target": "ai-lead-score",
+        "label": "New Inquiry"
+      },
+      {
+        "id": "ai-to-budget",
+        "source": "ai-lead-score",
+        "target": "budget-check",
+        "label": "Lead Scored"
+      },
+      {
+        "id": "budget-qualified",
+        "source": "budget-check",
+        "target": "qualified-followup",
+        "label": "Qualified"
+      },
+      {
+        "id": "budget-not-qualified",
+        "source": "budget-check",
+        "target": "nurture-campaign",
+        "label": "Needs Nurturing"
+      },
+      {
+        "id": "followup-to-end",
+        "source": "qualified-followup",
+        "target": "end-process",
+        "label": "Follow-up Sent"
+      },
+      {
+        "id": "nurture-to-end",
+        "source": "nurture-campaign",
+        "target": "end-process",
+        "label": "Added to Nurture"
+      }
+    ]
+  },
+  "tags": ["lead-qualification", "automotive", "sales", "AI", "scoring"],
+  "compliance": [],
+  "version": "1.0.0",
+  "createdAt": "2025-08-30T00:00:00Z",
+  "updatedAt": "2025-08-30T00:00:00Z"
+}

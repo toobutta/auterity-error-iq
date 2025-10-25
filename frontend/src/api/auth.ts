@@ -31,11 +31,28 @@ export class AuthApi {
     formData.append("username", credentials.email);
     formData.append("password", credentials.password);
 
-    return apiClient.post("/api/auth/login", formData);
+    // Request OAuth2 token
+    const token = await apiClient.post("/api/auth/token", formData);
+
+    // Persist token before fetching user info
+    localStorage.setItem("access_token", token.access_token);
+
+    // Fetch current user
+    const user = await apiClient.get("/api/auth/me");
+
+    return {
+      access_token: token.access_token,
+      token_type: token.token_type,
+      user,
+    };
   }
 
   static async register(userData: RegisterRequest): Promise<LoginResponse> {
-    return apiClient.post("/api/auth/register", userData);
+    // Register user
+    await apiClient.post("/api/auth/register", userData);
+
+    // Login to obtain token and user info
+    return this.login({ email: userData.email, password: userData.password });
   }
 
   static async getCurrentUser(): Promise<User> {
@@ -46,3 +63,5 @@ export class AuthApi {
     return apiClient.post("/api/auth/logout");
   }
 }
+
+

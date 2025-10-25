@@ -1,0 +1,27 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"zencoder.mcpServers": {
+			"github": {
+				"command": "docker",
+				"args": [
+					"run",
+					"-i",
+					"--rm",
+					"-e",
+					"GITHUB_PERSONAL_ACCESS_TOKEN",
+					"ghcr.io/github/github-mcp-server"
+				],
+				"env": {
+					"GITHUB_PERSONAL_ACCESS_TOKEN": "<YOUR_TOKEN>"
+				}
+			}
+		},
+		"docwriter.style": "Auto-detect",
+		"coderabbit.agentType": "Native"
+	}
+}

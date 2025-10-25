@@ -33,3 +33,5 @@ declare module "recharts" {
     React.ComponentProps<(typeof RechartsBar)["Bar"]>
   >;
 }
+
+

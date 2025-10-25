@@ -24,3 +24,4 @@ router.get("/detailed", (req, res) => {
 });
 
 export { router as healthRoutes };
+

@@ -180,7 +180,7 @@ const EnhancedWorkflowBuilder: React.FC<EnhancedWorkflowBuilderProps> = ({
 
       dispatch({ type: "SET_WORKFLOW", payload: enhancedWorkflow });
     } catch (error) {
-      console.error("Failed to load workflow:", error);
+
       dispatch({
         type: "SET_ERROR",
         payload: "Failed to load workflow. Please try again.",
@@ -228,7 +228,7 @@ const EnhancedWorkflowBuilder: React.FC<EnhancedWorkflowBuilderProps> = ({
           payload: "Workflow saved successfully!",
         });
       } catch (error) {
-        console.error("Failed to save workflow:", error);
+
         dispatch({
           type: "SET_ERROR",
           payload: "Failed to save workflow. Please try again.",
@@ -265,7 +265,7 @@ const EnhancedWorkflowBuilder: React.FC<EnhancedWorkflowBuilderProps> = ({
         const execution = await executeWorkflow(workflow.id, inputData);
         return execution.id;
       } catch (error) {
-        console.error("Workflow execution failed:", error);
+
         dispatch({
           type: "SET_ERROR",
           payload:
@@ -395,7 +395,7 @@ const EnhancedWorkflowBuilder: React.FC<EnhancedWorkflowBuilderProps> = ({
 
   const handleNodeDrag = useCallback((dragType: string) => {
     // Handle drag start events if needed
-    console.log("Node drag started:", dragType);
+
   }, []);
 
   const handleSearchChange = useCallback((term: string) => {
@@ -693,3 +693,5 @@ const EnhancedWorkflowBuilder: React.FC<EnhancedWorkflowBuilderProps> = ({
 };
 
 export default EnhancedWorkflowBuilder;
+
+

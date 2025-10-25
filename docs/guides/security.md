@@ -1,42 +1,128 @@
-# Frontend Security Configuration
 
-## PrismJS Security Measures
 
-### Version Management
+# Frontend Security Configuratio
 
-- **Current Version**: 1.30.0 (latest stable)
-- **Security Override**: Enforced via package.json overrides
-- **Auto-updates**: Disabled to prevent breaking changes
+n
 
-### Input Sanitization
+#
+
+# PrismJS Security Measure
+
+s
+
+#
+
+## Version Managemen
+
+t
+
+- **Current Version**: 1.30.0 (latest stabl
+
+e
+
+)
+
+- **Security Override**: Enforced via package.json override
+
+s
+
+- **Auto-updates**: Disabled to prevent breaking change
+
+s
+
+#
+
+## Input Sanitizatio
+
+n
 
 The `LazyCodeHighlighter` component implements multiple security layers:
 
-1. **Code Sanitization**: Removes dangerous HTML tags and scripts
-   - Strips `<script>`, `<iframe>`, `<object>`, `<embed>` tags
-   - Removes `javascript:` and `data:` protocols
+1. **Code Sanitization**: Removes dangerous HTML tags and scrip
 
-2. **Language Validation**: Restricts to allowed languages only
-   - Whitelist: javascript, json, markup, text, html, css, python, bash
-   - Defaults to 'text' for invalid languages
+t
 
-3. **Component Security**:
-   - Uses `PreTag="div"` to prevent HTML injection
-   - Custom styling prevents style-based attacks
-   - Error boundaries prevent crashes from malicious input
+s
 
-### Monitoring
+   - Strips `<script>`, `<iframe>`, `<object>`, `<embed>` tag
 
-- All errors are logged with timestamps and context
-- Failed loads trigger secure fallbacks
-- No user input is executed as code
+s
 
-### Dependencies
+   - Removes `javascript:` and `data:` protocol
 
-- `react-syntax-highlighter`: 15.6.1 (secure wrapper)
-- `prismjs`: 1.30.0 (latest patched version)
+s
 
-## Security Audit Status
+2. **Language Validation**: Restricts to allowed languages on
+
+l
+
+y
+
+   - Whitelist: javascript, json, markup, text, html, css, python, bas
+
+h
+
+   - Defaults to 'text' for invalid language
+
+s
+
+3. **Component Security*
+
+* :
+
+   - Uses `PreTag="div"` to prevent HTML injectio
+
+n
+
+   - Custom styling prevents style-based attack
+
+s
+
+   - Error boundaries prevent crashes from malicious inpu
+
+t
+
+#
+
+## Monitorin
+
+g
+
+- All errors are logged with timestamps and contex
+
+t
+
+- Failed loads trigger secure fallback
+
+s
+
+- No user input is executed as cod
+
+e
+
+#
+
+## Dependencie
+
+s
+
+- `react-syntax-highlighter`: 15.6.1 (secure wrappe
+
+r
+
+)
+
+- `prismjs`: 1.30.0 (latest patched versio
+
+n
+
+)
+
+#
+
+# Security Audit Statu
+
+s
 
 ✅ No high or critical vulnerabilities detected
 ✅ Input sanitization implemented

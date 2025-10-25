@@ -150,3 +150,4 @@ export interface BudgetListQuery {
   includeInactive?: boolean;
   parentBudgetId?: string;
 }
+

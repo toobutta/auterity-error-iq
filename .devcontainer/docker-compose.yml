@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - ../..:/workspaces:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /workspaces/auterity-error-iq
+    command: sleep infinity
+    environment:
+      - NODE_ENV=development
+      - PYTHONPATH=/workspaces/auterity-error-iq/backend
+    networks:
+      - auterity-dev
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: auterity_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: dev_password_123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - auterity-dev
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - auterity-dev
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: auterity
+      RABBITMQ_DEFAULT_PASS: dev_password_123
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - auterity-dev
+
+  # Optional: Add more services as needed
+  # elasticsearch:
+  #   image: elasticsearch:8.11.0
+  #   environment:
+  #     - discovery.type=single-node
+  #     - xpack.security.enabled=false
+  #   ports:
+  #     - "9200:9200"
+  #   networks:
+  #     - auterity-dev
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  auterity-dev:
+    driver: bridge

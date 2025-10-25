@@ -100,7 +100,6 @@ const ErrorDisplayDemo: React.FC = () => {
           : "",
       };
 
-      console.log("Error report submitted:", sanitizedData);
       showNotification("Error report submitted successfully!");
     },
     [showNotification],
@@ -214,7 +213,7 @@ const ErrorDisplayDemo: React.FC = () => {
   workflowId="workflow-456"
   onRetrySuccess={(newExecutionId) => {
     // Handle successful retry
-    console.log('Retried with ID:', newExecutionId);
+
   }}
   onClose={() => {
     // Handle close action
@@ -393,3 +392,5 @@ const ErrorDisplayDemo: React.FC = () => {
 };
 
 export default ErrorDisplayDemo;
+
+

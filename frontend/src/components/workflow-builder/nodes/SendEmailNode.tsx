@@ -2,11 +2,12 @@ import React from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { NodeData } from "../../../types/workflow";
 
-const SendEmailNode: React.FC<NodeProps<NodeData>> = ({
+const SendEmailNode: React.FC<NodeProps> = ({
   data,
   isConnectable,
 }) => {
-  const hasErrors = data.validationErrors && data.validationErrors.length > 0;
+  const nodeData = data as NodeData;
+  const hasErrors = nodeData.validationErrors && nodeData.validationErrors.length > 0;
 
   return (
     <div
@@ -23,22 +24,22 @@ const SendEmailNode: React.FC<NodeProps<NodeData>> = ({
         <div className="w-8 h-8 bg-blue-500 rounded-full mx-auto mb-2 flex items-center justify-center">
           <span className="text-white text-sm font-bold">📤</span>
         </div>
-        <h3 className="font-bold text-blue-800">{data.label}</h3>
-        {data.description && (
-          <p className="text-xs text-blue-600 mt-1">{data.description}</p>
+        <h3 className="font-bold text-blue-800">{nodeData.label}</h3>
+        {nodeData.description && (
+          <p className="text-xs text-blue-600 mt-1">{nodeData.description}</p>
         )}
-        {(data.config as { emailTemplate?: { subject?: string } })
+        {(nodeData.config as { emailTemplate?: { subject?: string } })
           ?.emailTemplate?.subject && (
           <p
             className="text-xs text-gray-500 mt-1 truncate"
             title={
-              (data.config as { emailTemplate?: { subject?: string } })
+              (nodeData.config as { emailTemplate?: { subject?: string } })
                 .emailTemplate?.subject || ""
             }
           >
             Subject:{" "}
             {(
-              (data.config as { emailTemplate?: { subject?: string } })
+              (nodeData.config as { emailTemplate?: { subject?: string } })
                 .emailTemplate?.subject || ""
             ).substring(0, 20)}
             ...
@@ -48,7 +49,7 @@ const SendEmailNode: React.FC<NodeProps<NodeData>> = ({
 
       {hasErrors && (
         <div className="mt-2 p-1 bg-red-100 border border-red-300 rounded text-xs text-red-600">
-          {data.validationErrors![0]}
+          {nodeData.validationErrors?.[0]}
         </div>
       )}
 
@@ -63,3 +64,5 @@ const SendEmailNode: React.FC<NodeProps<NodeData>> = ({
 };
 
 export default SendEmailNode;
+
+

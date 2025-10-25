@@ -40,7 +40,7 @@ const Workflows: React.FC = () => {
         typeof executionId !== "string" ||
         executionId.trim() === ""
       ) {
-        console.error("Invalid execution ID provided");
+
         return;
       }
 
@@ -235,3 +235,5 @@ const Workflows: React.FC = () => {
 };
 
 export default Workflows;
+
+

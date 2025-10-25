@@ -32,6 +32,12 @@ export default defineConfig({
       "@hooks": path.resolve(__dirname, "./src/hooks"),
       "@utils": path.resolve(__dirname, "./src/utils"),
       "@types": path.resolve(__dirname, "./src/types"),
+      "@enhanced": path.resolve(__dirname, "./src/services/enhanced"),
+      "@workflow-studio": path.resolve(__dirname, "./src/components/workflow-studio"),
+      "@canvas": path.resolve(__dirname, "./src/components/canvas"),
+      "@ai": path.resolve(__dirname, "./src/components/ai"),
+      "@collaboration": path.resolve(__dirname, "./src/collaboration"),
+      "@professional": path.resolve(__dirname, "./src/utils/professionalIcons"),
     },
   },
 
@@ -52,7 +58,7 @@ export default defineConfig({
     // Increase chunk size warning limit
     chunkSizeWarningLimit: 600,
 
-    // Simplified chunk strategy for stability
+    // Enhanced chunk strategy for better caching
     rollupOptions: {
       output: {
         manualChunks: {
@@ -64,13 +70,33 @@ export default defineConfig({
 
           // UI and utilities
           "ui-libs": ["recharts", "axios"],
+
+          // Performance optimizations
+          "performance-libs": ["lodash-es", "date-fns"],
         },
+        // Optimize asset naming for caching
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name?.split('.') ?? [];
+          const ext = info[info.length - 1];
+          if (/\.(png|jpe?g|svg|gif|tiff|bmp|ico)$/i.test(assetInfo.name ?? '')) {
+            return `assets/images/[name]-[hash][extname]`;
+          }
+          if (/\.(woff2?|eot|ttf|otf)$/i.test(assetInfo.name ?? '')) {
+            return `assets/fonts/[name]-[hash][extname]`;
+          }
+          return `assets/[name]-[hash][extname]`;
+        },
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
       },
     },
 
     // CSS optimization
     cssCodeSplit: true,
     cssMinify: "esbuild",
+
+    // Enable compression
+    reportCompressedSize: true,
   },
 
   optimizeDeps: {
@@ -80,6 +106,26 @@ export default defineConfig({
       "react-router-dom",
       "@xyflow/react",
       "recharts",
+      "lodash-es",
+      "date-fns",
+      "pixi.js",
+      "@ai-sdk/openai",
+      "@ai-sdk/anthropic",
+      "framer-motion",
+      "zod",
+      "zustand",
+      "yjs",
     ],
   },
+
+  // Performance optimizations
+  esbuild: {
+    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+    // Enable JSX runtime for better performance
+    jsxFactory: 'React.createElement',
+    jsxFragment: 'React.Fragment',
+  },
 });
+
+
+

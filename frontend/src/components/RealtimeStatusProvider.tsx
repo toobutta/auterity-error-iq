@@ -59,7 +59,7 @@ export const RealtimeStatusProvider: React.FC<{ children: ReactNode }> = ({
         setStatus(data.services);
         setLastUpdate(new Date());
       } catch (error) {
-        console.warn("Health check failed:", error);
+
       }
     }, 30000);
 
@@ -75,3 +75,5 @@ export const RealtimeStatusProvider: React.FC<{ children: ReactNode }> = ({
     </RealtimeStatusContext.Provider>
   );
 };
+
+

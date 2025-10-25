@@ -323,3 +323,5 @@ const NodePalette: React.FC<NodePaletteProps> = ({
 };
 
 export default NodePalette;
+
+

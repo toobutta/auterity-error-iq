@@ -35,3 +35,4 @@ export const authMiddleware = (unifiedAuth: UnifiedAuth) => {
     }
   };
 };
+

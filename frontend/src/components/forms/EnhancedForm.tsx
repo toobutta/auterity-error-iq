@@ -171,7 +171,7 @@ export const EnhancedForm: React.FC<FormConfig> = ({
       success("Success", "Form submitted successfully");
     } catch (err) {
       error("Submission Error", "Failed to submit form. Please try again.");
-      console.error("Form submission error:", err);
+
     } finally {
       setIsSubmitting(false);
     }
@@ -191,7 +191,7 @@ export const EnhancedForm: React.FC<FormConfig> = ({
             duration: 2000,
           });
         } catch (err) {
-          console.error("Auto-save failed:", err);
+
         } finally {
           setIsAutoSaving(false);
         }
@@ -212,7 +212,7 @@ export const EnhancedForm: React.FC<FormConfig> = ({
           info("Draft Loaded", "Your previous progress has been restored");
         }
       } catch (err) {
-        console.error("Failed to load draft:", err);
+
       }
     }
   }, [autoSave, title, info]);
@@ -407,3 +407,5 @@ export const EnhancedForm: React.FC<FormConfig> = ({
     </div>
   );
 };
+
+

@@ -1,0 +1,36 @@
+{
+  "name": "@auterity/workflow-contracts",
+  "version": "1.0.0",
+  "description": "Canonical workflow contracts (Zod, JSON Schema)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc && node build.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "files": ["dist"],
+  "devDependencies": {
+    "zod": "^3.22.2",
+    "zod-to-json-schema": "^3.21.1",
+    "ajv": "^8.12.0",
+    "typescript": "^5.0.0",
+    "vitest": "^0.34.0"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toobutta/auterity-error-iq.git",
+    "directory": "packages/workflow-contracts"
+  },
+  "homepage": "https://github.com/toobutta/auterity-error-iq/tree/main/packages/workflow-contracts",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  }
+}

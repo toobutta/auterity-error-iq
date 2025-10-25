@@ -1,0 +1,310 @@
+{
+  "name": "Auterity AI Platform - Commit Message Rules",
+  "version": "1.0.0",
+  "description": "Comprehensive rules for AI-generated commit messages in the Auterity platform",
+  
+  "conventionalCommits": {
+    "format": "<type>(<scope>): <description>",
+    "maxLineLength": 72,
+    "subjectMaxLength": 50,
+    "enforceConventionalFormat": true
+  },
+  
+  "commitTypes": {
+    "feat": {
+      "description": "A new feature for the user or system",
+      "examples": [
+        "feat(workflow): add parallel execution engine",
+        "feat(auth): implement multi-factor authentication",
+        "feat(agent): add smart triage capabilities"
+      ]
+    },
+    "fix": {
+      "description": "A bug fix that resolves an issue",
+      "examples": [
+        "fix(auth): resolve token validation race condition", 
+        "fix(workflow): prevent memory leaks in long-running tasks",
+        "fix(api): handle malformed request payloads gracefully"
+      ]
+    },
+    "docs": {
+      "description": "Documentation only changes",
+      "examples": [
+        "docs(api): update workflow execution endpoints",
+        "docs(readme): add installation instructions",
+        "docs(agent): document compliance framework"
+      ]
+    },
+    "style": {
+      "description": "Code style changes (formatting, missing semi colons, etc)",
+      "examples": [
+        "style(backend): apply black formatting to auth module",
+        "style(frontend): fix eslint violations in components",
+        "style(types): organize import statements"
+      ]
+    },
+    "refactor": {
+      "description": "Code changes that neither fix bugs nor add features",
+      "examples": [
+        "refactor(backend): standardize error handling patterns",
+        "refactor(workflow): extract common execution logic",
+        "refactor(auth): simplify user permission checks"
+      ]
+    },
+    "perf": {
+      "description": "Performance improvements",
+      "examples": [
+        "perf(workflow): optimize step execution batching",
+        "perf(db): add indexes for frequent queries",
+        "perf(api): implement response caching strategy"
+      ]
+    },
+    "test": {
+      "description": "Adding missing tests or correcting existing tests",
+      "examples": [
+        "test(auth): add integration tests for JWT flow",
+        "test(workflow): increase execution engine coverage",
+        "test(api): add load testing scenarios"
+      ]
+    },
+    "build": {
+      "description": "Build system or external dependency changes",
+      "examples": [
+        "build(deps): update fastapi to latest version",
+        "build(docker): optimize container build process",
+        "build(ci): add automated deployment pipeline"
+      ]
+    },
+    "ci": {
+      "description": "Continuous integration configuration changes",
+      "examples": [
+        "ci(github): add code quality gates",
+        "ci(workflow): implement automated testing",
+        "ci(deploy): configure staging environment"
+      ]
+    },
+    "chore": {
+      "description": "Other changes that don't modify src or test files",
+      "examples": [
+        "chore(config): update environment variables",
+        "chore(git): add development branch protection",
+        "chore(vscode): configure workspace settings"
+      ]
+    },
+    "revert": {
+      "description": "Reverts a previous commit",
+      "examples": [
+        "revert: feat(auth): implement SSO integration",
+        "revert: fix(workflow): resolve execution timeout"
+      ]
+    }
+  },
+  
+  "scopes": {
+    "backend": {
+      "description": "Backend Python/FastAPI changes",
+      "patterns": ["backend/**", "app/**", "*.py"]
+    },
+    "frontend": {
+      "description": "Frontend React/TypeScript changes", 
+      "patterns": ["frontend/**", "src/**", "*.tsx", "*.ts", "*.jsx", "*.js"]
+    },
+    "api": {
+      "description": "API endpoints and routing",
+      "patterns": ["**/api/**", "**/routes/**", "**/endpoints/**"]
+    },
+    "db": {
+      "description": "Database models, migrations, and queries",
+      "patterns": ["**/models/**", "**/migrations/**", "**/database/**", "alembic/**"]
+    },
+    "auth": {
+      "description": "Authentication and authorization",
+      "patterns": ["**/auth/**", "**/security/**", "**/permissions/**"]
+    },
+    "workflow": {
+      "description": "Workflow execution engine and related services",
+      "patterns": ["**/workflow/**", "**/execution/**", "**/step_executors/**"]
+    },
+    "agent": {
+      "description": "AI agent framework and orchestration",
+      "patterns": ["**/agents/**", "**/orchestrator/**", "**/rag_engine/**"]
+    },
+    "ui": {
+      "description": "User interface components and styling",
+      "patterns": ["**/components/**", "**/styles/**", "*.css", "*.scss"]
+    },
+    "config": {
+      "description": "Configuration files and settings",
+      "patterns": ["*.json", "*.yaml", "*.yml", "*.toml", "*.ini", ".env*", "*config*"]
+    },
+    "infra": {
+      "description": "Infrastructure and deployment",
+      "patterns": ["docker/**", "kubernetes/**", "terraform/**", "infrastructure/**"]
+    },
+    "deps": {
+      "description": "Dependencies and package management",
+      "patterns": ["requirements*.txt", "package*.json", "pyproject.toml", "poetry.lock"]
+    },
+    "types": {
+      "description": "Type definitions and interfaces",
+      "patterns": ["**/types/**", "*.d.ts", "**/schemas/**"]
+    },
+    "test": {
+      "description": "Test files and testing infrastructure",
+      "patterns": ["tests/**", "**/*.test.*", "**/*.spec.*", "**/test_*"]
+    },
+    "ci": {
+      "description": "Continuous integration and automation",
+      "patterns": [".github/**", "*.yml", "*.yaml", "Jenkinsfile", ".gitlab-ci.yml"]
+    },
+    "docs": {
+      "description": "Documentation and README files",
+      "patterns": ["docs/**", "*.md", "*.rst", "*.txt"]
+    }
+  },
+  
+  "messageStructure": {
+    "subject": {
+      "pattern": "^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\\([a-z0-9-]+\\))?: .{1,50}$",
+      "requirements": [
+        "Must start with commit type",
+        "Scope in parentheses (optional but recommended)",
+        "Colon and space after type/scope",
+        "Lowercase imperative description",
+        "Maximum 50 characters",
+        "No period at the end"
+      ]
+    },
+    "body": {
+      "format": "structured",
+      "template": [
+        "- What: <clear description of what changed>",
+        "- Why: <business reason or problem being solved>", 
+        "- How: <brief technical implementation detail>"
+      ],
+      "requirements": [
+        "Start with blank line after subject",
+        "Use bullet points for structure",
+        "Maximum 72 characters per line",
+        "Focus on what and why, not how",
+        "Use present tense imperative mood"
+      ]
+    },
+    "footer": {
+      "format": "optional",
+      "template": [
+        "Refs: #<issue_number>",
+        "Tested: <testing evidence>",
+        "Breaking Change: <if applicable>",
+        "Co-authored-by: <if applicable>"
+      ],
+      "requirements": [
+        "Start with blank line after body",
+        "Reference related issues",
+        "Include testing evidence", 
+        "Note breaking changes",
+        "Credit co-authors if applicable"
+      ]
+    }
+  },
+  
+  "aiGenerationRules": {
+    "contextAnalysis": {
+      "includeDiffStats": true,
+      "includeFileTypes": true,
+      "includeTestChanges": true,
+      "analyzeChangeComplexity": true,
+      "detectBreakingChanges": true
+    },
+    "scopeDetection": {
+      "useFilePatterns": true,
+      "analyzeChangedDirectories": true,
+      "detectCrossComponentChanges": true,
+      "prioritizeBusinessLogic": true
+    },
+    "typeClassification": {
+      "newFiles": "feat",
+      "deletedFiles": "refactor",
+      "bugFixPatterns": ["fix", "resolve", "correct", "repair"],
+      "featurePatterns": ["add", "implement", "create", "introduce"],
+      "refactorPatterns": ["refactor", "restructure", "reorganize", "optimize"],
+      "testPatterns": ["test", "spec", "coverage", "assertion"]
+    },
+    "qualityChecks": {
+      "enforceConventionalFormat": true,
+      "validateScopeExists": true,
+      "requireBodyForLargeChanges": true,
+      "requireTestEvidence": true,
+      "flagBreakingChanges": true
+    }
+  },
+  
+  "validationRules": {
+    "forbidden": {
+      "subjects": [
+        "update",
+        "changes", 
+        "misc",
+        "stuff",
+        "things",
+        "work",
+        "fixes"
+      ],
+      "patterns": [
+        "^(wip|todo|temp|debug)",
+        "^[A-Z]",
+        "\\.$",
+        "^(fix|feat)\\s*:",
+        "^(fix|feat)\\([^)]*\\)\\s*:"
+      ]
+    },
+    "required": {
+      "conventionalFormat": true,
+      "scopeForMultipleComponents": true,
+      "bodyForBreakingChanges": true,
+      "issueReferenceForBugs": true
+    }
+  },
+  
+  "templates": {
+    "quickFix": {
+      "pattern": "fix(<scope>): <brief_description>",
+      "example": "fix(auth): handle expired token edge case"
+    },
+    "feature": {
+      "pattern": "feat(<scope>): <feature_description>\n\n- What: <what_changed>\n- Why: <business_reason>\n- How: <technical_approach>\n\nRefs: #<issue>\nTested: <evidence>",
+      "example": "feat(workflow): add parallel execution support\n\n- What: Implemented concurrent step processing with dependency resolution\n- Why: Improve workflow performance for complex automation tasks\n- How: Added TopologicalExecutor with async batch processing\n\nRefs: #147\nTested: Unit tests, integration tests, performance benchmarks"
+    },
+    "refactor": {
+      "pattern": "refactor(<scope>): <refactor_description>\n\n- What: <structural_changes>\n- Why: <maintainability_reason>\n- How: <refactoring_approach>\n\nTested: <regression_evidence>",
+      "example": "refactor(backend): standardize error handling patterns\n\n- What: Unified exception hierarchy and response formatting\n- Why: Reduce code duplication and improve error consistency\n- How: Created BaseAppException with proper HTTP status mapping\n\nTested: All existing tests pass, error scenarios covered"
+    }
+  },
+  
+  "projectSpecific": {
+    "auterity": {
+      "businessDomains": [
+        "workflow automation",
+        "AI agent orchestration", 
+        "multi-tenant authentication",
+        "compliance framework",
+        "error intelligence",
+        "performance monitoring"
+      ],
+      "technicalAreas": [
+        "FastAPI backend",
+        "React frontend", 
+        "PostgreSQL database",
+        "Redis caching",
+        "Docker containerization",
+        "CI/CD pipeline"
+      ],
+      "qualityStandards": [
+        "All changes must include tests",
+        "Breaking changes require migration guide",
+        "Security changes need review approval",
+        "Performance changes need benchmarks"
+      ]
+    }
+  }
+}

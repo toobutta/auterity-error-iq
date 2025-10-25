@@ -1,38 +1,121 @@
-# NeuroWeaver - Model Specialization Platform
+
+
+# NeuroWeaver
+
+ - Model Specialization Platfo
+
+r
+
+m
 
 NeuroWeaver provides specialized AI model training and deployment for automotive domain expertise.
 
-## Architecture
+#
 
-- **Backend**: FastAPI with PostgreSQL for model registry
-- **Frontend**: Next.js with Material-UI components
-- **Training**: Docker containers for model fine-tuning
-- **Deployment**: Model serving with health checks
+# Architectur
 
-## Key Features
+e
 
-- Model registry with versioning
-- Automated fine-tuning pipeline using QLoRA and RLAIF
-- Automotive-specific prompt templates
-- Performance monitoring and automatic model switching
-- Integration with RelayCore for model registration
+- **Backend**: FastAPI with PostgreSQL for model registr
 
-## Development Setup
+y
+
+- **Frontend**: Next.js with Material-UI component
+
+s
+
+- **Training**: Docker containers for model fine-tunin
+
+g
+
+- **Deployment**: Model serving with health check
+
+s
+
+#
+
+# Key Feature
+
+s
+
+- Model registry with versionin
+
+g
+
+- Automated fine-tuning pipeline using QLoRA and RLAI
+
+F
+
+- Automotive-specific prompt template
+
+s
+
+- Performance monitoring and automatic model switchin
+
+g
+
+- Integration with RelayCore for model registratio
+
+n
+
+#
+
+# Development Setu
+
+p
 
 ```bash
 cd systems/neuroweaver
+
 # Backend
+
 cd backend && pip install -r requirements.txt
-uvicorn app.main:app --reload
+
+uvicorn app.main:app --reloa
+
+d
 
 # Frontend
+
 cd frontend && npm install
 npm run dev
+
 ```
 
-## API Endpoints
+#
 
-- `POST /api/v1/models` - Register new model
-- `GET /api/v1/models` - List available models
-- `POST /api/v1/deploy` - Deploy model to production
-- `GET /api/v1/metrics` - Model performance metrics
+# API Endpoint
+
+s
+
+- `POST /api/v1/models
+
+`
+
+ - Register new mode
+
+l
+
+- `GET /api/v1/models
+
+`
+
+ - List available model
+
+s
+
+- `POST /api/v1/deploy
+
+`
+
+ - Deploy model to productio
+
+n
+
+- `GET /api/v1/metrics
+
+`
+
+ - Model performance metric
+
+s

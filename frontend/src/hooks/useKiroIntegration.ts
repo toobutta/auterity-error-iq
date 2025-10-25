@@ -22,7 +22,7 @@ export const useKiroIntegration = (userRole = "guest") => {
       try {
         await onErrorEvent(kiroError);
       } catch (hookError) {
-        console.error("Kiro hook execution failed:", hookError);
+
       }
     },
     [],
@@ -66,3 +66,5 @@ const mapErrorCategoryToKiroType = (
       return "runtime";
   }
 };
+
+

@@ -1,0 +1,164 @@
+# Filebeat configuration for Auterity AI Platform
+
+filebeat.inputs:
+  # Docker container logs
+  - type: container
+    paths:
+      - "/var/lib/docker/containers/*/*.log"
+    processors:
+      - add_kubernetes_metadata:
+          host: ${NODE_NAME:localhost}
+          matchers:
+            - logs_path:
+                logs_path: "/var/lib/docker/containers/"
+      - decode_json_fields:
+          fields: ["message"]
+          target: ""
+          overwrite_keys: true
+          add_error_key: true
+      - drop_event:
+          when:
+            not:
+              contains:
+                kubernetes.container.name: "auterity"
+
+  # Application log files
+  - type: log
+    enabled: true
+    paths:
+      - "/app/logs/*.log"
+      - "/var/log/auterity/*.log"
+    fields:
+      service: "auterity-application"
+      type: "application"
+    processors:
+      - decode_json_fields:
+          fields: ["message"]
+          target: ""
+          overwrite_keys: true
+          add_error_key: true
+
+  # System logs
+  - type: log
+    enabled: true
+    paths:
+      - "/var/log/syslog"
+      - "/var/log/messages"
+    fields:
+      service: "system"
+      type: "system"
+    processors:
+      - drop_event:
+          when:
+            not:
+              or:
+                - contains:
+                    message: "auterity"
+                - contains:
+                    message: "vllm"
+                - contains:
+                    message: "langgraph"
+                - contains:
+                    message: "crewai"
+
+# Elasticsearch output (alternative to Logstash)
+# output.elasticsearch:
+#   hosts: ["elasticsearch:9200"]
+#   username: "${ELASTICSEARCH_USERNAME:elastic}"
+#   password: "${ELASTICSEARCH_PASSWORD}"
+#   index: "auterity-filebeat-%{+yyyy.MM.dd}"
+
+# Logstash output
+output.logstash:
+  hosts: ["logstash:5044"]
+  ssl:
+    enabled: false
+
+# Redis output (for buffering)
+# output.redis:
+#   hosts: ["redis:6379"]
+#   key: "auterity-logs"
+#   db: 1
+
+# Processors
+processors:
+  - add_host_metadata:
+      when:
+        not:
+          contains:
+            host.name: ""
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~
+
+# Logging
+logging:
+  level: info
+  to_files: true
+  files:
+    path: /usr/share/filebeat/logs
+    name: filebeat.log
+    keepfiles: 7
+    permissions: 0644
+  selectors: ["*"]
+
+# Monitoring
+http:
+  enabled: true
+  host: 0.0.0.0
+  port: 5066
+
+# Modules (disabled by default)
+filebeat.modules:
+  - module: system
+    syslog:
+      enabled: true
+    auth:
+      enabled: true
+  - module: auditd
+    audit_rule_files: ['${path.config}/audit.rules.d/*.conf']
+    audit_rules: |
+      -w /etc/passwd -p wa -k identity
+      -w /etc/group -p wa -k identity
+  - module: nginx
+    access:
+      enabled: true
+      var.paths: ["/var/log/nginx/access.log*"]
+    error:
+      enabled: true
+      var.paths: ["/var/log/nginx/error.log*"]
+
+# Autodiscovery for Docker
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      hints.enabled: true
+      hints.default_config:
+        type: container
+        paths:
+          - /var/lib/docker/containers/${data.docker.container.id}/*.log
+        processors:
+          - add_kubernetes_metadata:
+              host: ${NODE_NAME}
+              matchers:
+                - logs_path:
+                    logs_path: "/var/lib/docker/containers/"
+
+# Setup (run filebeat setup to initialize)
+setup:
+  template:
+    enabled: false  # Using Logstash for processing
+  ilm:
+    enabled: false
+  dashboards:
+    enabled: false
+
+# Dashboard import (optional)
+# setup.dashboards.enabled: true
+# setup.dashboards.index: "auterity-filebeat-*"
+
+# Kibana endpoint (optional)
+# setup.kibana.host: "kibana:5601"
+# setup.kibana.username: elastic
+# setup.kibana.password: "${ELASTIC_PASSWORD}"
+

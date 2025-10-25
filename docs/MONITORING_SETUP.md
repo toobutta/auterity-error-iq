@@ -1,62 +1,179 @@
-# Monitoring Setup
 
-## Access URLs
 
-- **Grafana**: http://localhost:3003 (admin/admin123)
-- **Prometheus**: http://localhost:9090
-- **Jaeger**: http://localhost:16686
-- **Kafka UI**: http://localhost:8080
-- **MLflow**: http://localhost:5000
+# Monitoring Setu
 
-## Key Metrics
+p
 
-### Application Metrics
+#
 
-- Request latency (95th percentile)
-- Error rate (4xx/5xx responses)
-- Throughput (requests/second)
-- Active connections
+# Access URL
 
-### Infrastructure Metrics
+s
 
-- CPU usage per service
-- Memory consumption
-- Disk I/O
-- Network traffic
+- **Grafana**: http://localhost:3003 (admin/admin123
 
-### Business Metrics
+)
 
-- Workflow execution time
-- Success/failure rates
-- AI model performance
-- User activity
+- **Prometheus**: http://localhost:909
 
-## Alerts Configuration
+0
+
+- **Jaeger**: http://localhost:1668
+
+6
+
+- **Kafka UI**: http://localhost:808
+
+0
+
+- **MLflow**: http://localhost:500
+
+0
+
+#
+
+# Key Metric
+
+s
+
+#
+
+## Application Metric
+
+s
+
+- Request latency (95th percentile
+
+)
+
+- Error rate (4xx/5xx responses
+
+)
+
+- Throughput (requests/second
+
+)
+
+- Active connection
+
+s
+
+#
+
+## Infrastructure Metric
+
+s
+
+- CPU usage per servic
+
+e
+
+- Memory consumptio
+
+n
+
+- Disk I/
+
+O
+
+- Network traffi
+
+c
+
+#
+
+## Business Metric
+
+s
+
+- Workflow execution tim
+
+e
+
+- Success/failure rate
+
+s
+
+- AI model performanc
+
+e
+
+- User activit
+
+y
+
+#
+
+# Alerts Configuratio
+
+n
 
 ```yaml
+
 # High error rate
+
 - alert: HighErrorRate
-  expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+
+  expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.
+
+1
 
 # High latency
+
 - alert: HighLatency
-  expr: histogram_quantile(0.95, http_request_duration_seconds) > 1.0
+
+  expr: histogram_quantile(0.95, http_request_duration_seconds) > 1.
+
+0
 
 # Service down
+
 - alert: ServiceDown
+
   expr: up == 0
+
 ```
 
-## Dashboard Setup
+#
 
-1. Import Grafana dashboards from `monitoring/grafana/dashboards/`
-2. Configure Prometheus data source
-3. Set up Loki for log aggregation
-4. Enable Jaeger tracing
+# Dashboard Setu
 
-## Log Aggregation
+p
 
-- All container logs → Promtail → Loki
-- Structured JSON logging
-- Correlation IDs for tracing
-- Log retention: 30 days
+1. Import Grafana dashboards from `monitoring/grafana/dashboards/
+
+`
+
+2. Configure Prometheus data sourc
+
+e
+
+3. Set up Loki for log aggregatio
+
+n
+
+4. Enable Jaeger tracin
+
+g
+
+#
+
+# Log Aggregatio
+
+n
+
+- All container logs → Promtail → Lok
+
+i
+
+- Structured JSON loggin
+
+g
+
+- Correlation IDs for tracin
+
+g
+
+- Log retention: 30 day
+
+s

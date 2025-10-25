@@ -1,0 +1,8 @@
+Component,Version,License(s),Evidence Path(s),Usage,Linking,Distribution,Obligations,Risk,Action,Replacement Candidates
+fastapi,0.104.1,MIT,backend/requirements.txt,linked,dynamic,SaaS,"Include copyright and license",Low,None,-
+uvicorn,0.24.0,Apache-2.0,backend/requirements.txt,linked,dynamic,SaaS,"Include copyright and license",Low,None,-
+sqlalchemy,2.0.23,MIT,backend/requirements.txt,linked,dynamic,SaaS,"Include copyright and license",Low,None,-
+pydantic,2.4.2,MIT,backend/requirements.txt,linked,dynamic,SaaS,"Include copyright and license",Low,None,-
+react,18.3.1,MIT,frontend/package.json,linked,dynamic,SaaS,"Include copyright and license",Low,None,-
+typescript,5.5.4,Apache-2.0,frontend/package.json,linked,dynamic,SaaS,"Include copyright and license",Low,None,-
+vite,5.4.1,MIT,frontend/package.json,linked,dynamic,SaaS,"Include copyright and license",Low,None,-

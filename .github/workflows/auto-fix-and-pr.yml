@@ -1,0 +1,44 @@
+name: Auto Fix & PR
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - 'copilot/**'
+
+jobs:
+  auto-fix:
+    name: Run auto-fixes and open PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run auto-fixers (frontend + backend)
+        run: |
+          npm run lint:fix || true
+          npm run lint:fix:workflow-studio || true
+          npm run type-check || true
+
+      - name: Create Pull Request with fixes
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(ci): apply auto-fixes"
+          branch: "auto/fix/${{ github.run_id }}"
+          title: "Auto: apply lint & formatting fixes"
+          body: |
+            This PR was generated automatically by the Auto Fix workflow.
+            It runs linting/formatting auto-fixers and TypeScript checks, and applies any fixes.
+          labels: automated, auto-fix

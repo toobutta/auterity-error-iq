@@ -37,6 +37,8 @@ export const onErrorEvent = async ({ workflowId, error }: KiroErrorEvent) => {
       }
     }
   } catch (hookError) {
-    console.error("Kiro hook failed:", hookError);
+
   }
 };
+
+

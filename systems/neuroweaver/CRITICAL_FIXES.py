@@ -15,7 +15,6 @@ def apply_critical_fixes():
     training_file = Path("backend/app/services/training_pipeline.py")
 
     if not training_file.exists():
-        print("Training pipeline file not found!")
         return
 
     # Read current content
@@ -156,7 +155,6 @@ def _sanitize_log_input(self, text: str) -> str:
 
     # Write fixed content
     training_file.write_text(content)
-    print("✅ Applied critical security and performance fixes")
 
 
 if __name__ == "__main__":

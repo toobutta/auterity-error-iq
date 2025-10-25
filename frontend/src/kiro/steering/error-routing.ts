@@ -28,7 +28,7 @@ export const errorSteeringRules: ErrorSteeringRule[] = [
     route: "notify_admin",
     action: () => {
       // Block execution for system errors
-      console.warn("System error detected - blocking execution");
+
     },
   },
 ];
@@ -41,3 +41,5 @@ export const applyErrorSteering = (error: ErrorDetails): string => {
   }
   return "default_error_display";
 };
+
+

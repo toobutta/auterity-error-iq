@@ -10,3 +10,5 @@ const InventoryManagementPage: React.FC = () => {
 };
 
 export default InventoryManagementPage;
+
+

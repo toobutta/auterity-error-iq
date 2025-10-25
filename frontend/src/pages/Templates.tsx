@@ -71,7 +71,7 @@ const Templates: React.FC = () => {
             ? error.message
             : "Failed to create workflow from template";
         setError(errorMessage);
-        console.error("Template instantiation failed:", error);
+
       } finally {
         setIsInstantiating(false);
       }
@@ -320,3 +320,5 @@ const Templates: React.FC = () => {
 };
 
 export default Templates;
+
+

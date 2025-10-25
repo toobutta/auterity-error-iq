@@ -331,7 +331,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       await logout();
       navigate("/login");
     } catch (error) {
-      console.error("Logout failed:", error);
+
     }
   };
 
@@ -631,3 +631,5 @@ const NavItem: React.FC<NavItemProps> = ({ item, isActive, collapsed }) => {
 };
 
 export default Layout;
+
+

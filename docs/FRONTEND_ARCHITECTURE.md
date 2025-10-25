@@ -1,47 +1,206 @@
-# Frontend Architecture Documentation
 
-**Document Version**: 1.0
-**Last Updated**: August 8, 2025
-**Maintained By**: Frontend Team
 
-## Overview
+# Frontend Architecture Documentatio
 
-The Auterity Unified Platform frontend is built with React 18, TypeScript, and Vite, providing a modern, performant, and type-safe user interface for workflow automation, AI routing management, and model training capabilities.
+n
 
----
+**Document Version**: 1.
 
-## Technology Stack
+0
+**Last Updated**: August 8, 202
 
-### Core Framework
+5
+**Maintained By**: Frontend Tea
 
-- **React 18.2.0** - Component-based UI library with concurrent features
-- **TypeScript 5.2.2** - Type-safe JavaScript development
-- **Vite 7.0.6** - Modern build tool and development server
-- **React Router DOM 6.18.0** - Client-side routing
+m
 
-### Styling & Design
+#
 
-- **Tailwind CSS 3.3.5** - Utility-first CSS framework
-- **@tailwindcss/line-clamp** - Text truncation utilities
-- **CSS Modules** - Component-scoped styling
+# Overvie
 
-### Data Visualization
+w
 
-- **React Flow 11.11.4** - Interactive workflow diagrams
-- **Recharts 3.1.0** - Chart and data visualization library
-- **ApexCharts 5.3.2** - Advanced charting capabilities
-- **Plotly.js 3.0.3** - Scientific and statistical charts
+The Auterity Unified Platform frontend is built with React 18, TypeScript, and Vite, providing a modern, performant, and type-safe user interface for workflow automation, AI routing management, and model training capabilities
 
-### Development Tools
+.
 
-- **ESLint** - Code linting and quality enforcement
-- **Prettier** - Code formatting
-- **Vitest** - Fast unit testing framework
-- **Testing Library** - Component testing utilities
+--
 
----
+- #
 
-## Application Architecture
+# Technology Stac
+
+k
+
+#
+
+## Core Framewor
+
+k
+
+- **React 18.2.
+
+0
+
+* *
+
+- Component-based UI library with concurrent feature
+
+s
+
+- **TypeScript 5.2.
+
+2
+
+* *
+
+- Type-safe JavaScript developmen
+
+t
+
+- **Vite 7.0.
+
+6
+
+* *
+
+- Modern build tool and development serve
+
+r
+
+- **React Router DOM 6.18.
+
+0
+
+* *
+
+- Client-side routin
+
+g
+
+#
+
+## Styling & Desig
+
+n
+
+- **Tailwind CSS 3.3.
+
+5
+
+* *
+
+- Utility-first CSS framewor
+
+k
+
+- **@tailwindcss/line-clamp
+
+* *
+
+- Text truncation utilitie
+
+s
+
+- **CSS Modules
+
+* *
+
+- Component-scoped stylin
+
+g
+
+#
+
+## Data Visualizatio
+
+n
+
+- **React Flow 11.11.
+
+4
+
+* *
+
+- Interactive workflow diagram
+
+s
+
+- **Recharts 3.1.
+
+0
+
+* *
+
+- Chart and data visualization librar
+
+y
+
+- **ApexCharts 5.3.
+
+2
+
+* *
+
+- Advanced charting capabilitie
+
+s
+
+- **Plotly.js 3.0.
+
+3
+
+* *
+
+- Scientific and statistical chart
+
+s
+
+#
+
+## Development Tool
+
+s
+
+- **ESLint
+
+* *
+
+- Code linting and quality enforcemen
+
+t
+
+- **Prettier
+
+* *
+
+- Code formattin
+
+g
+
+- **Vitest
+
+* *
+
+- Fast unit testing framewor
+
+k
+
+- **Testing Library
+
+* *
+
+- Component testing utilitie
+
+s
+
+--
+
+- #
+
+# Application Architectur
+
+e
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -72,67 +231,167 @@ The Auterity Unified Platform frontend is built with React 18, TypeScript, and V
 │  │  • useWorkflow  │ │  • Validators   │ │  • Models       │      │
 │  └─────────────────┘ └─────────────────┘ └─────────────────┘      │
 └─────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Directory Structure
 
 ```
+
+--
+
+- #
+
+# Directory Structur
+
+e
+
+```
+
 frontend/
 ├── src/
-│   ├── components/           # Reusable UI components
-│   │   ├── auth/            # Authentication components
-│   │   ├── workflow-builder/ # Workflow building components
-│   │   ├── charts/          # Data visualization components
-│   │   ├── nodes/           # React Flow node components
-│   │   └── __tests__/       # Component tests
-│   ├── pages/               # Route-level page components
+│   ├── components/
+
+# Reusable UI components
+
+│   │   ├── auth/
+
+# Authentication components
+
+│   │   ├── workflow-builder/
+
+
+
+# Workflow building components
+
+│   │   ├── charts/
+
+# Data visualization components
+
+│   │   ├── nodes/
+
+# React Flow node components
+
+│   │   └── __tests__/
+
+# Component tests
+
+│   ├── pages/
+
+# Route-level page component
+
+s
+
 │   │   ├── Dashboard.tsx
 │   │   ├── Workflows.tsx
 │   │   ├── Templates.tsx
 │   │   └── WorkflowBuilderPage.tsx
-│   ├── contexts/            # React Context providers
+│   ├── contexts/
+
+# React Context providers
+
 │   │   ├── AuthContext.tsx
 │   │   └── ErrorContext.tsx
-│   ├── hooks/               # Custom React hooks
+│   ├── hooks/
+
+# Custom React hooks
+
 │   │   ├── useAuth.ts
 │   │   ├── useApi.ts
 │   │   └── useWorkflow.ts
-│   ├── api/                 # API service layer
-│   │   ├── client.ts        # Axios configuration
-│   │   ├── auth.ts          # Authentication API
-│   │   ├── workflows.ts     # Workflow API
-│   │   └── templates.ts     # Template API
-│   ├── types/               # TypeScript type definitions
+│   ├── api/
+
+# API service layer
+
+│   │   ├── client.ts
+
+# Axios configuration
+
+│   │   ├── auth.ts
+
+# Authentication API
+
+│   │   ├── workflows.ts
+
+# Workflow API
+
+│   │   └── templates.ts
+
+# Template API
+
+│   ├── types/
+
+# TypeScript type definitions
+
 │   │   ├── auth.ts
 │   │   ├── workflow.ts
 │   │   └── api.ts
-│   ├── utils/               # Utility functions
+│   ├── utils/
+
+# Utility functions
+
 │   │   ├── formatters.ts
 │   │   ├── validators.ts
 │   │   └── constants.ts
-│   ├── tests/               # Test utilities and setup
-│   └── assets/              # Static assets
-├── public/                  # Public static files
-├── package.json             # Dependencies and scripts
-├── vite.config.ts          # Vite configuration
-├── tsconfig.json           # TypeScript configuration
-├── tailwind.config.js      # Tailwind CSS configuration
-└── .eslintrc.js           # ESLint configuration
+│   ├── tests/
+
+# Test utilities and setup
+
+│   └── assets/
+
+# Static assets
+
+├── public/
+
+# Public static files
+
+├── package.json
+
+# Dependencies and scripts
+
+├── vite.config.ts
+
+# Vite configuration
+
+├── tsconfig.json
+
+# TypeScript configuration
+
+├── tailwind.config.js
+
+# Tailwind CSS configuration
+
+└── .eslintrc.js
+
+# ESLint configuration
+
 ```
 
----
+--
 
-## State Management
+- #
 
-### 1. Context API Strategy
+# State Managemen
+
+t
+
+#
+
+##
+
+ 1. Context API Strate
+
+g
+
+y
 
 The application uses React Context for global state management, avoiding the complexity of external state management libraries while maintaining performance.
 
-#### AuthContext
+#
 
-```typescript
+### AuthContex
+
+t
+
+```
+
+typescript
 interface AuthContextType {
   user: User | null;
   token: string | null;
@@ -142,18 +401,38 @@ interface AuthContextType {
   loading: boolean;
   error: string | null;
 }
+
 ```
 
-**Responsibilities**:
+**Responsibilities**
 
-- User authentication state
-- JWT token management
-- Login/logout operations
-- User session persistence
+:
 
-#### ErrorContext
+- User authentication stat
 
-```typescript
+e
+
+- JWT token managemen
+
+t
+
+- Login/logout operation
+
+s
+
+- User session persistenc
+
+e
+
+#
+
+### ErrorContex
+
+t
+
+```
+
+typescript
 interface ErrorContextType {
   errors: ErrorRecord[];
   addError: (error: ErrorRecord) => void;
@@ -161,40 +440,121 @@ interface ErrorContextType {
   clearErrors: () => void;
   reportError: (error: Error, context: string) => void;
 }
+
 ```
 
-**Responsibilities**:
+**Responsibilities**
 
-- Global error state management
-- Error correlation and tracking
-- User-friendly error display
-- Error reporting to backend
+:
 
-### 2. Component State
+- Global error state managemen
+
+t
+
+- Error correlation and trackin
+
+g
+
+- User-friendly error displa
+
+y
+
+- Error reporting to backen
+
+d
+
+#
+
+##
+
+ 2. Component Sta
+
+t
+
+e
 
 Local component state is managed using:
 
-- **useState** for simple state
-- **useReducer** for complex state logic
-- **useRef** for mutable references
-- **useMemo/useCallback** for performance optimization
+- **useState
 
-### 3. Server State
+* * for simple stat
+
+e
+
+- **useReducer
+
+* * for complex state logi
+
+c
+
+- **useRef
+
+* * for mutable reference
+
+s
+
+- **useMemo/useCallback
+
+* * for performance optimizatio
+
+n
+
+#
+
+##
+
+ 3. Server Sta
+
+t
+
+e
 
 Server state management using:
 
-- **Custom hooks** for API calls
-- **SWR pattern** for data fetching
-- **Optimistic updates** for better UX
-- **Error boundaries** for error handling
+- **Custom hooks
 
----
+* * for API call
 
-## Component Architecture
+s
 
-### 1. Component Hierarchy
+- **SWR pattern
+
+* * for data fetchin
+
+g
+
+- **Optimistic updates
+
+* * for better U
+
+X
+
+- **Error boundaries
+
+* * for error handlin
+
+g
+
+--
+
+- #
+
+# Component Architectur
+
+e
+
+#
+
+##
+
+ 1. Component Hierarc
+
+h
+
+y
 
 ```
+
 App
 ├── AuthProvider
 │   ├── ErrorProvider
@@ -211,38 +571,106 @@ App
 │   │   │   └── PublicRoute
 │   │   │       ├── LoginForm
 │   │   │       └── RegisterForm
+
 ```
 
-### 2. Component Types
+#
 
-#### Page Components
+##
 
-- **Purpose**: Route-level components
-- **Responsibilities**: Data fetching, page layout, SEO
-- **Example**: `Dashboard.tsx`, `Workflows.tsx`
+ 2. Component Typ
 
-#### Feature Components
+e
 
-- **Purpose**: Business logic components
-- **Responsibilities**: Feature-specific functionality
-- **Example**: `WorkflowBuilder.tsx`, `TemplateLibrary.tsx`
+s
 
-#### UI Components
+#
 
-- **Purpose**: Reusable interface elements
-- **Responsibilities**: Pure presentation logic
-- **Example**: `Button.tsx`, `Modal.tsx`, `Card.tsx`
+### Page Component
 
-#### Layout Components
+s
 
-- **Purpose**: Structural components
-- **Responsibilities**: Page structure and navigation
-- **Example**: `Layout.tsx`, `Navigation.tsx`
+- **Purpose**: Route-level component
 
-### 3. Component Best Practices
+s
 
-```typescript
+- **Responsibilities**: Data fetching, page layout, SE
+
+O
+
+- **Example**: `Dashboard.tsx`, `Workflows.tsx
+
+`
+
+#
+
+### Feature Component
+
+s
+
+- **Purpose**: Business logic component
+
+s
+
+- **Responsibilities**: Feature-specific functionalit
+
+y
+
+- **Example**: `WorkflowBuilder.tsx`, `TemplateLibrary.tsx
+
+`
+
+#
+
+### UI Component
+
+s
+
+- **Purpose**: Reusable interface element
+
+s
+
+- **Responsibilities**: Pure presentation logi
+
+c
+
+- **Example**: `Button.tsx`, `Modal.tsx`, `Card.tsx
+
+`
+
+#
+
+### Layout Component
+
+s
+
+- **Purpose**: Structural component
+
+s
+
+- **Responsibilities**: Page structure and navigatio
+
+n
+
+- **Example**: `Layout.tsx`, `Navigation.tsx
+
+`
+
+#
+
+##
+
+ 3. Component Best Practic
+
+e
+
+s
+
+```
+
+typescript
 // Example: Well-structured component
+
 interface WorkflowCardProps {
   workflow: Workflow;
   onEdit: (id: string) => void;
@@ -274,21 +702,40 @@ const WorkflowCard: React.FC<WorkflowCardProps> = ({
 
   return (
     <div className="workflow-card">
-      {/* Component JSX */}
+
+      {/
+
+* Component JSX */}
+
     </div>
   );
 };
 
 export default WorkflowCard;
+
 ```
 
----
+--
 
-## Data Flow Patterns
+- #
 
-### 1. API Integration
+# Data Flow Pattern
 
-```typescript
+s
+
+#
+
+##
+
+ 1. API Integrati
+
+o
+
+n
+
+```
+
+typescript
 // API Service Layer
 class WorkflowService {
   static async getWorkflows(): Promise<Workflow[]> {
@@ -332,11 +779,22 @@ const useWorkflows = () => {
 
   return { workflows, loading, error, refetch: fetchWorkflows };
 };
+
 ```
 
-### 2. Event Handling
+#
 
-```typescript
+##
+
+ 2. Event Handli
+
+n
+
+g
+
+```
+
+typescript
 // Event handling patterns
 const WorkflowBuilder: React.FC = () => {
   const [nodes, setNodes] = useState<Node[]>([]);
@@ -368,21 +826,38 @@ const WorkflowBuilder: React.FC = () => {
     />
   );
 };
+
 ```
 
----
+--
 
-## Performance Optimization
+- #
 
-### 1. Code Splitting & Lazy Loading
+# Performance Optimizatio
 
-```typescript
+n
+
+#
+
+##
+
+ 1. Code Splitting & Lazy Loadi
+
+n
+
+g
+
+```
+
+typescript
 // Lazy loading for route-level components
+
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Workflows = lazy(() => import('./pages/Workflows'));
 const Templates = lazy(() => import('./pages/Templates'));
 
 // Component-level lazy loading
+
 const LazyReactFlow = lazy(() => import('reactflow'));
 
 const WorkflowBuilder = () => {
@@ -392,11 +867,22 @@ const WorkflowBuilder = () => {
     </Suspense>
   );
 };
+
 ```
 
-### 2. Memoization Strategies
+#
 
-```typescript
+##
+
+ 2. Memoization Strategi
+
+e
+
+s
+
+```
+
+typescript
 // Component memoization
 const WorkflowCard = React.memo<WorkflowCardProps>(
   ({ workflow, onEdit }) => {
@@ -419,24 +905,59 @@ const useFilteredWorkflows = (workflows: Workflow[], filter: string) => {
     );
   }, [workflows, filter]);
 };
+
 ```
 
-### 3. Bundle Optimization
+#
 
-- **Tree Shaking**: Remove unused code
-- **Chunk Splitting**: Separate vendor and app code
-- **Dynamic Imports**: Load code on demand
-- **Asset Optimization**: Compress images and fonts
+##
 
----
+ 3. Bundle Optimizati
 
-## Testing Strategy
+o
 
-### 1. Unit Testing
+n
 
-```typescript
+- **Tree Shaking**: Remove unused cod
+
+e
+
+- **Chunk Splitting**: Separate vendor and app cod
+
+e
+
+- **Dynamic Imports**: Load code on deman
+
+d
+
+- **Asset Optimization**: Compress images and font
+
+s
+
+--
+
+- #
+
+# Testing Strateg
+
+y
+
+#
+
+##
+
+ 1. Unit Testi
+
+n
+
+g
+
+```
+
+typescript
 // Component testing example
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+
 import { vi } from 'vitest';
 import WorkflowCard from '../WorkflowCard';
 
@@ -471,13 +992,25 @@ describe('WorkflowCard', () => {
     });
   });
 });
+
 ```
 
-### 2. Integration Testing
+#
 
-```typescript
+##
+
+ 2. Integration Testi
+
+n
+
+g
+
+```
+
+typescript
 // Hook testing
 import { renderHook, waitFor } from "@testing-library/react";
+
 import { vi } from "vitest";
 import { useWorkflows } from "../hooks/useWorkflows";
 
@@ -503,11 +1036,22 @@ describe("useWorkflows", () => {
     });
   });
 });
+
 ```
 
-### 3. E2E Testing
+#
 
-```typescript
+##
+
+ 3. E2E Testi
+
+n
+
+g
+
+```
+
+typescript
 // Playwright E2E test example
 import { test, expect } from "@playwright/test";
 
@@ -515,27 +1059,50 @@ test("workflow creation flow", async ({ page }) => {
   await page.goto("/workflows");
 
   // Click create button
-  await page.click('[data-testid="create-workflow"]');
+  await page.click('[data-testid="create-workflow"]')
+
+;
 
   // Fill form
   await page.fill('[data-testid="workflow-name"]', "Test Workflow");
-  await page.fill('[data-testid="workflow-description"]', "Test Description");
+
+  await page.fill('[data-testid="workflow-description"]', "Test Description")
+
+;
 
   // Submit form
-  await page.click('[data-testid="submit-workflow"]');
+  await page.click('[data-testid="submit-workflow"]')
+
+;
 
   // Verify navigation to builder
   await expect(page).toHaveURL(/\/workflow-builder/);
+
 });
+
 ```
 
----
+--
 
-## Error Handling
+- #
 
-### 1. Error Boundaries
+# Error Handlin
 
-```typescript
+g
+
+#
+
+##
+
+ 1. Error Boundari
+
+e
+
+s
+
+```
+
+typescript
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -569,6 +1136,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     fetch('/api/errors/report', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+
       body: JSON.stringify(errorReport)
     });
   };
@@ -581,11 +1149,22 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     return this.props.children;
   }
 }
+
 ```
 
-### 2. API Error Handling
+#
 
-```typescript
+##
+
+ 2. API Error Handli
+
+n
+
+g
+
+```
+
+typescript
 // Centralized API error handling
 const apiClient = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -612,15 +1191,30 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
 ```
 
----
+--
 
-## Security Considerations
+- #
 
-### 1. Authentication & Authorization
+# Security Consideration
 
-```typescript
+s
+
+#
+
+##
+
+ 1. Authentication & Authorizati
+
+o
+
+n
+
+```
+
+typescript
 // Protected route component
 const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> = ({
   children,
@@ -642,11 +1236,22 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> 
 
   return <>{children}</>;
 };
+
 ```
 
-### 2. Input Sanitization
+#
 
-```typescript
+##
+
+ 2. Input Sanitizati
+
+o
+
+n
+
+```
+
+typescript
 // Input validation and sanitization
 import DOMPurify from "dompurify";
 
@@ -670,33 +1275,70 @@ const validateWorkflowName = (name: string): ValidationResult => {
 
   return { isValid: true, value: sanitized };
 };
+
 ```
 
-### 3. Content Security Policy
+#
 
-```html
-<!-- Content Security Policy headers -->
+##
+
+ 3. Content Security Poli
+
+c
+
+y
+
+```
+
+html
+<!-
+
+- Content Security Policy headers -->
+
 <meta
   http-equiv="Content-Security-Policy"
+
   content="
   default-src 'self';
+
   script-src 'self' 'unsafe-inline' 'unsafe-eval';
+
   style-src 'self' 'unsafe-inline';
+
   img-src 'self' data: https:;
+
   connect-src 'self' https://api.openai.com https://api.anthropic.com;
+
   font-src 'self';
+
   frame-src 'none';
+
 "
 />
+
 ```
 
----
+--
 
-## Accessibility
+- #
 
-### 1. ARIA Implementation
+# Accessibilit
 
-```typescript
+y
+
+#
+
+##
+
+ 1. ARIA Implementati
+
+o
+
+n
+
+```
+
+typescript
 // Accessible component example
 const WorkflowStatusBadge: React.FC<{ status: WorkflowStatus }> = ({ status }) => {
   const statusConfig = {
@@ -710,18 +1352,31 @@ const WorkflowStatusBadge: React.FC<{ status: WorkflowStatus }> = ({ status }) =
   return (
     <span
       className={`badge badge-${config.color}`}
+
       role="status"
       aria-label={`Workflow status: ${config.label}`}
+
     >
       {config.label}
     </span>
   );
 };
+
 ```
 
-### 2. Keyboard Navigation
+#
 
-```typescript
+##
+
+ 2. Keyboard Navigati
+
+o
+
+n
+
+```
+
+typescript
 // Keyboard navigation support
 const WorkflowGrid: React.FC = () => {
   const [focusedIndex, setFocusedIndex] = useState(0);
@@ -729,10 +1384,20 @@ const WorkflowGrid: React.FC = () => {
   const handleKeyDown = (event: KeyboardEvent) => {
     switch (event.key) {
       case 'ArrowRight':
-        setFocusedIndex(prev => Math.min(prev + 1, workflows.length - 1));
+        setFocusedIndex(prev => Math.min(prev
+
+ + 1, workflows.lengt
+
+h
+
+ - 1));
+
         break;
       case 'ArrowLeft':
-        setFocusedIndex(prev => Math.max(prev - 1, 0));
+        setFocusedIndex(prev => Math.max(prev
+
+ - 1, 0));
+
         break;
       case 'Enter':
       case ' ':
@@ -752,24 +1417,45 @@ const WorkflowGrid: React.FC = () => {
           key={workflow.id}
           workflow={workflow}
           focused={index === focusedIndex}
-          aria-rowindex={index + 1}
+          aria-rowindex={inde
+
+x
+
+ + 1}
+
         />
       ))}
     </div>
   );
 };
+
 ```
 
----
+--
 
-## Deployment & Build Process
+- #
 
-### 1. Build Configuration
+# Deployment & Build Proces
 
-```typescript
+s
+
+#
+
+##
+
+ 1. Build Configurati
+
+o
+
+n
+
+```
+
+typescript
 // vite.config.ts
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+
 import { resolve } from "path";
 
 export default defineConfig({
@@ -782,6 +1468,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ["react", "react-dom"],
+
           charts: ["recharts", "plotly.js"],
           flow: ["reactflow"],
         },
@@ -797,11 +1484,22 @@ export default defineConfig({
     },
   },
 });
+
 ```
 
-### 2. Environment Configuration
+#
 
-```typescript
+##
+
+ 2. Environment Configurati
+
+o
+
+n
+
+```
+
+typescript
 // Environment variables
 interface EnvironmentConfig {
   REACT_APP_API_URL: string;
@@ -816,10 +1514,12 @@ const config: EnvironmentConfig = {
   REACT_APP_WS_URL: process.env.REACT_APP_WS_URL || "ws://localhost:8000",
   REACT_APP_ENVIRONMENT: process.env.REACT_APP_ENVIRONMENT || "development",
   REACT_APP_VERSION: process.env.REACT_APP_VERSION || "1.0.0",
+
   REACT_APP_SENTRY_DSN: process.env.REACT_APP_SENTRY_DSN,
 };
 
 export default config;
+
 ```
 
 This comprehensive frontend documentation provides developers with the knowledge needed to understand, maintain, and extend the Auterity platform's user interface components and architecture.

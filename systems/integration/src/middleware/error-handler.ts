@@ -6,7 +6,6 @@ export const errorHandler = (
   res: Response,
   next: NextFunction,
 ): void => {
-  console.error("Error:", error);
 
   const status = (error as any).status || 500;
   const message = error.message || "Internal Server Error";
@@ -20,3 +19,4 @@ export const errorHandler = (
     },
   });
 };
+

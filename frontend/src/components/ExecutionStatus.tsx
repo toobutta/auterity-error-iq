@@ -73,7 +73,7 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
           }));
           setLogs(transformedLogs);
         } catch (logError) {
-          console.warn("Failed to fetch execution logs:", logError);
+
         }
       }
 
@@ -88,7 +88,7 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
         }
       }
     } catch (err: unknown) {
-      console.error("Failed to fetch execution data:", err);
+
       setError(
         err instanceof Error ? err.message : "Failed to fetch execution status",
       );
@@ -385,3 +385,5 @@ const ExecutionStatus: React.FC<ExecutionStatusProps> = ({
 };
 
 export default ExecutionStatus;
+
+

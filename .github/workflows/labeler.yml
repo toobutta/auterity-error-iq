@@ -25,7 +25,8 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { owner, repo, number } = context.issue;
+            const { owner, repo } = context.repo;
+            const number = context.payload.pull_request.number;
 
             // Get PR details
             const pr = await github.rest.pulls.get({
@@ -77,7 +78,8 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { owner, repo, number } = context.issue;
+            const { owner, repo } = context.repo;
+            const number = context.payload.pull_request.number;
 
             // Get changed files
             const files = await github.rest.pulls.listFiles({

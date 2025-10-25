@@ -75,7 +75,7 @@ export const ErrorProvider: React.FC<ErrorProviderProps> = ({
     if (error.category === "auth" || error.category === "api") {
       // For network/API errors, we could retry the last failed request
       // This would need to be implemented based on the specific use case
-      console.log("Retrying error:", error);
+
     }
   };
 
@@ -149,3 +149,5 @@ export const ErrorProvider: React.FC<ErrorProviderProps> = ({
     </ErrorContext.Provider>
   );
 };
+
+

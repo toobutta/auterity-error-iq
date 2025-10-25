@@ -184,7 +184,7 @@ export const UnifiedMonitoringDashboard: React.FC<
       setAlerts(mockAlerts);
     } catch (err) {
       setError("Failed to load monitoring data");
-      console.error("Monitoring data error:", err);
+
     } finally {
       setLoading(false);
     }
@@ -874,3 +874,5 @@ const AlertSettingsModal: React.FC<{
     </div>
   </div>
 );
+
+

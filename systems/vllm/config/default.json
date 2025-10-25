@@ -1,0 +1,65 @@
+{
+  "service": {
+    "name": "vllm-server",
+    "version": "1.0.0",
+    "description": "High-throughput AI model serving service"
+  },
+  "model": {
+    "name": "meta-llama/Llama-2-7b-chat-hf",
+    "tensor_parallel_size": 1,
+    "gpu_memory_utilization": 0.9,
+    "max_model_len": 4096,
+    "max_batch_size": 32,
+    "dtype": "auto",
+    "quantization": null,
+    "trust_remote_code": true,
+    "enforce_eager": false
+  },
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8001,
+    "workers": 1,
+    "reload": false,
+    "log_level": "info"
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "db": 3,
+    "decode_responses": true,
+    "socket_timeout": 5,
+    "socket_connect_timeout": 5
+  },
+  "cache": {
+    "enabled": true,
+    "ttl_seconds": 3600,
+    "max_cache_size": 10000,
+    "cache_key_prefix": "vllm:"
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics_interval": 30,
+    "prometheus_port": 9090,
+    "health_check_interval": 30
+  },
+  "limits": {
+    "max_concurrent_requests": 100,
+    "max_queue_size": 1000,
+    "max_prompt_length": 10000,
+    "max_tokens_per_request": 4096,
+    "rate_limit_per_minute": 1000
+  },
+  "fallback": {
+    "enabled": true,
+    "model": "distilgpt2",
+    "device": "auto"
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file": "logs/vllm_service.log",
+    "max_file_size": "100 MB",
+    "backup_count": 5
+  }
+}
+

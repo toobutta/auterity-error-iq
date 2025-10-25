@@ -1,0 +1,142 @@
+{
+  "service": {
+    "name": "crewai-service",
+    "version": "1.0.0",
+    "description": "Multi-agent collaborative systems service"
+  },
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8003,
+    "workers": 1,
+    "reload": false,
+    "log_level": "info"
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "db": 5,
+    "decode_responses": true,
+    "socket_timeout": 5,
+    "socket_connect_timeout": 5
+  },
+  "ai": {
+    "default_provider": "openai",
+    "providers": {
+      "openai": {
+        "api_key": "${OPENAI_API_KEY}",
+        "base_url": "https://api.openai.com/v1",
+        "models": ["gpt-4", "gpt-3.5-turbo"],
+        "default_model": "gpt-4"
+      },
+      "anthropic": {
+        "api_key": "${ANTHROPIC_API_KEY}",
+        "base_url": "https://api.anthropic.com",
+        "models": ["claude-3-opus-20240229", "claude-3-sonnet-20240229"],
+        "default_model": "claude-3-sonnet-20240229"
+      },
+      "vllm": {
+        "base_url": "http://vllm-server:8001",
+        "models": ["custom-model"],
+        "default_model": "custom-model"
+      }
+    },
+    "agent_defaults": {
+      "temperature": 0.7,
+      "max_tokens": 2000,
+      "memory_size": 100
+    }
+  },
+  "crew": {
+    "max_concurrent_crews": 10,
+    "max_agents_per_crew": 20,
+    "max_tasks_per_crew": 50,
+    "default_collaboration_strategy": "hierarchical",
+    "task_timeout_seconds": 300,
+    "crew_execution_timeout": 1800,
+    "agent_assignment_timeout": 30
+  },
+  "integrations": {
+    "n8n": {
+      "base_url": "http://workflow-studio:3000",
+      "timeout": 60,
+      "retry_attempts": 3
+    },
+    "temporal": {
+      "base_url": "http://temporal:7233",
+      "namespace": "default",
+      "timeout": 30
+    },
+    "celery": {
+      "broker_url": "redis://redis:6379/0",
+      "result_backend": "redis://redis:6379/0",
+      "timeout": 300
+    },
+    "langgraph": {
+      "base_url": "http://langgraph-service:8002",
+      "timeout": 60
+    },
+    "kong": {
+      "base_url": "http://kong:8001",
+      "timeout": 30
+    }
+  },
+  "performance": {
+    "enable_performance_tracking": true,
+    "performance_update_interval": 30,
+    "max_performance_history": 1000,
+    "collaboration_efficiency_threshold": 0.8,
+    "agent_utilization_target": 0.7
+  },
+  "collaboration": {
+    "strategies": {
+      "hierarchical": {
+        "max_chain_depth": 5,
+        "manager_selection": "capability_based",
+        "task_delegation": "intelligent"
+      },
+      "democratic": {
+        "voting_timeout": 30,
+        "consensus_threshold": 0.6,
+        "fallback_strategy": "hierarchical"
+      },
+      "swarm": {
+        "max_parallel_tasks": 10,
+        "load_balancing": "round_robin",
+        "conflict_resolution": "majority_vote"
+      }
+    },
+    "communication": {
+      "protocol": "async",
+      "message_timeout": 30,
+      "retry_attempts": 3,
+      "max_message_size": 1048576
+    }
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics_interval": 30,
+    "prometheus_port": 9092,
+    "health_check_interval": 30,
+    "log_level": "INFO",
+    "log_file": "logs/crewai_service.log",
+    "max_file_size": "100 MB",
+    "backup_count": 5
+  },
+  "limits": {
+    "max_crew_size": 20,
+    "max_task_complexity": 10,
+    "max_execution_history": 1000,
+    "rate_limit_per_minute": 60,
+    "max_request_size": 10,
+    "timeout_default": 300
+  },
+  "features": {
+    "dynamic_agent_creation": true,
+    "intelligent_task_assignment": true,
+    "performance_adaptation": true,
+    "cross_crew_collaboration": true,
+    "real_time_monitoring": true,
+    "adaptive_collaboration": true
+  }
+}
+

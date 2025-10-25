@@ -230,11 +230,11 @@ export class MCPServer extends EventEmitter {
       // Note: This requires 'ws' package for WebSocket.Server
       // this.wss = new WebSocket.Server({ port: this.port });
       // this.setupWebSocketHandlers();
-      console.log("WebSocket server would be initialized here");
+
     }
 
     this.isRunning = true;
-    console.log(`MCP Orchestrator started on port ${this.port}`);
+
     this.emit("started");
   }
 
@@ -244,7 +244,7 @@ export class MCPServer extends EventEmitter {
     }
 
     this.isRunning = false;
-    console.log("MCP Orchestrator stopped");
+
     this.emit("stopped");
   }
 
@@ -252,24 +252,23 @@ export class MCPServer extends EventEmitter {
     if (!this.wss) return;
 
     this.wss.on("connection", (ws: WebSocket) => {
-      console.log("WebSocket client connected");
 
       ws.on("message", async (data: Buffer) => {
         try {
           const message = JSON.parse(data.toString());
           await this.handleWebSocketMessage(ws, message);
         } catch (error) {
-          console.error("Error handling WebSocket message:", error);
+
           ws.send(JSON.stringify({ error: "Invalid message format" }));
         }
       });
 
       ws.on("close", () => {
-        console.log("WebSocket client disconnected");
+
       });
 
       ws.on("error", (error) => {
-        console.error("WebSocket error:", error);
+
       });
     });
   }
@@ -320,7 +319,6 @@ export class MCPServer extends EventEmitter {
   async registerModel(model: Model): Promise<void> {
     this.models.set(model.id, model);
     this.emit("model-registered", model);
-    console.log(`Model registered: ${model.name} (${model.id})`);
   }
 
   async unregisterModel(modelId: string): Promise<boolean> {
@@ -329,7 +327,6 @@ export class MCPServer extends EventEmitter {
 
     this.models.delete(modelId);
     this.emit("model-unregistered", model);
-    console.log(`Model unregistered: ${model.name} (${modelId})`);
     return true;
   }
 
@@ -548,7 +545,6 @@ export class MCPServer extends EventEmitter {
     model.lastHealthCheck = new Date().toISOString();
 
     this.emit("model-status-updated", { modelId, status });
-    console.log(`Model ${modelId} status updated to: ${status}`);
 
     return true;
   }
@@ -564,7 +560,6 @@ export class MCPServer extends EventEmitter {
     model.lastHealthCheck = new Date().toISOString();
 
     this.emit("model-performance-updated", { modelId, performance });
-    console.log(`Model ${modelId} performance updated`);
 
     return true;
   }
@@ -600,7 +595,7 @@ export class MCPServer extends EventEmitter {
           ),
         });
       } catch (error) {
-        console.error(`Health check failed for model ${model.id}:`, error);
+
         await this.updateModelStatus(model.id, "offline");
       }
     }
@@ -613,10 +608,6 @@ export class MCPServer extends EventEmitter {
     const models = Array.from(this.models.values());
     const highLoadModels = models.filter(
       (m) => m.performance.requestsPerMinute > 50,
-    );
-
-    console.log(
-      `Optimizing allocation for ${highLoadModels.length} high-load models`,
     );
 
     // In a real implementation, this would trigger auto-scaling
@@ -692,10 +683,10 @@ export class MCPServer extends EventEmitter {
       this.wss.close();
     }
 
-    console.log("MCP Orchestrator cleaned up");
   }
 }
 
 // Export singleton instance
 export const mcpOrchestrator = new MCPServer();
 export default mcpOrchestrator;
+

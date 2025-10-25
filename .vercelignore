@@ -1,0 +1,56 @@
+# Vercel ignore file - exclude unnecessary files from deployment
+
+# Backend files (not needed for frontend deployment)
+backend/
+systems/neuroweaver/backend/
+scripts/
+tests/
+docs/
+
+# Development files
+*.md
+LICENSE
+.github/
+.git/
+*.log
+node_modules/
+
+# Environment files
+.env*
+!.env.production
+
+# Cache and build artifacts
+.cache/
+coverage/
+dist/
+build/
+
+# Docker files (not needed for Vercel)
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Python files (backend only)
+*.py
+*.pyc
+__pycache__/
+requirements*.txt
+runtime.txt
+alembic/
+
+# Database files
+*.sql
+migrations/
+
+# Infrastructure files
+infrastructure/
+monitoring/
+kong/
+nginx/
+vault/
+
+# Development tools
+.vscode/
+.idea/
+*.swp
+*.swo

@@ -1,11 +1,33 @@
-# Automation Services
 
-## Playwright
 
-- Web scraping, form automation, testing
-- Endpoints: `/api/scrape`, `/api/automate`
+# Automation Service
 
-## Workflow Engine
+s
 
-- Visual workflow builder with AI integration
-- Endpoints: `/api/workflows`
+#
+
+# Playwrigh
+
+t
+
+- Web scraping, form automation, testin
+
+g
+
+- Endpoints: `/api/scrape`, `/api/automate
+
+`
+
+#
+
+# Workflow Engin
+
+e
+
+- Visual workflow builder with AI integratio
+
+n
+
+- Endpoints: `/api/workflows
+
+`

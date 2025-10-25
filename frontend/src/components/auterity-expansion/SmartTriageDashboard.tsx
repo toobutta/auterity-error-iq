@@ -107,7 +107,7 @@ const SmartTriageDashboard: React.FC = () => {
       setRecentResults(mockResults);
       setMetrics(mockMetrics);
     } catch (error) {
-      console.error("Failed to fetch triage data:", error);
+
     } finally {
       setLoading(false);
     }
@@ -610,3 +610,5 @@ const SmartTriageDashboard: React.FC = () => {
 };
 
 export default SmartTriageDashboard;
+
+

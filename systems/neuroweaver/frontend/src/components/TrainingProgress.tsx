@@ -469,3 +469,4 @@ export const TrainingProgress: React.FC<TrainingProgressProps> = ({
     </Box>
   );
 };
+

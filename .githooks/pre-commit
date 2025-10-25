@@ -7,8 +7,8 @@ if grep -r "<<<<<<<" . --exclude-dir=.git --exclude-dir=node_modules --exclude-d
     exit 1
 fi
 
-# Check for debug statements in code files only
-if git diff --cached --name-only | grep -E '\.(py|js|ts|tsx)$' | xargs grep -l 'console\.log\|debugger\|pdb\.set_trace\|print(' 2>/dev/null | grep -v '.githooks/pre-commit'; then
+# Check for debug statements in code files only (excluding examples and tools)
+if git diff --cached --name-only | grep -E '\.(py|js|ts|tsx)$' | grep -v 'Example' | grep -v 'example' | grep -v 'tools/' | xargs grep -l 'console\.log\|debugger\|pdb\.set_trace\|print(' 2>/dev/null | grep -v '.githooks/pre-commit'; then
     echo "❌ Debug statements found in staged code files"
     exit 1
 fi

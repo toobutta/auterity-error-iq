@@ -1,20 +1,57 @@
-# Infrastructure Services
 
-## API Gateway (Kong)
 
-- Rate limiting, CORS, authentication
-- Ports: 8000 (proxy), 8001 (admin)
+# Infrastructure Service
 
-## Monitoring
+s
 
-- Prometheus (9090), Grafana (3001), Jaeger (16686)
+#
 
-## Secrets (Vault)
+# API Gateway (Kong
 
-- HashiCorp Vault integration
-- Port: 8200
+)
 
-## Event Streaming (Kafka)
+- Rate limiting, CORS, authenticatio
 
-- Apache Kafka
-- Port: 9092
+n
+
+- Ports: 8000 (proxy), 8001 (admin
+
+)
+
+#
+
+# Monitorin
+
+g
+
+- Prometheus (9090), Grafana (3001), Jaeger (16686
+
+)
+
+#
+
+# Secrets (Vault
+
+)
+
+- HashiCorp Vault integratio
+
+n
+
+- Port: 820
+
+0
+
+#
+
+# Event Streaming (Kafka
+
+)
+
+- Apache Kafk
+
+a
+
+- Port: 909
+
+2

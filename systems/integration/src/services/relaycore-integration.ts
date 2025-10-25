@@ -31,7 +31,6 @@ export class RelayCoreIntegration extends EventEmitter {
       this.handleRelayCoreMessage.bind(this),
     );
 
-    console.log("RelayCore integration initialized");
   }
 
   private async handleRelayCoreMessage(
@@ -63,3 +62,4 @@ export class RelayCoreIntegration extends EventEmitter {
     };
   }
 }
+

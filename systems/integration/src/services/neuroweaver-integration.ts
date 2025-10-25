@@ -31,7 +31,6 @@ export class NeuroWeaverIntegration extends EventEmitter {
       this.handleNeuroWeaverMessage.bind(this),
     );
 
-    console.log("NeuroWeaver integration initialized");
   }
 
   private async handleNeuroWeaverMessage(
@@ -63,3 +62,4 @@ export class NeuroWeaverIntegration extends EventEmitter {
     };
   }
 }
+

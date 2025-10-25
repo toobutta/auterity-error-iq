@@ -2,6 +2,9 @@
 export { default as CustomerInquiryNode } from "./CustomerInquiryNode";
 export { default as SendEmailNode } from "./SendEmailNode";
 export { default as LeadQualificationNode } from "./LeadQualificationNode";
+export { default as CrewAINode } from "./CrewAINode";
+export { default as LangGraphNode } from "./LangGraphNode";
+export { default as UnifiedAINode } from "./UnifiedAINode";
 
 // Re-export existing nodes
 export { StartNode } from "../../nodes/StartNode";
@@ -22,3 +25,5 @@ export { AIProcessNode as GeographicLocationNode } from "../../nodes/AIProcessNo
 export { AIProcessNode as PriceOptimizationNode } from "../../nodes/AIProcessNode";
 export { AIProcessNode as CustomerSentimentNode } from "../../nodes/AIProcessNode";
 export { AIProcessNode as RecommendationEngineNode } from "../../nodes/AIProcessNode";
+
+

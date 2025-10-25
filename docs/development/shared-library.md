@@ -1,17 +1,46 @@
-# Shared Components and Services
+
+
+# Shared Components and Service
+
+s
 
 This directory contains shared components, services, utilities, and hooks that are used across multiple parts of the application.
 
-## Directory Structure
+#
 
-- `/api`: Shared API clients and services
-- `/components`: Reusable UI components
-- `/contexts`: React contexts for state management
-- `/hooks`: Custom React hooks
-- `/types`: TypeScript interfaces and types
-- `/utils`: Utility functions
+# Directory Structur
 
-## Usage
+e
+
+- `/api`: Shared API clients and service
+
+s
+
+- `/components`: Reusable UI component
+
+s
+
+- `/contexts`: React contexts for state managemen
+
+t
+
+- `/hooks`: Custom React hook
+
+s
+
+- `/types`: TypeScript interfaces and type
+
+s
+
+- `/utils`: Utility function
+
+s
+
+#
+
+# Usag
+
+e
 
 Import shared components and services directly from their respective directories:
 
@@ -25,12 +54,33 @@ import { useErrorHandler } from "../shared/hooks/useErrorHandler";
 import { apiClient } from "../shared/api";
 import { logger } from "../shared/utils";
 import { useErrorHandler } from "../shared/hooks";
+
 ```
 
-## Guidelines
+#
 
-1. Keep shared code focused on reusability
-2. Avoid project-specific logic in shared components
-3. Document complex utilities and components
-4. Write tests for shared code
-5. Keep dependencies minimal
+# Guideline
+
+s
+
+1. Keep shared code focused on reusabilit
+
+y
+
+2. Avoid project-specific logic in shared componen
+
+t
+
+s
+
+3. Document complex utilities and component
+
+s
+
+4. Write tests for shared cod
+
+e
+
+5. Keep dependencies minima
+
+l

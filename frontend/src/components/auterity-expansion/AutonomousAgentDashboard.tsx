@@ -181,7 +181,7 @@ const AutonomousAgentDashboard: React.FC = () => {
       setMemories(mockMemories);
       setMetrics(mockMetrics);
     } catch (error) {
-      console.error("Failed to fetch agent data:", error);
+
     } finally {
       setLoading(false);
     }
@@ -965,3 +965,5 @@ const AutonomousAgentDashboard: React.FC = () => {
 };
 
 export default AutonomousAgentDashboard;
+
+

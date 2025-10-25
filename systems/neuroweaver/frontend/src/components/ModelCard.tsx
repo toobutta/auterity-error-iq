@@ -277,7 +277,7 @@ export const ModelCard: React.FC<ModelCardProps> = ({
                 startIcon={<StopIcon />}
                 onClick={() => {
                   // Handle stop deployment
-                  console.log("Stop deployment:", model.id);
+
                 }}
               >
                 Stop
@@ -354,3 +354,4 @@ export const ModelCard: React.FC<ModelCardProps> = ({
     </>
   );
 };
+

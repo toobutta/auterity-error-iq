@@ -512,3 +512,4 @@ export const defaultCircuitBreakerConfig: CircuitBreakerConfig = {
   timeout: 30000, // 30 second operation timeout
   maxRetries: 3, // Maximum 3 retries
 };
+

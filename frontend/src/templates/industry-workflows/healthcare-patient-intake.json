@@ -1,0 +1,151 @@
+{
+  "id": "healthcare-patient-intake",
+  "name": "Healthcare Patient Intake Workflow",
+  "description": "HIPAA-compliant patient intake and triage workflow with automated documentation and scheduling",
+  "industry": "healthcare",
+  "category": "operations",
+  "workflow": {
+    "name": "Patient Intake Process",
+    "description": "Handles new patient registration, triage, and initial appointment scheduling",
+    "steps": [
+      {
+        "id": "patient-contact",
+        "type": "start",
+        "name": "Patient Contact",
+        "description": "Initial patient contact via phone, portal, or referral",
+        "config": {},
+        "position": { "x": 100, "y": 100 }
+      },
+      {
+        "id": "data-verification",
+        "type": "ai_process",
+        "name": "Insurance & Data Verification",
+        "description": "Verifies insurance coverage and patient information",
+        "config": {
+          "model": "insurance-verification-v1",
+          "checkFields": ["insurance", "demographics", "eligibility"]
+        },
+        "position": { "x": 300, "y": 100 }
+      },
+      {
+        "id": "triage-assessment",
+        "type": "ai_process",
+        "name": "Symptom Triage",
+        "description": "AI-powered assessment of patient symptoms and urgency",
+        "config": {
+          "model": "medical-triage-v2",
+          "urgencyLevels": ["routine", "urgent", "emergency"]
+        },
+        "position": { "x": 500, "y": 100 }
+      },
+      {
+        "id": "urgency-check",
+        "type": "condition",
+        "name": "Urgency Evaluation",
+        "description": "Routes based on triage assessment results",
+        "config": {
+          "conditions": [
+            { "field": "urgency", "operator": "eq", "value": "emergency" }
+          ]
+        },
+        "position": { "x": 700, "y": 100 }
+      },
+      {
+        "id": "emergency-routing",
+        "type": "action",
+        "name": "Emergency Response",
+        "description": "Immediate routing to emergency department",
+        "config": {
+          "action": "emergency-alert",
+          "priority": "critical"
+        },
+        "position": { "x": 900, "y": 50 }
+      },
+      {
+        "id": "appointment-scheduling",
+        "type": "action",
+        "name": "Appointment Scheduling",
+        "description": "Schedules appropriate appointment based on triage results",
+        "config": {
+          "calendar": "primary-care",
+          "duration": 30
+        },
+        "position": { "x": 900, "y": 150 }
+      },
+      {
+        "id": "confirmation-email",
+        "type": "action",
+        "name": "Confirmation & Instructions",
+        "description": "Sends appointment confirmation and preparation instructions",
+        "config": {
+          "template": "appointment-confirmation",
+          "includeForms": true
+        },
+        "position": { "x": 1100, "y": 100 }
+      },
+      {
+        "id": "intake-complete",
+        "type": "end",
+        "name": "Intake Complete",
+        "description": "Patient intake process successfully completed",
+        "config": {},
+        "position": { "x": 1300, "y": 100 }
+      }
+    ],
+    "connections": [
+      {
+        "id": "contact-to-verification",
+        "source": "patient-contact",
+        "target": "data-verification",
+        "label": "New Patient"
+      },
+      {
+        "id": "verification-to-triage",
+        "source": "data-verification",
+        "target": "triage-assessment",
+        "label": "Data Verified"
+      },
+      {
+        "id": "triage-to-urgency",
+        "source": "triage-assessment",
+        "target": "urgency-check",
+        "label": "Triage Complete"
+      },
+      {
+        "id": "emergency-case",
+        "source": "urgency-check",
+        "target": "emergency-routing",
+        "label": "Emergency"
+      },
+      {
+        "id": "routine-case",
+        "source": "urgency-check",
+        "target": "appointment-scheduling",
+        "label": "Routine/Urgent"
+      },
+      {
+        "id": "emergency-to-complete",
+        "source": "emergency-routing",
+        "target": "intake-complete",
+        "label": "Routed"
+      },
+      {
+        "id": "scheduled-to-confirmation",
+        "source": "appointment-scheduling",
+        "target": "confirmation-email",
+        "label": "Scheduled"
+      },
+      {
+        "id": "confirmation-to-complete",
+        "source": "confirmation-email",
+        "target": "intake-complete",
+        "label": "Confirmed"
+      }
+    ]
+  },
+  "tags": ["patient-intake", "healthcare", "HIPAA", "triage", "scheduling"],
+  "compliance": ["HIPAA"],
+  "version": "1.0.0",
+  "createdAt": "2025-08-30T00:00:00Z",
+  "updatedAt": "2025-08-30T00:00:00Z"
+}

@@ -51,29 +51,29 @@ export class CrossSystemCache extends EventEmitter {
       this.client = createClient({ url: this.url });
 
       this.client.on("error", (error) => {
-        console.error("Redis client error:", error);
+
         this.isConnected = false;
         this.emit("connection-error", error);
       });
 
       this.client.on("connect", () => {
-        console.log("Connected to Redis");
+
         this.isConnected = true;
         this.emit("connected");
       });
 
       this.client.on("disconnect", () => {
-        console.log("Disconnected from Redis");
+
         this.isConnected = false;
         this.emit("disconnected");
       });
 
       await this.client.connect();
-      console.log("Cross-system cache initialized successfully");
+
     } catch (error) {
-      console.error("Failed to initialize cross-system cache:", error);
+
       // Fallback to local cache only
-      console.log("Using local cache fallback");
+
     }
   }
 
@@ -83,9 +83,9 @@ export class CrossSystemCache extends EventEmitter {
         await this.client.disconnect();
       }
       this.isConnected = false;
-      console.log("Cross-system cache disconnected");
+
     } catch (error) {
-      console.error("Error disconnecting cache:", error);
+
     }
   }
 
@@ -133,7 +133,7 @@ export class CrossSystemCache extends EventEmitter {
       this.stats.sets++;
       this.emit("entry-set", entry);
     } catch (error) {
-      console.error("Error setting cache entry:", error);
+
       // Fallback to local cache
       if (this.enableLocalCache) {
         this.localCache.set(key, entry);
@@ -174,7 +174,7 @@ export class CrossSystemCache extends EventEmitter {
       this.emit("cache-miss", { key });
       return null;
     } catch (error) {
-      console.error("Error getting cache entry:", error);
+
       this.stats.misses++;
       return null;
     }
@@ -212,7 +212,7 @@ export class CrossSystemCache extends EventEmitter {
 
       return deleted;
     } catch (error) {
-      console.error("Error deleting cache entry:", error);
+
       // Fallback to local cache deletion
       if (this.enableLocalCache) {
         return this.localCache.delete(key);
@@ -234,9 +234,9 @@ export class CrossSystemCache extends EventEmitter {
       }
 
       this.emit("cache-cleared");
-      console.log("Cache cleared");
+
     } catch (error) {
-      console.error("Error clearing cache:", error);
+
     }
   }
 
@@ -267,10 +267,9 @@ export class CrossSystemCache extends EventEmitter {
         this.emit("tag-invalidated", { tag, keys: keys.length });
       }
 
-      console.log(`Invalidated ${invalidated} entries for tag: ${tag}`);
       return invalidated;
     } catch (error) {
-      console.error("Error invalidating by tag:", error);
+
       return 0;
     }
   }
@@ -298,10 +297,9 @@ export class CrossSystemCache extends EventEmitter {
         this.emit("system-invalidated", { system, keys: keys.length });
       }
 
-      console.log(`Invalidated ${invalidated} entries for system: ${system}`);
       return invalidated;
     } catch (error) {
-      console.error("Error invalidating by system:", error);
+
       return 0;
     }
   }
@@ -321,7 +319,7 @@ export class CrossSystemCache extends EventEmitter {
 
       return false;
     } catch (error) {
-      console.error("Error checking cache existence:", error);
+
       return false;
     }
   }
@@ -346,7 +344,7 @@ export class CrossSystemCache extends EventEmitter {
 
       return null;
     } catch (error) {
-      console.error("Error getting cache entry:", error);
+
       return null;
     }
   }
@@ -368,7 +366,7 @@ export class CrossSystemCache extends EventEmitter {
 
       return entries;
     } catch (error) {
-      console.error("Error getting entries by tag:", error);
+
       return [];
     }
   }
@@ -390,7 +388,7 @@ export class CrossSystemCache extends EventEmitter {
 
       return entries;
     } catch (error) {
-      console.error("Error getting entries by system:", error);
+
       return [];
     }
   }
@@ -431,7 +429,6 @@ export class CrossSystemCache extends EventEmitter {
 
   // Cache warming for frequently accessed data
   async warmCache(keys: string[]): Promise<void> {
-    console.log(`Warming cache for ${keys.length} keys`);
 
     for (const key of keys) {
       // This would typically fetch from the database or external source
@@ -475,7 +472,7 @@ export class CrossSystemCache extends EventEmitter {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      console.error("Error getting Redis info:", error);
+
       return { status: "error", error: errorMessage };
     }
   }
@@ -545,7 +542,7 @@ export class CrossSystemCache extends EventEmitter {
     try {
       return await this.client.keys(pattern);
     } catch (error) {
-      console.error("Error getting keys by pattern:", error);
+
       return [];
     }
   }
@@ -564,7 +561,7 @@ export class CrossSystemCache extends EventEmitter {
       }
       return 0;
     } catch (error) {
-      console.error("Error deleting keys by pattern:", error);
+
       return 0;
     }
   }
@@ -581,3 +578,4 @@ export class CrossSystemCache extends EventEmitter {
     };
   }
 }
+

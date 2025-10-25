@@ -5,3 +5,5 @@ export const LazyBarChart = lazy(() =>
     default: module.BarChart,
   })),
 );
+
+

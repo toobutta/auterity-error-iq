@@ -1,0 +1,123 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Industry Workflow Template",
+  "description": "Schema for industry-specific workflow templates",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the template"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the template"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the template"
+    },
+    "industry": {
+      "type": "string",
+      "enum": ["automotive", "healthcare", "finance", "manufacturing", "retail", "real-estate"],
+      "description": "Target industry for the template"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["sales", "customer-service", "operations", "compliance", "marketing"],
+      "description": "Business category within the industry"
+    },
+    "workflow": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["start", "ai_process", "end", "condition", "action"]
+              },
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "config": {
+                "type": "object"
+              },
+              "position": {
+                "type": "object",
+                "properties": {
+                  "x": { "type": "number" },
+                  "y": { "type": "number" }
+                }
+              }
+            },
+            "required": ["id", "type", "name", "position"]
+          }
+        },
+        "connections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              },
+              "target": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              }
+            },
+            "required": ["id", "source", "target"]
+          }
+        }
+      },
+      "required": ["name", "steps"]
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for searching and filtering"
+    },
+    "compliance": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["GDPR", "HIPAA", "SOX", "PCI-DSS", "CCPA"]
+      },
+      "description": "Compliance requirements addressed by the template"
+    },
+    "version": {
+      "type": "string",
+      "description": "Template version"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": ["id", "name", "industry", "workflow"]
+}

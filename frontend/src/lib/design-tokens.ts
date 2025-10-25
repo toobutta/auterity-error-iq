@@ -420,3 +420,5 @@ export function generateCSSCustomProperties(): Record<string, string> {
 
 // Export the main design tokens
 export default automotiveDesignTokens;
+
+

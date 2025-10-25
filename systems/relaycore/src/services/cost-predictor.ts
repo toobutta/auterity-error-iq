@@ -550,3 +550,4 @@ export class CostPredictor {
     return 0.05;
   }
 }
+

@@ -1,29 +1,116 @@
-# 🔧 Auterity Three-System AI Platform - Complete Front-End Specification
 
-**Document Version**: 1.0
-**Date**: January 8, 2025
-**Author**: Kiro AI Assistant
-**Project**: Auterity Three-System AI Platform
 
----
+# 🔧 Auterity Three-System AI Platfor
 
-## 📋 Executive Summary
+m
 
-This specification outlines the complete front-end architecture for the **Auterity Three-System AI Platform**, integrating:
+ - Complete Front-End Specificati
 
-- **AutoMatrix** (Workflow Automation) - React 18 + TypeScript + Tailwind CSS
-- **NeuroWeaver** (Model Specialization) - Next.js + Material-UI + TypeScript
-- **RelayCore** (AI Routing Hub) - Express.js + TypeScript (minimal UI)
+o
+
+n
+
+**Document Version**: 1.
+
+0
+**Date**: January 8, 202
+
+5
+**Author**: Kiro AI Assistan
+
+t
+**Project**: Auterity Three-System AI Platfor
+
+m
+
+--
+
+- #
+
+# 📋 Executive Summar
+
+y
+
+This specification outlines the complete front-end architecture for the **Auterity Three-System AI Platform**, integrating
+
+:
+
+- **AutoMatrix
+
+* * (Workflow Automation
+
+)
+
+ - React 1
+
+8
+
+ + TypeScrip
+
+t
+
+ + Tailwind CS
+
+S
+
+- **NeuroWeaver
+
+* * (Model Specialization
+
+)
+
+ - Next.j
+
+s
+
+ + Material-U
+
+I
+
+ + TypeScrip
+
+t
+
+- **RelayCore
+
+* * (AI Routing Hub
+
+)
+
+ - Express.j
+
+s
+
+ + TypeScript (minimal UI
+
+)
 
 The platform provides unified automotive dealership workflow automation with specialized AI models and intelligent routing.
 
-## 🏗️ Three-System Architecture Overview
+#
+
+# 🏗️ Three-System Architecture Overvi
+
+e
+
+w
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   AutoMatrix    │◄──►│   RelayCore     │◄──►│   NeuroWeaver   │
 │   (Frontend)    │    │   (AI Router)   │    │   (Frontend)    │
-│  React + Vite   │    │  Express + TS   │    │  Next.js + MUI  │
+│  React
+
+ + Vite   │    │  Expres
+
+s
+
+ + TS   │    │  Next.j
+
+s
+
+ + MUI  │
+
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          └───────────────────────┼───────────────────────┘
@@ -33,72 +120,224 @@ The platform provides unified automotive dealership workflow automation with spe
                     │ & Monitoring    │
                     │   Dashboard     │
                     └─────────────────┘
+
 ```
 
-## 🎯 Current Implementation Status
+#
 
-### ✅ AutoMatrix Frontend (Primary UI)
+# 🎯 Current Implementation Statu
 
-- **Status**: 80% Complete - Production Ready Base
-- **Tech Stack**: React 18 + TypeScript + Tailwind CSS + Vite
-- **Features**: Workflow builder, dashboard, authentication, monitoring
-- **Critical Issues**: 3 security vulnerabilities, 108 TypeScript errors
+s
 
-### ✅ NeuroWeaver Frontend (Model Management)
+#
 
-- **Status**: 90% Complete - Advanced UI Components
-- **Tech Stack**: Next.js + Material-UI + TypeScript
-- **Features**: Model cards, template gallery, training progress, automotive templates
-- **Quality**: High-quality Material-UI components with comprehensive functionality
+## ✅ AutoMatrix Frontend (Primary UI
 
-### 🟡 RelayCore (Minimal Admin UI)
+)
 
-- **Status**: Backend Complete, Minimal Frontend
-- **Tech Stack**: Express.js + TypeScript (API-focused)
-- **Needs**: Admin dashboard for routing rules, cost monitoring, model registry
+- **Status**: 80% Complet
 
-## 🧩 Enhanced Three-System Frontend Architecture
+e
 
-### 1. 🎨 Unified Design System
+ - Production Ready Bas
 
-#### Cross-System Design Tokens
+e
 
-```typescript
+- **Tech Stack**: React 1
+
+8
+
+ + TypeScrip
+
+t
+
+ + Tailwind CS
+
+S
+
+ + Vit
+
+e
+
+- **Features**: Workflow builder, dashboard, authentication, monitorin
+
+g
+
+- **Critical Issues**: 3 security vulnerabilities, 108 TypeScript error
+
+s
+
+#
+
+## ✅ NeuroWeaver Frontend (Model Management
+
+)
+
+- **Status**: 90% Complet
+
+e
+
+ - Advanced UI Component
+
+s
+
+- **Tech Stack**: Next.j
+
+s
+
+ + Material-U
+
+I
+
+ + TypeScrip
+
+t
+
+- **Features**: Model cards, template gallery, training progress, automotive template
+
+s
+
+- **Quality**: High-quality Material-UI components with comprehensive functionalit
+
+y
+
+#
+
+## 🟡 RelayCore (Minimal Admin UI
+
+)
+
+- **Status**: Backend Complete, Minimal Fronten
+
+d
+
+- **Tech Stack**: Express.j
+
+s
+
+ + TypeScript (API-focused
+
+)
+
+- **Needs**: Admin dashboard for routing rules, cost monitoring, model registr
+
+y
+
+#
+
+# 🧩 Enhanced Three-System Frontend Architectu
+
+r
+
+e
+
+#
+
+##
+
+ 1. 🎨 Unified Design Syst
+
+e
+
+m
+
+#
+
+### Cross-System Design Toke
+
+n
+
+s
+
+```
+
+typescript
 // Shared design system across all three frontends
 const UnifiedDesignSystem = {
   // Brand colors consistent across systems
   colors: {
     primary: {
-      autmatrix: "#0ea5e9", // Blue - workflow focus
-      neuroweaver: "#8b5cf6", // Purple - AI/ML focus
-      relaycore: "#10b981", // Green - routing/optimization
+      autmatrix: "
+
+#0ea5e9", // Blue
+
+ - workflow focu
+
+s
+
+      neuroweaver: "
+
+#8b5cf6", // Purple
+
+ - AI/ML focu
+
+s
+
+      relaycore: "
+
+#10b981", // Green
+
+ - routing/optimizatio
+
+n
+
     },
     // Automotive status colors (shared)
     status: {
-      active: "#10b981",
-      warning: "#f59e0b",
-      error: "#ef4444",
-      pending: "#6b7280",
+      active: "
+
+#10b981",
+
+      warning: "
+
+#f59e0b",
+
+      error: "
+
+#ef4444",
+
+      pending: "
+
+#6b7280",
+
     },
     // Dealership department colors (shared)
     departments: {
-      sales: "#3b82f6",
-      service: "#8b5cf6",
-      parts: "#f97316",
-      finance: "#1f2937",
+      sales: "
+
+#3b82f6",
+
+      service: "
+
+#8b5cf6",
+
+      parts: "
+
+#f97316",
+
+      finance: "
+
+#1f2937",
+
     },
   },
 
   // Typography scale (shared)
   typography: {
     fontFamily: "Inter, system-ui, sans-serif",
+
     scale: {
       xs: "0.75rem",
+
       sm: "0.875rem",
+
       base: "1rem",
       lg: "1.125rem",
+
       xl: "1.25rem",
+
       "2xl": "1.5rem",
+
     },
   },
 
@@ -109,11 +348,18 @@ const UnifiedDesignSystem = {
     compact: "16px",
   },
 };
+
 ```
 
-#### Component Consistency Framework
+#
 
-```typescript
+### Component Consistency Framewor
+
+k
+
+```
+
+typescript
 interface CrossSystemComponents {
   // Shared component patterns
   ModelCard: {
@@ -134,14 +380,32 @@ interface CrossSystemComponents {
     relaycore: "CostOptimization"; // Cost and routing metrics
   };
 }
+
 ```
 
-### 2. 🔗 Cross-System Integration Layer
+#
 
-#### Unified API Client
+##
 
-```typescript
+ 2. 🔗 Cross-System Integration La
+
+y
+
+e
+
+r
+
+#
+
+### Unified API Clien
+
+t
+
+```
+
+typescript
 // Shared API client for cross-system communication
+
 interface UnifiedAPIClient {
   // AutoMatrix API calls
   autmatrix: {
@@ -169,12 +433,22 @@ interface UnifiedAPIClient {
     getCostAnalytics: () => Promise<CostAnalytics>;
   };
 }
+
 ```
 
-#### Cross-System State Management
+#
 
-```typescript
+### Cross-System State Manageme
+
+n
+
+t
+
+```
+
+typescript
 // Unified state management for cross-system data
+
 interface UnifiedAppState {
   // Authentication (shared across systems)
   auth: {
@@ -184,6 +458,7 @@ interface UnifiedAppState {
   };
 
   // Cross-system data
+
   crossSystem: {
     availableModels: Model[]; // From NeuroWeaver
     routingMetrics: RoutingMetrics; // From RelayCore
@@ -192,39 +467,63 @@ interface UnifiedAppState {
   };
 
   // System-specific state
+
   autmatrix: AutoMatrixState;
   neuroweaver: NeuroWeaverState;
   relaycore: RelayCoreState;
 }
+
 ```
 
-### 3. 🚀 AutoMatrix Frontend Enhancements
+#
 
-#### Enhanced Workflow Builder with AI Integration
+##
 
-```typescript
+ 3. 🚀 AutoMatrix Frontend Enhancemen
+
+t
+
+s
+
+#
+
+### Enhanced Workflow Builder with AI Integratio
+
+n
+
+```
+
+typescript
 interface EnhancedWorkflowBuilder {
   // AI-powered workflow features
+
   aiAssistance: {
     modelSelection: {
       component: "ModelSelectorDropdown";
       integration: "neuroweaver-api";
+
       features: ["automotive-models", "performance-metrics", "cost-analysis"];
+
     };
 
     promptOptimization: {
       component: "PromptEditor";
       features: [
         "template-suggestions",
+
         "automotive-context",
+
         "testing-interface",
+
       ];
     };
 
     routingConfiguration: {
       component: "RoutingRulesEditor";
       integration: "relaycore-api";
+
       features: ["cost-optimization", "fallback-models", "performance-routing"];
+
     };
   };
 
@@ -232,69 +531,121 @@ interface EnhancedWorkflowBuilder {
   enhancedNodes: {
     AIProcessNode: {
       modelSelection: "neuroweaver-integration";
+
       routingRules: "relaycore-integration";
+
       costMonitoring: "real-time-cost-tracking";
+
       performanceMetrics: "response-time-accuracy";
+
     };
 
     AutomotiveNodes: {
       CustomerInquiryNode: "specialized-automotive-ai";
+
       VehicleInventoryNode: "inventory-integration";
+
       ServiceSchedulingNode: "service-optimization";
+
       FinancingNode: "finance-calculation";
+
     };
   };
 }
+
 ```
 
-#### Automotive-Specific Dashboard
+#
 
-```typescript
+### Automotive-Specific Dashboa
+
+r
+
+d
+
+```
+
+typescript
 interface AutomotiveDashboard {
   // Dealership role-based views
+
   roleBasedDashboards: {
     salesManager: {
       widgets: [
         "active-workflows",
+
         "lead-conversion-metrics",
+
         "ai-model-performance",
+
         "cost-optimization-savings",
+
       ];
       integrations: ["neuroweaver-models", "relaycore-costs"];
+
     };
 
     serviceManager: {
       widgets: [
         "service-workflows",
+
         "technician-efficiency",
+
         "parts-availability",
+
         "customer-satisfaction",
+
       ];
       integrations: ["automotive-templates", "service-models"];
+
     };
   };
 
   // Cross-system monitoring
+
   unifiedMonitoring: {
     workflowHealth: "autmatrix-metrics";
+
     modelPerformance: "neuroweaver-metrics";
+
     routingEfficiency: "relaycore-metrics";
+
     costOptimization: "cross-system-analytics";
+
   };
 }
+
 ```
 
-### 4. 🧠 NeuroWeaver Frontend Integration
+#
 
-#### Enhanced Model Management
+##
 
-```typescript
+ 4. 🧠 NeuroWeaver Frontend Integrati
+
+o
+
+n
+
+#
+
+### Enhanced Model Managemen
+
+t
+
+```
+
+typescript
 interface EnhancedNeuroWeaver {
   // Current components (already well-implemented)
+
   existingComponents: {
     ModelCard: "production-ready";
+
     TemplateGallery: "comprehensive-automotive-templates";
+
     TrainingProgress: "real-time-monitoring";
+
   };
 
   // Integration enhancements
@@ -303,14 +654,18 @@ interface EnhancedNeuroWeaver {
       component: "WorkflowModelSelector";
       features: [
         "model-recommendations",
+
         "performance-preview",
+
         "cost-estimation",
+
       ];
     };
 
     relaycoreIntegration: {
       component: "ModelRegistration";
       features: ["auto-registration", "routing-optimization", "load-balancing"];
+
     };
   };
 
@@ -319,39 +674,63 @@ interface EnhancedNeuroWeaver {
     dealershipTemplates: {
       categories: [
         "service-advisor",
+
         "sales-assistant",
+
         "parts-inventory",
+
         "finance-advisor",
+
       ];
       instantiation: "real-time-testing";
+
       comparison: "side-by-side-analysis";
+
     };
 
     performanceOptimization: {
       component: "ModelBenchmarking";
       features: ["automotive-specific-metrics", "cost-performance-analysis"];
+
     };
   };
 }
+
 ```
 
-### 5. 🔄 RelayCore Admin Interface
+#
 
-#### New Admin Dashboard (Needs Implementation)
+##
 
-```typescript
+ 5. 🔄 RelayCore Admin Interfa
+
+c
+
+e
+
+#
+
+### New Admin Dashboard (Needs Implementation
+
+)
+
+```
+
+typescript
 interface RelayCoreAdminDashboard {
   // Core admin features (needs CURSOR implementation)
   adminInterface: {
     routingRules: {
       component: "SteeringRulesEditor";
       features: ["yaml-editor", "rule-validation", "testing-interface"];
+
       priority: "HIGH";
     };
 
     modelRegistry: {
       component: "ModelRegistryManager";
       features: ["provider-management", "model-catalog", "health-monitoring"];
+
       priority: "HIGH";
     };
 
@@ -359,8 +738,11 @@ interface RelayCoreAdminDashboard {
       component: "CostAnalyticsDashboard";
       features: [
         "real-time-costs",
+
         "budget-alerts",
+
         "optimization-suggestions",
+
       ];
       priority: "MEDIUM";
     };
@@ -371,40 +753,69 @@ interface RelayCoreAdminDashboard {
     autmatrixMonitoring: {
       component: "WorkflowRequestMonitor";
       features: ["request-logs", "response-times", "error-tracking"];
+
     };
 
     neuroweaverMonitoring: {
       component: "ModelUsageAnalytics";
       features: [
         "model-performance",
+
         "usage-patterns",
+
         "optimization-opportunities",
+
       ];
     };
   };
 }
+
 ```
 
-### 6. 🔐 Unified Authentication & Navigation
+#
 
-#### Cross-System Navigation
+##
 
-```typescript
+ 6. 🔐 Unified Authentication & Navigati
+
+o
+
+n
+
+#
+
+### Cross-System Navigati
+
+o
+
+n
+
+```
+
+typescript
 interface UnifiedNavigation {
   // Main navigation structure
   navigationStructure: {
     primary: {
       dashboard: "unified-overview";
+
       workflows: "autmatrix-primary";
+
       models: "neuroweaver-primary";
+
       routing: "relaycore-admin";
+
     };
 
     secondary: {
       templates: "cross-system-templates";
+
       monitoring: "unified-monitoring";
+
       analytics: "cross-system-analytics";
+
       settings: "system-configuration";
+
     };
   };
 
@@ -412,108 +823,254 @@ interface UnifiedNavigation {
   systemSwitcher: {
     component: "SystemTabSwitcher";
     features: ["seamless-switching", "context-preservation", "unified-search"];
+
   };
 }
+
 ```
 
-#### Single Sign-On Implementation
+#
 
-```typescript
+### Single Sign-On Implementati
+
+o
+
+n
+
+```
+
+typescript
 interface UnifiedAuthentication {
   // JWT-based SSO
+
   authentication: {
     tokenManagement: "cross-system-jwt";
+
     permissionSystem: "role-based-access-control";
+
     sessionSync: "real-time-synchronization";
+
   };
 
   // Role-based access
+
   roleBasedAccess: {
     dealershipRoles: [
       "sales-manager",
+
       "service-manager",
+
       "general-manager",
+
       "technician",
     ];
     systemPermissions: {
       autmatrix: ["workflow-create", "workflow-execute", "workflow-monitor"];
+
       neuroweaver: ["model-view", "model-deploy", "template-instantiate"];
+
       relaycore: ["routing-view", "cost-monitor", "rules-edit"];
+
     };
   };
 }
+
 ```
 
-### 7. 📊 Unified Monitoring Dashboard
+#
 
-#### Cross-System Analytics
+##
 
-```typescript
+ 7. 📊 Unified Monitoring Dashboa
+
+r
+
+d
+
+#
+
+### Cross-System Analyti
+
+c
+
+s
+
+```
+
+typescript
 interface UnifiedMonitoringDashboard {
   // Real-time metrics aggregation
+
   metricsAggregation: {
     workflowMetrics: {
       source: "autmatrix";
       metrics: ["execution-count", "success-rate", "average-duration"];
+
     };
 
     modelMetrics: {
       source: "neuroweaver";
       metrics: ["model-accuracy", "inference-speed", "deployment-status"];
+
     };
 
     routingMetrics: {
       source: "relaycore";
       metrics: ["request-volume", "cost-optimization", "response-times"];
+
     };
   };
 
   // Unified visualization
   dashboardComponents: {
     SystemHealthOverview: "three-system-status-grid";
+
     CostAnalytics: "cross-system-cost-tracking";
+
     PerformanceMetrics: "unified-performance-charts";
+
     ErrorCorrelation: "cross-system-error-analysis";
+
   };
 }
-```
-
-## 🗂️ Enhanced File Structure
 
 ```
+
+#
+
+# 🗂️ Enhanced File Structur
+
+e
+
+```
+
 frontend-systems/
-├── autmatrix/                    # Primary workflow UI
+
+├── autmatrix/
+
+# Primary workflow UI
+
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── workflow/         # Enhanced workflow builder
-│   │   │   ├── automotive/       # Automotive-specific components
-│   │   │   ├── integration/      # Cross-system integration
-│   │   │   └── dashboard/        # Unified dashboard
+│   │   │   ├── workflow/
+
+# Enhanced workflow builder
+
+│   │   │   ├── automotive/
+
+# Automotive-specific component
+
+s
+
+│   │   │   ├── integration/
+
+# Cross-system integratio
+
+n
+
+│   │   │   └── dashboard/
+
+# Unified dashboard
+
 │   │   ├── services/
-│   │   │   ├── neuroweaver/      # NeuroWeaver API client
-│   │   │   ├── relaycore/        # RelayCore API client
-│   │   │   └── unified/          # Cross-system services
+│   │   │   ├── neuroweaver/
+
+# NeuroWeaver API client
+
+│   │   │   ├── relaycore/
+
+# RelayCore API client
+
+│   │   │   └── unified/
+
+# Cross-system service
+
+s
+
 │   │   └── types/
-│   │       ├── cross-system/     # Shared type definitions
-│   │       └── automotive/       # Automotive domain types
-│   └── package.json              # React + Vite + Tailwind
+│   │       ├── cross-system/
+
+
+
+# Shared type definitions
+
+│   │       └── automotive/
+
+# Automotive domain types
+
+│   └── package.json
+
+# React
+
+ + Vit
+
+e
+
+ + Tailwin
+
+d
+
 │
-├── neuroweaver/                  # Model management UI
+├── neuroweaver/
+
+# Model management UI
+
 │   ├── src/
-│   │   ├── components/           # Existing MUI components
-│   │   │   ├── ModelCard.tsx     # ✅ Production ready
-│   │   │   ├── TemplateGallery.tsx # ✅ Production ready
-│   │   │   ├── TrainingProgress.tsx # ✅ Production ready
-│   │   │   └── integration/      # AutoMatrix integration
+│   │   ├── components/
+
+# Existing MUI components
+
+│   │   │   ├── ModelCard.tsx
+
+# ✅ Production ready
+
+│   │   │   ├── TemplateGallery.tsx
+
+# ✅ Production ready
+
+│   │   │   ├── TrainingProgress.tsx
+
+# ✅ Production ready
+
+│   │   │   └── integration/
+
+# AutoMatrix integration
+
 │   │   ├── services/
-│   │   │   ├── autmatrix/        # AutoMatrix API client
-│   │   │   └── relaycore/        # RelayCore API client
+│   │   │   ├── autmatrix/
+
+# AutoMatrix API client
+
+│   │   │   └── relaycore/
+
+# RelayCore API client
+
 │   │   └── types/
-│   │       └── integration/      # Cross-system types
-│   └── package.json              # Next.js + Material-UI
+│   │       └── integration/
+
+# Cross-system type
+
+s
+
+│   └── package.json
+
+# Next.js
+
+ + Material-U
+
+I
+
 │
-├── relaycore/                    # NEW: Admin interface
-│   ├── admin-ui/                 # 🔴 NEEDS IMPLEMENTATION
+├── relaycore/
+
+# NEW: Admin interface
+
+│   ├── admin-ui/
+
+
+
+# 🔴 NEEDS IMPLEMENTATION
+
 │   │   ├── src/
 │   │   │   ├── components/
 │   │   │   │   ├── SteeringRulesEditor/
@@ -522,10 +1079,27 @@ frontend-systems/
 │   │   │   │   └── SystemMonitoring/
 │   │   │   ├── services/
 │   │   │   └── types/
-│   │   └── package.json          # React + TypeScript + Tailwind
-│   └── src/                      # Existing Express.js backend
+│   │   └── package.json
+
+# React
+
+ + TypeScrip
+
+t
+
+ + Tailwin
+
+d
+
+│   └── src/
+
+# Existing Express.js backend
+
 │
-├── shared/                       # Shared components & utilities
+├── shared/
+
+# Shared components & utilities
+
 │   ├── components/
 │   │   ├── UnifiedAuth/
 │   │   ├── SystemSwitcher/
@@ -533,87 +1107,265 @@ frontend-systems/
 │   │   └── UnifiedMonitoring/
 │   ├── services/
 │   │   ├── unified-api-client/
+
 │   │   ├── cross-system-state/
+
 │   │   └── authentication/
 │   ├── types/
 │   │   ├── cross-system/
+
 │   │   ├── automotive/
 │   │   └── api/
 │   └── utils/
 │       ├── design-tokens/
+
 │       ├── cross-system/
+
 │       └── automotive/
 │
 └── deployment/
-    ├── docker-compose.yml        # Three-system deployment
-    ├── nginx.conf               # Reverse proxy configuration
-    └── monitoring/              # Unified monitoring setup
+    ├── docker-compose.yml
+
+
+
+# Three-system deploymen
+
+t
+
+    ├── nginx.conf
+
+# Reverse proxy configuration
+
+    └── monitoring/
+
+# Unified monitoring setup
+
 ```
 
-## 🎯 Implementation Priorities
+#
 
-### Phase 1: Critical Fixes & Integration Foundation (Week 1)
+# 🎯 Implementation Prioritie
 
-1. **🔴 AMAZON-Q-TASK**: Fix AutoMatrix security vulnerabilities (prismjs)
-2. **🟡 CURSOR-TASK**: Fix AutoMatrix TypeScript errors (108 linting issues)
-3. **🟡 CURSOR-TASK**: Create shared design system and cross-system API client
-4. **🟡 CURSOR-TASK**: Implement RelayCore admin interface foundation
+s
 
-### Phase 2: Cross-System Integration (Weeks 2-3)
+#
 
-1. **🟡 CURSOR-TASK**: AutoMatrix-NeuroWeaver integration (model selection in workflows)
-2. **🟡 CURSOR-TASK**: AutoMatrix-RelayCore integration (AI routing in workflows)
-3. **🟡 CURSOR-TASK**: NeuroWeaver-RelayCore integration (model registration)
-4. **🟡 CURSOR-TASK**: Unified authentication system
+## Phase 1: Critical Fixes & Integration Foundation (Week 1
 
-### Phase 3: Enhanced Features (Weeks 4-6)
+)
 
-1. **🟡 CURSOR-TASK**: RelayCore admin dashboard (steering rules, cost monitoring)
-2. **🟡 CURSOR-TASK**: Unified monitoring dashboard
-3. **🟡 CURSOR-TASK**: Enhanced automotive workflow nodes
-4. **🟡 CURSOR-TASK**: Cross-system analytics and reporting
+1. **🔴 AMAZON-Q-TASK**: Fix AutoMatrix security vulnerabilities (prismj
 
-### Phase 4: Production Readiness (Weeks 7-8)
+s
 
-1. **🔴 AMAZON-Q-TASK**: Comprehensive testing across all three systems
-2. **🔴 AMAZON-Q-TASK**: Performance optimization and bundle analysis
-3. **🔴 AMAZON-Q-TASK**: Security hardening and compliance
-4. **🔴 AMAZON-Q-TASK**: Production deployment and monitoring
+)
 
-## 📋 Success Criteria
+2. **🟡 CURSOR-TASK**: Fix AutoMatrix TypeScript errors (108 linting issue
 
-### Technical Metrics
+s
 
-- **AutoMatrix**: Bundle size < 1MB, 0 TypeScript errors, 0 security vulnerabilities
-- **NeuroWeaver**: Maintain current high quality, add cross-system integration
-- **RelayCore**: Complete admin interface, real-time monitoring
-- **Cross-System**: Seamless authentication, unified monitoring, <2s system switching
+)
 
-### Integration Metrics
+3. **🟡 CURSOR-TASK**: Create shared design system and cross-system API clie
 
-- **API Integration**: <500ms cross-system API calls
-- **Authentication**: Single sign-on across all systems
-- **Data Consistency**: Real-time synchronization of shared data
-- **Error Handling**: Graceful degradation when systems are unavailable
+n
 
-### User Experience Metrics
+t
 
-- **Navigation**: Seamless switching between systems
-- **Performance**: <3s load time for any system
-- **Consistency**: Unified design language across all interfaces
-- **Functionality**: 100% feature parity with current implementations
+4. **🟡 CURSOR-TASK**: Implement RelayCore admin interface foundati
 
-## 🔧 Automotive Workflow Modules
+o
 
-### Customer Journey Workflows
+n
 
-```typescript
+#
+
+## Phase 2: Cross-System Integration (Weeks 2-
+
+3
+
+)
+
+1. **🟡 CURSOR-TASK**: AutoMatrix-NeuroWeaver integration (model selection in workflow
+
+s
+
+)
+
+2. **🟡 CURSOR-TASK**: AutoMatrix-RelayCore integration (AI routing in workflow
+
+s
+
+)
+
+3. **🟡 CURSOR-TASK**: NeuroWeaver-RelayCore integration (model registratio
+
+n
+
+)
+
+4. **🟡 CURSOR-TASK**: Unified authentication syst
+
+e
+
+m
+
+#
+
+## Phase 3: Enhanced Features (Weeks 4-6
+
+)
+
+1. **🟡 CURSOR-TASK**: RelayCore admin dashboard (steering rules, cost monitorin
+
+g
+
+)
+
+2. **🟡 CURSOR-TASK**: Unified monitoring dashboa
+
+r
+
+d
+
+3. **🟡 CURSOR-TASK**: Enhanced automotive workflow nod
+
+e
+
+s
+
+4. **🟡 CURSOR-TASK**: Cross-system analytics and reporti
+
+n
+
+g
+
+#
+
+## Phase 4: Production Readiness (Weeks 7-8
+
+)
+
+1. **🔴 AMAZON-Q-TASK**: Comprehensive testing across all three syste
+
+m
+
+s
+
+2. **🔴 AMAZON-Q-TASK**: Performance optimization and bundle analys
+
+i
+
+s
+
+3. **🔴 AMAZON-Q-TASK**: Security hardening and complian
+
+c
+
+e
+
+4. **🔴 AMAZON-Q-TASK**: Production deployment and monitori
+
+n
+
+g
+
+#
+
+# 📋 Success Criteri
+
+a
+
+#
+
+## Technical Metric
+
+s
+
+- **AutoMatrix**: Bundle size < 1MB, 0 TypeScript errors, 0 security vulnerabilitie
+
+s
+
+- **NeuroWeaver**: Maintain current high quality, add cross-system integratio
+
+n
+
+- **RelayCore**: Complete admin interface, real-time monitorin
+
+g
+
+- **Cross-System**: Seamless authentication, unified monitoring, <2s system switchin
+
+g
+
+#
+
+## Integration Metric
+
+s
+
+- **API Integration**: <500ms cross-system API call
+
+s
+
+- **Authentication**: Single sign-on across all system
+
+s
+
+- **Data Consistency**: Real-time synchronization of shared dat
+
+a
+
+- **Error Handling**: Graceful degradation when systems are unavailabl
+
+e
+
+#
+
+## User Experience Metric
+
+s
+
+- **Navigation**: Seamless switching between system
+
+s
+
+- **Performance**: <3s load time for any syste
+
+m
+
+- **Consistency**: Unified design language across all interface
+
+s
+
+- **Functionality**: 100% feature parity with current implementation
+
+s
+
+#
+
+# 🔧 Automotive Workflow Module
+
+s
+
+#
+
+## Customer Journey Workflow
+
+s
+
+```
+
+typescript
 interface CustomerJourneyModules {
   // Lead Management
   LeadCapture: {
     triggers: ["website-form", "phone-call", "walk-in", "referral"];
+
     aiProcessing: ["intent-classification", "urgency-scoring", "routing"];
+
     outputs: ["crm-entry", "sales-assignment", "follow-up-schedule"];
+
   };
 
   // Sales Process
@@ -621,51 +1373,75 @@ interface CustomerJourneyModules {
     stages: [
       "qualification",
       "needs-analysis",
+
       "presentation",
       "negotiation",
       "closing",
     ];
     aiAssistance: [
       "vehicle-matching",
+
       "pricing-optimization",
+
       "objection-handling",
+
     ];
     integrations: ["inventory-system", "financing-tools", "trade-evaluation"];
+
   };
 
   // Service Operations
   ServiceWorkflow: {
     processes: [
       "appointment-scheduling",
+
       "service-advisor",
+
       "technician-assignment",
+
     ];
     aiFeatures: ["diagnostic-assistance", "parts-ordering", "time-estimation"];
+
     customerComms: [
       "status-updates",
+
       "completion-notifications",
+
       "satisfaction-surveys",
+
     ];
   };
 }
+
 ```
 
-### Advanced Node Types
+#
 
-```typescript
+## Advanced Node Type
+
+s
+
+```
+
+typescript
 interface AutomotiveNodeTypes {
   // Customer Communication Nodes
   CustomerCommunicationNode: {
     channels: ["email", "sms", "phone", "chat"];
     templates: "automotive-specific";
+
     personalization: "ai-powered";
+
     compliance: "tcpa-compliant";
+
   };
 
   // Integration Nodes
   DMSIntegrationNode: {
     systems: ["reynolds-reynolds", "cdk-global", "dealertrack", "auto-mate"];
+
     operations: ["customer-lookup", "inventory-check", "deal-creation"];
+
     realTime: true;
   };
 
@@ -673,201 +1449,388 @@ interface AutomotiveNodeTypes {
   AIDecisionNode: {
     models: ["classification", "scoring", "recommendation"];
     confidence: "threshold-based";
+
     fallback: "human-escalation";
+
   };
 }
+
 ```
 
-## 🧪 Testing Strategy
+#
 
-### Comprehensive Testing Framework
+# 🧪 Testing Strateg
 
-```typescript
+y
+
+#
+
+## Comprehensive Testing Framewor
+
+k
+
+```
+
+typescript
 interface TestingStrategy {
   // Unit Testing
   unitTests: {
     framework: "vitest";
     coverage: "90%+";
+
     components: "react-testing-library";
+
     utilities: "pure-function-testing";
+
   };
 
   // Integration Testing
   integrationTests: {
     apiTesting: "mock-service-worker";
+
     workflowTesting: "end-to-end-workflow-execution";
+
     authTesting: "authentication-flow-testing";
+
   };
 
   // E2E Testing
   e2eTests: {
     framework: "playwright";
     scenarios: "critical-user-journeys";
+
     crossBrowser: "chrome-firefox-safari";
+
     mobile: "responsive-testing";
+
   };
 
   // Performance Testing
   performanceTesting: {
     bundleAnalysis: "webpack-bundle-analyzer";
+
     loadTesting: "lighthouse-ci";
+
     memoryLeaks: "memory-profiling";
+
   };
 }
+
 ```
 
-## 🚀 Performance Optimization
+#
 
-### Bundle Optimization
+# 🚀 Performance Optimizatio
 
-```typescript
+n
+
+#
+
+## Bundle Optimizatio
+
+n
+
+```
+
+typescript
 interface PerformanceOptimization {
   // Code Splitting
   codeSplitting: {
     routeLevel: "lazy-loaded-pages";
+
     componentLevel: "dynamic-imports";
+
     vendorSplitting: "separate-vendor-chunks";
+
   };
 
   // Asset Optimization
   assetOptimization: {
     images: "webp-format-with-fallbacks";
+
     fonts: "font-display-swap";
+
     icons: "svg-sprite-optimization";
+
   };
 
   // Runtime Optimization
   runtimeOptimization: {
     memoization: "react-memo-optimization";
+
     virtualScrolling: "large-list-virtualization";
+
     debouncing: "input-debouncing";
+
     caching: "intelligent-data-caching";
+
   };
 }
+
 ```
 
-## 🔒 Security Implementation
+#
 
-### Security Architecture
+# 🔒 Security Implementatio
 
-```typescript
+n
+
+#
+
+## Security Architectur
+
+e
+
+```
+
+typescript
 interface SecurityArchitecture {
   // Authentication & Authorization
   auth: {
     jwtManagement: "secure-token-storage";
+
     roleBasedAccess: "granular-permissions";
+
     sessionManagement: "automatic-session-refresh";
+
     multiFactorAuth: "optional-2fa-support";
+
   };
 
   // Data Protection
   dataProtection: {
     encryption: "client-side-sensitive-data-encryption";
+
     sanitization: "input-output-sanitization";
+
     csp: "content-security-policy";
+
     xssProtection: "xss-prevention-measures";
+
   };
 
   // Compliance
   compliance: {
     gdpr: "data-privacy-compliance";
+
     ccpa: "california-privacy-compliance";
+
     automotive: "industry-specific-compliance";
+
   };
 }
+
 ```
 
-## 📱 Mobile & Responsive Design
+#
 
-### Mobile-First Approach
+# 📱 Mobile & Responsive Desig
 
-```typescript
+n
+
+#
+
+## Mobile-First Approa
+
+c
+
+h
+
+```
+
+typescript
 interface MobileExperience {
   // Responsive Breakpoints
   breakpoints: {
     mobile: "320px-768px";
+
     tablet: "768px-1024px";
+
     desktop: "1024px+";
+
   };
 
   // Mobile-Optimized Components
+
   mobileComponents: {
     WorkflowViewer: "touch-optimized-canvas";
+
     Dashboard: "swipeable-widget-cards";
+
     NodeEditor: "modal-based-editing";
+
     Navigation: "bottom-tab-navigation";
+
   };
 
   // Progressive Web App Features
   pwaFeatures: {
     offlineSupport: "service-worker-caching";
+
     pushNotifications: "workflow-status-alerts";
+
     installable: "add-to-homescreen";
+
   };
 }
+
 ```
 
-## 🔗 API Integration Architecture
+#
 
-### API Integration Layer
+# 🔗 API Integration Architectur
 
-```typescript
+e
+
+#
+
+## API Integration Laye
+
+r
+
+```
+
+typescript
 interface APIIntegrationLayer {
   // HTTP Client Configuration
   httpClient: {
     baseClient: "axios-with-interceptors";
+
     authentication: "jwt-token-management";
+
     retryLogic: "exponential-backoff";
+
     caching: "response-caching-strategy";
+
   };
 
   // WebSocket Integration
   realTimeConnection: {
     connection: "socket.io-client";
+
     reconnection: "automatic-reconnection";
+
     heartbeat: "connection-health-monitoring";
+
     channels: ["workflow-updates", "system-notifications"];
+
   };
 
   // External System Integrations
   externalSystems: {
     dmsIntegration: "dealership-management-systems";
+
     crmIntegration: "customer-relationship-management";
+
     inventoryIntegration: "vehicle-inventory-systems";
+
     financingIntegration: "financing-and-insurance-tools";
+
   };
 }
+
 ```
 
----
+--
 
-## 📝 Conversation Summary
+- #
 
-This specification was developed through a comprehensive analysis of the Auterity Three-System AI Platform, which includes:
+# 📝 Conversation Summar
 
-1. **Initial Request**: User asked for a complete front-end specification for Auterity
-2. **Architecture Discovery**: Identified the three-system architecture (AutoMatrix, NeuroWeaver, RelayCore)
-3. **Current State Analysis**: Reviewed existing implementations and identified critical issues
-4. **Comprehensive Specification**: Created detailed architecture covering all three systems
-5. **Implementation Priorities**: Defined phased approach with tool delegation strategy
+y
 
-### Key Insights from Analysis:
+This specification was developed through a comprehensive analysis of the Auterity Three-System AI Platform, which includes
 
-- **AutoMatrix**: Solid React foundation but needs security fixes and TypeScript cleanup
-- **NeuroWeaver**: High-quality Material-UI implementation with excellent automotive templates
-- **RelayCore**: Backend complete but needs admin interface implementation
-- **Integration**: Requires unified authentication, cross-system API client, and shared design system
+:
 
-### Critical Next Steps:
+1. **Initial Request**: User asked for a complete front-end specification for Auteri
 
-1. **Amazon Q**: Fix security vulnerabilities in AutoMatrix
-2. **Cursor**: Implement RelayCore admin interface and cross-system integration
-3. **Unified Development**: Create shared components and authentication system
+t
 
-This specification provides a complete roadmap for transforming the current implementations into a unified, production-ready automotive AI platform.
+y
 
----
+2. **Architecture Discovery**: Identified the three-system architecture (AutoMatrix, NeuroWeaver, RelayCor
 
-**Document Status**: Complete
-**Next Review**: After Phase 1 implementation
-**Stakeholders**: Development Team, Product Management, QA Team
+e
+
+)
+
+3. **Current State Analysis**: Reviewed existing implementations and identified critical issu
+
+e
+
+s
+
+4. **Comprehensive Specification**: Created detailed architecture covering all three syste
+
+m
+
+s
+
+5. **Implementation Priorities**: Defined phased approach with tool delegation strate
+
+g
+
+y
+
+#
+
+## Key Insights from Analysis
+
+:
+
+- **AutoMatrix**: Solid React foundation but needs security fixes and TypeScript cleanu
+
+p
+
+- **NeuroWeaver**: High-quality Material-UI implementation with excellent automotive template
+
+s
+
+- **RelayCore**: Backend complete but needs admin interface implementatio
+
+n
+
+- **Integration**: Requires unified authentication, cross-system API client, and shared design syste
+
+m
+
+#
+
+## Critical Next Steps
+
+:
+
+1. **Amazon Q**: Fix security vulnerabilities in AutoMatr
+
+i
+
+x
+
+2. **Cursor**: Implement RelayCore admin interface and cross-system integrati
+
+o
+
+n
+
+3. **Unified Development**: Create shared components and authentication syst
+
+e
+
+m
+
+This specification provides a complete roadmap for transforming the current implementations into a unified, production-ready automotive AI platform
+
+.
+
+--
+
+- **Document Status**: Complet
+
+e
+**Next Review**: After Phase 1 implementatio
+
+n
+**Stakeholders**: Development Team, Product Management, QA Tea
+
+m

@@ -3,16 +3,37 @@
  * JWT token validation for API requests
  */
 
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { logger } from "../utils/logger";
 
-interface JWTPayload {
+interface LegacyJWTPayload {
   id: string;
   username: string;
   role: string;
   iat: number;
   exp: number;
+}
+
+interface BackendJWTPayload {
+  sub: string; // email
+  user_id: string;
+  name?: string;
+  permissions?: string[];
+  type?: string;
+  target_system?: string;
+  iat?: number;
+  exp?: number;
+}
+
+type AnyJWTPayload = LegacyJWTPayload | BackendJWTPayload;
+
+function deriveRoleFromPermissions(permissions?: string[]): string {
+  if (!permissions || permissions.length === 0) return "user";
+  const isAdmin = permissions.some((p) => p.endsWith(":admin"));
+  if (isAdmin) return "admin";
+  const canWrite = permissions.some((p) => p.endsWith(":write"));
+  return canWrite ? "manager" : "user";
 }
 
 export const authMiddleware = async (
@@ -50,14 +71,25 @@ export const authMiddleware = async (
     }
 
     try {
-      const decoded = jwt.verify(token, secretKey) as JWTPayload;
+      const decoded = jwt.verify(token, secretKey) as AnyJWTPayload;
 
-      // Add user info to request object
-      req.user = {
-        id: decoded.id,
-        username: decoded.username,
-        role: decoded.role,
-      };
+      // Normalize user shape across token issuers
+      const isBackendFormat = (decoded as BackendJWTPayload).user_id !== undefined;
+      if (isBackendFormat) {
+        const backend = decoded as BackendJWTPayload;
+        req.user = {
+          id: backend.user_id,
+          username: backend.name || backend.sub,
+          role: deriveRoleFromPermissions(backend.permissions),
+        } as any;
+      } else {
+        const legacy = decoded as LegacyJWTPayload;
+        req.user = {
+          id: legacy.id,
+          username: legacy.username,
+          role: legacy.role,
+        } as any;
+      }
 
       logger.debug(`Authenticated user: ${decoded.username} (${decoded.role})`);
       next();
@@ -155,3 +187,4 @@ export const requireRole = (requiredRole: string) => {
     next();
   };
 };
+

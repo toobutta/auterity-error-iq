@@ -453,3 +453,5 @@ describe("TemplateComparison", () => {
     expect(screen.getByText("Comparing 1 template")).toBeInTheDocument();
   });
 });
+
+

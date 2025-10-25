@@ -1,8 +1,8 @@
 import React from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
-import { NodeData } from "../../types/workflow-fixed";
+import { NodeData } from "../../types/workflow";
 
-export const AIProcessNode: React.FC<NodeProps<Record<string, unknown>>> = ({
+export const AIProcessNode: React.FC<NodeProps> = ({
   data,
   isConnectable,
 }) => {
@@ -29,19 +29,19 @@ export const AIProcessNode: React.FC<NodeProps<Record<string, unknown>>> = ({
         {nodeData.description && (
           <p className="text-xs text-blue-600 mt-1">{nodeData.description}</p>
         )}
-        {nodeData.config.prompt && (
+        {nodeData.config.prompt ? (
           <p
             className="text-xs text-gray-500 mt-1 truncate"
             title={String(nodeData.config.prompt)}
           >
             {String(nodeData.config.prompt).substring(0, 30)}...
           </p>
-        )}
+        ) : null}
       </div>
 
       {hasErrors && (
         <div className="mt-2 p-1 bg-red-100 border border-red-300 rounded text-xs text-red-600">
-          {nodeData.validationErrors![0]}
+          {nodeData.validationErrors?.[0]}
         </div>
       )}
 
@@ -54,3 +54,5 @@ export const AIProcessNode: React.FC<NodeProps<Record<string, unknown>>> = ({
     </div>
   );
 };
+
+

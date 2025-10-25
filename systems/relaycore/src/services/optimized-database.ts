@@ -542,3 +542,4 @@ export function createOptimizedDatabase(): OptimizedDatabase {
 
   return new OptimizedDatabase(primaryConfig, readReplicaConfig);
 }
+

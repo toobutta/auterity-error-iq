@@ -1,0 +1,185 @@
+# Third-Party Software Notices and Attributions
+
+The Auterity Unified AI Platform includes third-party software components. This file provides attribution and license information for these components.
+
+## AI SDK Libraries
+
+### Anthropic AI SDK
+- **Package**: @ai-sdk/anthropic
+- **License**: Apache License 2.0
+- **Source**: https://github.com/vercel/ai
+- **Copyright**: Copyright 2023 Vercel, Inc.
+
+### Azure AI SDK
+- **Package**: @ai-sdk/azure
+- **License**: Apache License 2.0
+- **Source**: https://github.com/vercel/ai
+- **Copyright**: Copyright 2023 Vercel, Inc.
+
+### Cohere AI SDK
+- **Package**: @ai-sdk/cohere
+- **License**: Apache License 2.0
+- **Source**: https://github.com/vercel/ai
+- **Copyright**: Copyright 2023 Vercel, Inc.
+
+### Google AI SDK
+- **Package**: @ai-sdk/google
+- **License**: Apache License 2.0
+- **Source**: https://github.com/vercel/ai
+- **Copyright**: Copyright 2023 Vercel, Inc.
+
+### OpenAI SDK
+- **Package**: @ai-sdk/openai
+- **License**: Apache License 2.0
+- **Source**: https://github.com/vercel/ai
+- **Copyright**: Copyright 2023 Vercel, Inc.
+
+## LangChain Ecosystem
+
+### LangChain Core
+- **Package**: @langchain/core
+- **License**: MIT License
+- **Source**: https://github.com/langchain-ai/langchain
+- **Copyright**: Copyright 2023 LangChain, Inc.
+
+### LangChain OpenAI
+- **Package**: @langchain/openai
+- **License**: MIT License
+- **Source**: https://github.com/langchain-ai/langchain
+- **Copyright**: Copyright 2023 LangChain, Inc.
+
+### LangChain Anthropic
+- **Package**: @langchain/anthropic
+- **License**: MIT License
+- **Source**: https://github.com/langchain-ai/langchain
+- **Copyright**: Copyright 2023 LangChain, Inc.
+
+### LangChain Google Generative AI
+- **Package**: @langchain/google-genai
+- **License**: MIT License
+- **Source**: https://github.com/langchain-ai/langchain
+- **Copyright**: Copyright 2023 LangChain, Inc.
+
+### LangChain Cohere
+- **Package**: @langchain/cohere
+- **License**: MIT License
+- **Source**: https://github.com/langchain-ai/langchain
+- **Copyright**: Copyright 2023 LangChain, Inc.
+
+## Machine Learning Libraries
+
+### LiteLLM
+- **Package**: litellm
+- **License**: MIT License
+- **Source**: https://github.com/BerriAI/litellm
+- **Copyright**: Copyright 2023 BerriAI
+
+### Hugging Face Transformers
+- **Package**: @huggingface/transformers
+- **License**: Apache License 2.0
+- **Source**: https://github.com/huggingface/transformers
+- **Copyright**: Copyright 2020, The Hugging Face Team
+
+### Hugging Face Hub
+- **Package**: @huggingface/hub
+- **License**: Apache License 2.0
+- **Source**: https://github.com/huggingface/huggingface_hub
+- **Copyright**: Copyright 2020, The Hugging Face Team
+
+### AutoGen
+- **Package**: autogen
+- **License**: MIT License
+- **Source**: https://github.com/microsoft/autogen
+- **Copyright**: Copyright 2023 Microsoft Corporation
+
+### Temporal
+- **Package**: temporalio
+- **License**: MIT License
+- **Source**: https://github.com/temporalio/sdk-typescript
+- **Copyright**: Copyright 2020 Temporal Technologies, Inc.
+
+### Weights & Biases
+- **Package**: wandb
+- **License**: MIT License
+- **Source**: https://github.com/wandb/wandb
+- **Copyright**: Copyright 2017 Weights & Biases, Inc.
+
+## Development Tools & Frameworks
+
+### React
+- **Package**: react
+- **License**: MIT License
+- **Source**: https://github.com/facebook/react
+- **Copyright**: Copyright 2013-present, Facebook, Inc.
+
+### TypeScript
+- **Package**: typescript
+- **License**: Apache License 2.0
+- **Source**: https://github.com/microsoft/TypeScript
+- **Copyright**: Copyright 2012-2023 Microsoft Corporation
+
+### Vite
+- **Package**: vite
+- **License**: MIT License
+- **Source**: https://github.com/vitejs/vite
+- **Copyright**: Copyright 2019-present, Yuxi (Evan) You and Vite contributors
+
+### Tailwind CSS
+- **Package**: tailwindcss
+- **License**: MIT License
+- **Source**: https://github.com/tailwindlabs/tailwindcss
+- **Copyright**: Copyright 2020 Tailwind Labs, Inc.
+
+### ESLint
+- **Package**: eslint
+- **License**: MIT License
+- **Source**: https://github.com/eslint/eslint
+- **Copyright**: Copyright 2013-2023 ESLint Contributors
+
+## License Texts
+
+### Apache License 2.0
+```
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
+
+### MIT License
+```
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## Contact
+
+For license-related questions or concerns, please contact:
+- Email: legal@auterity.com
+- Repository: https://github.com/toobutta/auterity-error-iq
+
+---
+
+*This NOTICE file was last updated on September 1, 2025*

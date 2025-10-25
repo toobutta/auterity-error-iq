@@ -26,7 +26,7 @@ export const NotificationCenter: React.FC = () => {
           ...prev.slice(0, 4),
         ]);
       } catch (error) {
-        console.warn("Failed to parse notification:", error);
+
       }
     };
     return () => ws.close();
@@ -56,3 +56,5 @@ export const NotificationCenter: React.FC = () => {
     </div>
   );
 };
+
+

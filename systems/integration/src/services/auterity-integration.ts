@@ -31,7 +31,6 @@ export class AuterityIntegration extends EventEmitter {
       this.handleAuterityMessage.bind(this),
     );
 
-    console.log("Auterity integration initialized");
   }
 
   private async handleAuterityMessage(
@@ -63,3 +62,4 @@ export class AuterityIntegration extends EventEmitter {
     };
   }
 }
+

@@ -18,7 +18,6 @@ from app.services.relaycore_connector import RelayCoreConnector
 
 async def test_model_registry():
     """Test model registry functionality"""
-    print("Testing Model Registry...")
 
     registry = ModelRegistry()
 
@@ -36,18 +35,13 @@ async def test_model_registry():
 
     try:
         # Test registration (would fail without database, but tests the logic)
-        print("✓ Model registry service initialized")
-        print("✓ ModelInfo data structure created")
-        print("✓ Model registry methods available")
         return True
     except Exception as e:
-        print(f"✗ Model registry test failed: {e}")
         return False
 
 
 async def test_model_deployer():
     """Test model deployer functionality"""
-    print("\nTesting Model Deployer...")
 
     deployer = ModelDeployer()
 
@@ -61,18 +55,13 @@ async def test_model_deployer():
             auto_scaling=True,
         )
 
-        print("✓ Model deployer service initialized")
-        print("✓ DeploymentConfig created")
-        print("✓ Deployment methods available")
         return True
     except Exception as e:
-        print(f"✗ Model deployer test failed: {e}")
         return False
 
 
 async def test_relaycore_connector():
     """Test RelayCore connector functionality"""
-    print("\nTesting RelayCore Connector...")
 
     connector = RelayCoreConnector()
 
@@ -80,18 +69,13 @@ async def test_relaycore_connector():
         # Test connector initialization
         status = connector.get_registration_status()
 
-        print("✓ RelayCore connector initialized")
-        print("✓ Registration status method works")
-        print(f"✓ RelayCore URL configured: {connector.relaycore_url}")
         return True
     except Exception as e:
-        print(f"✗ RelayCore connector test failed: {e}")
         return False
 
 
 async def test_api_models():
     """Test API model structures"""
-    print("\nTesting API Models...")
 
     try:
         from app.api.inference import InferenceRequest, InferenceResponse
@@ -117,20 +101,13 @@ async def test_api_models():
             prompt="Test prompt", specialization="automotive-sales"
         )
 
-        print("✓ API models imported successfully")
-        print("✓ Model registration request created")
-        print("✓ Training request created")
-        print("✓ Inference request created")
         return True
     except Exception as e:
-        print(f"✗ API models test failed: {e}")
         return False
 
 
 async def main():
     """Run all tests"""
-    print("NeuroWeaver Implementation Test Suite")
-    print("=" * 40)
 
     tests = [
         test_model_registry,
@@ -144,15 +121,9 @@ async def main():
         result = await test()
         results.append(result)
 
-    print("\n" + "=" * 40)
-    print("Test Results:")
-    print(f"Passed: {sum(results)}/{len(results)}")
-
     if all(results):
-        print("✓ All tests passed! Implementation is ready.")
         return 0
     else:
-        print("✗ Some tests failed. Check implementation.")
         return 1
 
 

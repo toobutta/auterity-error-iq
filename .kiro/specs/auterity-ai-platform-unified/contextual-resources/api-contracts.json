@@ -1,0 +1,686 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Auterity AI-First Platform - Preview API",
+    "description": "Interactive workflow canvas preview API with sandboxed execution, streaming support, and compliance validation",
+    "version": "2.0.0",
+    "contact": {
+      "name": "Auterity Platform Team",
+      "email": "platform@auterity.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.auterity.com/v2",
+      "description": "Production server"
+    },
+    {
+      "url": "https://staging-api.auterity.com/v2",
+      "description": "Staging server"
+    },
+    {
+      "url": "http://localhost:8000/api",
+      "description": "Local development server"
+    }
+  ],
+  "paths": {
+    "/preview/node": {
+      "post": {
+        "summary": "Generate node preview",
+        "description": "Process a workflow node configuration and return a preview of the results with sandboxed execution",
+        "operationId": "previewNode",
+        "tags": ["Preview"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreviewRequest"
+              },
+              "examples": {
+                "dataSourcePreview": {
+                  "summary": "Data source preview",
+                  "value": {
+                    "node_id": "datasource_001",
+                    "node_type": "dataSource",
+                    "config": {
+                      "connection_type": "database",
+                      "query": "SELECT * FROM customers LIMIT 100",
+                      "connection_params": {
+                        "host": "db.example.com",
+                        "database": "production"
+                      }
+                    },
+                    "industry_context": "automotive",
+                    "compliance_level": "standard",
+                    "max_rows": 100,
+                    "timeout": 30,
+                    "enable_streaming": false,
+                    "cache_ttl": 3600
+                  }
+                },
+                "visualizationPreview": {
+                  "summary": "Visualization preview",
+                  "value": {
+                    "node_id": "viz_001",
+                    "node_type": "visualization",
+                    "config": {
+                      "chart_type": "bar",
+                      "x_axis": "month",
+                      "y_axis": "sales",
+                      "group_by": "region",
+                      "styling": {
+                        "color_scheme": "blue",
+                        "title": "Monthly Sales by Region"
+                      }
+                    },
+                    "input_data": [
+                      {"month": "Jan", "sales": 1000, "region": "North"},
+                      {"month": "Feb", "sales": 1200, "region": "North"},
+                      {"month": "Jan", "sales": 800, "region": "South"}
+                    ],
+                    "industry_context": "automotive",
+                    "compliance_level": "standard",
+                    "max_rows": 1000,
+                    "timeout": 15
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Preview generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewResponse"
+                },
+                "examples": {
+                  "dataSourceSuccess": {
+                    "summary": "Successful data source preview",
+                    "value": {
+                      "node_id": "datasource_001",
+                      "success": true,
+                      "status": "completed",
+                      "data": [
+                        {"id": 1, "name": "John Doe", "email": "j***@example.com", "phone": "***-***-1234"},
+                        {"id": 2, "name": "Jane Smith", "email": "j***@example.com", "phone": "***-***-5678"}
+                      ],
+                      "metadata": {
+                        "row_count": 2,
+                        "processing_time": 0.15,
+                        "cost": 0.001,
+                        "cache_key": "abc123def456",
+                        "expires_at": "2024-01-01T12:00:00Z",
+                        "sandbox_id": "sandbox_xyz789"
+                      },
+                      "compliance_info": {
+                        "pii_detected": true,
+                        "redacted_fields": ["email", "phone"],
+                        "compliance_level": "standard",
+                        "audit_log_id": "audit_001"
+                      }
+                    }
+                  },
+                  "visualizationSuccess": {
+                    "summary": "Successful visualization preview",
+                    "value": {
+                      "node_id": "viz_001",
+                      "success": true,
+                      "status": "completed",
+                      "visualization": {
+                        "type": "plotly",
+                        "config": {
+                          "chart_type": "bar",
+                          "responsive": true
+                        },
+                        "chart_data": {
+                          "data": [
+                            {
+                              "x": ["Jan", "Feb"],
+                              "y": [1000, 1200],
+                              "name": "North",
+                              "type": "bar"
+                            }
+                          ],
+                          "layout": {
+                            "title": "Monthly Sales by Region",
+                            "xaxis": {"title": "Month"},
+                            "yaxis": {"title": "Sales"}
+                          }
+                        }
+                      },
+                      "metadata": {
+                        "row_count": 3,
+                        "processing_time": 0.25,
+                        "cost": 0.002,
+                        "cache_key": "viz123abc456",
+                        "expires_at": "2024-01-01T12:00:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "INVALID_REQUEST",
+                    "message": "Invalid node configuration",
+                    "details": {
+                      "field": "config.query",
+                      "issue": "SQL query contains forbidden operations"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "PERMISSION_DENIED",
+                    "message": "Insufficient permissions for preview operation"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "RATE_LIMIT_EXCEEDED",
+                    "message": "Too many preview requests. Please wait before retrying.",
+                    "details": {
+                      "retry_after": 60,
+                      "limit": 100,
+                      "window": "1h"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewResponse"
+                },
+                "example": {
+                  "node_id": "datasource_001",
+                  "success": false,
+                  "status": "failed",
+                  "metadata": {
+                    "row_count": 0,
+                    "processing_time": 0,
+                    "cache_key": "abc123def456",
+                    "expires_at": "2024-01-01T12:00:00Z"
+                  },
+                  "error": {
+                    "code": "EXECUTION_ERROR",
+                    "message": "Sandbox execution failed",
+                    "details": {
+                      "error_type": "TimeoutError",
+                      "sandbox_id": "sandbox_xyz789"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/preview/stream/{node_id}": {
+      "get": {
+        "summary": "Stream preview results",
+        "description": "WebSocket endpoint for streaming preview results for long-running operations",
+        "operationId": "streamPreview",
+        "tags": ["Preview", "Streaming"],
+        "parameters": [
+          {
+            "name": "node_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique identifier for the node"
+          }
+        ],
+        "responses": {
+          "101": {
+            "description": "WebSocket connection established"
+          },
+          "400": {
+            "description": "Invalid WebSocket request"
+          },
+          "403": {
+            "description": "Insufficient permissions for streaming"
+          }
+        }
+      }
+    },
+    "/preview/health": {
+      "get": {
+        "summary": "Preview service health check",
+        "description": "Check the health status of the preview service and its dependencies",
+        "operationId": "previewHealth",
+        "tags": ["Health"],
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                },
+                "example": {
+                  "status": "healthy",
+                  "timestamp": "2024-01-01T12:00:00Z",
+                  "services": {
+                    "sandbox": "operational",
+                    "cache": "operational",
+                    "compliance": "operational",
+                    "database": "operational"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service is unhealthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                },
+                "example": {
+                  "status": "unhealthy",
+                  "timestamp": "2024-01-01T12:00:00Z",
+                  "services": {
+                    "sandbox": "operational",
+                    "cache": "degraded",
+                    "compliance": "operational",
+                    "database": "failed"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PreviewRequest": {
+        "type": "object",
+        "required": ["node_id", "node_type", "config"],
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "description": "Unique identifier for the node",
+            "example": "datasource_001"
+          },
+          "node_type": {
+            "type": "string",
+            "enum": ["dataSource", "transform", "visualization", "content", "aiAgent", "complianceCheck"],
+            "description": "Type of node being previewed"
+          },
+          "config": {
+            "type": "object",
+            "description": "Node configuration parameters",
+            "additionalProperties": true
+          },
+          "input_data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "description": "Input data for processing (optional)"
+          },
+          "industry_context": {
+            "type": "string",
+            "enum": ["automotive", "healthcare", "finance", "manufacturing"],
+            "description": "Industry context for specialized processing"
+          },
+          "compliance_level": {
+            "type": "string",
+            "enum": ["basic", "standard", "strict"],
+            "default": "standard",
+            "description": "Required compliance level"
+          },
+          "max_rows": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 1000,
+            "description": "Maximum number of rows to return"
+          },
+          "timeout": {
+            "type": "integer",
+            "minimum": 5,
+            "maximum": 300,
+            "default": 30,
+            "description": "Timeout in seconds"
+          },
+          "enable_streaming": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable streaming for long-running operations"
+          },
+          "cache_ttl": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 86400,
+            "default": 3600,
+            "description": "Cache TTL in seconds"
+          }
+        }
+      },
+      "PreviewResponse": {
+        "type": "object",
+        "required": ["node_id", "success", "status", "metadata"],
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "description": "Unique identifier for the node"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether the preview was successful"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "processing", "completed", "failed", "cancelled"],
+            "description": "Processing status"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "description": "Preview data results"
+          },
+          "visualization": {
+            "$ref": "#/components/schemas/VisualizationResult"
+          },
+          "content": {
+            "$ref": "#/components/schemas/ContentResult"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/PreviewMetadata"
+          },
+          "error": {
+            "$ref": "#/components/schemas/PreviewError"
+          },
+          "compliance_info": {
+            "$ref": "#/components/schemas/ComplianceInfo"
+          }
+        }
+      },
+      "VisualizationResult": {
+        "type": "object",
+        "required": ["type", "config", "chart_data"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["plotly", "d3", "chartjs"],
+            "description": "Visualization library type"
+          },
+          "config": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Visualization configuration"
+          },
+          "chart_data": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Chart data in library-specific format"
+          }
+        }
+      },
+      "ContentResult": {
+        "type": "object",
+        "required": ["type", "rendered", "metadata"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["html", "markdown", "pdf", "docx"],
+            "description": "Content type"
+          },
+          "rendered": {
+            "type": "string",
+            "description": "Rendered content"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Content metadata"
+          }
+        }
+      },
+      "PreviewMetadata": {
+        "type": "object",
+        "required": ["row_count", "processing_time", "cache_key", "expires_at"],
+        "properties": {
+          "row_count": {
+            "type": "integer",
+            "description": "Number of rows in the result"
+          },
+          "processing_time": {
+            "type": "number",
+            "description": "Processing time in seconds"
+          },
+          "cost": {
+            "type": "number",
+            "description": "Processing cost in USD"
+          },
+          "cache_key": {
+            "type": "string",
+            "description": "Cache key for the result"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Cache expiration timestamp"
+          },
+          "sandbox_id": {
+            "type": "string",
+            "description": "Sandbox identifier used for processing"
+          }
+        }
+      },
+      "ComplianceInfo": {
+        "type": "object",
+        "required": ["pii_detected", "redacted_fields", "compliance_level", "audit_log_id"],
+        "properties": {
+          "pii_detected": {
+            "type": "boolean",
+            "description": "Whether PII was detected in the data"
+          },
+          "redacted_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of fields that were redacted"
+          },
+          "compliance_level": {
+            "type": "string",
+            "description": "Applied compliance level"
+          },
+          "audit_log_id": {
+            "type": "string",
+            "description": "Audit log identifier for compliance tracking"
+          }
+        }
+      },
+      "PreviewError": {
+        "type": "object",
+        "required": ["code", "message"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INVALID_REQUEST",
+              "PERMISSION_DENIED",
+              "EXECUTION_ERROR",
+              "TIMEOUT_ERROR",
+              "COMPLIANCE_ERROR",
+              "RATE_LIMIT_EXCEEDED",
+              "SANDBOX_ERROR",
+              "RESOURCE_LIMIT_EXCEEDED"
+            ],
+            "description": "Error code"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Additional error details"
+          }
+        }
+      },
+      "StreamingUpdate": {
+        "type": "object",
+        "required": ["node_id", "type", "timestamp"],
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "description": "Node identifier"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["progress", "partial_result", "complete", "error"],
+            "description": "Update type"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Update data"
+          },
+          "progress": {
+            "type": "object",
+            "properties": {
+              "current": {
+                "type": "integer",
+                "description": "Current progress value"
+              },
+              "total": {
+                "type": "integer",
+                "description": "Total progress value"
+              },
+              "message": {
+                "type": "string",
+                "description": "Progress message"
+              }
+            }
+          },
+          "error": {
+            "$ref": "#/components/schemas/PreviewError"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Update timestamp"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/PreviewError"
+          }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "required": ["status", "timestamp", "services"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["healthy", "degraded", "unhealthy"],
+            "description": "Overall service health status"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Health check timestamp"
+          },
+          "services": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "enum": ["operational", "degraded", "failed"]
+            },
+            "description": "Status of individual service components"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token for authentication"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Preview",
+      "description": "Node preview operations"
+    },
+    {
+      "name": "Streaming",
+      "description": "Real-time streaming operations"
+    },
+    {
+      "name": "Health",
+      "description": "Service health monitoring"
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "service": {
+    "name": "langgraph-service",
+    "version": "1.0.0",
+    "description": "AI-powered workflow orchestration service"
+  },
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8002,
+    "workers": 1,
+    "reload": false,
+    "log_level": "info"
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "db": 4,
+    "decode_responses": true,
+    "socket_timeout": 5,
+    "socket_connect_timeout": 5
+  },
+  "ai": {
+    "default_provider": "openai",
+    "providers": {
+      "openai": {
+        "api_key": "${OPENAI_API_KEY}",
+        "base_url": "https://api.openai.com/v1",
+        "models": ["gpt-4", "gpt-3.5-turbo"],
+        "default_model": "gpt-4"
+      },
+      "anthropic": {
+        "api_key": "${ANTHROPIC_API_KEY}",
+        "base_url": "https://api.anthropic.com",
+        "models": ["claude-3-opus-20240229", "claude-3-sonnet-20240229"],
+        "default_model": "claude-3-sonnet-20240229"
+      },
+      "vllm": {
+        "base_url": "http://vllm-server:8001",
+        "models": ["custom-model"],
+        "default_model": "custom-model"
+      }
+    },
+    "decision_making": {
+      "temperature": 0.3,
+      "max_tokens": 100,
+      "model": "gpt-4"
+    }
+  },
+  "integrations": {
+    "n8n": {
+      "base_url": "http://workflow-studio:3000",
+      "timeout": 60,
+      "retry_attempts": 3
+    },
+    "temporal": {
+      "base_url": "http://temporal:7233",
+      "namespace": "default",
+      "timeout": 30
+    },
+    "celery": {
+      "broker_url": "redis://redis:6379/0",
+      "result_backend": "redis://redis:6379/0",
+      "timeout": 300
+    },
+    "kong": {
+      "base_url": "http://kong:8001",
+      "timeout": 30
+    }
+  },
+  "workflow": {
+    "max_concurrent_executions": 50,
+    "max_execution_time": 3600,
+    "max_nodes_per_workflow": 100,
+    "max_edges_per_workflow": 200,
+    "cache_enabled": true,
+    "cache_ttl_seconds": 3600,
+    "persistence_enabled": true
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics_interval": 30,
+    "prometheus_port": 9091,
+    "health_check_interval": 30,
+    "log_level": "INFO",
+    "log_file": "logs/langgraph_service.log",
+    "max_file_size": "100 MB",
+    "backup_count": 5
+  },
+  "limits": {
+    "max_workflow_size": 10,
+    "max_execution_history": 1000,
+    "rate_limit_per_minute": 100,
+    "max_request_size": 50,
+    "timeout_default": 300
+  },
+  "features": {
+    "ai_decision_making": true,
+    "dynamic_routing": true,
+    "error_recovery": true,
+    "parallel_execution": true,
+    "human_in_loop": true,
+    "real_time_monitoring": true
+  }
+}
+

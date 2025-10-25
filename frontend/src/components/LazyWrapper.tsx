@@ -26,3 +26,5 @@ export const LazyWrapper: React.FC<LazyWrapperProps> = ({
 };
 
 export default LazyWrapper;
+
+

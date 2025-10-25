@@ -246,3 +246,4 @@ export class CacheManager {
     return regex.test(key);
   }
 }
+

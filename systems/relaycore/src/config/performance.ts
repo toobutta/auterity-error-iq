@@ -389,3 +389,4 @@ export function validateConfig(config: RelayCorePerfConfig): string[] {
 
   return issues;
 }
+

@@ -1,16 +1,47 @@
-# Communication Services
 
-## Twilio
 
-- SMS, voice, campaigns, IVR
-- Endpoints: `/api/sms`, `/api/voice`
+# Communication Service
 
-## WhatsApp
+s
 
-- Business API, templates, interactive messages
-- Endpoints: `/api/whatsapp/*`
+#
 
-## Notifications
+# Twili
 
-- Multi-channel: Email, Slack, SMS, WhatsApp, webhooks
-- Endpoints: `/api/notifications`
+o
+
+- SMS, voice, campaigns, IV
+
+R
+
+- Endpoints: `/api/sms`, `/api/voice
+
+`
+
+#
+
+# WhatsAp
+
+p
+
+- Business API, templates, interactive message
+
+s
+
+- Endpoints: `/api/whatsapp/*
+
+`
+
+#
+
+# Notification
+
+s
+
+- Multi-channel: Email, Slack, SMS, WhatsApp, webhook
+
+s
+
+- Endpoints: `/api/notifications
+
+`

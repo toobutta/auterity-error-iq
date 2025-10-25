@@ -1,0 +1,191 @@
+groups:
+  - name: auterity.alerts
+    rules:
+      # Frontend Alerts
+      - alert: FrontendDown
+        expr: up{job="auterity-frontend"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          service: frontend
+        annotations:
+          summary: "Auterity Frontend is down"
+          description: "Auterity Frontend has been down for more than 5 minutes."
+
+      - alert: FrontendHighErrorRate
+        expr: rate(http_requests_total{job="auterity-frontend", status=~"5.."}[5m]) / rate(http_requests_total{job="auterity-frontend"}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          service: frontend
+        annotations:
+          summary: "High error rate on Frontend"
+          description: "Frontend error rate is {{ $value | printf "%.2f" }}% over the last 5 minutes."
+
+      # Backend Alerts
+      - alert: BackendDown
+        expr: up{job="auterity-backend"} == 0
+        for: 3m
+        labels:
+          severity: critical
+          service: backend
+        annotations:
+          summary: "Auterity Backend is down"
+          description: "Auterity Backend has been down for more than 3 minutes."
+
+      - alert: BackendHighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="auterity-backend"}[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "High response time on Backend"
+          description: "95th percentile response time is {{ $value | printf "%.2f" }}s over the last 5 minutes."
+
+      - alert: BackendHighErrorRate
+        expr: rate(http_requests_total{job="auterity-backend", status=~"5.."}[5m]) / rate(http_requests_total{job="auterity-backend"}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          service: backend
+        annotations:
+          summary: "Critical error rate on Backend"
+          description: "Backend error rate is {{ $value | printf "%.2f" }}% over the last 5 minutes."
+
+      # Database Alerts
+      - alert: DatabaseDown
+        expr: up{job="postgres"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: database
+        annotations:
+          summary: "PostgreSQL Database is down"
+          description: "PostgreSQL database has been down for more than 2 minutes."
+
+      - alert: DatabaseHighConnections
+        expr: pg_stat_activity_count{datname="auterity"} > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "High database connections"
+          description: "Database has {{ $value }} active connections."
+
+      # Redis Alerts
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: cache
+        annotations:
+          summary: "Redis Cache is down"
+          description: "Redis cache has been down for more than 2 minutes."
+
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: cache
+        annotations:
+          summary: "High Redis memory usage"
+          description: "Redis memory usage is {{ $value | printf "%.1f" }}%."
+
+      # System Resource Alerts
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 10m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value | printf "%.1f" }}% on {{ $labels.instance }}."
+
+      - alert: HighMemoryUsage
+        expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 > 85
+        for: 10m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is {{ $value | printf "%.1f" }}% on {{ $labels.instance }}."
+
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 < 10
+        for: 5m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Disk space is {{ $value | printf "%.1f" }}% full on {{ $labels.instance }}."
+
+      # Business Logic Alerts
+      - alert: LowUserActivity
+        expr: rate(user_sessions_total[1h]) < 1
+        for: 1h
+        labels:
+          severity: info
+          service: business
+        annotations:
+          summary: "Low user activity detected"
+          description: "User session rate is below 1 per hour."
+
+      - alert: HighFailedLogins
+        expr: increase(login_failures_total[10m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          service: security
+        annotations:
+          summary: "High number of failed login attempts"
+          description: "{{ $value }} failed login attempts in the last 10 minutes."
+
+      - alert: AIGenerationTimeout
+        expr: increase(ai_generation_timeouts_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: ai
+        annotations:
+          summary: "AI generation timeouts increasing"
+          description: "{{ $value }} AI generation timeouts in the last 5 minutes."
+
+      - alert: CodeGenerationErrors
+        expr: increase(code_generation_errors_total[5m]) > 3
+        for: 5m
+        labels:
+          severity: warning
+          service: ai
+        annotations:
+          summary: "Code generation errors increasing"
+          description: "{{ $value }} code generation errors in the last 5 minutes."
+
+  - name: auterity.slos
+    rules:
+      # Service Level Objectives
+      - alert: FrontendSLOViolation
+        expr: (1 - (rate(http_requests_total{job="auterity-frontend", status!~"5.."}[30d]) / rate(http_requests_total{job="auterity-frontend"}[30d]))) > 0.001
+        for: 1h
+        labels:
+          severity: warning
+          slo: frontend-availability
+        annotations:
+          summary: "Frontend SLO violation"
+          description: "Frontend availability is below 99.9% over the last 30 days."
+
+      - alert: BackendSLOViolation
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="auterity-backend"}[30d])) > 2
+        for: 1h
+        labels:
+          severity: warning
+          slo: backend-latency
+        annotations:
+          summary: "Backend SLO violation"
+          description: "95th percentile latency is above 2s over the last 30 days."

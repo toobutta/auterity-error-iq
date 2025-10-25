@@ -7,15 +7,11 @@ import { Template } from "../../types/template";
 // Mock ReactFlow
 vi.mock("reactflow", () => ({
   __esModule: true,
-  default: () => (
-    <div data-testid="react-flow">Mocked ReactFlow</div>
-  ),
+  default: () => <div data-testid="react-flow">Mocked ReactFlow</div>,
   Background: () => <div data-testid="background" />,
   Controls: () => <div data-testid="controls" />,
   MiniMap: () => <div data-testid="minimap" />,
-  Panel: () => (
-    <div data-testid="panel">Mocked Panel</div>
-  ),
+  Panel: () => <div data-testid="panel">Mocked Panel</div>,
   useReactFlow: () => ({
     fitView: vi.fn(),
   }),
@@ -358,7 +354,8 @@ describe("TemplatePreviewModal", () => {
     fireEvent.click(screen.getByText("Parameters"));
     expect(screen.getByText("No parameters defined")).toBeInTheDocument();
   });
-});en template has no parameters", () => {
+
+  it("should show 'No parameters required' when template has no parameters", () => {
     const templateWithoutParams = {
       ...mockTemplate,
       parameters: [],
@@ -379,3 +376,5 @@ describe("TemplatePreviewModal", () => {
     expect(screen.getByText("No parameters required")).toBeInTheDocument();
   });
 });
+
+

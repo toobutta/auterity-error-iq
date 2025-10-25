@@ -1,0 +1,376 @@
+/* Error Boundary Styles */
+.error-boundary-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: 2rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-error);
+  border-radius: 8px;
+  color: var(--color-text);
+  text-align: center;
+}
+
+.error-boundary-content {
+  max-width: 500px;
+}
+
+.error-boundary-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.error-boundary-title {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-error);
+}
+
+.error-boundary-message {
+  margin: 0 0 2rem 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.error-boundary-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.error-boundary-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  min-width: 120px;
+}
+
+.error-boundary-button.primary {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.error-boundary-button.primary:hover {
+  background-color: var(--color-primary);
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.error-boundary-button.secondary {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.error-boundary-button.secondary:hover {
+  background-color: var(--color-border);
+}
+
+.error-boundary-button.link {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  text-decoration: underline;
+  padding: 0.5rem;
+  min-width: auto;
+}
+
+.error-boundary-button.link:hover {
+  color: var(--color-primary);
+  opacity: 0.8;
+  text-decoration: none;
+}
+
+.error-boundary-details {
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.error-boundary-details summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: 1rem;
+}
+
+.error-details-content {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 1rem;
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  overflow-x: auto;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.error-stack,
+.error-component-stack {
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-top: 0.5rem;
+  background-color: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+/* Canvas Error Fallback */
+.canvas-error-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 400px;
+  padding: 2rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-error);
+  border-radius: 8px;
+  color: var(--color-text);
+  text-align: center;
+}
+
+.canvas-error-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.canvas-error-fallback h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-error);
+}
+
+.canvas-error-fallback p {
+  margin: 0 0 2rem 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.canvas-error-fallback button {
+  padding: 0.75rem 2rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: 1px solid var(--color-primary);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.canvas-error-fallback button:hover {
+  background-color: var(--color-primary);
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Panel Error Fallback */
+.panel-error-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 200px;
+  padding: 1.5rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-error);
+  border-radius: 6px;
+  color: var(--color-text);
+  text-align: center;
+}
+
+.panel-error-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.panel-error-fallback h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-error);
+}
+
+.panel-error-fallback p {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+.panel-error-fallback button {
+  padding: 0.5rem 1.5rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: 1px solid var(--color-primary);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.panel-error-fallback button:hover {
+  background-color: var(--color-primary);
+  opacity: 0.9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .error-boundary-fallback {
+    padding: 1.5rem;
+    min-height: 250px;
+  }
+
+  .error-boundary-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .error-boundary-button {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .error-details-content {
+    font-size: 0.7rem;
+    padding: 0.75rem;
+  }
+
+  .canvas-error-fallback {
+    min-height: 300px;
+    padding: 1.5rem;
+  }
+
+  .canvas-error-icon {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .error-boundary-fallback {
+    padding: 1rem;
+  }
+
+  .error-boundary-title {
+    font-size: 1.25rem;
+  }
+
+  .error-boundary-message {
+    font-size: 0.9rem;
+  }
+
+  .error-boundary-actions {
+    gap: 0.75rem;
+  }
+
+  .error-boundary-button {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.85rem;
+  }
+
+  .canvas-error-fallback {
+    padding: 1rem;
+  }
+
+  .canvas-error-icon {
+    font-size: 2.5rem;
+  }
+
+  .panel-error-fallback {
+    min-height: 150px;
+    padding: 1rem;
+  }
+
+  .panel-error-icon {
+    font-size: 1.5rem;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .error-boundary-fallback,
+  .canvas-error-fallback,
+  .panel-error-fallback {
+    border-color: currentColor;
+  }
+
+  .error-boundary-title,
+  .canvas-error-fallback h3,
+  .panel-error-fallback h4 {
+    color: currentColor;
+  }
+
+  .error-stack,
+  .error-component-stack {
+    border-color: currentColor;
+    background-color: var(--color-background);
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .error-boundary-button,
+  .canvas-error-fallback button,
+  .panel-error-fallback button {
+    transition: none;
+  }
+
+  .error-boundary-button.primary:hover,
+  .error-boundary-button.secondary:hover {
+    transform: none;
+  }
+}
+
+/* Dark Mode Adjustments */
+@media (prefers-color-scheme: dark) {
+  .error-boundary-fallback,
+  .canvas-error-fallback,
+  .panel-error-fallback {
+    background-color: var(--color-background);
+  }
+
+  .error-details-content {
+    background-color: var(--color-surface);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .error-boundary-fallback,
+  .canvas-error-fallback,
+  .panel-error-fallback {
+    border: 2px solid black;
+    background: white;
+    color: black;
+    break-inside: avoid;
+  }
+
+  .error-boundary-actions,
+  .canvas-error-fallback button,
+  .panel-error-fallback button {
+    display: none;
+  }
+
+  .error-boundary-details {
+    break-inside: avoid;
+  }
+}

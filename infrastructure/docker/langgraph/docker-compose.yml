@@ -1,0 +1,135 @@
+version: '3.8'
+
+services:
+  langgraph-service:
+    build:
+      context: ../../systems/langgraph
+      dockerfile: Dockerfile
+    container_name: auterity-langgraph
+    ports:
+      - "${LANGGRAPH_PORT:-8002}:8002"
+    environment:
+      # AI Provider Configuration
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+
+      # Service Configuration
+      - SERVICE_NAME=langgraph-service
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+
+      # Redis Configuration
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=4
+
+      # Integration URLs
+      - N8N_BASE_URL=http://workflow-studio:3000
+      - TEMPORAL_BASE_URL=http://temporal:7233
+      - VLLM_BASE_URL=http://vllm-server:8001
+      - KONG_BASE_URL=http://kong:8001
+
+      # Workflow Limits
+      - MAX_CONCURRENT_EXECUTIONS=${MAX_CONCURRENT_EXECUTIONS:-50}
+      - MAX_EXECUTION_TIME=${MAX_EXECUTION_TIME:-3600}
+      - MAX_NODES_PER_WORKFLOW=${MAX_NODES_PER_WORKFLOW:-100}
+
+    volumes:
+      # Mount logs for monitoring
+      - langgraph_logs:/app/logs
+      # Mount config for customization
+      - ./config:/app/config:ro
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: ${LANGGRAPH_MEMORY_LIMIT:-2G}
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+    # Health checks
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    # Networking
+    networks:
+      - auterity
+
+    # Dependencies
+    depends_on:
+      - redis
+      # Optional dependencies based on integrations
+      # vllm-server:
+      #   condition: service_healthy
+      #   required: false
+
+    # Profiles for different deployment scenarios
+    profiles:
+      - ai-services
+
+  # Optional: Workflow Persistence Service
+  langgraph-persistence:
+    image: postgres:15-alpine
+    container_name: auterity-langgraph-persistence
+    environment:
+      - POSTGRES_DB=langgraph
+      - POSTGRES_USER=langgraph
+      - POSTGRES_PASSWORD=${LANGGRAPH_DB_PASSWORD:-langgraph123}
+    volumes:
+      - langgraph_db:/var/lib/postgresql/data
+    profiles:
+      - persistence
+    networks:
+      - auterity
+
+  # Optional: Monitoring Sidecar
+  langgraph-monitor:
+    image: prom/prometheus:latest
+    container_name: auterity-langgraph-monitor
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - langgraph_metrics:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    profiles:
+      - monitoring
+    networks:
+      - auterity
+
+volumes:
+  langgraph_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${LANGGRAPH_LOG_DIR:-./data/langgraph/logs}
+
+  langgraph_db:
+    driver: local
+
+  langgraph_metrics:
+    driver: local
+
+networks:
+  auterity:
+    external: true
+    name: auterity
+

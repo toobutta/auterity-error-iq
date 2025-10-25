@@ -52,3 +52,5 @@ export const getErrorStats = async (
   const response = await client.get(`/api/errors/stats${params}`);
   return response.data;
 };
+
+

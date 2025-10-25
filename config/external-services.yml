@@ -13,6 +13,103 @@ vector_databases:
     api_key: "${WEAVIATE_API_KEY}"
     class_name: "AuterityDocument"
 
+# AI Framework Mappings and Configurations
+ai_frameworks:
+  # Vercel AI SDK Configuration
+  ai_sdk:
+    enabled: true
+    providers:
+      openai:
+        enabled: true
+        api_key: "${OPENAI_API_KEY}"
+        models: ["gpt-4o", "gpt-4-turbo-preview", "gpt-3.5-turbo"]
+        cost_per_token: 0.00003
+        max_tokens: 4096
+        capabilities: ["text", "chat", "function_calling", "reasoning"]
+
+      anthropic:
+        enabled: true
+        api_key: "${ANTHROPIC_API_KEY}"
+        models: ["claude-3-5-sonnet-20241022", "claude-3-opus-20240229"]
+        cost_per_token: 0.000015
+        max_tokens: 4096
+        capabilities: ["text", "chat", "reasoning", "long_context"]
+
+      google:
+        enabled: true
+        api_key: "${GOOGLE_API_KEY}"
+        models: ["gemini-1.5-pro", "gemini-pro"]
+        cost_per_token: 0.00001
+        max_tokens: 8192
+        capabilities: ["text", "chat", "multimodal"]
+
+      azure:
+        enabled: true
+        endpoint: "${AZURE_OPENAI_ENDPOINT}"
+        api_key: "${AZURE_OPENAI_API_KEY}"
+        api_version: "2024-02-15-preview"
+        models: ["gpt-4", "gpt-35-turbo"]
+        cost_per_token: 0.00003
+        capabilities: ["text", "chat", "function_calling"]
+
+      cohere:
+        enabled: true
+        api_key: "${COHERE_API_KEY}"
+        models: ["command-r-plus"]
+        cost_per_token: 0.000002
+        capabilities: ["text", "chat"]
+
+      ollama:
+        enabled: false  # Enable when Ollama is installed
+        endpoint: "${OLLAMA_ENDPOINT:-http://localhost:11434}"
+        model: "${OLLAMA_MODEL:-llama3.1:8b}"
+        cost_per_token: 0  # Local, free
+        capabilities: ["text", "chat"]
+
+  # LangChain Configuration (uses AI SDK providers via mappings)
+  langchain:
+    enabled: true
+    # LangChain will use AI SDK providers via framework mappings
+    # No duplicate provider configuration needed
+    use_ai_sdk_providers: true
+
+    # LangChain-specific settings
+    default_chain_type: "conversation"
+    enable_memory: true
+    enable_streaming: true
+    max_chain_length: 10
+
+  # Framework Mappings (AI SDK ↔ LangChain)
+  framework_mappings:
+    ai_sdk_to_langchain:
+      openai: "openai"
+      anthropic: "anthropic"
+      google: "google"
+      azure: "azure"
+      cohere: "cohere"
+      ollama: "ollama"
+
+    langchain_to_ai_sdk:
+      openai: "openai"
+      anthropic: "anthropic"
+      google: "google"
+      azure: "azure"
+      cohere: "cohere"
+      ollama: "ollama"
+
+  # Unified Configuration
+  unified_config:
+    default_provider: "openai"
+    fallback_provider: "anthropic"
+    cost_tracking: true
+    health_check: true
+    timeout: 30000
+    max_retries: 3
+    enable_streaming: true
+    enable_caching: true
+    cache_ttl: 3600000  # 1 hour
+
+# Legacy LLM Providers (for backward compatibility)
 llm_providers:
   openai:
     enabled: true

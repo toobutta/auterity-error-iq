@@ -1,50 +1,169 @@
-# Auterity Unified AI Platform - Comprehensive Deployment Guide
 
-## 🎯 Deployment Overview
 
-**Platform**: Auterity Unified AI Platform
-**Architecture**: Microservices with 26 Integrated Services
-**Deployment Options**: Development, Staging, Production
-**Container Technology**: Docker + Docker Compose
-**Orchestration**: Kubernetes Ready
+# Auterity Unified AI Platform
 
-## 🚀 Quick Start Deployment
+ - Comprehensive Deployment Gui
 
-### Prerequisites
+d
+
+e
+
+#
+
+# 🎯 Deployment Overvie
+
+w
+
+**Platform**: Auterity Unified AI Platfor
+
+m
+**Architecture**: Microservices with 26 Integrated Service
+
+s
+**Deployment Options**: Development, Staging, Productio
+
+n
+**Container Technology**: Docke
+
+r
+
+ + Docker Compos
+
+e
+**Orchestration**: Kubernetes Read
+
+y
+
+#
+
+# 🚀 Quick Start Deploymen
+
+t
+
+#
+
+## Prerequisite
+
+s
 
 ```bash
+
 # Required Software
-- Docker 24.0+
-- Docker Compose 2.20+
-- Git 2.40+
-- Node.js 18.0+ (for local development)
-- Python 3.11+ (for backend development)
+
+- Docker 24.
+
+0
+
++ - Docker Compose 2.2
+
+0
+
++ - Git 2.4
+
+0
+
++ - Node.js 18.
+
+0
+
++ (for local development
+
+)
+
+- Python 3.1
+
+1
+
++ (for backend development
+
+)
 
 # System Requirements
-- CPU: 4+ cores
-- RAM: 8GB+ (16GB recommended for production)
-- Storage: 20GB+ available space
-- Network: Ports 80, 443, 3000, 8000, 8001 available
+
+- CPU:
+
+4
+
++ core
+
+s
+
+- RAM: 8G
+
+B
+
++ (16GB recommended for production
+
+)
+
+- Storage: 20G
+
+B
+
++ available spac
+
+e
+
+- Network: Ports 80, 443, 3000, 8000, 8001 availabl
+
+e
+
 ```
 
-### 1. Repository Setup
+#
 
-```bash
+##
+
+ 1. Repository Set
+
+u
+
+p
+
+```
+
+bash
+
 # Clone the repository
+
 git clone https://github.com/toobutta/auterity-error-iq.git
-cd auterity-error-iq
+
+cd auterity-error-i
+
+q
 
 # Copy environment configuration
+
 cp .env.example .env
 
 # Edit environment variables
-nano .env  # or use your preferred editor
+
+nano .env
+
+# or use your preferred editor
+
 ```
 
-### 2. Environment Configuration
+#
 
-```bash
-# .env - Core Configuration
+##
+
+ 2. Environment Configurati
+
+o
+
+n
+
+```
+
+bash
+
+# .env
+
+ - Core Configuratio
+
+n
+
 POSTGRES_DB=auterity
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=your_secure_password_here
@@ -53,121 +172,306 @@ REDIS_URL=redis://redis:6379
 RABBITMQ_PASSWORD=your_rabbitmq_password
 
 # AI Service Keys
+
 OPENAI_API_KEY=your_openai_api_key
 ANTHROPIC_API_KEY=your_anthropic_api_key
 PINECONE_API_KEY=your_pinecone_api_key
 
 # Communication Services
+
 TWILIO_ACCOUNT_SID=your_twilio_sid
 TWILIO_AUTH_TOKEN=your_twilio_token
 WHATSAPP_ACCESS_TOKEN=your_whatsapp_token
 
 # Infrastructure
+
 VAULT_TOKEN=your_vault_token
 KAFKA_BOOTSTRAP_SERVERS=kafka:9092
 
 # Monitoring
+
 GRAFANA_PASSWORD=your_grafana_password
 SLACK_WEBHOOK_URL=your_slack_webhook
+
 ```
 
-### 3. Development Deployment
+#
 
-```bash
+##
+
+ 3. Development Deployme
+
+n
+
+t
+
+```
+
+bash
+
 # Start all services in development mode
+
 npm run dev
 
 # Alternative: Direct Docker Compose
-docker-compose -f docker-compose.unified.yml up -d
+
+docker-compose -f docker-compose.unified.yml up -
+
+d
 
 # Check service status
-npm run health-check
+
+npm run health-chec
+
+k
 
 # View logs
+
 npm run dev:logs
+
 ```
 
-### 4. Production Deployment
+#
 
-```bash
+##
+
+ 4. Production Deployme
+
+n
+
+t
+
+```
+
+bash
+
 # Deploy production stack
+
 npm run prod
 
 # Alternative: Full production stack
-docker-compose -f docker-compose.unified.yml -f docker-compose.production.yml up -d
+
+docker-compose -f docker-compose.unified.yml -f docker-compose.production.yml up -
+
+d
 
 # Verify deployment
-./scripts/health-check.sh
+
+./scripts/health-check.s
+
+h
+
 ```
 
-## 🏗️ Service Architecture
+#
 
-### **26 Integrated Services**
+# 🏗️ Service Architectur
+
+e
+
+#
+
+## **26 Integrated Service
+
+s
+
+* *
 
 | Service           | Type          | Port        | Health Check                            |
-| ----------------- | ------------- | ----------- | --------------------------------------- |
-| **kong**          | Gateway       | 8000, 8001  | `curl localhost:8001/status`            |
-| **nginx**         | Load Balancer | 80, 443     | `curl localhost/health`                 |
-| **backend**       | API           | 8080        | `curl localhost:8080/api/health`        |
-| **frontend**      | Web           | 3000        | `curl localhost:3000`                   |
-| **postgres**      | Database      | 5432        | `pg_isready -h localhost`               |
-| **redis**         | Cache         | 6379        | `redis-cli ping`                        |
-| **rabbitmq**      | Queue         | 5672, 15672 | `curl localhost:15672`                  |
-| **kafka**         | Streaming     | 9092        | `kafka-topics.sh --list`                |
-| **vault**         | Secrets       | 8200        | `curl localhost:8200/v1/sys/health`     |
-| **mlflow**        | ML            | 5000        | `curl localhost:5000/health`            |
-| **weaviate**      | Vector DB     | 8081        | `curl localhost:8081/v1/meta`           |
-| **puppeteer**     | Automation    | 3000        | `curl localhost:3000/health`            |
-| **celery-worker** | Workers       | -           | `celery inspect ping`                   |
-| **prometheus**    | Metrics       | 9090        | `curl localhost:9090/-/healthy`         |
-| **grafana**       | Monitoring    | 3001        | `curl localhost:3001/api/health`        |
-| **jaeger**        | Tracing       | 16686       | `curl localhost:16686/health`           |
-| **minio**         | Storage       | 9000, 9001  | `curl localhost:9000/minio/health/live` |
+| ---------------
 
-## 🔧 Configuration Management
+- - | -----------
 
-### **Environment Configurations**
+- - | ---------
 
-#### Development Environment
+- - | -------------------------------------
 
-```yaml
-# docker-compose.unified.yml
+- - |
+
+| **kong
+
+* *          | Gateway       | 8000, 8001  | `curl localhost:8001/status`            |
+
+| **nginx
+
+* *         | Load Balancer | 80, 443     | `curl localhost/health`                 |
+
+| **backend
+
+* *       | API           | 8080        | `curl localhost:8080/api/health`        |
+
+| **frontend
+
+* *      | Web           | 3000        | `curl localhost:3000`                   |
+
+| **postgres
+
+* *      | Database      | 5432        | `pg_isready -h localhost`               |
+
+| **redis
+
+* *         | Cache         | 6379        | `redis-cli ping`                        |
+
+| **rabbitmq
+
+* *      | Queue         | 5672, 15672 | `curl localhost:15672`                  |
+
+| **kafka
+
+* *         | Streaming     | 9092        | `kafka-topics.sh --list`                |
+
+| **vault
+
+* *         | Secrets       | 8200        | `curl localhost:8200/v1/sys/health`     |
+
+| **mlflow
+
+* *        | ML            | 5000        | `curl localhost:5000/health`            |
+
+| **weaviate
+
+* *      | Vector DB     | 8081        | `curl localhost:8081/v1/meta`           |
+
+| **puppeteer
+
+* *     | Automation    | 3000        | `curl localhost:3000/health`            |
+
+| **celery-worker
+
+* * | Workers
+
+|
+
+ - | `celery inspect ping`                   |
+
+| **prometheus
+
+* *    | Metrics       | 9090        | `curl localhost:9090/-/healthy`         |
+
+| **grafana
+
+* *       | Monitoring    | 3001        | `curl localhost:3001/api/health`        |
+
+| **jaeger
+
+* *        | Tracing       | 16686       | `curl localhost:16686/health`           |
+
+| **minio
+
+* *         | Storage       | 9000, 9001  | `curl localhost:9000/minio/health/live`
+
+|
+
+#
+
+# 🔧 Configuration Managemen
+
+t
+
+#
+
+## **Environment Configuration
+
+s
+
+* *
+
+#
+
+### Development Environmen
+
+t
+
+```
+
+yaml
+
+# docker-compose.unified.ym
+
+l
+
 version: "3.8"
+
 services:
   backend:
     build: ./backend
     environment:
-      - DEBUG=true
-      - LOG_LEVEL=debug
+
+      - DEBUG=tru
+
+e
+
+      - LOG_LEVEL=debu
+
+g
+
       - CORS_ORIGINS=http://localhost:3000
+
     volumes:
-      - ./backend:/app
-      - /app/node_modules
+
+      - ./backend:/ap
+
+p
+
+      - /app/node_module
+
+s
+
 ```
 
-#### Production Environment
+#
 
-```yaml
-# docker-compose.production.yml
+### Production Environmen
+
+t
+
+```
+
+yaml
+
+# docker-compose.production.ym
+
+l
+
 version: "3.8"
+
 services:
   backend:
     environment:
-      - DEBUG=false
-      - LOG_LEVEL=info
+
+      - DEBUG=fals
+
+e
+
+      - LOG_LEVEL=inf
+
+o
+
       - CORS_ORIGINS=https://yourdomain.com
+
     deploy:
       replicas: 3
       resources:
         limits:
           cpus: "2"
           memory: 2G
+
 ```
 
-### **Service Dependencies**
+#
 
-```yaml
+## **Service Dependencie
+
+s
+
+* *
+
+```
+
+yaml
+
 # Service startup order and health checks
+
 depends_on:
   postgres:
     condition: service_healthy
@@ -179,109 +483,241 @@ depends_on:
     condition: service_healthy
   vault:
     condition: service_started
+
 ```
 
-## 🔒 Security Configuration
+#
 
-### **SSL/TLS Setup**
+# 🔒 Security Configuratio
 
-```bash
-# Generate self-signed certificates for development
-./scripts/generate-ssl-certs.sh
+n
+
+#
+
+## **SSL/TLS Setu
+
+p
+
+* *
+
+```
+
+bash
+
+# Generate self-signed certificates for developmen
+
+t
+
+./scripts/generate-ssl-certs.s
+
+h
 
 # Production: Use Let's Encrypt
-certbot certonly --webroot -w /var/www/html -d yourdomain.com
+
+certbot certonly --webroot -w /var/www/html -d yourdomain.co
+
+m
+
 ```
 
-### **Vault Configuration**
+#
 
-```bash
+## **Vault Configuratio
+
+n
+
+* *
+
+```
+
+bash
+
 # Initialize Vault
-docker-compose exec vault vault operator init
+
+docker-compose exec vault vault operator ini
+
+t
 
 # Unseal Vault
-docker-compose exec vault vault operator unseal <unseal_key>
+
+docker-compose exec vault vault operator unseal <unseal_key
+
+>
 
 # Configure secrets
-docker-compose exec vault vault auth -method=userpass username=admin password=<password>
+
+docker-compose exec vault vault auth -method=userpass username=admin password=<password
+
+>
+
 ```
 
-### **API Gateway Security**
+#
 
-```yaml
+## **API Gateway Securit
+
+y
+
+* *
+
+```
+
+yaml
+
 # kong/kong.yml
+
 _format_version: "3.0"
+
 services:
+
   - name: backend-api
+
     url: http://backend:8000
     plugins:
+
       - name: rate-limiting
+
         config:
           minute: 1000
           hour: 10000
+
       - name: cors
+
         config:
           origins: ["https://yourdomain.com"]
           methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+
 ```
 
-## 📊 Monitoring & Observability
+#
 
-### **Health Checks**
+# 📊 Monitoring & Observabilit
 
-```bash
-#!/bin/bash
-# scripts/health-check.sh
+y
+
+#
+
+## **Health Check
+
+s
+
+* *
+
+```
+
+bash
+
+#!/bin/bas
+
+h
+
+# scripts/health-check.
+
+s
+
+h
 
 echo "🔍 Checking service health..."
 
 # Core services
+
 curl -f http://localhost:8080/api/health || echo "❌ Backend unhealthy"
+
 curl -f http://localhost:3000 || echo "❌ Frontend unhealthy"
-curl -f http://localhost:8001/status || echo "❌ Kong unhealthy"
+
+curl -f http://localhost:8001/status || echo "❌ Kong unhealthy
+
+"
 
 # Databases
+
 pg_isready -h localhost -p 5432 || echo "❌ PostgreSQL unhealthy"
-redis-cli -h localhost -p 6379 ping || echo "❌ Redis unhealthy"
+
+redis-cli -h localhost -p 6379 ping || echo "❌ Redis unhealthy
+
+"
 
 # Monitoring
+
 curl -f http://localhost:9090/-/healthy || echo "❌ Prometheus unhealthy"
-curl -f http://localhost:3001/api/health || echo "❌ Grafana unhealthy"
+
+curl -f http://localhost:3001/api/health || echo "❌ Grafana unhealthy
+
+"
 
 echo "✅ Health check completed"
+
 ```
 
-### **Metrics Collection**
+#
 
-```yaml
+## **Metrics Collectio
+
+n
+
+* *
+
+```
+
+yaml
+
 # monitoring/prometheus/prometheus.yml
+
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
 rule_files:
-  - "alert_rules.yml"
+
+  - "alert_rules.yml
+
+"
 
 scrape_configs:
+
   - job_name: "backend-api"
+
     static_configs:
+
       - targets: ["backend:8000"]
+
     metrics_path: "/metrics"
     scrape_interval: 10s
 
   - job_name: "postgres"
+
     static_configs:
-      - targets: ["postgres-exporter:9187"]
+
+      - targets: ["postgres-exporter:9187"
+
+]
 
   - job_name: "redis"
+
     static_configs:
-      - targets: ["redis-exporter:9121"]
+
+      - targets: ["redis-exporter:9121"
+
+]
+
 ```
 
-### **Log Aggregation**
+#
 
-```yaml
-# monitoring/loki/local-config.yaml
+## **Log Aggregatio
+
+n
+
+* *
+
+```
+
+yaml
+
+# monitoring/loki/local-config.yam
+
+l
+
 auth_enabled: false
 
 server:
@@ -290,6 +726,7 @@ server:
 ingester:
   lifecycler:
     address: 127.0.0.1
+
     ring:
       kvstore:
         store: inmemory
@@ -297,159 +734,379 @@ ingester:
 
 schema_config:
   configs:
+
     - from: 2020-10-24
+
       store: boltdb-shipper
+
       object_store: filesystem
       schema: v11
       index:
         prefix: index_
         period: 24h
+
 ```
 
-## 🚀 Deployment Strategies
+#
 
-### **Rolling Deployment**
+# 🚀 Deployment Strategie
 
-```bash
-#!/bin/bash
-# scripts/rolling-deployment.sh
+s
+
+#
+
+## **Rolling Deploymen
+
+t
+
+* *
+
+```
+
+bash
+
+#!/bin/bas
+
+h
+
+# scripts/rolling-deployment.
+
+s
+
+h
 
 echo "🚀 Starting rolling deployment..."
 
 # Update backend services one by one
+
 for service in backend-1 backend-2 backend-3; do
+
     echo "📦 Updating $service..."
     docker-compose stop $service
-    docker-compose pull $service
-    docker-compose up -d $service
 
-    # Wait for health check
+    docker-compose pull $service
+
+    docker-compose up -d $servic
+
+e
+
+
+
+# Wait for health check
+
     sleep 30
     curl -f http://localhost:8080/api/health || exit 1
+
 done
 
 echo "✅ Rolling deployment completed"
+
 ```
 
-### **Blue-Green Deployment**
+#
 
-```bash
-#!/bin/bash
-# scripts/blue-green-deployment.sh
+## **Blue-Green Deploymen
+
+t
+
+* *
+
+```
+
+bash
+
+#!/bin/bas
+
+h
+
+# scripts/blue-green-deployment.
+
+s
+
+h
 
 # Deploy to green environment
-docker-compose -f docker-compose.green.yml up -d
+
+docker-compose -f docker-compose.green.yml up -
+
+d
 
 # Run health checks on green
-./scripts/health-check-green.sh
+
+./scripts/health-check-green.s
+
+h
 
 # Switch traffic to green
-./scripts/switch-traffic.sh green
+
+./scripts/switch-traffic.sh gree
+
+n
 
 # Keep blue for rollback capability
-echo "✅ Blue-green deployment completed"
+
+echo "✅ Blue-green deployment completed
+
+"
+
 ```
 
-## 🧪 Testing in Production
+#
 
-### **Smoke Tests**
+# 🧪 Testing in Productio
 
-```bash
-#!/bin/bash
-# scripts/smoke-tests.sh
+n
+
+#
+
+## **Smoke Test
+
+s
+
+* *
+
+```
+
+bash
+
+#!/bin/bas
+
+h
+
+# scripts/smoke-tests.
+
+s
+
+h
 
 echo "🧪 Running smoke tests..."
 
 # API endpoints
+
 curl -f http://localhost:8080/api/health
+
 curl -f http://localhost:8080/api/auth/me
-curl -f http://localhost:8080/api/workflows
+
+curl -f http://localhost:8080/api/workflow
+
+s
 
 # Database connectivity
-python -c "import psycopg2; conn = psycopg2.connect('postgresql://postgres:password@localhost:5432/auterity')"
+
+python -c "import psycopg2; conn = psycopg2.connect('postgresql://postgres:password@localhost:5432/auterity'
+
+)
+
+"
 
 # Cache connectivity
-redis-cli ping
+
+redis-cli pin
+
+g
 
 echo "✅ Smoke tests passed"
+
 ```
 
-### **Load Testing**
+#
 
-```bash
+## **Load Testin
+
+g
+
+* *
+
+```
+
+bash
+
 # Install k6 for load testing
-curl https://github.com/grafana/k6/releases/download/v0.45.0/k6-v0.45.0-linux-amd64.tar.gz -L | tar xvz --strip-components 1
+
+curl https://github.com/grafana/k6/releases/download/v0.45.0/k6-v0.45.0-linux-amd64.tar.gz -L | tar xvz --strip-components
+
+
+
+1
 
 # Run load tests
-k6 run tests/load/api-load-test.js
+
+k6 run tests/load/api-load-test.j
+
+s
+
 ```
 
-## 🔧 Troubleshooting
+#
 
-### **Common Issues**
+# 🔧 Troubleshootin
 
-#### Service Won't Start
+g
 
-```bash
+#
+
+## **Common Issue
+
+s
+
+* *
+
+#
+
+### Service Won't Star
+
+t
+
+```
+
+bash
+
 # Check logs
-docker-compose logs backend
+
+docker-compose logs backen
+
+d
 
 # Check resources
+
 docker stats
 
 # Check disk space
+
 df -h
+
 ```
 
-#### Database Connection Issues
+#
 
-```bash
+### Database Connection Issue
+
+s
+
+```
+
+bash
+
 # Check PostgreSQL status
-docker-compose exec postgres pg_isready
+
+docker-compose exec postgres pg_isread
+
+y
 
 # Check connection string
-docker-compose exec backend env | grep DATABASE_URL
+
+docker-compose exec backend env | grep DATABASE_UR
+
+L
+
 ```
 
-#### Performance Issues
+#
 
-```bash
+### Performance Issue
+
+s
+
+```
+
+bash
+
 # Monitor resource usage
+
 docker stats
 
 # Check slow queries
-docker-compose exec postgres psql -U postgres -d auterity -c "SELECT * FROM pg_stat_activity WHERE state = 'active';"
+
+docker-compose exec postgres psql -U postgres -d auterity -c "SELEC
+
+T
+
+ * FROM pg_stat_activity WHERE state = 'active';
+
+"
+
 ```
 
-### **Recovery Procedures**
+#
 
-#### Database Recovery
+## **Recovery Procedure
 
-```bash
+s
+
+* *
+
+#
+
+### Database Recover
+
+y
+
+```
+
+bash
+
 # Backup database
-docker-compose exec postgres pg_dump -U postgres auterity > backup.sql
+
+docker-compose exec postgres pg_dump -U postgres auterity > backup.sq
+
+l
 
 # Restore database
-docker-compose exec postgres psql -U postgres auterity < backup.sql
+
+docker-compose exec postgres psql -U postgres auterity < backup.sq
+
+l
+
 ```
 
-#### Service Recovery
+#
 
-```bash
+### Service Recover
+
+y
+
+```
+
+bash
+
 # Restart specific service
-docker-compose restart backend
+
+docker-compose restart backen
+
+d
 
 # Full system restart
-docker-compose down && docker-compose up -d
+
+docker-compose down && docker-compose up -
+
+d
+
 ```
 
-## 📈 Scaling Considerations
+#
 
-### **Horizontal Scaling**
+# 📈 Scaling Consideration
 
-```yaml
-# docker-compose.scale.yml
+s
+
+#
+
+## **Horizontal Scalin
+
+g
+
+* *
+
+```
+
+yaml
+
+# docker-compose.scale.ym
+
+l
+
 version: "3.8"
+
 services:
   backend:
     deploy:
@@ -460,56 +1117,158 @@ services:
       replicas: 2
 
   celery-worker:
+
     deploy:
       replicas: 5
+
 ```
 
-### **Database Scaling**
+#
 
-```yaml
+## **Database Scalin
+
+g
+
+* *
+
+```
+
+yaml
+
 # PostgreSQL clustering
+
 postgres-master:
+
   image: postgres:15-alpine
+
   environment:
-    - POSTGRES_REPLICATION_MODE=master
+
+    - POSTGRES_REPLICATION_MODE=maste
+
+r
 
 postgres-slave:
+
   image: postgres:15-alpine
+
   environment:
-    - POSTGRES_REPLICATION_MODE=slave
-    - POSTGRES_MASTER_SERVICE=postgres-master
+
+    - POSTGRES_REPLICATION_MODE=slav
+
+e
+
+    - POSTGRES_MASTER_SERVICE=postgres-maste
+
+r
+
 ```
 
-## 🔐 Production Security Checklist
+#
 
-- [ ] SSL/TLS certificates configured
-- [ ] Secrets stored in Vault
-- [ ] Database encrypted at rest
-- [ ] Network segmentation implemented
-- [ ] Regular security updates
-- [ ] Backup strategy implemented
-- [ ] Monitoring and alerting active
-- [ ] Access controls configured
-- [ ] Audit logging enabled
-- [ ] Security scanning automated
+# 🔐 Production Security Checklis
 
-## 📞 Support & Maintenance
+t
 
-### **Monitoring Dashboards**
+- [ ] SSL/TLS certificates configure
 
-- **Application**: http://localhost:3001 (Grafana)
-- **API Gateway**: http://localhost:8001 (Kong Admin)
-- **Message Queue**: http://localhost:15672 (RabbitMQ)
-- **Service Mesh**: http://localhost:16686 (Jaeger)
+d
 
-### **Emergency Contacts**
+- [ ] Secrets stored in Vaul
 
-- **DevOps Team**: devops@auterity.com
-- **Security Team**: security@auterity.com
-- **On-Call**: +1-XXX-XXX-XXXX
+t
 
----
+- [ ] Database encrypted at res
 
-**Last Updated**: August 25, 2025
-**Version**: 1.0.0
-**Maintained By**: Auterity DevOps Team
+t
+
+- [ ] Network segmentation implemente
+
+d
+
+- [ ] Regular security update
+
+s
+
+- [ ] Backup strategy implemente
+
+d
+
+- [ ] Monitoring and alerting activ
+
+e
+
+- [ ] Access controls configure
+
+d
+
+- [ ] Audit logging enable
+
+d
+
+- [ ] Security scanning automate
+
+d
+
+#
+
+# 📞 Support & Maintenanc
+
+e
+
+#
+
+## **Monitoring Dashboard
+
+s
+
+* *
+
+- **Application**: http://localhost:3001 (Grafana
+
+)
+
+- **API Gateway**: http://localhost:8001 (Kong Admin
+
+)
+
+- **Message Queue**: http://localhost:15672 (RabbitMQ
+
+)
+
+- **Service Mesh**: http://localhost:16686 (Jaeger
+
+)
+
+#
+
+## **Emergency Contact
+
+s
+
+* *
+
+- **DevOps Team**: devops@auterity.co
+
+m
+
+- **Security Team**: security@auterity.co
+
+m
+
+- **On-Call**: +1-XXX-XXX-XXX
+
+X
+
+--
+
+- **Last Updated**: August 25, 202
+
+5
+**Version**: 1.0
+
+.
+
+0
+**Maintained By**: Auterity DevOps Tea
+
+m

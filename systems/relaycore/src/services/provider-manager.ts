@@ -400,3 +400,4 @@ export class ProviderManager {
     return provider?.available || false;
   }
 }
+

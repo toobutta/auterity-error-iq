@@ -2,11 +2,12 @@ import React from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { NodeData } from "../../../types/workflow";
 
-const LeadQualificationNode: React.FC<NodeProps<NodeData>> = ({
+const LeadQualificationNode: React.FC<NodeProps> = ({
   data,
   isConnectable,
 }) => {
-  const hasErrors = data.validationErrors && data.validationErrors.length > 0;
+  const nodeData = data as NodeData;
+  const hasErrors = nodeData.validationErrors && nodeData.validationErrors.length > 0;
 
   return (
     <div
@@ -23,15 +24,15 @@ const LeadQualificationNode: React.FC<NodeProps<NodeData>> = ({
         <div className="w-8 h-8 bg-green-500 rounded-full mx-auto mb-2 flex items-center justify-center">
           <span className="text-white text-sm font-bold">🤖</span>
         </div>
-        <h3 className="font-bold text-green-800">{data.label}</h3>
-        {data.description && (
-          <p className="text-xs text-green-600 mt-1">{data.description}</p>
+        <h3 className="font-bold text-green-800">{nodeData.label}</h3>
+        {nodeData.description && (
+          <p className="text-xs text-green-600 mt-1">{nodeData.description}</p>
         )}
-        {(data.config as { aiPrompt?: { model?: string } })?.aiPrompt
+        {(nodeData.config as { aiPrompt?: { model?: string } })?.aiPrompt
           ?.model && (
           <p className="text-xs text-gray-500 mt-1">
             Model:{" "}
-            {(data.config as { aiPrompt?: { model?: string } }).aiPrompt
+            {(nodeData.config as { aiPrompt?: { model?: string } }).aiPrompt
               ?.model || ""}
           </p>
         )}
@@ -39,7 +40,7 @@ const LeadQualificationNode: React.FC<NodeProps<NodeData>> = ({
 
       {hasErrors && (
         <div className="mt-2 p-1 bg-red-100 border border-red-300 rounded text-xs text-red-600">
-          {data.validationErrors![0]}
+          {nodeData.validationErrors?.[0]}
         </div>
       )}
 
@@ -54,3 +55,5 @@ const LeadQualificationNode: React.FC<NodeProps<NodeData>> = ({
 };
 
 export default LeadQualificationNode;
+
+

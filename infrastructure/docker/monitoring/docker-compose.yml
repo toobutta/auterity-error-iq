@@ -1,0 +1,219 @@
+version: '3.8'
+
+services:
+  # Elasticsearch for centralized logging and analytics
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: auterity-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:-auterity123}
+      - path.data=/usr/share/elasticsearch/data
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "${ELASTICSEARCH_PORT:-9200}:9200"
+      - "${ELASTICSEARCH_PORT_SSL:-9300}:9300"
+    networks:
+      - auterity
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # Kibana for Elasticsearch visualization
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: auterity-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD:-auterity123}
+    ports:
+      - "${KIBANA_PORT:-5601}:5601"
+    networks:
+      - auterity
+    depends_on:
+      - elasticsearch
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # Logstash for log processing and enrichment
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.11.0
+    container_name: auterity-logstash
+    environment:
+      - "LS_JAVA_OPTS=-Xms256m -Xmx256m"
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./logstash/config:/usr/share/logstash/config:ro
+      - logstash_data:/usr/share/logstash/data
+    ports:
+      - "${LOGSTASH_PORT:-5044}:5044"
+      - "${LOGSTASH_API_PORT:-9600}:9600"
+    networks:
+      - auterity
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+  # Filebeat for log shipping from containers
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.11.0
+    container_name: auterity-filebeat
+    user: root
+    volumes:
+      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - filebeat_data:/usr/share/filebeat/data
+    networks:
+      - auterity
+    depends_on:
+      - logstash
+    restart: unless-stopped
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: auterity-prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    networks:
+      - auterity
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9090/-/healthy || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  # Grafana for metrics visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: auterity-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-auterity123}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "${GRAFANA_PORT:-3001}:3000"
+    networks:
+      - auterity
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  # Sentry for error tracking and monitoring
+  sentry:
+    image: sentry:23.11.0
+    container_name: auterity-sentry
+    environment:
+      - SENTRY_SECRET_KEY=${SENTRY_SECRET_KEY:-random-secret-key-change-in-production}
+      - SENTRY_POSTGRES_HOST=postgres
+      - SENTRY_POSTGRES_PORT=5432
+      - SENTRY_DB_NAME=sentry
+      - SENTRY_DB_USER=sentry
+      - SENTRY_DB_PASSWORD=${SENTRY_DB_PASSWORD:-sentry123}
+      - SENTRY_REDIS_HOST=redis
+      - SENTRY_REDIS_PORT=6379
+      - SENTRY_REDIS_DB=2
+      - SENTRY_EMAIL_HOST=${SENTRY_EMAIL_HOST:-}
+      - SENTRY_EMAIL_PORT=${SENTRY_EMAIL_PORT:-}
+      - SENTRY_EMAIL_USER=${SENTRY_EMAIL_USER:-}
+      - SENTRY_EMAIL_PASSWORD=${SENTRY_EMAIL_PASSWORD:-}
+      - SENTRY_SERVER_EMAIL=${SENTRY_SERVER_EMAIL:-sentry@localhost}
+    volumes:
+      - sentry_data:/data
+    ports:
+      - "${SENTRY_PORT:-9000}:9000"
+    networks:
+      - auterity
+    depends_on:
+      - postgres
+      - redis
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/_health/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  # Custom monitoring aggregator service
+  monitoring-aggregator:
+    build:
+      context: ../../../src/services
+      dockerfile: Dockerfile.monitoring
+    container_name: auterity-monitoring-aggregator
+    environment:
+      - NODE_ENV=production
+      - ELASTICSEARCH_NODE=http://elasticsearch:9200
+      - PROMETHEUS_ENDPOINT=http://prometheus:9090
+      - SENTRY_DSN=${SENTRY_DSN:-}
+      - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY:-}
+      - LOG_LEVEL=info
+      - METRICS_ENDPOINT=http://prometheus:9090/api/v1/write
+    volumes:
+      - monitoring_logs:/app/logs
+    networks:
+      - auterity
+    depends_on:
+      - elasticsearch
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  elasticsearch_data:
+    driver: local
+  kibana_data:
+    driver: local
+  logstash_data:
+    driver: local
+  filebeat_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  sentry_data:
+    driver: local
+  monitoring_logs:
+    driver: local
+
+networks:
+  auterity:
+    external: true
+    name: auterity
+

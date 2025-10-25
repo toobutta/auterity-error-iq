@@ -20,12 +20,135 @@
     "**/__pycache__": true,
     "**/node_modules": true
   },
-  "python.linting.enabled": true,
-  "python.linting.flake8Enabled": true,
-  "python.formatting.provider": "black",
-  "typescript.preferences.importModuleSpecifier": "relative",
-  "eslint.workingDirectories": ["frontend", "shared"],
+  "git.inputValidationSubjectLength": 72,
+  
+  // Commit Message Template for AI Generation
+  "aiCommitMessage.rules": {
+    "format": "conventional",
+    "types": [
+      "feat",
+      "fix", 
+      "docs",
+      "style",
+      "refactor",
+      "perf",
+      "test",
+      "build",
+      "ci",
+      "chore",
+      "revert"
+    ],
+    "scopes": [
+      "backend",
+      "frontend", 
+      "api",
+      "db",
+      "auth",
+      "workflow",
+      "agent",
+      "ui",
+      "config",
+      "infra",
+      "deps",
+      "types",
+      "test",
+      "ci",
+      "docs"
+    ],
+    "template": {
+      "subject": "<type>(<scope>): <description>",
+      "body": "- What: <change_description>\n- Why: <business_reason>\n- How: <implementation_detail>",
+      "footer": "Refs: #<issue_number>\nTested: <test_evidence>"
+    },
+    "rules": {
+      "subjectMaxLength": 50,
+      "subjectCase": "lower",
+      "subjectEmptyLine": true,
+      "bodyLineLength": 72,
+      "footerLeadingBlankLine": true,
+      "headerPattern": "^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\\([a-z]+\\))?: .{1,50}$",
+      "bodyPattern": "^- (What|Why|How): .+$"
+    },
+    "examples": {
+      "feature": "feat(workflow): add parallel execution engine\n\n- What: Implemented TopologicalExecutor for dependency resolution\n- Why: Enable concurrent step processing for better performance\n- How: Added async batch execution with circuit breaker pattern\n\nRefs: #147\nTested: Unit tests, integration tests, performance benchmarks",
+      "bugfix": "fix(auth): resolve token validation race condition\n\n- What: Fixed concurrent token refresh causing authentication failures\n- Why: Multiple requests were invalidating active sessions\n- How: Added mutex lock and token validation queue\n\nRefs: #203\nTested: Load testing with 100 concurrent users",
+      "refactor": "refactor(backend): standardize error handling patterns\n\n- What: Unified exception hierarchy and response formatting\n- Why: Inconsistent error responses causing client confusion\n- How: Created BaseAppException with proper HTTP status mapping\n\nRefs: #156\nTested: All existing tests pass, new error scenarios covered"
+    }
+  },
+  
+  // AI Commit Message Generation Settings
+  "aiCommitMessage.context": {
+    "includeChangedFiles": true,
+    "includeDiffStats": true,
+    "includeTestFiles": true,
+    "maxContextLines": 20,
+    "excludePatterns": [
+      "*.pyc",
+      "__pycache__/**",
+      "node_modules/**",
+      ".venv/**",
+      "*.log"
+    ]
+  },
+  
+  // Project-Specific Commit Conventions
+  "aiCommitMessage.projectRules": {
+    "auterity-error-iq": {
+      "priorityKeywords": [
+        "authentication",
+        "workflow",
+        "agent",
+        "security",
+        "performance",
+        "database",
+        "api",
+        "frontend",
+        "backend",
+        "compliance",
+        "error handling",
+        "testing",
+        "documentation"
+      ],
+      "scopeMapping": {
+        "backend/app/api/": "api",
+        "backend/app/auth/": "auth", 
+        "backend/app/services/": "backend",
+        "backend/app/models/": "db",
+        "backend/app/services/workflow*": "workflow",
+        "backend/app/services/agents/": "agent",
+        "frontend/src/": "frontend",
+        "frontend/src/components/": "ui",
+        "tests/": "test",
+        ".github/workflows/": "ci",
+        "docs/": "docs",
+        "infrastructure/": "infra",
+        "requirements*.txt": "deps",
+        "package*.json": "deps",
+        "**/tsconfig.json": "config",
+        "**/pyproject.toml": "config"
+      },
+      "changePatterns": {
+        "addedFiles": "feat",
+        "deletedFiles": "refactor", 
+        "modifiedFiles": "fix",
+        "renamedFiles": "refactor",
+        "testFiles": "test",
+        "configFiles": "config",
+        "docFiles": "docs",
+        "dependencyFiles": "build"
+      }
+    }
+  },
+  
+  // Ruff linting and Black formatting (from theirs)
+  "ruff.lint.enable": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  }
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.ruff": "explicit"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "cursorpyright.analysis.autoImportCompletions": true,
+  "cursorpyright.analysis.typeCheckingMode": "basic"
 }

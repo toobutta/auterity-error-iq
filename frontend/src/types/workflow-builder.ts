@@ -44,7 +44,7 @@ export interface Connection {
   targetHandle: string;
 }
 
-export interface NodeData {
+export interface NodeData extends Record<string, unknown> {
   label: string;
   description?: string;
   type: WorkflowStep["type"];
@@ -91,7 +91,7 @@ export interface OutputPort {
 }
 
 // Node configurations for different types
-export interface NodeConfig {
+export interface NodeConfig extends Record<string, unknown> {
   // Email Node
   emailTemplate?: {
     subject: string;
@@ -307,3 +307,5 @@ export const AUTOMOTIVE_NODE_CATEGORIES: NodeCategory[] = [
     nodes: [],
   },
 ];
+
+

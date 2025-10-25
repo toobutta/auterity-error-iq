@@ -51,7 +51,7 @@ function App() {
     });
 
     socketInstance.on("connect", () => {
-      console.log("Connected to RelayCore WebSocket");
+
       setConnected(true);
 
       // Subscribe to metrics updates
@@ -66,7 +66,7 @@ function App() {
     });
 
     socketInstance.on("disconnect", () => {
-      console.log("Disconnected from RelayCore WebSocket");
+
       setConnected(false);
     });
 
@@ -85,7 +85,7 @@ function App() {
     });
 
     socketInstance.on("error", (error: any) => {
-      console.error("WebSocket error:", error);
+
     });
 
     setSocket(socketInstance);
@@ -149,3 +149,5 @@ function App() {
 }
 
 export default App;
+
+

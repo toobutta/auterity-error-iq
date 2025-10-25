@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../auterity-workflow-studio"
+		}
+	],
+	"settings": {
+		"gitlens.advanced.messages": {
+			"suppressCommitHasNoPreviousCommitWarning": false,
+			"suppressCommitNotFoundWarning": false,
+			"suppressFileNotUnderSourceControlWarning": false,
+			"suppressGitVersionWarning": false,
+			"suppressLineUncommittedWarning": false,
+			"suppressNoRepositoryWarning": false
+		},
+		"gitlens.blame.format": "${message|50?} ${agoOrDate|14-}",
+		"gitlens.blame.heatmap.enabled": true,
+		"gitlens.codeLens.enabled": true,
+		"gitlens.currentLine.enabled": true,
+		"gitlens.hovers.enabled": true,
+		"gitlens.statusBar.enabled": true,
+		"gitlens.views.repositories.files.layout": "tree",
+		"gitlens.views.lineHistory.enabled": true,
+		"git.confirmSync": false
+	}
+}

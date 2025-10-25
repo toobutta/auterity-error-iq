@@ -92,7 +92,6 @@ export class ErrorBoundary extends Component<Props, State> {
         : undefined,
     };
 
-    console.log("Reporting error:", sanitizedError);
   };
 
   toggleDetails = () => {
@@ -288,3 +287,5 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
+
+

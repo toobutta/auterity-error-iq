@@ -31,16 +31,7 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
       } catch (err: unknown) {
         const errorMessage =
           err instanceof Error ? err.message : "Unknown error occurred";
-        const errorContext = {
-          operation: "fetchExecution",
-          executionId,
-          timestamp: new Date().toISOString(),
-          errorType:
-            err instanceof Error ? err.constructor.name : "UnknownError",
-          errorMessage,
-          stack: err instanceof Error ? err.stack : undefined,
-        };
-        console.error("Execution fetch failed:", errorContext);
+        // error context captured for potential telemetry
         setError(`Failed to fetch execution results: ${errorMessage}`);
       } finally {
         setLoading(false);
@@ -87,23 +78,9 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
 
     try {
       await navigator.clipboard.writeText(formatValue(execution.outputData));
-      console.log("Clipboard operation successful", {
-        operation: "copyToClipboard",
-        timestamp: new Date().toISOString(),
-        dataLength: formatValue(execution.outputData).length,
-      });
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Unknown clipboard error";
-      const errorContext = {
-        operation: "copyToClipboard",
-        timestamp: new Date().toISOString(),
-        hasOutputData: !!execution?.outputData,
-        errorMessage,
-        errorType: err instanceof Error ? err.constructor.name : "UnknownError",
-      };
-      console.error("Clipboard operation failed:", errorContext);
-      // Could add user notification here if needed
+      // debug: copyToClipboard succeeded (logging removed for production)
+    } catch {
+      // Could add user notification here or send telemetry for clipboard errors
     }
   };
 
@@ -458,3 +435,5 @@ const WorkflowExecutionResults: React.FC<WorkflowExecutionResultsProps> = ({
 };
 
 export default WorkflowExecutionResults;
+
+

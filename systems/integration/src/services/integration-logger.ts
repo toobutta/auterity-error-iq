@@ -114,7 +114,6 @@ export class IntegrationLogger extends EventEmitter {
       transports,
     });
 
-    console.log("Integration logger initialized");
   }
 
   private createLogEntry(
@@ -623,7 +622,7 @@ export class IntegrationLogger extends EventEmitter {
   async clearLogs(): Promise<void> {
     this.logEntries = [];
     this.emit("logs-cleared");
-    console.log("Log entries cleared");
+
   }
 
   // Export logs
@@ -733,3 +732,4 @@ export class IntegrationLogger extends EventEmitter {
     };
   }
 }
+

@@ -94,7 +94,7 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
         setNodes(flowNodes);
         setEdges(flowEdges);
       } catch (error: unknown) {
-        console.error("Failed to load workflow:", error);
+
       } finally {
         setIsLoading(false);
       }
@@ -301,7 +301,7 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
       onSave?.(savedWorkflow);
       alert("Workflow saved successfully!");
     } catch (error: unknown) {
-      console.error("Failed to save workflow:", error);
+
       alert("Failed to save workflow. Please try again.");
     } finally {
       setIsSaving(false);
@@ -432,3 +432,5 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
 };
 
 export default WorkflowBuilder;
+
+

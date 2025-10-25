@@ -1,0 +1,400 @@
+/**
+ * EXPLAINABILITY CHIP STYLES
+ *
+ * Transparent AI interface with comprehensive metrics and expandable details
+ * Implements 2025 UX trends: ethical AI transparency, explainable AI
+ */
+
+.explainability-chip {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: var(--bg-secondary, #f9fafb);
+  border: 1px solid var(--border-primary, rgba(0, 0, 0, 0.1));
+  border-radius: 8px;
+  font-size: 0.875rem;
+  position: relative;
+}
+
+/* Metrics Row */
+.metrics-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.metric-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--bg-primary, #ffffff);
+  border: 1px solid var(--border-light, rgba(0, 0, 0, 0.05));
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.metric-label {
+  color: var(--text-muted, #6b7280);
+  font-weight: 500;
+}
+
+.metric-value {
+  color: var(--text-primary, #111827);
+  font-weight: 600;
+}
+
+.risk-indicator {
+  position: relative;
+}
+
+.risk-indicator::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Expandable Section */
+.expandable-section {
+  border-top: 1px solid var(--border-light, rgba(0, 0, 0, 0.05));
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.expand-button {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: 1px solid var(--border-primary, rgba(0, 0, 0, 0.1));
+  border-radius: 4px;
+  color: var(--text-muted, #6b7280);
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.expand-button:hover {
+  background: var(--bg-hover, rgba(0, 0, 0, 0.05));
+  color: var(--text-primary, #111827);
+}
+
+.expand-button svg {
+  transition: transform 0.2s ease;
+}
+
+/* Expanded Details */
+.expanded-details {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: var(--bg-primary, #ffffff);
+  border: 1px solid var(--border-light, rgba(0, 0, 0, 0.05));
+  border-radius: 6px;
+  animation: slideDown 0.2s ease-out;
+}
+
+.detail-section {
+  margin-bottom: 1rem;
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.detail-section h5 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-section p,
+.detail-section li {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-primary, #111827);
+  margin-bottom: 0.25rem;
+}
+
+.detail-section ul {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.detail-section li {
+  list-style-type: disc;
+}
+
+/* Model Info */
+.model-info {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light, rgba(0, 0, 0, 0.05));
+}
+
+.model-detail {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.model-detail .label {
+  color: var(--text-muted, #6b7280);
+  font-weight: 500;
+}
+
+.model-detail .value {
+  color: var(--text-primary, #111827);
+  font-weight: 600;
+}
+
+/* Opt-out Button */
+.opt-out-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  background: var(--bg-primary, #ffffff);
+  border: 1px solid var(--border-primary, rgba(0, 0, 0, 0.1));
+  border-radius: 50%;
+  color: var(--text-muted, #6b7280);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.opt-out-button:hover {
+  background: var(--accent-error, #ef4444);
+  border-color: var(--accent-error, #ef4444);
+  color: white;
+}
+
+/* Explainable Actions Panel */
+.explainable-actions-panel {
+  padding: 1rem;
+}
+
+.actions-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-primary, rgba(0, 0, 0, 0.1));
+}
+
+.actions-header h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+}
+
+.transparency-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--text-muted, #6b7280);
+  background: rgba(59, 130, 246, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.explainable-actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.explainable-action-card {
+  padding: 1rem;
+  background: var(--bg-primary, #ffffff);
+  border: 1px solid var(--border-primary, rgba(0, 0, 0, 0.1));
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.explainable-action-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent-primary, #3b82f6);
+}
+
+.action-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.action-header h5 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+}
+
+.execute-action-button {
+  padding: 0.375rem 0.75rem;
+  background: var(--accent-primary, #3b82f6);
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.execute-action-button:hover {
+  background: var(--accent-primary-hover, #2563eb);
+  transform: translateY(-1px);
+}
+
+.action-description {
+  font-size: 0.75rem;
+  color: var(--text-muted, #6b7280);
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-muted, #6b7280);
+}
+
+.empty-state p {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .explainability-chip {
+    background: var(--bg-secondary-dark, #1f2937);
+    border-color: var(--border-primary-dark, rgba(255, 255, 255, 0.1));
+  }
+
+  .metric-item {
+    background: var(--bg-primary-dark, #374151);
+    border-color: var(--border-light-dark, rgba(255, 255, 255, 0.1));
+  }
+
+  .expanded-details {
+    background: var(--bg-primary-dark, #374151);
+    border-color: var(--border-light-dark, rgba(255, 255, 255, 0.1));
+  }
+
+  .explainable-action-card {
+    background: var(--bg-primary-dark, #1f2937);
+    border-color: var(--border-primary-dark, rgba(255, 255, 255, 0.1));
+  }
+
+  .expand-button:hover,
+  .opt-out-button:hover {
+    background: var(--bg-hover-dark, rgba(255, 255, 255, 0.1));
+  }
+
+  .transparency-notice {
+    background: rgba(59, 130, 246, 0.2);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .explainability-chip,
+  .explainable-action-card {
+    border: 2px solid var(--text-primary, #000000);
+  }
+
+  .metric-item {
+    border: 2px solid var(--text-primary, #000000);
+  }
+
+  .expanded-details {
+    border: 2px solid var(--text-primary, #000000);
+  }
+
+  .expand-button,
+  .opt-out-button,
+  .execute-action-button {
+    border: 2px solid var(--text-primary, #000000);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .explainability-chip,
+  .explainable-action-card,
+  .expand-button,
+  .execute-action-button,
+  .opt-out-button {
+    transition: none;
+  }
+
+  .expanded-details {
+    animation: none;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .metrics-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .metric-item {
+    justify-content: space-between;
+  }
+
+  .action-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .execute-action-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .model-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

@@ -67,7 +67,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
           })) as ExecutionLog[];
           setLogs(transformedLogs);
         } catch (logError) {
-          console.warn("Failed to fetch execution logs:", logError);
+
         }
       } catch (error) {
         addError("Failed to load execution details", {
@@ -192,7 +192,7 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
         onRetrySuccess(response.executionId);
       }
     } catch (error) {
-      console.error("Retry failed:", error);
+
       // Error handling is done within the modal
     }
   };
@@ -694,3 +694,5 @@ const WorkflowErrorDisplay: React.FC<WorkflowErrorDisplayProps> = ({
 };
 
 export default WorkflowErrorDisplay;
+
+

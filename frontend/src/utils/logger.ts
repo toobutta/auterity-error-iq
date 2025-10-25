@@ -143,16 +143,16 @@ class Logger {
 
     switch (entry.level) {
       case LogLevel.DEBUG:
-        console.debug("[DEBUG]", logData);
+
         break;
       case LogLevel.INFO:
         console.info("[INFO]", logData);
         break;
       case LogLevel.WARN:
-        console.warn("[WARN]", logData);
+
         break;
       case LogLevel.ERROR:
-        console.error("[ERROR]", logData);
+
         break;
     }
   }
@@ -414,3 +414,5 @@ export const logWorkflowEvent = (
   executionId?: string,
   context?: Record<string, unknown>,
 ) => logger.logWorkflowEvent(event, workflowId, executionId, context);
+
+

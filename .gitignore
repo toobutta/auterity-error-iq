@@ -65,3 +65,14 @@ archive/*.zip
 *.tmp
 *.temp
 .tmp/
+
+# Backend model artifacts and virtualenv
+backend/models/
+backend/.venv/
+backend/venv/
+*.pth
+
+# Explicitly ignore virtual environment
+backend/.venv/
+backend/venv*/
+

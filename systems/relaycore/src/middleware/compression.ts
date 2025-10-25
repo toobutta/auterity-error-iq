@@ -443,3 +443,4 @@ export const maxCompressionConfig: CompressionConfig = {
   memLevel: 9, // Maximum memory usage
   enableBrotli: true, // Prefer Brotli for best ratios
 };
+

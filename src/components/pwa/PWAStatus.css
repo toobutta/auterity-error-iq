@@ -1,0 +1,385 @@
+/* PWA Status Component Styles */
+
+.pwa-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-primary);
+  border: 1px solid var(--color-border-subtle);
+  box-shadow: var(--shadow-sm);
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: var(--transition-colors);
+}
+
+.status-indicator.online {
+  background: var(--color-success-50);
+  color: var(--color-success-700);
+  border: 1px solid var(--color-success-200);
+}
+
+.status-indicator.online .status-icon {
+  color: var(--color-success-600);
+}
+
+.status-indicator.offline {
+  background: var(--color-warning-50);
+  color: var(--color-warning-700);
+  border: 1px solid var(--color-warning-200);
+}
+
+.status-indicator.offline .status-icon {
+  color: var(--color-warning-600);
+}
+
+.status-indicator.installed {
+  background: var(--color-info-50);
+  color: var(--color-info-700);
+  border: 1px solid var(--color-info-200);
+}
+
+.status-indicator.installed .status-icon {
+  color: var(--color-info-600);
+}
+
+.status-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.status-text {
+  font-size: var(--font-size-sm);
+}
+
+.pwa-action-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-all);
+  border: none;
+  background: none;
+}
+
+.pwa-action-button.install {
+  background: var(--color-primary-500);
+  color: white;
+}
+
+.pwa-action-button.install:hover {
+  background: var(--color-primary-600);
+  transform: translateY(-1px);
+}
+
+.pwa-action-button.update {
+  background: var(--color-success-500);
+  color: white;
+}
+
+.pwa-action-button.update:hover {
+  background: var(--color-success-600);
+  transform: translateY(-1px);
+}
+
+.pwa-action-button.dismiss {
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-700);
+}
+
+.pwa-action-button.dismiss:hover {
+  background: var(--color-neutral-200);
+}
+
+.pwa-action-button.check-updates {
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-700);
+}
+
+.pwa-action-button.check-updates:hover {
+  background: var(--color-neutral-200);
+}
+
+.action-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.pwa-update-notification {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  background: var(--color-warning-50);
+  border: 1px solid var(--color-warning-200);
+  border-radius: var(--radius-lg);
+  min-width: 300px;
+}
+
+.update-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.update-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-warning-600);
+  flex-shrink: 0;
+}
+
+.update-text {
+  flex: 1;
+}
+
+.update-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-warning-900);
+  margin-bottom: 2px;
+}
+
+.update-description {
+  font-size: var(--font-size-xs);
+  color: var(--color-warning-700);
+}
+
+.update-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* Mini version for navigation bars */
+.pwa-status-mini {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.online-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: var(--transition-colors);
+}
+
+.online-indicator.online {
+  background: var(--color-success-500);
+  box-shadow: 0 0 6px var(--color-success-400);
+}
+
+.online-indicator.offline {
+  background: var(--color-warning-500);
+  box-shadow: 0 0 6px var(--color-warning-400);
+}
+
+.install-button-mini,
+.update-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-all);
+  border: none;
+  background: none;
+}
+
+.install-button-mini {
+  background: var(--color-primary-500);
+  color: white;
+}
+
+.install-button-mini:hover {
+  background: var(--color-primary-600);
+  transform: scale(1.1);
+}
+
+.update-indicator {
+  background: var(--color-warning-500);
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+.mini-icon {
+  width: 14px;
+  height: 14px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .pwa-status {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-3);
+  }
+
+  .status-indicator {
+    padding: var(--space-2);
+    font-size: var(--font-size-xs);
+  }
+
+  .pwa-action-button {
+    padding: var(--space-2);
+    font-size: var(--font-size-xs);
+  }
+
+  .pwa-update-notification {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+    min-width: 280px;
+  }
+
+  .update-actions {
+    justify-content: stretch;
+  }
+
+  .update-actions .pwa-action-button {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+/* Dark mode overrides */
+[data-theme="dark"] .pwa-status {
+  background: var(--color-neutral-800);
+  border-color: var(--color-neutral-700);
+}
+
+[data-theme="dark"] .status-indicator.online {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--color-success-300);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+[data-theme="dark"] .status-indicator.offline {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning-300);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+[data-theme="dark"] .status-indicator.installed {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--color-info-300);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+[data-theme="dark"] .pwa-update-notification {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+[data-theme="dark"] .update-title {
+  color: var(--color-warning-100);
+}
+
+[data-theme="dark"] .update-description {
+  color: var(--color-warning-200);
+}
+
+[data-theme="dark"] .pwa-action-button.dismiss {
+  background: var(--color-neutral-700);
+  color: var(--color-neutral-200);
+}
+
+[data-theme="dark"] .pwa-action-button.dismiss:hover {
+  background: var(--color-neutral-600);
+}
+
+[data-theme="dark"] .pwa-action-button.check-updates {
+  background: var(--color-neutral-700);
+  color: var(--color-neutral-200);
+}
+
+[data-theme="dark"] .pwa-action-button.check-updates:hover {
+  background: var(--color-neutral-600);
+}
+
+/* High contrast mode */
+[data-theme="high-contrast"] .pwa-status {
+  border-width: 2px;
+  border-color: var(--color-text-primary);
+}
+
+[data-theme="high-contrast"] .status-indicator,
+[data-theme="high-contrast"] .pwa-update-notification {
+  border-width: 2px;
+  border-color: var(--color-text-primary);
+}
+
+[data-theme="high-contrast"] .pwa-action-button {
+  border: 2px solid;
+}
+
+[data-theme="high-contrast"] .pwa-action-button.install {
+  border-color: var(--color-primary-500);
+}
+
+[data-theme="high-contrast"] .pwa-action-button.update {
+  border-color: var(--color-success-500);
+}
+
+[data-theme="high-contrast"] .pwa-action-button.dismiss {
+  border-color: var(--color-neutral-700);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .pwa-action-button,
+  .install-button-mini,
+  .update-indicator {
+    transition: none;
+  }
+
+  .update-indicator {
+    animation: none;
+  }
+
+  .pwa-action-button.install:hover,
+  .pwa-action-button.update:hover,
+  .install-button-mini:hover {
+    transform: none;
+  }
+}
+
+/* Focus styles for accessibility */
+.pwa-action-button:focus-visible,
+.install-button-mini:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  .pwa-status,
+  .pwa-status-mini,
+  .pwa-update-notification {
+    display: none;
+  }
+}

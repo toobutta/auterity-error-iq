@@ -83,7 +83,7 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
       setLogs(transformedLogs);
     } catch (err) {
       setError("Failed to load execution logs");
-      console.error("Execution logs error:", err);
+
     } finally {
       setLoading(false);
     }
@@ -550,3 +550,5 @@ export const ExecutionLogViewer: React.FC<ExecutionLogViewerProps> = ({
     </div>
   );
 };
+
+

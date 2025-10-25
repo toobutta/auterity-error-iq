@@ -1,0 +1,132 @@
+# Prometheus configuration for Auterity Unified AI Platform
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+scrape_configs:
+  # Auterity AI Services
+  - job_name: 'auterity-vllm'
+    static_configs:
+      - targets: ['vllm-server:8001']
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+    params:
+      format: ['prometheus']
+
+  - job_name: 'auterity-langgraph'
+    static_configs:
+      - targets: ['langgraph-service:8002']
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+
+  - job_name: 'auterity-crewai'
+    static_configs:
+      - targets: ['crewai-service:8003']
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+
+  # Infrastructure Services
+  - job_name: 'auterity-backend'
+    static_configs:
+      - targets: ['backend:8000']
+    scrape_interval: 15s
+    metrics_path: '/metrics'
+
+  - job_name: 'auterity-workflow-studio'
+    static_configs:
+      - targets: ['workflow-studio:3000']
+    scrape_interval: 15s
+    metrics_path: '/metrics'
+
+  - job_name: 'auterity-temporal'
+    static_configs:
+      - targets: ['temporal:7233']
+    scrape_interval: 30s
+    metrics_path: '/metrics'
+
+  - job_name: 'auterity-n8n'
+    static_configs:
+      - targets: ['n8n:5678']
+    scrape_interval: 30s
+    metrics_path: '/metrics'
+
+  # Database Services
+  - job_name: 'auterity-postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    scrape_interval: 30s
+
+  - job_name: 'auterity-redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 15s
+
+  # Kong API Gateway
+  - job_name: 'auterity-kong'
+    static_configs:
+      - targets: ['kong:8001']
+    scrape_interval: 15s
+    metrics_path: '/metrics'
+
+  # Monitoring Stack (Self-monitoring)
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+    scrape_interval: 30s
+
+  - job_name: 'elasticsearch'
+    static_configs:
+      - targets: ['elasticsearch:9200']
+    scrape_interval: 30s
+    metrics_path: '/_prometheus/metrics'
+
+  - job_name: 'kibana'
+    static_configs:
+      - targets: ['kibana:5601']
+    scrape_interval: 30s
+
+  - job_name: 'logstash'
+    static_configs:
+      - targets: ['logstash:9600']
+    scrape_interval: 30s
+
+  # Node Exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+
+  # Custom monitoring aggregator
+  - job_name: 'monitoring-aggregator'
+    static_configs:
+      - targets: ['monitoring-aggregator:9464']
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+
+# Remote write configuration (optional)
+# remote_write:
+#   - url: "https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom/push"
+#     authorization:
+#       credentials: "your-grafana-cloud-api-key"
+
+# Remote read configuration (optional)
+# remote_read:
+#   - url: "https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom"
+#     authorization:
+#       credentials: "your-grafana-cloud-api-key"
+

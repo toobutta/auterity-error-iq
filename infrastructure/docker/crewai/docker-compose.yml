@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  crewai-service:
+    build:
+      context: ../../systems/crewai
+      dockerfile: Dockerfile
+    container_name: auterity-crewai
+    ports:
+      - "${CREWAI_PORT:-8003}:8003"
+    environment:
+      # AI Provider Configuration
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+
+      # Service Configuration
+      - SERVICE_NAME=crewai-service
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+
+      # Redis Configuration
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=5
+
+      # Integration URLs
+      - N8N_BASE_URL=http://workflow-studio:3000
+      - TEMPORAL_BASE_URL=http://temporal:7233
+      - LANGGRAPH_BASE_URL=http://langgraph-service:8002
+      - VLLM_BASE_URL=http://vllm-server:8001
+      - KONG_BASE_URL=http://kong:8001
+
+      # Crew Limits
+      - MAX_CONCURRENT_CREWS=${MAX_CONCURRENT_CREWS:-10}
+      - MAX_AGENTS_PER_CREW=${MAX_AGENTS_PER_CREW:-20}
+      - MAX_TASKS_PER_CREW=${MAX_TASKS_PER_CREW:-50}
+    volumes:
+      # Mount logs for monitoring
+      - crewai_logs:/app/logs
+      # Mount config for customization
+      - ./config:/app/config:ro
+    deploy:
+      resources:
+        limits:
+          memory: ${CREWAI_MEMORY_LIMIT:-1G}
+          cpus: '1.0'
+        reservations:
+          memory: 256M
+          cpus: '0.5'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - auterity
+    depends_on:
+      - redis
+    profiles:
+      - ai-services
+
+  # Optional: CrewAI Persistence Service
+  crewai-persistence:
+    image: postgres:15-alpine
+    container_name: auterity-crewai-persistence
+    environment:
+      - POSTGRES_DB=crewai
+      - POSTGRES_USER=crewai
+      - POSTGRES_PASSWORD=${CREWAI_DB_PASSWORD:-crewai123}
+    volumes:
+      - crewai_db:/var/lib/postgresql/data
+    profiles:
+      - persistence
+    networks:
+      - auterity
+
+  # Optional: CrewAI Monitoring Sidecar
+  crewai-monitor:
+    image: prom/prometheus:latest
+    container_name: auterity-crewai-monitor
+    ports:
+      - "9092:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - crewai_metrics:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    profiles:
+      - monitoring
+    networks:
+      - auterity
+
+volumes:
+  crewai_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${CREWAI_LOG_DIR:-./data/crewai/logs}
+
+  crewai_db:
+    driver: local
+
+  crewai_metrics:
+    driver: local
+
+networks:
+  auterity:
+    external: true
+    name: auterity
+

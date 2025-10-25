@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Alert, AlertDescription } from "../ui/alert";
-import { Eye, EyeOff, Save, RefreshCw, CheckCircle, AlertTriangle } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Save,
+  RefreshCw,
+  CheckCircle,
+  AlertTriangle,
+} from "lucide-react";
 
 interface ConfigurationItem {
   key: string;
@@ -23,7 +30,7 @@ interface ConfigurationSettingsProps {
 export const ConfigurationSettings: React.FC<ConfigurationSettingsProps> = ({
   onSave,
   onTest,
-  readonly = false
+  readonly = false,
 }) => {
   const [configurations, setConfigurations] = useState<ConfigurationItem[]>([
     // Database Configuration
@@ -34,18 +41,18 @@ export const ConfigurationSettings: React.FC<ConfigurationSettingsProps> = ({
       category: "Database",
       isSecret: true,
       placeholder: "Enter secure database password",
-      description: "PostgreSQL database password for production environment"
+      description: "PostgreSQL database password for production environment",
     },
     {
       key: "DATABASE_URL",
       label: "Database URL",
       value: "",
-      category: "Database", 
+      category: "Database",
       isSecret: true,
       placeholder: "postgresql://username:${PASSWORD}@hostname:5432/database", // pragma: allowlist secret
-      description: "Complete database connection string"
+      description: "Complete database connection string",
     },
-    
+
     // Security Configuration
     {
       key: "SECRET_KEY",
@@ -54,18 +61,18 @@ export const ConfigurationSettings: React.FC<ConfigurationSettingsProps> = ({
       category: "Security",
       isSecret: true,
       placeholder: "Generate 256-bit secure secret key",
-      description: "Main application secret key for encryption and signing"
+      description: "Main application secret key for encryption and signing",
     },
     {
-      key: "JWT_SECRET_KEY", 
+      key: "JWT_SECRET_KEY",
       label: "JWT Secret Key",
       value: "",
       category: "Security",
       isSecret: true,
       placeholder: "Generate JWT-specific secret key",
-      description: "Secret key used for JWT token signing and verification"
+      description: "Secret key used for JWT token signing and verification",
     },
-    
+
     // AI Service Configuration
     {
       key: "OPENAI_API_KEY",
@@ -74,61 +81,67 @@ export const ConfigurationSettings: React.FC<ConfigurationSettingsProps> = ({
       category: "AI Services",
       isSecret: true,
       placeholder: "sk-...",
-      description: "OpenAI API key for GPT model access"
+      description: "OpenAI API key for GPT model access",
     },
     {
       key: "ANTHROPIC_API_KEY",
-      label: "Anthropic API Key", 
+      label: "Anthropic API Key",
       value: "",
       category: "AI Services",
       isSecret: true,
       placeholder: "sk-ant-...",
-      description: "Anthropic API key for Claude model access"
+      description: "Anthropic API key for Claude model access",
     },
     {
       key: "CLAUDE_API_KEY",
       label: "Claude API Key",
       value: "",
-      category: "AI Services", 
+      category: "AI Services",
       isSecret: true,
       placeholder: "Claude API key",
-      description: "Additional Claude API configuration"
-    }
+      description: "Additional Claude API configuration",
+    },
   ]);
 
   const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testResults, setTestResults] = useState<Record<string, boolean>>({});
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">(
+    "idle",
+  );
 
   // Group configurations by category
-  const groupedConfigs = configurations.reduce((acc, config) => {
-    if (!acc[config.category]) {
-      acc[config.category] = [];
-    }
-    acc[config.category].push(config);
-    return acc;
-  }, {} as Record<string, ConfigurationItem[]>);
+  const groupedConfigs = configurations.reduce(
+    (acc, config) => {
+      if (!acc[config.category]) {
+        acc[config.category] = [];
+      }
+      acc[config.category].push(config);
+      return acc;
+    },
+    {} as Record<string, ConfigurationItem[]>,
+  );
 
   const handleInputChange = (key: string, value: string): void => {
-    setConfigurations(prev => 
-      prev.map(config => 
-        config.key === key ? { ...config, value } : config
-      )
+    setConfigurations((prev) =>
+      prev.map((config) =>
+        config.key === key ? { ...config, value } : config,
+      ),
     );
   };
 
   const toggleSecretVisibility = (key: string): void => {
-    setShowSecrets(prev => ({
+    setShowSecrets((prev) => ({
       ...prev,
-      [key]: !prev[key]
+      [key]: !prev[key],
     }));
   };
 
   const generateSecretKey = (length = 64): string => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-    let result = '';
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+    let result = "";
     for (let i = 0; i < length; i++) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -136,32 +149,35 @@ export const ConfigurationSettings: React.FC<ConfigurationSettingsProps> = ({
   };
 
   const handleGenerateSecret = (key: string): void => {
-    const secretLength = key.includes('JWT') ? 64 : 32;
+    const secretLength = key.includes("JWT") ? 64 : 32;
     const generatedSecret = generateSecretKey(secretLength);
     handleInputChange(key, generatedSecret);
   };
 
   const handleSave = async (): Promise<void> => {
     setSaving(true);
-    setSaveStatus('idle');
-    
+    setSaveStatus("idle");
+
     try {
-      const configObject = configurations.reduce((acc, config) => {
-        if (config.value.trim()) {
-          acc[config.key] = config.value;
-        }
-        return acc;
-      }, {} as Record<string, string>);
+      const configObject = configurations.reduce(
+        (acc, config) => {
+          if (config.value.trim()) {
+            acc[config.key] = config.value;
+          }
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
 
       if (onSave) {
         await onSave(configObject);
       }
-      
-      setSaveStatus('success');
-      setTimeout(() => setSaveStatus('idle'), 3000);
+
+      setSaveStatus("success");
+      setTimeout(() => setSaveStatus("idle"), 3000);
     } catch (error) {
-      setSaveStatus('error');
-      setTimeout(() => setSaveStatus('idle'), 5000);
+      setSaveStatus("error");
+      setTimeout(() => setSaveStatus("idle"), 5000);
     } finally {
       setSaving(false);
     }
@@ -169,17 +185,20 @@ export const ConfigurationSettings: React.FC<ConfigurationSettingsProps> = ({
 
   const handleTestConfiguration = async (): Promise<void> => {
     if (!onTest) return;
-    
+
     setTesting(true);
     setTestResults({});
-    
+
     try {
-      const configObject = configurations.reduce((acc, config) => {
-        if (config.value.trim()) {
-          acc[config.key] = config.value;
-        }
-        return acc;
-      }, {} as Record<string, string>);
+      const configObject = configurations.reduce(
+        (acc, config) => {
+          if (config.value.trim()) {
+            acc[config.key] = config.value;
+          }
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
 
       const isValid = await onTest(configObject);
       setTestResults({ overall: isValid });
@@ -190,19 +209,23 @@ export const ConfigurationSettings: React.FC<ConfigurationSettingsProps> = ({
     }
   };
 
-  const hasUnsavedChanges = configurations.some(config => config.value.trim() !== '');
+  const hasUnsavedChanges = configurations.some(
+    (config) => config.value.trim() !== "",
+  );
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Configuration Settings</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Configuration Settings
+          </h2>
           <p className="text-gray-600 mt-1">
             Configure production environment settings and API keys
           </p>
         </div>
-        
+
         <div className="flex space-x-2">
           {onTest && (
             <Button
@@ -211,24 +234,26 @@ export const ConfigurationSettings: React.FC<ConfigurationSettingsProps> = ({
               variant="outline"
               className="flex items-center"
             >
-              <RefreshCw className={`h-4 w-4 mr-2 ${testing ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`h-4 w-4 mr-2 ${testing ? "animate-spin" : ""}`}
+              />
               Test Configuration
             </Button>
           )}
-          
+
           <Button
             onClick={handleSave}
             disabled={saving || !hasUnsavedChanges || readonly}
             className="flex items-center"
           >
-            <Save className={`h-4 w-4 mr-2 ${saving ? 'animate-pulse' : ''}`} />
-            {saving ? 'Saving...' : 'Save Configuration'}
+            <Save className={`h-4 w-4 mr-2 ${saving ? "animate-pulse" : ""}`} />
+            {saving ? "Saving..." : "Save Configuration"}
           </Button>
         </div>
       </div>
 
       {/* Status Alerts */}
-      {saveStatus === 'success' && (
+      {saveStatus === "success" && (
         <Alert className="border-green-200 bg-green-50">
           <CheckCircle className="h-4 w-4 text-green-600" />
           <AlertDescription className="text-green-800">
@@ -237,7 +262,7 @@ export const ConfigurationSettings: React.FC<ConfigurationSettingsProps> = ({
         </Alert>
       )}
 
-      {saveStatus === 'error' && (
+      {saveStatus === "error" && (
         <Alert className="border-red-200 bg-red-50">
           <AlertTriangle className="h-4 w-4 text-red-600" />
           <AlertDescription className="text-red-800">
@@ -285,16 +310,22 @@ export const ConfigurationSettings: React.FC<ConfigurationSettingsProps> = ({
                     </div>
                   )}
                 </div>
-                
+
                 <input
-                  type={config.isSecret && !showSecrets[config.key] ? "password" : "text"}
+                  type={
+                    config.isSecret && !showSecrets[config.key]
+                      ? "password"
+                      : "text"
+                  }
                   value={config.value}
-                  onChange={(e) => handleInputChange(config.key, e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange(config.key, e.target.value)
+                  }
                   placeholder={config.placeholder}
                   disabled={readonly}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                 />
-                
+
                 <p className="text-xs text-gray-500">{config.description}</p>
               </div>
             ))}
@@ -306,7 +337,9 @@ export const ConfigurationSettings: React.FC<ConfigurationSettingsProps> = ({
       {Object.keys(testResults).length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Configuration Test Results</CardTitle>
+            <CardTitle className="text-lg">
+              Configuration Test Results
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center space-x-2">
@@ -330,3 +363,5 @@ export const ConfigurationSettings: React.FC<ConfigurationSettingsProps> = ({
 };
 
 export default ConfigurationSettings;
+
+

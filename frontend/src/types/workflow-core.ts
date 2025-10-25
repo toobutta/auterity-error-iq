@@ -187,3 +187,5 @@ export interface LogEntry {
 }
 
 export type LogLevel = "debug" | "info" | "warn" | "error" | "fatal";
+
+

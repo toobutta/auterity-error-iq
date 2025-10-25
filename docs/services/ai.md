@@ -1,16 +1,47 @@
-# AI/ML Services
 
-## Vector Databases
 
-- Pinecone, Weaviate integration
-- Endpoints: `/api/vectors/*`
+# AI/ML Service
 
-## LLM Providers
+s
 
-- OpenAI, Anthropic, Azure OpenAI
-- Endpoints: `/api/llm/*`
+#
 
-## MLflow
+# Vector Database
 
-- Experiment tracking, model registry
-- Port: 5000
+s
+
+- Pinecone, Weaviate integratio
+
+n
+
+- Endpoints: `/api/vectors/*
+
+`
+
+#
+
+# LLM Provider
+
+s
+
+- OpenAI, Anthropic, Azure OpenA
+
+I
+
+- Endpoints: `/api/llm/*
+
+`
+
+#
+
+# MLflo
+
+w
+
+- Experiment tracking, model registr
+
+y
+
+- Port: 500
+
+0

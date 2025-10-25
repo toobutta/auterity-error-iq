@@ -157,3 +157,5 @@ describe("TemplateCard", () => {
     expect(screen.getByText("No description available")).toBeInTheDocument();
   });
 });
+
+

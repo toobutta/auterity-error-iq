@@ -24,6 +24,68 @@ export interface ThemeConfig {
     enabled: boolean;
     duration: "fast" | "normal" | "slow";
   };
+  extended?: {
+    colors: {
+      error: string;
+      warning: string;
+      success: string;
+      info: string;
+      secondary: string;
+    };
+    sizing: {
+      component: string;
+      button: string;
+      input: string;
+      modal: string;
+    };
+    layout: {
+      density: string;
+      gridGap: number;
+      maxWidth: string;
+      sidebarWidth: string;
+    };
+    typography: {
+      fontFamily: string;
+      fontSize: string;
+      lineHeight: string;
+      letterSpacing: string;
+    };
+    accessibility: {
+      highContrast: boolean;
+      reducedMotion: boolean;
+      focusVisible: boolean;
+    };
+    dashboard: {
+      layout: string;
+      chartTheme: string;
+      metricCardVariant: string;
+      statusIndicatorSize: string;
+    };
+    forms: {
+      layout: string;
+      inputVariant: string;
+      labelPosition: string;
+      validationStyle: string;
+    };
+    notifications: {
+      toastPosition: string;
+      toastDuration: number;
+      notificationVariant: string;
+      loadingSpinnerVariant: string;
+    };
+    responsive: {
+      sm: string;
+      md: string;
+      lg: string;
+      xl: string;
+    };
+    features: {
+      rippleEffects: boolean;
+      hoverLift: boolean;
+      focusRings: boolean;
+      gradientBackgrounds: boolean;
+    };
+  };
 }
 
 interface ThemeContextType {
@@ -51,12 +113,75 @@ const defaultThemeConfig: ThemeConfig = {
     surface: process.env.VITE_THEME_SURFACE || "#f8fafc",
   },
   glassmorphism: {
-    enabled: true,
-    intensity: "medium",
+    enabled: process.env.VITE_GLASSMORPHISM_ENABLED === 'true',
+    intensity: (process.env.VITE_GLASSMORPHISM_INTENSITY as "subtle" | "medium" | "strong") || "medium",
   },
   animations: {
-    enabled: true,
-    duration: "normal",
+    enabled: process.env.VITE_ANIMATIONS_ENABLED === 'true',
+    duration: (process.env.VITE_ANIMATIONS_DURATION as "fast" | "normal" | "slow") || "normal",
+  },
+  // Extended theme configuration from environment variables
+  extended: {
+    colors: {
+      error: process.env.VITE_THEME_ERROR || "#dc2626",
+      warning: process.env.VITE_THEME_WARNING || "#f59e0b",
+      success: process.env.VITE_THEME_SUCCESS || "#16a34a",
+      info: process.env.VITE_THEME_INFO || "#0284c7",
+      secondary: process.env.VITE_THEME_SECONDARY || "#64748b",
+    },
+    sizing: {
+      component: process.env.VITE_COMPONENT_SIZE_DEFAULT || "md",
+      button: process.env.VITE_BUTTON_SIZE_DEFAULT || "md",
+      input: process.env.VITE_INPUT_SIZE_DEFAULT || "md",
+      modal: process.env.VITE_MODAL_SIZE_DEFAULT || "md",
+    },
+    layout: {
+      density: process.env.VITE_LAYOUT_DENSITY || "comfortable",
+      gridGap: parseInt(process.env.VITE_GRID_GAP || "4"),
+      maxWidth: process.env.VITE_CONTAINER_MAX_WIDTH || "xl",
+      sidebarWidth: process.env.VITE_SIDEBAR_WIDTH || "280px",
+    },
+    typography: {
+      fontFamily: process.env.VITE_FONT_FAMILY || "sans",
+      fontSize: process.env.VITE_FONT_SIZE_BASE || "base",
+      lineHeight: process.env.VITE_LINE_HEIGHT || "normal",
+      letterSpacing: process.env.VITE_LETTER_SPACING || "normal",
+    },
+    accessibility: {
+      highContrast: process.env.VITE_ACCESSIBILITY_HIGH_CONTRAST === 'true',
+      reducedMotion: process.env.VITE_ACCESSIBILITY_REDUCED_MOTION === 'true',
+      focusVisible: process.env.VITE_ACCESSIBILITY_FOCUS_VISIBLE !== 'false',
+    },
+    dashboard: {
+      layout: process.env.VITE_DASHBOARD_LAYOUT || "grid",
+      chartTheme: process.env.VITE_CHART_THEME || "default",
+      metricCardVariant: process.env.VITE_METRIC_CARD_VARIANT || "glass",
+      statusIndicatorSize: process.env.VITE_STATUS_INDICATOR_SIZE || "md",
+    },
+    forms: {
+      layout: process.env.VITE_FORM_LAYOUT || "vertical",
+      inputVariant: process.env.VITE_INPUT_VARIANT || "outlined",
+      labelPosition: process.env.VITE_LABEL_POSITION || "top",
+      validationStyle: process.env.VITE_VALIDATION_STYLE || "inline",
+    },
+    notifications: {
+      toastPosition: process.env.VITE_TOAST_POSITION || "top-right",
+      toastDuration: parseInt(process.env.VITE_TOAST_DURATION || "5000"),
+      notificationVariant: process.env.VITE_NOTIFICATION_VARIANT || "glass",
+      loadingSpinnerVariant: process.env.VITE_LOADING_SPINNER_VARIANT || "pulse",
+    },
+    responsive: {
+      sm: process.env.VITE_RESPONSIVE_BREAKPOINT_SM || "640px",
+      md: process.env.VITE_RESPONSIVE_BREAKPOINT_MD || "768px",
+      lg: process.env.VITE_RESPONSIVE_BREAKPOINT_LG || "1024px",
+      xl: process.env.VITE_RESPONSIVE_BREAKPOINT_XL || "1280px",
+    },
+    features: {
+      rippleEffects: process.env.VITE_ENABLE_RIPPLE_EFFECTS !== 'false',
+      hoverLift: process.env.VITE_ENABLE_HOVER_LIFT !== 'false',
+      focusRings: process.env.VITE_ENABLE_FOCUS_RINGS !== 'false',
+      gradientBackgrounds: process.env.VITE_ENABLE_GRADIENT_BACKGROUNDS !== 'false',
+    },
   },
 };
 
@@ -322,7 +447,10 @@ export const glassmorphismCSS = (
 };
 
 // Export theme types for consumption
-export type { ThemeMode, ThemeConfig };
+// export type { ThemeMode, ThemeConfig }; // Already exported at top
 
 // Default export for convenience
 export default ThemeProvider;
+
+
+

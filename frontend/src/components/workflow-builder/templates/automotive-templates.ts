@@ -860,3 +860,5 @@ export const AUTOMOTIVE_NODE_CATEGORIES: NodeCategory[] = [
     nodes: AI_TEMPLATES,
   },
 ];
+
+

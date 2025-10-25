@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { MetricCard } from "../components/MetricCard";
 import { getDashboardMetrics, DashboardMetrics } from "../api/workflows";
+import CrossFilterAnalyticsDashboard from "../components/CrossFilterAnalyticsDashboard";
+import "../components/CrossFilterAnalyticsDashboard.css";
 
 const PerformanceDashboard = lazy(() =>
   import("../components/PerformanceDashboard").then((module) => ({
@@ -27,7 +29,7 @@ const Dashboard: React.FC = () => {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to load dashboard metrics";
       setError(errorMessage);
-      console.error("Dashboard metrics error:", err);
+
     } finally {
       setLoading(false);
     }
@@ -234,16 +236,10 @@ const Dashboard: React.FC = () => {
         </div>
 
         <div className="glass-card p-6">
-          <Suspense
-            fallback={
-              <div className="animate-pulse">
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
-                <div className="h-80 bg-gray-200 dark:bg-gray-700 rounded"></div>
-              </div>
-            }
-          >
-            <PerformanceDashboard showSystemMetrics={true} />
-          </Suspense>
+          <CrossFilterAnalyticsDashboard
+            enableRealTime={true}
+            initialTimeRange="24h"
+          />
         </div>
 
         <div className="glass-card p-6">
@@ -302,3 +298,5 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+
+

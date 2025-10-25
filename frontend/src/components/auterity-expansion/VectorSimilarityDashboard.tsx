@@ -131,7 +131,7 @@ const VectorSimilarityDashboard: React.FC = () => {
       setClusters(mockClusters);
       setMetrics(mockMetrics);
     } catch (error) {
-      console.error("Failed to fetch vector data:", error);
+
     } finally {
       setLoading(false);
     }
@@ -674,3 +674,5 @@ const VectorSimilarityDashboard: React.FC = () => {
 };
 
 export default VectorSimilarityDashboard;
+
+

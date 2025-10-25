@@ -78,7 +78,7 @@ export class WebSocketClient {
             const message: WebSocketMessage = JSON.parse(event.data);
             this.handleMessage(message);
           } catch (error) {
-            console.error("Failed to parse WebSocket message:", error);
+
           }
         };
 
@@ -126,7 +126,7 @@ export class WebSocketClient {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
     } else {
-      console.warn("WebSocket is not connected. Cannot send message:", message);
+
     }
   }
 
@@ -192,7 +192,7 @@ export class WebSocketClient {
         try {
           handler(message.data);
         } catch (error) {
-          console.error("Error in message handler:", error);
+
         }
       });
     }
@@ -205,7 +205,7 @@ export class WebSocketClient {
       try {
         handler(status);
       } catch (error) {
-        console.error("Error in status handler:", error);
+
       }
     });
   }
@@ -232,11 +232,9 @@ export class WebSocketClient {
     this.reconnectCount++;
 
     this.reconnectTimer = setTimeout(() => {
-      console.log(
-        `Attempting WebSocket reconnection ${this.reconnectCount}/${this.config.reconnectAttempts}`,
-      );
+
       this.connect(endpoint).catch((error) => {
-        console.error("Reconnection failed:", error);
+
       });
     }, this.config.reconnectInterval);
   }
@@ -273,3 +271,5 @@ export const subscribeToStatusUpdates = (
     handler as (data: unknown) => void,
   );
 };
+
+

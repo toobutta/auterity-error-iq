@@ -1,0 +1,219 @@
+"""Prometheus alert rules for analytics platform."""
+
+groups:
+  - name: analytics_api_alerts
+    rules:
+      # API Health Alerts
+      - alert: AnalyticsAPIHighErrorRate
+        expr: rate(http_requests_total{job="analytics-api", status=~"5.."}[5m]) / rate(http_requests_total{job="analytics-api"}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          service: analytics-api
+        annotations:
+          summary: "High error rate on Analytics API"
+          description: "Analytics API error rate is {{ $value | printf \"%.2f\" }}% over the last 5 minutes"
+
+      - alert: AnalyticsAPIHighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="analytics-api"}[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: analytics-api
+        annotations:
+          summary: "High latency on Analytics API"
+          description: "95th percentile latency is {{ $value | printf \"%.2f\" }}s over the last 5 minutes"
+
+      # Database Alerts
+      - alert: DatabaseHighConnectionCount
+        expr: pg_stat_activity_count{datname="analytics"} > 50
+        for: 5m
+        labels:
+          severity: warning
+          service: postgres
+        annotations:
+          summary: "High database connection count"
+          description: "Database has {{ $value }} active connections"
+
+      - alert: DatabaseSlowQueries
+        expr: rate(pg_stat_statements_total_time_seconds[5m]) / rate(pg_stat_statements_calls[5m]) > 1
+        for: 5m
+        labels:
+          severity: warning
+          service: postgres
+        annotations:
+          summary: "Slow database queries detected"
+          description: "Average query time is {{ $value | printf \"%.2f\" }}s"
+
+      # Cache Alerts
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: redis
+        annotations:
+          summary: "High Redis memory usage"
+          description: "Redis memory usage is {{ $value | printf \"%.1%\" }}"
+
+      - alert: RedisConnectionErrors
+        expr: rate(redis_net_errors_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: critical
+          service: redis
+        annotations:
+          summary: "Redis connection errors"
+          description: "Redis has {{ $value | printf \"%.0f\" }} connection errors per minute"
+
+      # System Resource Alerts
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is {{ $value | printf \"%.1f\" }}%"
+
+      - alert: HighMemoryUsage
+        expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value | printf \"%.1f\" }}%"
+
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 < 15
+        for: 5m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Low disk space"
+          description: "Disk space available is {{ $value | printf \"%.1f\" }}%"
+
+      # Business Logic Alerts
+      - alert: AnalyticsDataStaleness
+        expr: (time() - analytics_data_last_updated) > 3600
+        for: 5m
+        labels:
+          severity: warning
+          service: analytics
+        annotations:
+          summary: "Analytics data is stale"
+          description: "Analytics data hasn't been updated for {{ $value | printf \"%.0f\" }} seconds"
+
+      - alert: HighAnomalyDetection
+        expr: rate(analytics_anomalies_detected_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: info
+          service: analytics
+        annotations:
+          summary: "High anomaly detection rate"
+          description: "Detected {{ $value | printf \"%.0f\" }} anomalies per minute"
+
+      # WebSocket Alerts
+      - alert: WebSocketHighConnectionCount
+        expr: websocket_active_connections > 1000
+        for: 5m
+        labels:
+          severity: warning
+          service: websocket
+        annotations:
+          summary: "High WebSocket connection count"
+          description: "WebSocket has {{ $value }} active connections"
+
+      - alert: WebSocketConnectionErrors
+        expr: rate(websocket_connection_errors_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: critical
+          service: websocket
+        annotations:
+          summary: "WebSocket connection errors"
+          description: "WebSocket has {{ $value | printf \"%.0f\" }} connection errors per minute"
+
+  - name: business_metrics_alerts
+    rules:
+      # Revenue Alerts
+      - alert: RevenueDropDetected
+        expr: (revenue_current - revenue_previous) / revenue_previous < -0.1
+        for: 1h
+        labels:
+          severity: critical
+          service: business
+        annotations:
+          summary: "Revenue drop detected"
+          description: "Revenue dropped by {{ $value | printf \"%.1f\" }}% compared to previous period"
+
+      # User Engagement Alerts
+      - alert: UserEngagementDrop
+        expr: user_session_duration_avg < 300
+        for: 1h
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "Low user engagement detected"
+          description: "Average session duration is {{ $value | printf \"%.0f\" }} seconds"
+
+      # AI Performance Alerts
+      - alert: AIHighErrorRate
+        expr: rate(ai_model_errors_total[5m]) / rate(ai_model_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          service: ai
+        annotations:
+          summary: "High AI error rate"
+          description: "AI error rate is {{ $value | printf \"%.2f\" }}%"
+
+      - alert: AISlowResponseTime
+        expr: ai_model_response_time_p95 > 10000
+        for: 5m
+        labels:
+          severity: warning
+          service: ai
+        annotations:
+          summary: "Slow AI response time"
+          description: "95th percentile AI response time is {{ $value | printf \"%.0f\" }}ms"
+
+  - name: security_alerts
+    rules:
+      # Security Alerts
+      - alert: HighFailedLoginAttempts
+        expr: rate(auth_failed_login_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: security
+        annotations:
+          summary: "High failed login attempts"
+          description: "Detected {{ $value | printf \"%.0f\" }} failed login attempts per minute"
+
+      - alert: SuspiciousAPIAccess
+        expr: rate(api_requests_suspicious_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: critical
+          service: security
+        annotations:
+          summary: "Suspicious API access detected"
+          description: "Detected {{ $value | printf \"%.0f\" }} suspicious API requests per minute"
+
+      - alert: DataExportAnomaly
+        expr: rate(data_export_requests_total[5m]) > 100
+        for: 5m
+        labels:
+          severity: warning
+          service: security
+        annotations:
+          summary: "High data export activity"
+          description: "Detected {{ $value | printf \"%.0f\" }} data export requests per minute"
+

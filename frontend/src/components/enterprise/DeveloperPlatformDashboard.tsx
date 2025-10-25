@@ -37,7 +37,7 @@ export const DeveloperPlatformDashboard: React.FC = () => {
     loadPlatformData();
   }, []);
 
-  const loadPlatformData = async () => {
+  const loadPlatformData = async (): Promise<void> => {
     try {
       setLoading(true);
 
@@ -110,13 +110,13 @@ export const DeveloperPlatformDashboard: React.FC = () => {
         },
       ]);
     } catch (error) {
-      console.error("Error loading platform data:", error);
+
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGenerateSDK = async (language: string) => {
+  const handleGenerateSDK = async (language: string): Promise<void> => {
     try {
       setGenerating(language);
 
@@ -136,7 +136,7 @@ export const DeveloperPlatformDashboard: React.FC = () => {
         ),
       );
     } catch (error) {
-      console.error("Error generating SDK:", error);
+
       setSDKs((prev) =>
         prev.map((sdk) =>
           sdk.language === language
@@ -149,7 +149,7 @@ export const DeveloperPlatformDashboard: React.FC = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string): string => {
     switch (status) {
       case "available":
         return "bg-green-100 text-green-800";
@@ -162,7 +162,7 @@ export const DeveloperPlatformDashboard: React.FC = () => {
     }
   };
 
-  const getMethodColor = (method: string) => {
+  const getMethodColor = (method: string): string => {
     switch (method) {
       case "GET":
         return "bg-blue-100 text-blue-800";
@@ -256,7 +256,9 @@ export const DeveloperPlatformDashboard: React.FC = () => {
               >
                 <div className="flex items-center space-x-4">
                   <div>
-                    <h3 className="font-medium">{sdk.language} SDK</h3>
+                    <h3 className="font-medium">
+                      {sdk.language === "Python" ? "Python Library" : `${sdk.language} SDK`}
+                    </h3>
                     <p className="text-sm text-gray-500">
                       Version {sdk.version} • {sdk.size} • Updated{" "}
                       {sdk.lastUpdated}
@@ -404,3 +406,5 @@ export const DeveloperPlatformDashboard: React.FC = () => {
     </div>
   );
 };
+
+

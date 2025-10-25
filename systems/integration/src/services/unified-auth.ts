@@ -67,7 +67,7 @@ export class UnifiedAuth extends EventEmitter {
     };
 
     this.users.set(adminUser.id, adminUser);
-    console.log("Default admin user initialized");
+
   }
 
   private initializeSystemCredentials(): void {
@@ -97,7 +97,6 @@ export class UnifiedAuth extends EventEmitter {
       this.systemCredentials.set(creds.system, creds);
     });
 
-    console.log("System credentials initialized");
   }
 
   async hashPassword(password: string): Promise<string> {
@@ -118,7 +117,6 @@ export class UnifiedAuth extends EventEmitter {
     this.users.set(user.id, user);
     this.emit("user-created", user);
 
-    console.log(`User created: ${user.username}`);
     return user;
   }
 
@@ -132,14 +130,14 @@ export class UnifiedAuth extends EventEmitter {
     );
 
     if (!user) {
-      console.log(`Authentication failed: user not found - ${username}`);
+
       return null;
     }
 
     // TODO: Implement proper password verification with stored hashed passwords
     // For demo purposes, accept any non-empty password
     if (!password || password.length < 1) {
-      console.log(`Authentication failed: invalid password - ${username}`);
+
       return null;
     }
 
@@ -187,13 +185,13 @@ export class UnifiedAuth extends EventEmitter {
       const userId = this.refreshTokens.get(refreshToken);
 
       if (!userId || decoded.userId !== userId) {
-        console.log("Invalid refresh token");
+
         return null;
       }
 
       const user = this.users.get(userId);
       if (!user) {
-        console.log("User not found for refresh token");
+
         return null;
       }
 
@@ -205,7 +203,7 @@ export class UnifiedAuth extends EventEmitter {
 
       return tokens;
     } catch (error) {
-      console.error("Error refreshing token:", error);
+
       return null;
     }
   }
@@ -216,13 +214,13 @@ export class UnifiedAuth extends EventEmitter {
       const user = this.users.get(decoded.userId);
 
       if (!user) {
-        console.log("User not found for token");
+
         return null;
       }
 
       return user;
     } catch (error) {
-      console.error("Token verification failed:", error);
+
       return null;
     }
   }
@@ -239,7 +237,7 @@ export class UnifiedAuth extends EventEmitter {
   ): Promise<string | null> {
     const credentials = this.systemCredentials.get(system);
     if (!credentials) {
-      console.log(`No credentials found for system: ${system}`);
+
       return null;
     }
 
@@ -271,7 +269,7 @@ export class UnifiedAuth extends EventEmitter {
 
       return true;
     } catch (error) {
-      console.error("System token validation failed:", error);
+
       return false;
     }
   }
@@ -427,7 +425,7 @@ export class UnifiedAuth extends EventEmitter {
   async cleanupExpiredTokens(): Promise<void> {
     // In a real implementation, you'd check token expiration
     // For now, just log the cleanup
-    console.log("Token cleanup completed");
+
     this.emit("tokens-cleaned");
   }
 
@@ -446,7 +444,7 @@ export class UnifiedAuth extends EventEmitter {
     }
 
     if (cleaned > 0) {
-      console.log(`Cleaned up ${cleaned} expired sessions`);
+
       this.emit("sessions-cleaned", cleaned);
     }
   }
@@ -473,3 +471,4 @@ export class UnifiedAuth extends EventEmitter {
     };
   }
 }
+

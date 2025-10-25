@@ -90,7 +90,7 @@ export default function Dashboard() {
       });
       refetchModels();
     } catch (error) {
-      console.error("Failed to register model:", error);
+
     }
   };
 
@@ -283,11 +283,11 @@ export default function Dashboard() {
                   onUpdate={refetchModels}
                   onDeploy={(modelId) => {
                     // Handle deployment
-                    console.log("Deploy model:", modelId);
+
                   }}
                   onDelete={(modelId) => {
                     // Handle deletion
-                    console.log("Delete model:", modelId);
+
                   }}
                 />
               </Grid>
@@ -416,3 +416,4 @@ export default function Dashboard() {
     </Container>
   );
 }
+

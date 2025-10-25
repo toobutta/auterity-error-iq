@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           }
         }
       } catch (error) {
-        console.error("Auth initialization error:", error);
+
       } finally {
         setIsLoading(false);
       }
@@ -69,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       setUser(response.user);
     } catch (error) {
-      console.error("Login error:", error);
+
       throw error;
     }
   };
@@ -84,7 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       setUser(response.user);
     } catch (error) {
-      console.error("Registration error:", error);
+
       throw error;
     }
   };
@@ -93,7 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await AuthApi.logout();
     } catch (error) {
-      console.error("Logout error:", error);
+
     } finally {
       // Clear local storage and state regardless of API call success
       localStorage.removeItem("access_token");
@@ -117,3 +117,5 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     </AuthContext.Provider>
   );
 };
+
+

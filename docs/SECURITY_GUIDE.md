@@ -1,87 +1,243 @@
-# Security Guide
 
-## Authentication & Authorization
 
-### JWT Tokens
+# Security Guid
 
-- Expiration: 24 hours
-- Refresh tokens: 7 days
-- Algorithm: HS256
-- Claims: user_id, email, roles
+e
 
-### API Security
+#
+
+# Authentication & Authorizatio
+
+n
+
+#
+
+## JWT Token
+
+s
+
+- Expiration: 24 hour
+
+s
+
+- Refresh tokens: 7 day
+
+s
+
+- Algorithm: HS25
+
+6
+
+- Claims: user_id, email, role
+
+s
+
+#
+
+## API Securit
+
+y
 
 ```python
+
 # Protected endpoint example
+
 @router.get("/protected")
 async def protected_route(current_user: User = Depends(get_current_user)):
     return {"user": current_user.email}
+
 ```
 
-## Secrets Management
+#
 
-### Vault Integration
+# Secrets Managemen
 
-```python
+t
+
+#
+
+## Vault Integratio
+
+n
+
+```
+
+python
+
 # Store secret
-await vault_service.store_secret("api/openai", {"key": "sk-..."})
+
+await vault_service.store_secret("api/openai", {"key": "sk-..."}
+
+)
 
 # Retrieve secret
+
 secret = await vault_service.get_secret("api/openai")
+
 ```
 
-### Environment Variables
+#
 
-- Never commit secrets to git
-- Use `.env` files for local development
-- Use Vault for production secrets
+## Environment Variable
 
-## Data Protection
+s
 
-### Database Security
+- Never commit secrets to gi
 
-- Encrypted connections (SSL)
-- Row-level security policies
-- Regular backups with encryption
-- Access logging
+t
 
-### API Security
+- Use `.env` files for local developmen
 
-- CORS configuration
-- Rate limiting
-- Input validation
-- SQL injection prevention
+t
 
-## Network Security
+- Use Vault for production secret
 
-### Container Security
+s
 
-- Non-root users
-- Minimal base images
-- Security scanning
-- Network isolation
+#
 
-### TLS/SSL
+# Data Protectio
 
-```nginx
+n
+
+#
+
+## Database Securit
+
+y
+
+- Encrypted connections (SSL
+
+)
+
+- Row-level security policie
+
+s
+
+- Regular backups with encryptio
+
+n
+
+- Access loggin
+
+g
+
+#
+
+## API Securit
+
+y
+
+- CORS configuratio
+
+n
+
+- Rate limitin
+
+g
+
+- Input validatio
+
+n
+
+- SQL injection preventio
+
+n
+
+#
+
+# Network Securit
+
+y
+
+#
+
+## Container Securit
+
+y
+
+- Non-root user
+
+s
+
+- Minimal base image
+
+s
+
+- Security scannin
+
+g
+
+- Network isolatio
+
+n
+
+#
+
+## TLS/SS
+
+L
+
+```
+
+nginx
+
 # Nginx configuration
+
 ssl_certificate /path/to/cert.pem;
 ssl_certificate_key /path/to/key.pem;
-ssl_protocols TLSv1.2 TLSv1.3;
+ssl_protocols TLSv1.2 TLSv1.3
+
+;
+
 ```
 
-## Monitoring & Auditing
+#
 
-### Security Events
+# Monitoring & Auditin
 
-- Failed login attempts
-- Unauthorized access
-- Data modifications
-- System changes
+g
 
-### Compliance
+#
 
-- GDPR data handling
-- Audit trail maintenance
-- Access control reviews
-- Security assessments
+## Security Event
+
+s
+
+- Failed login attempt
+
+s
+
+- Unauthorized acces
+
+s
+
+- Data modification
+
+s
+
+- System change
+
+s
+
+#
+
+## Complianc
+
+e
+
+- GDPR data handlin
+
+g
+
+- Audit trail maintenanc
+
+e
+
+- Access control review
+
+s
+
+- Security assessment
+
+s

@@ -1,291 +1,967 @@
-# Frontend Migration Plan - Auterity Error-IQ
 
-## Executive Summary
 
-**Goal**: Transform the current React + Tailwind frontend into a modern, accessible, high-performance Error-IQ platform following industry best practices.
+# Frontend Migration Plan
 
-**Timeline**: 8 weeks (4 phases, 2 weeks each)
-**Risk Level**: Low-Medium (incremental approach)
-**Dependencies**: Add shadcn/ui primitives, design tokens, performance monitoring
+ - Auterity Error-
 
-## Current State Assessment
+I
 
-### ✅ Strong Foundation
+Q
 
-- React 18 + TypeScript + Vite already configured
-- Basic Tailwind CSS setup
-- Existing shared components (Button, Modal) with good API design
-- Playwright E2E testing infrastructure ready
-- Lazy loading implemented for routes
+#
 
-### ⚠️ Immediate Needs
+# Executive Summar
 
-- Install shadcn/ui dependencies: `@radix-ui/react-*`, `class-variance-authority`, `clsx`, `tailwind-merge`
-- Fix TypeScript configuration issues
-- Implement design token system
-- Add missing Error-IQ specific components
+y
 
-## Phase 1: Foundation & Tokens (Weeks 1-2)
+**Goal**: Transform the current Reac
 
-### Week 1: Dependencies & Configuration
+t
+
+ + Tailwind frontend into a modern, accessible, high-performance Error-IQ platform following industry best practices
+
+.
+
+**Timeline**: 8 weeks (4 phases, 2 weeks each
+
+)
+**Risk Level**: Low-Medium (incremental approach
+
+)
+**Dependencies**: Add shadcn/ui primitives, design tokens, performance monitorin
+
+g
+
+#
+
+# Current State Assessmen
+
+t
+
+#
+
+## ✅ Strong Foundatio
+
+n
+
+- React 1
+
+8
+
+ + TypeScrip
+
+t
+
+ + Vite already configure
+
+d
+
+- Basic Tailwind CSS setu
+
+p
+
+- Existing shared components (Button, Modal) with good API desig
+
+n
+
+- Playwright E2E testing infrastructure read
+
+y
+
+- Lazy loading implemented for route
+
+s
+
+#
+
+## ⚠️ Immediate Need
+
+s
+
+- Install shadcn/ui dependencies: `@radix-ui/react-*`, `class-variance-authority`, `clsx`, `tailwind-merge
+
+`
+
+- Fix TypeScript configuration issue
+
+s
+
+- Implement design token syste
+
+m
+
+- Add missing Error-IQ specific component
+
+s
+
+#
+
+# Phase 1: Foundation & Tokens (Weeks 1-2
+
+)
+
+#
+
+## Week 1: Dependencies & Configuratio
+
+n
 
 ```bash
+
 # Add required dependencies
+
 npm install @radix-ui/react-slot @radix-ui/react-dialog @radix-ui/react-select
+
 npm install @radix-ui/react-tabs @radix-ui/react-tooltip @radix-ui/react-toast
+
 npm install class-variance-authority clsx tailwind-merge lucide-react
-npm install @tanstack/react-virtual # for list virtualization
-npm install @headlessui/react # as fallback for some components
+
+npm install @tanstack/react-virtual
+
+
+
+# for list virtualization
+
+npm install @headlessui/react
+
+# as fallback for some components
+
 ```
 
-### Week 1: Design System Setup
+#
 
-1. **Fix TypeScript configuration** - resolve React type issues
-2. **Implement design tokens** - complete the `tokens.ts` system
-3. **Update Tailwind config** - integrate custom color palette
-4. **Create utility functions** - enhance `utils.ts` with proper dependencies
+## Week 1: Design System Setu
 
-### Week 2: Core UI Primitives
+p
 
-Build shadcn/ui-style components:
+1. **Fix TypeScript configuratio
 
-- ✅ Button (enhance existing)
-- 🔄 Input (form fields with validation states)
-- 🔄 Select (dropdown with search capability)
-- 🔄 Dialog/Modal (enhance existing)
-- 🔄 Card (content containers)
-- 🔄 Badge (status/severity indicators)
-- 🔄 Tabs (navigation within pages)
-- 🔄 Toast (notifications)
+n
 
-### Deliverables Phase 1
+* *
 
-- `src/components/ui/` directory with 8 primitive components
-- `src/styles/tokens.ts` design system
-- Updated `tailwind.config.js` with custom theme
-- Fixed TypeScript compilation
-- Migration guide for existing components
+- resolve React type issue
 
----
+s
 
-## Phase 2: Error-IQ Components (Weeks 3-4)
+2. **Implement design token
 
-### Week 3: Core Error-IQ Components
+s
 
-1. **KPIHeader** ✅ (created, needs integration)
-   - Real-time metrics display
-   - Trend indicators with severity colors
-   - Refresh functionality
-   - Loading skeletons
+* *
 
-2. **IssueList** ✅ (created, needs virtualization)
-   - Filterable/sortable table
-   - Virtual scrolling for performance
-   - Bulk actions support
-   - Pagination with infinite scroll
+- complete the `tokens.ts` syste
 
-3. **SeverityBadge & StatusBadge** ✅ (embedded in components)
-   - Consistent error level indicators
-   - Accessible color coding
-   - Icon + text combinations
+m
 
-### Week 4: Issue Detail & Navigation
+3. **Update Tailwind confi
 
-1. **IssueDetail** ✅ (created, needs polish)
-   - Tabbed interface (Overview, Timeline, Stack Trace)
-   - Interactive stack trace with code context
-   - Assignment and status change workflows
-   - Related issues suggestions
+g
 
-2. **Enhanced Layout**
-   - Responsive sidebar navigation
-   - Breadcrumb navigation
-   - Global search functionality
-   - Notification center integration
+* *
 
-### Deliverables Phase 2
+- integrate custom color palett
 
-- 4 major Error-IQ specific components
-- Enhanced Layout with proper navigation
-- Integration with existing Dashboard page
-- Component stories for Storybook
+e
 
----
+4. **Create utility function
 
-## Phase 3: Performance & Polish (Weeks 5-6)
+s
 
-### Week 5: Performance Optimization
+* *
 
-1. **List Virtualization**
+- enhance `utils.ts` with proper dependencie
 
-   ```tsx
+s
+
+#
+
+## Week 2: Core UI Primitive
+
+s
+
+Build shadcn/ui-style components
+
+:
+
+- ✅ Button (enhance existing
+
+)
+
+- 🔄 Input (form fields with validation states
+
+)
+
+- 🔄 Select (dropdown with search capability
+
+)
+
+- 🔄 Dialog/Modal (enhance existing
+
+)
+
+- 🔄 Card (content containers
+
+)
+
+- 🔄 Badge (status/severity indicators
+
+)
+
+- 🔄 Tabs (navigation within pages
+
+)
+
+- 🔄 Toast (notifications
+
+)
+
+#
+
+## Deliverables Phase
+
+1
+
+- `src/components/ui/` directory with 8 primitive component
+
+s
+
+- `src/styles/tokens.ts` design syste
+
+m
+
+- Updated `tailwind.config.js` with custom them
+
+e
+
+- Fixed TypeScript compilatio
+
+n
+
+- Migration guide for existing component
+
+s
+
+--
+
+- #
+
+# Phase 2: Error-IQ Components (Weeks 3-
+
+4
+
+)
+
+#
+
+## Week 3: Core Error-IQ Componen
+
+t
+
+s
+
+1. **KPIHeade
+
+r
+
+* * ✅ (created, needs integration
+
+)
+
+   - Real-time metrics displa
+
+y
+
+   - Trend indicators with severity color
+
+s
+
+   - Refresh functionalit
+
+y
+
+   - Loading skeleton
+
+s
+
+2. **IssueLis
+
+t
+
+* * ✅ (created, needs virtualization
+
+)
+
+   - Filterable/sortable tabl
+
+e
+
+   - Virtual scrolling for performanc
+
+e
+
+   - Bulk actions suppor
+
+t
+
+   - Pagination with infinite scrol
+
+l
+
+3. **SeverityBadge & StatusBadg
+
+e
+
+* * ✅ (embedded in components
+
+)
+
+   - Consistent error level indicator
+
+s
+
+   - Accessible color codin
+
+g
+
+   - Ico
+
+n
+
+ + text combination
+
+s
+
+#
+
+## Week 4: Issue Detail & Navigatio
+
+n
+
+1. **IssueDetai
+
+l
+
+* * ✅ (created, needs polish
+
+)
+
+   - Tabbed interface (Overview, Timeline, Stack Trace
+
+)
+
+   - Interactive stack trace with code contex
+
+t
+
+   - Assignment and status change workflow
+
+s
+
+   - Related issues suggestion
+
+s
+
+2. **Enhanced Layou
+
+t
+
+* *
+
+   - Responsive sidebar navigatio
+
+n
+
+   - Breadcrumb navigatio
+
+n
+
+   - Global search functionalit
+
+y
+
+   - Notification center integratio
+
+n
+
+#
+
+## Deliverables Phase
+
+2
+
+- 4 major Error-IQ specific component
+
+s
+
+- Enhanced Layout with proper navigatio
+
+n
+
+- Integration with existing Dashboard pag
+
+e
+
+- Component stories for Storyboo
+
+k
+
+--
+
+- #
+
+# Phase 3: Performance & Polish (Weeks 5-6
+
+)
+
+#
+
+## Week 5: Performance Optimizatio
+
+n
+
+1. **List Virtualizatio
+
+n
+
+* *
+
+
+
+```
+
+tsx
    // Implement TanStack Virtual for IssueList
    import { useVirtualizer } from "@tanstack/react-virtual";
-   ```
 
-2. **Chart Optimization**
-   - Lazy load Recharts components
-   - Implement canvas fallback for large datasets
-   - Add skeleton loading for charts
 
-3. **Bundle Optimization**
-   - Implement proper code splitting
-   - Analyze bundle with `npm run build:analyze`
-   - Tree-shake unused dependencies
 
-### Week 6: Accessibility & Dark Mode
+```
 
-1. **WCAG 2.2 Compliance**
-   - Audit with axe-core
-   - Fix color contrast issues
-   - Implement proper focus management
-   - Add skip links and ARIA labels
+2. **Chart Optimizatio
 
-2. **Dark Mode Support**
-   - Extend design tokens for dark theme
-   - Implement theme switching
-   - Test all components in both modes
+n
 
-### Deliverables Phase 3
+* *
 
-- Web Vitals monitoring integrated
-- Lighthouse score ≥ 90 on key pages
-- Full accessibility audit report
-- Dark mode implementation
+   - Lazy load Recharts component
 
----
+s
 
-## Phase 4: Testing & Documentation (Weeks 7-8)
+   - Implement canvas fallback for large dataset
 
-### Week 7: Storybook & Component Documentation
+s
 
-1. **Storybook Setup**
+   - Add skeleton loading for chart
 
-   ```bash
+s
+
+3. **Bundle Optimizatio
+
+n
+
+* *
+
+   - Implement proper code splittin
+
+g
+
+   - Analyze bundle with `npm run build:analyze
+
+`
+
+   - Tree-shake unused dependencie
+
+s
+
+#
+
+## Week 6: Accessibility & Dark Mod
+
+e
+
+1. **WCAG 2.2 Complianc
+
+e
+
+* *
+
+   - Audit with axe-cor
+
+e
+
+   - Fix color contrast issue
+
+s
+
+   - Implement proper focus managemen
+
+t
+
+   - Add skip links and ARIA label
+
+s
+
+2. **Dark Mode Suppor
+
+t
+
+* *
+
+   - Extend design tokens for dark them
+
+e
+
+   - Implement theme switchin
+
+g
+
+   - Test all components in both mode
+
+s
+
+#
+
+## Deliverables Phase
+
+3
+
+- Web Vitals monitoring integrate
+
+d
+
+- Lighthouse score ≥ 90 on key page
+
+s
+
+- Full accessibility audit repor
+
+t
+
+- Dark mode implementatio
+
+n
+
+--
+
+- #
+
+# Phase 4: Testing & Documentation (Weeks 7-8
+
+)
+
+#
+
+## Week 7: Storybook & Component Documentatio
+
+n
+
+1. **Storybook Setu
+
+p
+
+* *
+
+
+
+```
+
+bash
    npx storybook@latest init
-   ```
 
-   - Stories for all UI primitives
-   - Error-IQ component examples
-   - Accessibility addon integration
-   - Controls for all props
 
-2. **Component Documentation**
-   - Props documentation with TypeScript
-   - Usage examples and best practices
-   - Design system guidelines
+```
 
-### Week 8: E2E Testing & Deployment
+   - Stories for all UI primitive
 
-1. **Critical Path Testing** (Playwright)
-   - Error triage workflow
-   - Issue detail navigation
-   - Filter and search functionality
-   - Status change workflows
+s
 
-2. **Performance Testing**
-   - Core Web Vitals monitoring
-   - Bundle size thresholds
-   - Load testing for large datasets
+   - Error-IQ component example
 
-### Deliverables Phase 4
+s
 
-- Complete Storybook with all components
-- E2E test suite covering critical paths
-- Performance benchmark baselines
-- Deployment-ready documentation
+   - Accessibility addon integratio
 
----
+n
 
-## Risk Mitigation
+   - Controls for all prop
 
-### Technical Risks
+s
 
-1. **TypeScript Configuration Issues**
-   - **Risk**: Current type errors prevent compilation
-   - **Mitigation**: Fix in Week 1, create proper type definitions
+2. **Component Documentatio
 
-2. **Performance Regression**
-   - **Risk**: Large error lists causing UI freeze
-   - **Mitigation**: Implement virtualization early, set performance budgets
+n
 
-3. **Accessibility Compliance**
-   - **Risk**: WCAG violations in complex components
-   - **Mitigation**: Use Radix primitives, test with screen readers
+* *
 
-### Implementation Risks
+   - Props documentation with TypeScrip
 
-1. **Design System Adoption**
-   - **Risk**: Team resistance to new component patterns
-   - **Mitigation**: Provide clear migration guide, maintain backward compatibility
+t
 
-2. **Testing Coverage**
-   - **Risk**: Components break after refactoring
-   - **Mitigation**: Write tests during development, not after
+   - Usage examples and best practice
 
----
+s
 
-## Success Metrics
+   - Design system guideline
 
-### Performance Targets
+s
 
-- **Core Web Vitals**: INP < 200ms, LCP < 2.5s, CLS < 0.1
-- **Bundle Size**: < 500KB compressed for initial load
-- **Lighthouse Score**: ≥ 90 for Performance, Accessibility, Best Practices
+#
 
-### UX Targets
+## Week 8: E2E Testing & Deploymen
 
-- **Error Triage Time**: Reduce by 40% through better filtering/search
-- **Issue Resolution Speed**: Improve visibility into critical issues
-- **User Satisfaction**: Conduct usability testing post-implementation
+t
 
-### Development Targets
+1. **Critical Path Testin
 
-- **Component Reusability**: 90% of UI built from design system
-- **Type Safety**: Zero TypeScript errors in production builds
-- **Test Coverage**: ≥ 80% for critical components
+g
 
----
+* * (Playwright
 
-## Dependencies Update for package.json
+)
 
-```json
+   - Error triage workflo
+
+w
+
+   - Issue detail navigatio
+
+n
+
+   - Filter and search functionalit
+
+y
+
+   - Status change workflow
+
+s
+
+2. **Performance Testin
+
+g
+
+* *
+
+   - Core Web Vitals monitorin
+
+g
+
+   - Bundle size threshold
+
+s
+
+   - Load testing for large dataset
+
+s
+
+#
+
+## Deliverables Phase
+
+4
+
+- Complete Storybook with all component
+
+s
+
+- E2E test suite covering critical path
+
+s
+
+- Performance benchmark baseline
+
+s
+
+- Deployment-ready documentatio
+
+n
+
+--
+
+- #
+
+# Risk Mitigatio
+
+n
+
+#
+
+## Technical Risk
+
+s
+
+1. **TypeScript Configuration Issue
+
+s
+
+* *
+
+   - **Risk**: Current type errors prevent compilatio
+
+n
+
+   - **Mitigation**: Fix in Week 1, create proper type definition
+
+s
+
+2. **Performance Regressio
+
+n
+
+* *
+
+   - **Risk**: Large error lists causing UI freez
+
+e
+
+   - **Mitigation**: Implement virtualization early, set performance budget
+
+s
+
+3. **Accessibility Complianc
+
+e
+
+* *
+
+   - **Risk**: WCAG violations in complex component
+
+s
+
+   - **Mitigation**: Use Radix primitives, test with screen reader
+
+s
+
+#
+
+## Implementation Risk
+
+s
+
+1. **Design System Adoptio
+
+n
+
+* *
+
+   - **Risk**: Team resistance to new component pattern
+
+s
+
+   - **Mitigation**: Provide clear migration guide, maintain backward compatibilit
+
+y
+
+2. **Testing Coverag
+
+e
+
+* *
+
+   - **Risk**: Components break after refactorin
+
+g
+
+   - **Mitigation**: Write tests during development, not afte
+
+r
+
+--
+
+- #
+
+# Success Metric
+
+s
+
+#
+
+## Performance Target
+
+s
+
+- **Core Web Vitals**: INP < 200ms, LCP < 2.5s, CLS < 0
+
+.
+
+1
+
+- **Bundle Size**: < 500KB compressed for initial loa
+
+d
+
+- **Lighthouse Score**: ≥ 90 for Performance, Accessibility, Best Practice
+
+s
+
+#
+
+## UX Target
+
+s
+
+- **Error Triage Time**: Reduce by 40% through better filtering/searc
+
+h
+
+- **Issue Resolution Speed**: Improve visibility into critical issue
+
+s
+
+- **User Satisfaction**: Conduct usability testing post-implementatio
+
+n
+
+#
+
+## Development Target
+
+s
+
+- **Component Reusability**: 90% of UI built from design syste
+
+m
+
+- **Type Safety**: Zero TypeScript errors in production build
+
+s
+
+- **Test Coverage**: ≥ 80% for critical component
+
+s
+
+--
+
+- #
+
+# Dependencies Update for package.jso
+
+n
+
+```
+
+json
 {
   "dependencies": {
     "@headlessui/react": "^1.7.17",
-    "@radix-ui/react-dialog": "^1.0.5",
-    "@radix-ui/react-select": "^2.0.0",
-    "@radix-ui/react-slot": "^1.0.2",
-    "@radix-ui/react-tabs": "^1.0.4",
-    "@radix-ui/react-toast": "^1.1.5",
-    "@radix-ui/react-tooltip": "^1.0.7",
-    "@tanstack/react-virtual": "^3.0.0",
-    "class-variance-authority": "^0.7.0",
+
+    "@radix-ui/react-dialog": "^1.0.5"
+
+,
+
+    "@radix-ui/react-select": "^2.0.0"
+
+,
+
+    "@radix-ui/react-slot": "^1.0.2"
+
+,
+
+    "@radix-ui/react-tabs": "^1.0.4"
+
+,
+
+    "@radix-ui/react-toast": "^1.1.5"
+
+,
+
+    "@radix-ui/react-tooltip": "^1.0.7"
+
+,
+
+    "@tanstack/react-virtual": "^3.0.0"
+
+,
+
+    "class-variance-authority": "^0.7.0"
+
+,
+
     "clsx": "^2.0.0",
-    "lucide-react": "^0.294.0",
-    "tailwind-merge": "^2.0.0"
+
+    "lucide-react": "^0.294.0"
+
+,
+
+    "tailwind-merge": "^2.0.0
+
+"
+
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.8.2",
-    "@storybook/react-vite": "^7.6.0"
+    "@axe-core/playwright": "^4.8.2"
+
+,
+
+    "@storybook/react-vite": "^7.6.0
+
+"
+
   }
 }
+
 ```
 
-## Next Actions
+#
 
-1. **Week 1 Sprint Planning**
-   - Add dependencies to package.json
-   - Fix TypeScript configuration
-   - Complete design token implementation
-   - Set up development environment standards
+# Next Action
 
-2. **Team Preparation**
-   - Review migration plan with development team
-   - Set up code review standards for new components
-   - Establish performance monitoring baseline
+s
 
-3. **Stakeholder Communication**
-   - Share UI audit findings with product team
-   - Get approval for 8-week timeline
-   - Set expectations for incremental rollout
+1. **Week 1 Sprint Plannin
+
+g
+
+* *
+
+   - Add dependencies to package.jso
+
+n
+
+   - Fix TypeScript configuratio
+
+n
+
+   - Complete design token implementatio
+
+n
+
+   - Set up development environment standard
+
+s
+
+2. **Team Preparatio
+
+n
+
+* *
+
+   - Review migration plan with development tea
+
+m
+
+   - Set up code review standards for new component
+
+s
+
+   - Establish performance monitoring baselin
+
+e
+
+3. **Stakeholder Communicatio
+
+n
+
+* *
+
+   - Share UI audit findings with product tea
+
+m
+
+   - Get approval for 8-week timelin
+
+e
+
+   - Set expectations for incremental rollou
+
+t

@@ -356,7 +356,6 @@ export class HealthMonitor extends EventEmitter {
     await this.cache.set(`alert:${alert.id}`, alert, { ttl: 3600 }); // 1 hour
 
     // In a real system, this would send notifications via email, Slack, etc.
-    console.log(`🚨 ALERT [${rule.severity.toUpperCase()}]: ${alert.message}`);
   }
 
   async addAlertRule(rule: Omit<AlertRule, "id">): Promise<string> {
@@ -496,3 +495,4 @@ export class HealthMonitor extends EventEmitter {
     };
   }
 }
+

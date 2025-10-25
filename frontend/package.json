@@ -4,25 +4,41 @@
   "type": "module",
   "private": true,
   "dependencies": {
+    "@growthbook/growthbook-react": "^1.6.1",
+    "@vercel/analytics": "^1.5.0",
+    "@vercel/speed-insights": "^1.2.0",
+    "@headlessui/react": "^2.2.7",
+    "@heroicons/react": "^2.2.0",
+    "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/line-clamp": "^0.4.4",
+    "@tanstack/react-table": "^8.21.3",
+    "@types/prismjs": "^1.26.5",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
-    "@types/react-syntax-highlighter": "^15.5.13",
     "@types/uuid": "^9.0.8",
+    "clsx": "^2.1.1",
+    "d3": "^7.9.0",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.23.12",
+    "gsap": "^3.13.0",
     "immer": "^10.1.1",
-    "langchain": "^0.3.31",
-    "llamaindex": "^0.11.27",
     "react": "^18.3.1",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.18.0",
-    "react-syntax-highlighter": "^15.6.1",
+    "react-table": "^7.8.0",
+    "react-window": "^2.0.1",
+    "react-window-infinite-loader": "^1.0.10",
     "recharts": "^3.1.2",
+    "socket.io-client": "^4.8.1",
     "tailwindcss": "^3.3.5",
     "typescript": "^5.2.2",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "y-webrtc": "^10.3.0",
+    "yjs": "^13.6.27",
+    "zod": "^4.1.5",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.8.0",
@@ -38,6 +54,7 @@
     "@xyflow/react": "^12.8.4",
     "autoprefixer": "^10.4.16",
     "axios": "^1.11.0",
+    "cross-env": "^10.0.0",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
@@ -54,22 +71,18 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:analyze": "ANALYZE=true vite build",
+    "build:vercel": "cross-env VITE_API_BASE_URL=https://auterity-backend.onrender.com vite build",
+    "build:analyze": "cross-env ANALYZE=true vite build",
     "preview": "vite preview",
-    "lint": "eslint . --config .eslintrc.minimal.cjs --max-warnings 50",
-    "test": "vitest run --config vitest.config.ts",
-    "test:watch": "vitest --config vitest.config.ts",
-    "test:coverage": "vitest run --coverage --config vitest.config.ts",
+    "lint": "eslint . --max-warnings 50",
+    "test": "vitest run --config vitest.config.ts --exclude src/tests/integration/**",
+    "test:watch": "vitest --config vitest.config.ts --exclude src/tests/integration/**",
+    "test:coverage": "vitest run --coverage --config vitest.config.ts --exclude src/tests/integration/**",
+    "test:integration": "vitest run --config vitest.config.ts src/tests/integration/**",
     "test:runner": "node test-runner.js",
     "fix:typescript": "node fix-all-typescript-errors.js",
     "fix:all": "node fix-all-typescript-errors.js && npm run lint -- --fix",
     "type-check": "tsc --noEmit --project tsconfig.strict.json"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "browserslist": {
     "production": [
@@ -83,8 +96,7 @@
       "last 1 safari version"
     ]
   },
-  "overrides": {
-    "prismjs": "^1.30.0",
-    "react-syntax-highlighter": "^15.6.1"
+  "engines": {
+    "node": "18.x"
   }
 }

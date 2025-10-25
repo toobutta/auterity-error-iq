@@ -1,10 +1,24 @@
-# Frontend Architecture Specification
 
-## Overview
 
-The Auterity frontend is a modern React-based single-page application (SPA) built with TypeScript, designed for scalability, maintainability, and optimal user experience. The architecture follows component-based design principles with clear separation of concerns.
+# Frontend Architecture Specificatio
 
-## Architecture Diagram
+n
+
+#
+
+# Overvie
+
+w
+
+The Auterity frontend is a modern React-based single-page application (SPA) built with TypeScript, designed for scalability, maintainability, and optimal user experience. The architecture follows component-based design principles with clear separation of concerns
+
+.
+
+#
+
+# Architecture Diagra
+
+m
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -33,92 +47,274 @@ The Auterity frontend is a modern React-based single-page application (SPA) buil
 │  │             │  │             │  │             │            │
 │  │ Axios       │  │ Socket.IO   │  │ JWT Handler │            │
 │  │ Interceptors│  │ Real-time   │  │ Token Mgmt  │            │
+
 │  │ Error Handling│ │ Updates    │  │ Refresh     │            │
 │  └─────────────┘  └─────────────┘  └─────────────┘            │
 └─────────────────────────────────────────────────────────────────┘
-```
-
-## Directory Structure
 
 ```
+
+#
+
+# Directory Structur
+
+e
+
+```
+
 frontend/
-├── public/                     # Static assets
-│   ├── index.html             # HTML template
-│   ├── favicon.ico            # Application icon
-│   └── manifest.json          # PWA manifest
+├── public/
+
+# Static assets
+
+│   ├── index.html
+
+# HTML template
+
+│   ├── favicon.ico
+
+# Application icon
+
+│   └── manifest.json
+
+# PWA manifest
+
 ├── src/
-│   ├── api/                   # API client and services
-│   │   ├── client.ts          # Axios configuration
-│   │   ├── auth.ts            # Authentication API
-│   │   ├── workflows.ts       # Workflow API
-│   │   ├── templates.ts       # Template API
-│   │   ├── websocket.ts       # WebSocket client
-│   │   └── errors.ts          # Error handling
-│   ├── components/            # Reusable UI components
-│   │   ├── auth/              # Authentication components
+│   ├── api/
+
+# API client and services
+
+│   │   ├── client.ts
+
+# Axios configuration
+
+│   │   ├── auth.ts
+
+# Authentication API
+
+│   │   ├── workflows.ts
+
+# Workflow API
+
+│   │   ├── templates.ts
+
+# Template API
+
+│   │   ├── websocket.ts
+
+# WebSocket client
+
+│   │   └── errors.ts
+
+# Error handling
+
+│   ├── components/
+
+# Reusable UI components
+
+│   │   ├── auth/
+
+# Authentication components
+
 │   │   │   ├── LoginForm.tsx
 │   │   │   ├── RegisterForm.tsx
 │   │   │   └── ProtectedRoute.tsx
-│   │   ├── workflow-builder/  # Workflow builder components
+│   │   ├── workflow-builder/
+
+
+
+# Workflow builder components
+
 │   │   │   ├── WorkflowCanvas.tsx
 │   │   │   ├── NodePalette.tsx
 │   │   │   ├── NodeEditor.tsx
-│   │   │   └── nodes/         # Custom node types
+│   │   │   └── nodes/
+
+# Custom node types
+
 │   │   │       ├── StartNode.tsx
 │   │   │       ├── AIProcessNode.tsx
 │   │   │       └── EndNode.tsx
-│   │   ├── charts/            # Data visualization
+│   │   ├── charts/
+
+# Data visualization
+
 │   │   │   ├── LineChart.tsx
 │   │   │   └── BarChart.tsx
-│   │   ├── common/            # Common UI components
+│   │   ├── common/
+
+# Common UI components
+
 │   │   │   ├── Button.tsx
 │   │   │   ├── Modal.tsx
 │   │   │   ├── Loading.tsx
 │   │   │   └── ErrorBoundary.tsx
-│   │   └── __tests__/         # Component tests
-│   ├── contexts/              # React contexts
-│   │   ├── AuthContext.tsx    # Authentication state
-│   │   ├── ErrorContext.tsx   # Error handling
-│   │   └── ThemeContext.tsx   # Theme management
-│   ├── hooks/                 # Custom React hooks
-│   │   ├── useAuth.ts         # Authentication hook
-│   │   ├── useAPI.ts          # API interaction hook
-│   │   ├── useWebSocket.ts    # WebSocket hook
-│   │   └── useLocalStorage.ts # Local storage hook
-│   ├── pages/                 # Page components
-│   │   ├── Dashboard.tsx      # Main dashboard
-│   │   ├── Workflows.tsx      # Workflow management
-│   │   ├── Templates.tsx      # Template library
-│   │   └── WorkflowBuilder.tsx # Workflow builder
-│   ├── types/                 # TypeScript type definitions
-│   │   ├── workflow.ts        # Workflow types
-│   │   ├── template.ts        # Template types
-│   │   ├── user.ts            # User types
-│   │   └── api.ts             # API response types
-│   ├── utils/                 # Utility functions
-│   │   ├── validation.ts      # Form validation
-│   │   ├── formatting.ts      # Data formatting
-│   │   ├── constants.ts       # Application constants
-│   │   └── helpers.ts         # Helper functions
-│   ├── styles/                # Global styles
-│   │   ├── globals.css        # Global CSS
-│   │   ├── components.css     # Component styles
-│   │   └── tailwind.css       # Tailwind imports
-│   ├── App.tsx                # Root application component
-│   ├── main.tsx               # Application entry point
-│   └── vite-env.d.ts          # Vite type definitions
-├── package.json               # Dependencies and scripts
-├── tsconfig.json              # TypeScript configuration
-├── tailwind.config.js         # Tailwind CSS configuration
-├── vite.config.ts             # Vite build configuration
-└── .eslintrc.json             # ESLint configuration
+│   │   └── __tests__/
+
+# Component tests
+
+│   ├── contexts/
+
+# React contexts
+
+│   │   ├── AuthContext.tsx
+
+# Authentication state
+
+│   │   ├── ErrorContext.tsx
+
+# Error handling
+
+│   │   └── ThemeContext.tsx
+
+# Theme management
+
+│   ├── hooks/
+
+# Custom React hooks
+
+│   │   ├── useAuth.ts
+
+# Authentication hook
+
+│   │   ├── useAPI.ts
+
+# API interaction hook
+
+│   │   ├── useWebSocket.ts
+
+# WebSocket hook
+
+│   │   └── useLocalStorage.ts
+
+# Local storage hook
+
+│   ├── pages/
+
+# Page components
+
+│   │   ├── Dashboard.tsx
+
+# Main dashboard
+
+│   │   ├── Workflows.tsx
+
+# Workflow management
+
+│   │   ├── Templates.tsx
+
+# Template library
+
+│   │   └── WorkflowBuilder.tsx
+
+# Workflow builder
+
+│   ├── types/
+
+# TypeScript type definitions
+
+│   │   ├── workflow.ts
+
+# Workflow types
+
+│   │   ├── template.ts
+
+# Template types
+
+│   │   ├── user.ts
+
+# User types
+
+│   │   └── api.ts
+
+# API response types
+
+│   ├── utils/
+
+# Utility functions
+
+│   │   ├── validation.ts
+
+# Form validation
+
+│   │   ├── formatting.ts
+
+# Data formatting
+
+│   │   ├── constants.ts
+
+# Application constants
+
+│   │   └── helpers.ts
+
+# Helper functions
+
+│   ├── styles/
+
+# Global styles
+
+│   │   ├── globals.css
+
+# Global CSS
+
+│   │   ├── components.css
+
+# Component styles
+
+│   │   └── tailwind.css
+
+# Tailwind imports
+
+│   ├── App.tsx
+
+# Root application component
+
+│   ├── main.tsx
+
+# Application entry point
+
+│   └── vite-env.d.ts
+
+
+
+# Vite type definitions
+
+├── package.json
+
+# Dependencies and scripts
+
+├── tsconfig.json
+
+# TypeScript configuration
+
+├── tailwind.config.js
+
+# Tailwind CSS configuration
+
+├── vite.config.ts
+
+# Vite build configuration
+
+└── .eslintrc.json
+
+# ESLint configuration
+
 ```
 
-## Component Architecture
+#
 
-### Component Hierarchy
+# Component Architectur
+
+e
+
+#
+
+## Component Hierarch
+
+y
 
 ```
+
 App
 ├── AuthProvider
 │   ├── ErrorProvider
@@ -138,23 +334,56 @@ App
 │   │   │       └── RegisterForm
 │   │   └── ErrorToast
 │   └── LoadingSpinner
+
 ```
 
-### Component Design Principles
+#
 
-#### 1. Single Responsibility
+## Component Design Principle
 
-Each component has a single, well-defined purpose:
+s
 
-- **Presentational Components**: Focus on UI rendering
-- **Container Components**: Handle data fetching and state management
-- **Hook Components**: Encapsulate reusable logic
+#
 
-#### 2. Composition over Inheritance
+###
+
+ 1. Single Responsibili
+
+t
+
+y
+
+Each component has a single, well-defined purpose
+
+:
+
+- **Presentational Components**: Focus on UI renderin
+
+g
+
+- **Container Components**: Handle data fetching and state managemen
+
+t
+
+- **Hook Components**: Encapsulate reusable logi
+
+c
+
+#
+
+###
+
+ 2. Composition over Inheritan
+
+c
+
+e
 
 Components are composed together rather than using inheritance:
 
-```typescript
+```
+
+typescript
 // Good: Composition
 const WorkflowCard = ({ workflow, onEdit, onDelete }) => (
   <Card>
@@ -166,26 +395,47 @@ const WorkflowCard = ({ workflow, onEdit, onDelete }) => (
 
 // Avoid: Inheritance
 class WorkflowCard extends BaseCard { ... }
+
 ```
 
-#### 3. Props Interface Design
+#
+
+###
+
+ 3. Props Interface Desi
+
+g
+
+n
 
 Clear, typed interfaces for all component props:
 
-```typescript
+```
+
+typescript
 interface WorkflowBuilderProps {
   workflow?: Workflow;
   onSave: (workflow: Workflow) => Promise<void>;
   onCancel: () => void;
   readonly?: boolean;
 }
-```
-
-## State Management
-
-### Global State Architecture
 
 ```
+
+#
+
+# State Managemen
+
+t
+
+#
+
+## Global State Architectur
+
+e
+
+```
+
 Application State
 ├── Authentication State (AuthContext)
 │   ├── user: User | null
@@ -204,13 +454,28 @@ Application State
     ├── Form State (React Hook Form)
     ├── UI State (useState)
     └── Server State (React Query)
+
 ```
 
-### State Management Patterns
+#
 
-#### 1. Context for Global State
+## State Management Pattern
 
-```typescript
+s
+
+#
+
+###
+
+ 1. Context for Global Sta
+
+t
+
+e
+
+```
+
+typescript
 // AuthContext.tsx
 interface AuthContextType {
   user: User | null;
@@ -228,18 +493,43 @@ export const useAuth = () => {
   }
   return context;
 };
+
 ```
 
-#### 2. React Query for Server State
+#
 
-```typescript
+###
+
+ 2. React Query for Server Sta
+
+t
+
+e
+
+```
+
+typescript
 // hooks/useWorkflows.ts
 export const useWorkflows = () => {
   return useQuery({
     queryKey: ["workflows"],
     queryFn: () => workflowAPI.getWorkflows(),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    cacheTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 5
+
+ * 6
+
+0
+
+ * 1000, // 5 minutes
+
+    cacheTime: 10
+
+ * 6
+
+0
+
+ * 1000, // 10 minutes
+
   });
 };
 
@@ -253,11 +543,22 @@ export const useCreateWorkflow = () => {
     },
   });
 };
+
 ```
 
-#### 3. Local State for UI
+#
 
-```typescript
+###
+
+ 3. Local State for
+
+U
+
+I
+
+```
+
+typescript
 // Component local state
 const WorkflowBuilder = () => {
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
@@ -266,13 +567,24 @@ const WorkflowBuilder = () => {
 
   // Component logic...
 };
+
 ```
 
-## API Integration
+#
 
-### HTTP Client Configuration
+# API Integratio
 
-```typescript
+n
+
+#
+
+## HTTP Client Configuratio
+
+n
+
+```
+
+typescript
 // api/client.ts
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
@@ -285,6 +597,7 @@ class APIClient {
       timeout: 10000,
       headers: {
         "Content-Type": "application/json",
+
       },
     });
 
@@ -333,11 +646,18 @@ class APIClient {
 
   // Additional HTTP methods...
 }
+
 ```
 
-### API Service Layer
+#
 
-```typescript
+## API Service Laye
+
+r
+
+```
+
+typescript
 // api/workflows.ts
 export class WorkflowAPI {
   constructor(private client: APIClient) {}
@@ -360,13 +680,26 @@ export class WorkflowAPI {
     return this.client.get<ExecutionStatus>(`/api/executions/${executionId}`);
   }
 }
+
 ```
 
-## Real-time Communication
+#
 
-### WebSocket Integration
+# Real-time Communicati
 
-```typescript
+o
+
+n
+
+#
+
+## WebSocket Integratio
+
+n
+
+```
+
+typescript
 // api/websocket.ts
 export class WebSocketClient {
   private socket: WebSocket | null = null;
@@ -402,9 +735,13 @@ export class WebSocketClient {
       setTimeout(
         () => {
           this.reconnectAttempts++;
+
           this.reconnect();
         },
-        this.reconnectInterval * Math.pow(2, this.reconnectAttempts),
+        this.reconnectInterval
+
+ * Math.pow(2, this.reconnectAttempts),
+
       );
     }
   }
@@ -419,11 +756,20 @@ export class WebSocketClient {
     }
   }
 }
+
 ```
 
-### Real-time Hooks
+#
 
-```typescript
+## Real-time Hoo
+
+k
+
+s
+
+```
+
+typescript
 // hooks/useWebSocket.ts
 export const useWebSocket = (url: string) => {
   const [socket, setSocket] = useState<WebSocketClient | null>(null);
@@ -455,34 +801,55 @@ export const useWebSocket = (url: string) => {
 
   return { socket, isConnected, subscribe };
 };
+
 ```
 
-## Performance Optimization
+#
 
-### Code Splitting
+# Performance Optimizatio
 
-```typescript
+n
+
+#
+
+## Code Splittin
+
+g
+
+```
+
+typescript
 // Lazy loading for route-based splitting
+
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Workflows = lazy(() => import("./pages/Workflows"));
 const Templates = lazy(() => import("./pages/Templates"));
 const WorkflowBuilder = lazy(() => import("./pages/WorkflowBuilder"));
 
 // Component-based splitting
+
 const LazyWorkflowBuilder = lazy(() =>
   import("./components/WorkflowBuilder").then((module) => ({
     default: module.WorkflowBuilder,
   })),
 );
+
 ```
 
-### Memoization
+#
 
-```typescript
+## Memoizatio
+
+n
+
+```
+
+typescript
 // React.memo for component memoization
 export const WorkflowCard = React.memo<WorkflowCardProps>(({ workflow, onEdit }) => {
   return (
     <div className="workflow-card">
+
       <h3>{workflow.name}</h3>
       <p>{workflow.description}</p>
       <button onClick={() => onEdit(workflow.id)}>Edit</button>
@@ -506,13 +873,22 @@ const WorkflowList = ({ workflows, searchTerm }) => {
     </div>
   );
 };
+
 ```
 
-### Virtual Scrolling
+#
 
-```typescript
+## Virtual Scrollin
+
+g
+
+```
+
+typescript
 // For large lists of workflows or templates
-import { FixedSizeList as List } from 'react-window';
+import { FixedSizeList as List } from 'react-window'
+
+;
 
 const WorkflowList = ({ workflows }) => {
   const Row = ({ index, style }) => (
@@ -532,13 +908,24 @@ const WorkflowList = ({ workflows }) => {
     </List>
   );
 };
+
 ```
 
-## Error Handling
+#
 
-### Error Boundary Implementation
+# Error Handlin
 
-```typescript
+g
+
+#
+
+## Error Boundary Implementatio
+
+n
+
+```
+
+typescript
 // components/ErrorBoundary.tsx
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -575,6 +962,7 @@ export class ErrorBoundary extends Component<
     if (this.state.hasError) {
       return (
         <div className="error-boundary">
+
           <h2>Something went wrong</h2>
           <details>
             <summary>Error details</summary>
@@ -588,11 +976,18 @@ export class ErrorBoundary extends Component<
     return this.props.children;
   }
 }
+
 ```
 
-### Global Error Handling
+#
 
-```typescript
+## Global Error Handlin
+
+g
+
+```
+
+typescript
 // contexts/ErrorContext.tsx
 interface ErrorContextType {
   errors: AppError[];
@@ -609,6 +1004,7 @@ export const ErrorProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setErrors(prev => [...prev, errorWithId]);
 
     // Auto-remove error after timeout
+
     setTimeout(() => {
       removeError(errorWithId.id);
     }, 5000);
@@ -629,15 +1025,27 @@ export const ErrorProvider: React.FC<PropsWithChildren> = ({ children }) => {
     </ErrorContext.Provider>
   );
 };
+
 ```
 
-## Testing Strategy
+#
 
-### Component Testing
+# Testing Strateg
 
-```typescript
+y
+
+#
+
+## Component Testin
+
+g
+
+```
+
+typescript
 // __tests__/WorkflowCard.test.tsx
 import { render, screen, fireEvent } from '@testing-library/react';
+
 import { WorkflowCard } from '../WorkflowCard';
 
 const mockWorkflow: Workflow = {
@@ -663,13 +1071,21 @@ describe('WorkflowCard', () => {
     expect(onEdit).toHaveBeenCalledWith('1');
   });
 });
+
 ```
 
-### Hook Testing
+#
 
-```typescript
+## Hook Testin
+
+g
+
+```
+
+typescript
 // __tests__/useAuth.test.ts
 import { renderHook, act } from "@testing-library/react";
+
 import { useAuth } from "../hooks/useAuth";
 
 describe("useAuth", () => {
@@ -687,14 +1103,23 @@ describe("useAuth", () => {
     expect(result.current.user).toBeDefined();
   });
 });
+
 ```
 
-### Integration Testing
+#
 
-```typescript
+## Integration Testin
+
+g
+
+```
+
+typescript
 // __tests__/WorkflowBuilder.integration.test.tsx
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 import { WorkflowBuilder } from '../pages/WorkflowBuilder';
 
 const createWrapper = () => {
@@ -729,16 +1154,28 @@ describe('WorkflowBuilder Integration', () => {
     });
   });
 });
+
 ```
 
-## Build Configuration
+#
 
-### Vite Configuration
+# Build Configuratio
 
-```typescript
+n
+
+#
+
+## Vite Configuratio
+
+n
+
+```
+
+typescript
 // vite.config.ts
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+
 import { resolve } from "path";
 
 export default defineConfig({
@@ -761,6 +1198,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ["react", "react-dom"],
+
           ui: ["@headlessui/react", "@heroicons/react"],
           charts: ["recharts"],
           workflow: ["reactflow"],
@@ -783,11 +1221,18 @@ export default defineConfig({
     setupFiles: ["./src/setupTests.ts"],
   },
 });
+
 ```
 
-### TypeScript Configuration
+#
 
-```json
+## TypeScript Configuratio
+
+n
+
+```
+
+json
 // tsconfig.json
 {
   "compilerOptions": {
@@ -801,6 +1246,7 @@ export default defineConfig({
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -808,21 +1254,36 @@ export default defineConfig({
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
+
       "@components/*": ["src/components/*"],
+
       "@pages/*": ["src/pages/*"],
+
       "@hooks/*": ["src/hooks/*"],
+
       "@utils/*": ["src/utils/*"],
+
       "@types/*": ["src/types/*"]
+
     }
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
+
 ```
 
----
+--
 
-**Document Version**: 1.0
-**Last Updated**: $(date)
-**Architecture Review**: Monthly architecture assessment
-**Maintained By**: Auterity Frontend Team
+- **Document Version**: 1.
+
+0
+**Last Updated**: $(date
+
+)
+**Architecture Review**: Monthly architecture assessmen
+
+t
+**Maintained By**: Auterity Frontend Tea
+
+m

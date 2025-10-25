@@ -1,6 +1,6 @@
 ---
 description: Repository Information Overview
-alwaysApply: true
+alwaysApply: false
 ---
 
 # Repository Information Overview

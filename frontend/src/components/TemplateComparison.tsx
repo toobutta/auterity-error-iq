@@ -421,3 +421,5 @@ const TemplateComparison: React.FC<TemplateComparisonProps> = ({
 };
 
 export default TemplateComparison;
+
+

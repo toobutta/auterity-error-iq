@@ -738,3 +738,4 @@ export const TemplateGallery: React.FC = () => {
     </Box>
   );
 };
+

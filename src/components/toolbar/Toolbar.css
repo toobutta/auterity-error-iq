@@ -1,0 +1,192 @@
+/* Professional Toolbar Styling */
+@import url('../../../design/system/tokens.css');
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-primary);
+  border-bottom: 1px solid var(--color-border-subtle);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  z-index: var(--z-index-docked);
+}
+
+/* Toolbar Groups */
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  background: var(--color-surface-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.toolbar-separator {
+  width: 1px;
+  height: var(--size-6);
+  background: var(--color-border-default);
+  margin: 0 var(--space-2);
+}
+
+/* Toolbar Buttons */
+.toolbar-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-button);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-all);
+  min-width: 60px;
+  position: relative;
+}
+
+.toolbar-button:hover {
+  background: var(--color-surface-tertiary);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-default);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-button-hover);
+}
+
+.toolbar-button.active {
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+  border-color: var(--color-primary-200);
+  box-shadow: var(--shadow-button);
+}
+
+.toolbar-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--color-primary-500);
+}
+
+.toolbar-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Tool Labels */
+.tool-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Zoom Display */
+.zoom-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-surface-primary);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  min-width: 60px;
+}
+
+/* Toolbar Spacer */
+.toolbar-spacer {
+  flex: 1;
+}
+
+/* Toolbar Status */
+.toolbar-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  background: var(--color-surface-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.status-item {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  text-transform: capitalize;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .toolbar {
+    flex-wrap: wrap;
+    padding: var(--space-2);
+  }
+  
+  .toolbar-group {
+    flex-wrap: wrap;
+  }
+  
+  .toolbar-button {
+    min-width: 48px;
+    padding: var(--space-2);
+  }
+  
+  .tool-label {
+    display: none;
+  }
+}
+
+/* High Contrast Support */
+@media (prefers-contrast: high) {
+  .toolbar-button {
+    border: var(--high-contrast-border) var(--color-border-strong);
+  }
+  
+  .toolbar-button.active {
+    border: var(--high-contrast-border) var(--color-primary-600);
+    background: var(--color-primary-100);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .toolbar-button {
+    transition: none;
+  }
+  
+  .toolbar-button:hover {
+    transform: none;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .toolbar {
+    background: var(--color-surface-primary);
+    border-color: var(--color-border-subtle);
+  }
+  
+  .toolbar-group {
+    background: var(--color-surface-secondary);
+    border-color: var(--color-border-subtle);
+  }
+  
+  .toolbar-button.active {
+    background: var(--color-primary-900);
+    color: var(--color-primary-300);
+    border-color: var(--color-primary-700);
+  }
+  
+  .zoom-display {
+    background: var(--color-surface-primary);
+    border-color: var(--color-border-default);
+  }
+}

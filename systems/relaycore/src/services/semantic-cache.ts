@@ -381,3 +381,4 @@ export const defaultSemanticCacheConfig: SemanticCacheConfig = {
   ttlSeconds: 3600, // 1 hour
   embeddingProvider: "openai",
 };
+

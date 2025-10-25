@@ -86,7 +86,7 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
         `${templateData.name} - ${new Date().toLocaleDateString()}`,
       );
     } catch (error) {
-      console.error("Error loading template:", error);
+
       setGeneralError("Failed to load template. Please try again.");
     } finally {
       setIsLoading(false);
@@ -261,7 +261,7 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
         throw new Error("Workflow creation failed - no ID returned");
       }
     } catch (error) {
-      console.error("Error creating workflow:", error);
+
       setGeneralError("Failed to create workflow. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -575,3 +575,5 @@ const TemplateInstantiationForm: React.FC<TemplateInstantiationFormProps> = ({
 };
 
 export default TemplateInstantiationForm;
+
+

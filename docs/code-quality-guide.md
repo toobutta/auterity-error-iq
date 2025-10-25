@@ -1,23 +1,88 @@
-# Auterity Unified Code Quality Guide
+
+
+# Auterity Unified Code Quality Guid
+
+e
 
 This guide outlines the code quality standards and best practices for the Auterity Unified project. Following these guidelines will help maintain a clean, consistent, and maintainable codebase.
 
-## Table of Contents
+#
 
-1. [TypeScript Best Practices](#typescript-best-practices)
-2. [Python Code Style](#python-code-style)
-3. [Linting Tools](#linting-tools)
-4. [Pre-commit Hooks](#pre-commit-hooks)
-5. [Common Issues and Solutions](#common-issues-and-solutions)
+# Table of Content
 
-## TypeScript Best Practices
+s
 
-### Type Safety
+1. [TypeScript Best Practices]
 
-- **Avoid using `any`**: Always define proper types for variables, parameters, and return values.
-- **Use TypeScript interfaces**: Create interfaces for data structures, API responses, and component props.
-- **Leverage utility types**: Use built-in utility types like `Partial<T>`, `Pick<T, K>`, `Omit<T, K>`, etc.
-- **Type assertions**: Use type assertions (`as Type`) only when necessary and when you're certain of the type.
+(
+
+#typescript-best-practices
+
+)
+
+2. [Python Code Style]
+
+(
+
+#python-code-style
+
+)
+
+3. [Linting Tools]
+
+(
+
+#linting-tools
+
+)
+
+4. [Pre-commit Hooks
+
+]
+
+(
+
+#pre-commit-hooks
+
+)
+
+5. [Common Issues and Solutions]
+
+(
+
+#common-issues-and-solution
+
+s
+
+)
+
+#
+
+# TypeScript Best Practice
+
+s
+
+#
+
+## Type Safet
+
+y
+
+- **Avoid using `any`**: Always define proper types for variables, parameters, and return values
+
+.
+
+- **Use TypeScript interfaces**: Create interfaces for data structures, API responses, and component props
+
+.
+
+- **Leverage utility types**: Use built-in utility types like `Partial<T>`, `Pick<T, K>`, `Omit<T, K>`, etc
+
+.
+
+- **Type assertions**: Use type assertions (`as Type`) only when necessary and when you're certain of the type
+
+.
 
 ```typescript
 // ❌ Bad
@@ -37,16 +102,34 @@ const fetchData = async (): Promise<DataResponse[]> => {
   const response = await api.get<ApiResponse<DataResponse[]>>("/data");
   return response.data;
 };
+
 ```
 
-### React Components
+#
 
-- **Use functional components**: Prefer functional components with hooks over class components.
-- **Type props properly**: Define interfaces for component props.
-- **Handle unused variables**: Prefix unused variables with underscore (`_variable`).
-- **useEffect dependencies**: Ensure all dependencies are properly listed in the dependency array.
+## React Component
 
-```typescript
+s
+
+- **Use functional components**: Prefer functional components with hooks over class components
+
+.
+
+- **Type props properly**: Define interfaces for component props
+
+.
+
+- **Handle unused variables**: Prefix unused variables with underscore (`_variable`)
+
+.
+
+- **useEffect dependencies**: Ensure all dependencies are properly listed in the dependency array
+
+.
+
+```
+
+typescript
 // ❌ Bad
 const Component = (props) => {
   const [data, setData] = useState();
@@ -84,28 +167,75 @@ const Component: React.FC<ComponentProps> = ({ id, onDataLoad }) => {
 
   return <div>{data.map(item => <Item key={item.id} data={item} />)}</div>;
 };
+
 ```
 
-## Python Code Style
+#
 
-### Formatting
+# Python Code Styl
 
-- **Use Black**: Format all Python code with Black using the project's configuration.
-- **Line length**: Keep lines under 88 characters.
-- **Import sorting**: Use isort to organize imports in the following order:
-  1. Standard library imports
-  2. Related third-party imports
-  3. Local application/library specific imports
+e
 
-### Best Practices
+#
 
-- **Type hints**: Use type hints for function parameters and return values.
-- **Docstrings**: Write docstrings for all public functions, classes, and methods.
-- **Avoid unused imports**: Remove unused imports.
-- **Whitespace**: Avoid trailing whitespace and ensure proper blank lines.
+## Formattin
 
-```python
+g
+
+- **Use Black**: Format all Python code with Black using the project's configuration
+
+.
+
+- **Line length**: Keep lines under 88 characters
+
+.
+
+- **Import sorting**: Use isort to organize imports in the following order
+
+:
+
+  1. Standard library import
+
+s
+
+  2. Related third-party impor
+
+t
+
+s
+
+  3. Local application/library specific import
+
+s
+
+#
+
+## Best Practice
+
+s
+
+- **Type hints**: Use type hints for function parameters and return values
+
+.
+
+- **Docstrings**: Write docstrings for all public functions, classes, and methods
+
+.
+
+- **Avoid unused imports**: Remove unused imports
+
+.
+
+- **Whitespace**: Avoid trailing whitespace and ensure proper blank lines
+
+.
+
+```
+
+python
+
 # ❌ Bad
+
 import json, os, sys
 from typing import Dict, List, Any
 import requests
@@ -119,6 +249,7 @@ def process_data(data):
     return result
 
 # ✅ Good
+
 import json
 import os
 import sys
@@ -128,10 +259,12 @@ import requests
 
 from app.models import User
 
-
 def process_data(data: List[Dict[str, str]]) -> Dict[str, str]:
+
     """
-    Process the input data and return a dictionary of id-value pairs.
+    Process the input data and return a dictionary of id-value pairs
+
+.
 
     Args:
         data: A list of dictionaries containing 'id' and 'value' keys
@@ -143,82 +276,182 @@ def process_data(data: List[Dict[str, str]]) -> Dict[str, str]:
     for item in data:
         result[item['id']] = item['value']
     return result
+
 ```
 
-## Linting Tools
+#
 
-### Frontend
+# Linting Tool
 
-- **ESLint**: Used for linting TypeScript/JavaScript code.
-- **Prettier**: Used for code formatting.
+s
+
+#
+
+## Fronten
+
+d
+
+- **ESLint**: Used for linting TypeScript/JavaScript code
+
+.
+
+- **Prettier**: Used for code formatting
+
+.
 
 To run linting:
 
-```bash
+```
+
+bash
 cd frontend
 npm run lint
+
 ```
 
 To automatically fix issues:
 
-```bash
-cd frontend
-npm run lint -- --fix
 ```
 
-### Backend
+bash
+cd frontend
+npm run lint -
 
-- **Black**: Used for code formatting.
-- **isort**: Used for import sorting.
-- **flake8**: Used for code quality checks.
+- --fi
+
+x
+
+```
+
+#
+
+## Backen
+
+d
+
+- **Black**: Used for code formatting
+
+.
+
+- **isort**: Used for import sorting
+
+.
+
+- **flake8**: Used for code quality checks
+
+.
 
 To run linting:
 
-```bash
-cd backend
-python -m black app
-python -m isort app
-python -m flake8 app
 ```
 
-### Automated Scripts
+bash
+cd backend
+python -m black app
+
+python -m isort app
+
+python -m flake8 ap
+
+p
+
+```
+
+#
+
+## Automated Script
+
+s
 
 We provide scripts to automate linting:
 
-```bash
+```
+
+bash
+
 # Backend linting
-./scripts/backend-lint-fix.sh
+
+./scripts/backend-lint-fix.s
+
+h
 
 # Frontend linting
-./scripts/frontend-lint-fix.sh
+
+./scripts/frontend-lint-fix.s
+
+h
+
 ```
 
-## Pre-commit Hooks
+#
 
-We use pre-commit hooks to ensure code quality before committing changes.
+# Pre-commit Hoo
 
-### Installation
+k
 
-```bash
+s
+
+We use pre-commit hooks to ensure code quality before committing changes
+
+.
+
+#
+
+## Installatio
+
+n
+
+```
+
+bash
 pip install pre-commit
-pre-commit install
+
+pre-commit instal
+
+l
+
 ```
 
-### Running Hooks Manually
+#
 
-```bash
-pre-commit run --all-files
+## Running Hooks Manuall
+
+y
+
 ```
 
-## Common Issues and Solutions
+bash
+pre-commit run --all-file
 
-### TypeScript: no-explicit-any
+s
 
-**Issue**: Using `any` type.
+```
 
-**Solution**: Create proper interfaces or use more specific types:
+#
 
-```typescript
+# Common Issues and Solution
+
+s
+
+#
+
+## TypeScript: no-explicit-a
+
+n
+
+y
+
+**Issue**: Using `any` type
+
+.
+
+**Solution**: Create proper interfaces or use more specific types
+
+:
+
+```
+
+typescript
 // Instead of:
 const data: any = { name: "John", age: 30 };
 
@@ -229,15 +462,28 @@ interface Person {
 }
 
 const data: Person = { name: "John", age: 30 };
+
 ```
 
-### React: react-hooks/exhaustive-deps
+#
 
-**Issue**: Missing dependencies in useEffect.
+## React: react-hooks/exhaustive-de
 
-**Solution**: Add all dependencies or use useCallback:
+p
 
-```typescript
+s
+
+**Issue**: Missing dependencies in useEffect
+
+.
+
+**Solution**: Add all dependencies or use useCallback
+
+:
+
+```
+
+typescript
 // Instead of:
 useEffect(() => {
   fetchData(id);
@@ -256,29 +502,56 @@ const handleData = useCallback(() => {
 useEffect(() => {
   handleData();
 }, [handleData]);
+
 ```
 
-### Python: Import Sorting
+#
 
-**Issue**: Imports not properly sorted.
+## Python: Import Sortin
 
-**Solution**: Run isort:
+g
 
-```bash
-python -m isort file.py
+**Issue**: Imports not properly sorted
+
+.
+
+**Solution**: Run isort
+
+:
+
 ```
 
-### Python: Line Length
+bash
+python -m isort file.p
 
-**Issue**: Lines too long.
+y
 
-**Solution**: Break long lines:
+```
 
-```python
+#
+
+## Python: Line Lengt
+
+h
+
+**Issue**: Lines too long
+
+.
+
+**Solution**: Break long lines
+
+:
+
+```
+
+python
+
 # Instead of:
+
 result = some_function_with_a_very_long_name(parameter1, parameter2, parameter3, parameter4, parameter5)
 
 # Use:
+
 result = some_function_with_a_very_long_name(
     parameter1,
     parameter2,
@@ -286,8 +559,13 @@ result = some_function_with_a_very_long_name(
     parameter4,
     parameter5,
 )
+
 ```
 
-## Conclusion
+#
+
+# Conclusio
+
+n
 
 Following these code quality guidelines will help maintain a clean, consistent, and maintainable codebase for the Auterity Unified project. If you have any questions or suggestions, please reach out to the development team.

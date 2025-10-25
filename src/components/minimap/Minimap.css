@@ -1,0 +1,147 @@
+/* Minimap Styles */
+.minimap {
+  position: relative;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.minimap-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Controls */
+.minimap-controls {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  gap: 2px;
+}
+
+.minimap-button {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.minimap-button:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.minimap-button:active {
+  transform: scale(0.95);
+}
+
+/* Hover Effects */
+.minimap:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading State */
+.minimap.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-surface);
+}
+
+.minimap.loading::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-border);
+  border-top: 2px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .minimap {
+    width: 120px !important;
+    height: 90px !important;
+  }
+  
+  .minimap-controls {
+    top: 2px;
+    right: 2px;
+  }
+  
+  .minimap-button {
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .minimap {
+    display: none;
+  }
+}
+
+/* High Contrast */
+@media (prefers-contrast: high) {
+  .minimap {
+    border: 2px solid currentColor;
+  }
+  
+  .minimap-button {
+    background-color: var(--color-text);
+    color: var(--color-background);
+  }
+}
+
+/* Focus */
+.minimap:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.minimap:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Dark Theme */
+.minimap[data-theme="dark"] {
+  background-color: var(--color-surface);
+}
+
+/* Accessibility */
+.minimap[aria-label]:hover::after {
+  content: attr(aria-label);
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--color-text);
+  color: var(--color-background);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+}

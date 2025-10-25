@@ -130,7 +130,7 @@ export const useWebSocketLogs = (
 
       ws.onopen = () => {
         if (!mountedRef.current) return;
-        console.log(`WebSocket connected for execution ${executionId}`);
+
         setConnectionStatus("connected");
         setError(null);
         reconnectAttemptsRef.current = 0;
@@ -144,7 +144,7 @@ export const useWebSocketLogs = (
           const transformedLog = transformLogMessage(message);
           addLog(transformedLog);
         } catch (parseError) {
-          console.error("Failed to parse WebSocket message:", parseError);
+
           setError("Failed to parse log message");
         }
       };
@@ -152,11 +152,6 @@ export const useWebSocketLogs = (
       ws.onclose = (event) => {
         if (!mountedRef.current) return;
 
-        console.log(
-          `WebSocket closed for execution ${executionId}:`,
-          event.code,
-          event.reason,
-        );
         setConnectionStatus("disconnected");
         wsRef.current = null;
 
@@ -167,9 +162,6 @@ export const useWebSocketLogs = (
           reconnectAttemptsRef.current < opts.reconnectAttempts
         ) {
           reconnectAttemptsRef.current++;
-          console.log(
-            `Attempting reconnection ${reconnectAttemptsRef.current}/${opts.reconnectAttempts}`,
-          );
 
           reconnectTimeoutRef.current = setTimeout(() => {
             if (mountedRef.current) {
@@ -182,12 +174,11 @@ export const useWebSocketLogs = (
       ws.onerror = (event) => {
         if (!mountedRef.current) return;
 
-        console.error("WebSocket error:", event);
         setConnectionStatus("error");
         setError("WebSocket connection error");
       };
     } catch (connectionError) {
-      console.error("Failed to create WebSocket connection:", connectionError);
+
       setConnectionStatus("error");
       setError("Failed to establish WebSocket connection");
     }
@@ -254,3 +245,5 @@ export const useWebSocketLogs = (
     disconnect,
   };
 };
+
+

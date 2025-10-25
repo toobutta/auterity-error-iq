@@ -9,13 +9,11 @@ const WorkflowBuilderDemo: React.FC = () => {
 
   const handleSave = (workflow: Workflow) => {
     setSavedWorkflow(workflow);
-    console.log("Workflow saved:", sanitizeLog(JSON.stringify(workflow)));
     // Show success notification
     alert(`Workflow "${sanitizeLog(workflow.name)}" saved successfully!`);
   };
 
   const handleTest = (workflow: Workflow) => {
-    console.log("Testing workflow:", sanitizeLog(JSON.stringify(workflow)));
     setExecutionResult(`Testing workflow: ${sanitizeLog(workflow.name)}`);
   };
 
@@ -95,3 +93,5 @@ const WorkflowBuilderDemo: React.FC = () => {
 };
 
 export default WorkflowBuilderDemo;
+
+

@@ -117,7 +117,7 @@ export const WhiteLabelCustomizer: React.FC = () => {
       setThemes(mockThemes);
       setSelectedTheme(mockThemes[0]);
     } catch (error) {
-      console.error("Error loading themes:", error);
+
     } finally {
       setLoading(false);
     }
@@ -208,7 +208,7 @@ export const WhiteLabelCustomizer: React.FC = () => {
 
       alert("White-label configuration saved successfully!");
     } catch (error) {
-      console.error("Error saving configuration:", error);
+
       alert("Error saving configuration. Please try again.");
     } finally {
       setSaving(false);
@@ -489,3 +489,5 @@ export const WhiteLabelCustomizer: React.FC = () => {
     </div>
   );
 };
+
+

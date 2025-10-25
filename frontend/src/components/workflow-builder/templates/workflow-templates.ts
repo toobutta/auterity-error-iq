@@ -516,3 +516,5 @@ export const getTemplatesByCategory = (
 export const getTemplateById = (id: string) => {
   return AUTOMOTIVE_WORKFLOW_TEMPLATES.find((template) => template.id === id);
 };
+
+

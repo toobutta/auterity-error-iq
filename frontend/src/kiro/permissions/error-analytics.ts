@@ -32,3 +32,5 @@ export const checkKiroPermission = (
   const role = kiroRoles.find((r) => r.name === userRole);
   return role?.canView.includes(resource) ?? false;
 };
+
+

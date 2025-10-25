@@ -1,74 +1,244 @@
-# Shared Modules Documentation
 
-**Document Version**: 1.0
-**Last Updated**: August 8, 2025
-**Maintained By**: Development Team
 
-## Overview
+# Shared Modules Documentatio
+
+n
+
+**Document Version**: 1.
+
+0
+**Last Updated**: August 8, 202
+
+5
+**Maintained By**: Development Tea
+
+m
+
+#
+
+# Overvie
+
+w
 
 The shared modules directory contains reusable components, utilities, types, and services that are used across the Auterity Unified Platform. These modules promote code reuse, maintain consistency, and reduce duplication across the frontend, backend, and system integrations.
 
----
+--
 
-## Directory Structure
+- #
+
+# Directory Structur
+
+e
 
 ```
 shared/
-├── api/                    # API clients and service abstractions
-│   ├── client.ts          # HTTP client configuration
-│   ├── auth.ts            # Authentication API service
-│   ├── workflows.ts       # Workflow API service
-│   └── index.ts           # API exports
-├── components/            # Reusable UI components
-│   ├── ui/                # Basic UI components
-│   ├── forms/             # Form components
-│   ├── charts/            # Chart components
-│   └── index.ts           # Component exports
-├── contexts/              # React context providers
-│   ├── AuthContext.tsx    # Authentication context
-│   ├── ErrorContext.tsx   # Error handling context
-│   └── index.ts           # Context exports
-├── hooks/                 # Custom React hooks
-│   ├── useAuth.ts         # Authentication hook
-│   ├── useApi.ts          # API interaction hook
-│   ├── useErrorHandler.ts # Error handling hook
-│   └── index.ts           # Hook exports
-├── types/                 # TypeScript type definitions
-│   ├── error.ts           # Error types
-│   ├── api.ts             # API types
-│   ├── workflow.ts        # Workflow types
-│   └── index.ts           # Type exports
-├── utils/                 # Utility functions
-│   ├── logger.ts          # Logging utilities
-│   ├── errorUtils.ts      # Error handling utilities
-│   ├── retryUtils.ts      # Retry mechanism utilities
-│   ├── component-utils.ts # Component utility functions
-│   ├── theme-utils.ts     # Theme and styling utilities
-│   └── index.ts           # Utility exports
-├── services/              # Business logic services
-│   ├── analytics.ts       # Analytics service
-│   ├── monitoring.ts      # Monitoring service
-│   └── index.ts           # Service exports
-├── design-tokens/         # Design system tokens
-│   ├── colors.ts          # Color definitions
-│   ├── typography.ts      # Typography settings
-│   ├── spacing.ts         # Spacing values
-│   └── index.ts           # Token exports
-├── README.md              # Shared modules documentation
-└── index.ts               # Main exports file
+├── api/
+
+# API clients and service abstractions
+
+│   ├── client.ts
+
+# HTTP client configuration
+
+│   ├── auth.ts
+
+# Authentication API service
+
+│   ├── workflows.ts
+
+# Workflow API service
+
+│   └── index.ts
+
+# API exports
+
+├── components/
+
+# Reusable UI components
+
+│   ├── ui/
+
+# Basic UI components
+
+│   ├── forms/
+
+# Form components
+
+│   ├── charts/
+
+# Chart components
+
+│   └── index.ts
+
+# Component exports
+
+├── contexts/
+
+# React context providers
+
+│   ├── AuthContext.tsx
+
+# Authentication context
+
+│   ├── ErrorContext.tsx
+
+# Error handling context
+
+│   └── index.ts
+
+# Context exports
+
+├── hooks/
+
+# Custom React hooks
+
+│   ├── useAuth.ts
+
+# Authentication hook
+
+│   ├── useApi.ts
+
+# API interaction hook
+
+│   ├── useErrorHandler.ts
+
+# Error handling hook
+
+│   └── index.ts
+
+# Hook exports
+
+├── types/
+
+# TypeScript type definitions
+
+│   ├── error.ts
+
+# Error types
+
+│   ├── api.ts
+
+# API types
+
+│   ├── workflow.ts
+
+# Workflow types
+
+│   └── index.ts
+
+# Type exports
+
+├── utils/
+
+# Utility functions
+
+│   ├── logger.ts
+
+# Logging utilities
+
+│   ├── errorUtils.ts
+
+# Error handling utilities
+
+│   ├── retryUtils.ts
+
+# Retry mechanism utilities
+
+│   ├── component-utils.ts
+
+
+
+# Component utility functions
+
+│   ├── theme-utils.ts
+
+
+
+# Theme and styling utilities
+
+│   └── index.ts
+
+# Utility exports
+
+├── services/
+
+# Business logic services
+
+│   ├── analytics.ts
+
+# Analytics service
+
+│   ├── monitoring.ts
+
+# Monitoring service
+
+│   └── index.ts
+
+# Service exports
+
+├── design-tokens/
+
+
+
+# Design system tokens
+
+│   ├── colors.ts
+
+# Color definitions
+
+│   ├── typography.ts
+
+# Typography settings
+
+│   ├── spacing.ts
+
+# Spacing values
+
+│   └── index.ts
+
+# Token exports
+
+├── README.md
+
+# Shared modules documentation
+
+└── index.ts
+
+# Main exports file
+
 ```
 
----
+--
 
-## Core Modules
+- #
 
-### 1. API Services (`/api`)
+# Core Module
 
-#### HTTP Client Configuration
+s
 
-**File**: `api/client.ts`
+#
 
-```typescript
+##
+
+ 1. API Services (`/api
+
+`
+
+)
+
+#
+
+### HTTP Client Configuratio
+
+n
+
+**File**: `api/client.ts
+
+`
+
+```
+
+typescript
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { AuthService } from "./auth";
 import { Logger } from "../utils/logger";
@@ -98,6 +268,7 @@ class ApiClient {
       timeout: this.config.timeout,
       headers: {
         "Content-Type": "application/json",
+
       },
     });
   }
@@ -192,13 +363,22 @@ export const apiClient = new ApiClient({
   retryAttempts: 3,
   enableRequestLogging: process.env.NODE_ENV === "development",
 });
+
 ```
 
-#### Authentication Service
+#
 
-**File**: `api/auth.ts`
+### Authentication Servic
 
-```typescript
+e
+
+**File**: `api/auth.ts
+
+`
+
+```
+
+typescript
 import { apiClient } from "./client";
 import { Logger } from "../utils/logger";
 
@@ -338,15 +518,32 @@ class AuthServiceClass {
 }
 
 export const AuthService = new AuthServiceClass();
+
 ```
 
-### 2. Utility Functions (`/utils`)
+#
 
-#### Logging Utility
+##
 
-**File**: `utils/logger.ts`
+ 2. Utility Functions (`/utils
 
-```typescript
+`
+
+)
+
+#
+
+### Logging Utilit
+
+y
+
+**File**: `utils/logger.ts
+
+`
+
+```
+
+typescript
 export enum LogLevel {
   DEBUG = 0,
   INFO = 1,
@@ -425,6 +622,7 @@ class LoggerClass {
       await fetch("/api/monitoring/logs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+
         body: JSON.stringify(entry),
       });
     } catch (error) {
@@ -463,13 +661,22 @@ class LoggerClass {
 
 export const Logger = LoggerClass;
 export const logger = new LoggerClass();
+
 ```
 
-#### Error Handling Utilities
+#
 
-**File**: `utils/errorUtils.ts`
+### Error Handling Utilitie
 
-```typescript
+s
+
+**File**: `utils/errorUtils.ts
+
+`
+
+```
+
+typescript
 import { Logger } from "./logger";
 
 export interface ErrorContext {
@@ -549,6 +756,7 @@ class ErrorUtilsClass {
       await fetch("/api/errors/report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+
         body: JSON.stringify(errorReport),
       });
     } catch (reportingError) {
@@ -600,13 +808,22 @@ class ErrorUtilsClass {
 }
 
 export const ErrorUtils = new ErrorUtilsClass();
+
 ```
 
-#### Retry Utilities
+#
 
-**File**: `utils/retryUtils.ts`
+### Retry Utilitie
 
-```typescript
+s
+
+**File**: `utils/retryUtils.ts
+
+`
+
+```
+
+typescript
 import { Logger } from "./logger";
 
 export interface RetryOptions {
@@ -642,6 +859,7 @@ class RetryUtilsClass {
     let lastError: Error;
 
     for (let attempt = 1; attempt <= config.maxAttempts; attempt++) {
+
       try {
         return await operation();
       } catch (error) {
@@ -680,15 +898,43 @@ class RetryUtilsClass {
   }
 
   private calculateDelay(attempt: number, config: RetryOptions): number {
-    // Exponential backoff: baseDelay * (backoffFactor ^ (attempt - 1))
-    let delay = config.baseDelay * Math.pow(config.backoffFactor, attempt - 1);
+    // Exponential backoff: baseDelay
+
+ * (backoffFactor ^ (attemp
+
+t
+
+ - 1))
+
+    let delay = config.baseDelay
+
+ * Math.pow(config.backoffFactor, attemp
+
+t
+
+ - 1)
+
+;
 
     // Apply maximum delay limit
     delay = Math.min(delay, config.maxDelay);
 
     // Add jitter to prevent thundering herd
     if (config.jitter) {
-      delay = delay * (0.5 + Math.random() * 0.5);
+      delay = delay
+
+ * (0.
+
+5
+
+ + Math.random(
+
+)
+
+ * 0.5)
+
+;
+
     }
 
     return Math.floor(delay);
@@ -726,15 +972,32 @@ export const RetryUtils = new RetryUtilsClass();
 
 // Convenience wrapper for common retry scenarios
 export const retry = RetryUtils.withRetry.bind(RetryUtils);
+
 ```
 
-### 3. Custom Hooks (`/hooks`)
+#
 
-#### Authentication Hook
+##
 
-**File**: `hooks/useAuth.ts`
+ 3. Custom Hooks (`/hooks
 
-```typescript
+`
+
+)
+
+#
+
+### Authentication Hoo
+
+k
+
+**File**: `hooks/useAuth.ts
+
+`
+
+```
+
+typescript
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { AuthService } from '../api/auth';
 import { Logger } from '../utils/logger';
@@ -866,13 +1129,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
 ```
 
-#### API Hook
+#
 
-**File**: `hooks/useApi.ts`
+### API Hoo
 
-```typescript
+k
+
+**File**: `hooks/useApi.ts
+
+`
+
+```
+
+typescript
 import { useState, useEffect, useCallback } from "react";
 import { apiClient } from "../api/client";
 import { RetryUtils } from "../utils/retryUtils";
@@ -1015,15 +1287,32 @@ export function useWorkflowApi() {
     executeWorkflow,
   };
 }
+
 ```
 
-### 4. Type Definitions (`/types`)
+#
 
-#### Core Types
+##
 
-**File**: `types/index.ts`
+ 4. Type Definitions (`/types
 
-```typescript
+`
+
+)
+
+#
+
+### Core Type
+
+s
+
+**File**: `types/index.ts
+
+`
+
+```
+
+typescript
 // Common utility types
 export type UUID = string;
 export type Timestamp = string;
@@ -1215,13 +1504,22 @@ export interface SystemMetrics {
     executions_last_hour: number;
   };
 }
+
 ```
 
-#### Error Types
+#
 
-**File**: `types/error.ts`
+### Error Type
 
-```typescript
+s
+
+**File**: `types/error.ts
+
+`
+
+```
+
+typescript
 export interface ErrorContext {
   component?: string;
   action?: string;
@@ -1255,15 +1553,30 @@ export interface ErrorNotification {
   dismissed: boolean;
   persistent: boolean;
 }
+
 ```
 
----
+--
 
-## Usage Guidelines
+- #
 
-### 1. Import Patterns
+# Usage Guideline
 
-```typescript
+s
+
+#
+
+##
+
+ 1. Import Patter
+
+n
+
+s
+
+```
+
+typescript
 // Import specific modules
 import { apiClient } from "@/shared/api/client";
 import { Logger } from "@/shared/utils/logger";
@@ -1276,11 +1589,22 @@ import { useApi, useWorkflowApi } from "@/shared/hooks";
 
 // Import types
 import type { User, Workflow, ApiResponse } from "@/shared/types";
+
 ```
 
-### 2. Component Integration
+#
 
-```typescript
+##
+
+ 2. Component Integrati
+
+o
+
+n
+
+```
+
+typescript
 // Using shared hooks in components
 import React from 'react';
 import { useAuth } from '@/shared/hooks/useAuth';
@@ -1307,15 +1631,29 @@ const WorkflowDashboard: React.FC = () => {
 
   return (
     <div>
-      {/* Component JSX */}
+      {/
+
+* Component JSX */}
+
     </div>
   );
 };
+
 ```
 
-### 3. Service Integration
+#
 
-```typescript
+##
+
+ 3. Service Integrati
+
+o
+
+n
+
+```
+
+typescript
 // Using shared services
 import { AuthService } from "@/shared/api/auth";
 import { retry } from "@/shared/utils/retryUtils";
@@ -1333,6 +1671,7 @@ class CustomService {
       async () => {
         // Critical operation that might fail
         const result = await fetch("/api/critical-endpoint");
+
         return result.json();
       },
       {
@@ -1348,15 +1687,30 @@ class CustomService {
     );
   }
 }
+
 ```
 
----
+--
 
-## Testing Shared Modules
+- #
 
-### 1. Unit Testing
+# Testing Shared Module
 
-```typescript
+s
+
+#
+
+##
+
+ 1. Unit Testi
+
+n
+
+g
+
+```
+
+typescript
 // Testing utilities
 import { describe, it, expect, vi } from "vitest";
 import { ErrorUtils } from "../utils/errorUtils";
@@ -1370,6 +1724,7 @@ describe("ErrorUtils", () => {
   });
 
   it("should generate user-friendly messages", () => {
+
     const validationError = new Error("Invalid email format");
     const message = ErrorUtils.createUserFriendlyMessage(
       validationError,
@@ -1384,6 +1739,7 @@ describe("RetryUtils", () => {
     let attempts = 0;
     const operation = vi.fn(() => {
       attempts++;
+
       if (attempts < 3) {
         throw new Error("Temporary failure");
       }
@@ -1400,13 +1756,25 @@ describe("RetryUtils", () => {
     expect(operation).toHaveBeenCalledTimes(3);
   });
 });
+
 ```
 
-### 2. Integration Testing
+#
 
-```typescript
+##
+
+ 2. Integration Testi
+
+n
+
+g
+
+```
+
+typescript
 // Testing hooks
 import { renderHook, waitFor } from "@testing-library/react";
+
 import { useAuth } from "../hooks/useAuth";
 import { AuthService } from "../api/auth";
 
@@ -1431,40 +1799,121 @@ describe("useAuth", () => {
     });
   });
 });
+
 ```
 
----
+--
 
-## Maintenance and Best Practices
+- #
 
-### 1. Code Quality
+# Maintenance and Best Practice
 
-- **Type Safety**: All shared modules use TypeScript
-- **Error Handling**: Comprehensive error handling with logging
-- **Testing**: Unit tests for all utilities and services
-- **Documentation**: JSDoc comments for public APIs
+s
 
-### 2. Performance
+#
 
-- **Tree Shaking**: Modular exports for optimal bundling
-- **Lazy Loading**: Conditional imports where appropriate
-- **Memoization**: React hooks use proper dependencies
-- **Caching**: API responses cached where beneficial
+##
 
-### 3. Security
+ 1. Code Quali
 
-- **Input Validation**: All user inputs validated
-- **Token Management**: Secure token storage and refresh
-- **Error Sanitization**: Sensitive data excluded from error reports
-- **Audit Logging**: Security events logged appropriately
+t
 
-### 4. Versioning
+y
 
-- **Semantic Versioning**: Breaking changes increment major version
-- **Changelog**: All changes documented
-- **Migration Guides**: Breaking change migration documentation
-- **Backward Compatibility**: Maintained where possible
+- **Type Safety**: All shared modules use TypeScrip
 
----
+t
 
-This comprehensive shared modules documentation provides developers with the knowledge and tools needed to effectively use and extend the common functionality across the Auterity platform.
+- **Error Handling**: Comprehensive error handling with loggin
+
+g
+
+- **Testing**: Unit tests for all utilities and service
+
+s
+
+- **Documentation**: JSDoc comments for public API
+
+s
+
+#
+
+##
+
+ 2. Performan
+
+c
+
+e
+
+- **Tree Shaking**: Modular exports for optimal bundlin
+
+g
+
+- **Lazy Loading**: Conditional imports where appropriat
+
+e
+
+- **Memoization**: React hooks use proper dependencie
+
+s
+
+- **Caching**: API responses cached where beneficia
+
+l
+
+#
+
+##
+
+ 3. Securi
+
+t
+
+y
+
+- **Input Validation**: All user inputs validate
+
+d
+
+- **Token Management**: Secure token storage and refres
+
+h
+
+- **Error Sanitization**: Sensitive data excluded from error report
+
+s
+
+- **Audit Logging**: Security events logged appropriatel
+
+y
+
+#
+
+##
+
+ 4. Versioni
+
+n
+
+g
+
+- **Semantic Versioning**: Breaking changes increment major versio
+
+n
+
+- **Changelog**: All changes documente
+
+d
+
+- **Migration Guides**: Breaking change migration documentatio
+
+n
+
+- **Backward Compatibility**: Maintained where possibl
+
+e
+
+--
+
+- This comprehensive shared modules documentation provides developers with the knowledge and tools needed to effectively use and extend the common functionality across the Auterity platform.

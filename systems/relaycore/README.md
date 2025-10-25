@@ -1,33 +1,112 @@
-# RelayCore - AI Routing Hub
 
-RelayCore serves as the central AI request routing system for the three-system platform.
 
-## Architecture
+# RelayCore
 
-- **HTTP Proxy Server**: Express.js with TypeScript
-- **Provider Management**: OpenAI, Anthropic, Claude integrations
-- **Cost Optimization**: Intelligent model selection based on budget constraints
-- **Steering Rules**: YAML-based routing configuration
+ - AI Routing H
 
-## Key Features
+u
 
-- Request/response logging and metrics
-- Cost-aware model selection
-- Fallback mechanisms
-- Performance monitoring
-- Integration with NeuroWeaver specialized models
+b
 
-## Development Setup
+RelayCore serves as the central AI request routing system for the three-system platform
+
+.
+
+#
+
+# Architectur
+
+e
+
+- **HTTP Proxy Server**: Express.js with TypeScrip
+
+t
+
+- **Provider Management**: OpenAI, Anthropic, Claude integration
+
+s
+
+- **Cost Optimization**: Intelligent model selection based on budget constraint
+
+s
+
+- **Steering Rules**: YAML-based routing configuratio
+
+n
+
+#
+
+# Key Feature
+
+s
+
+- Request/response logging and metric
+
+s
+
+- Cost-aware model selectio
+
+n
+
+- Fallback mechanism
+
+s
+
+- Performance monitorin
+
+g
+
+- Integration with NeuroWeaver specialized model
+
+s
+
+#
+
+# Development Setu
+
+p
 
 ```bash
 cd systems/relaycore
 npm install
 npm run dev
+
 ```
 
-## API Endpoints
+#
 
-- `POST /api/v1/chat` - Route AI chat requests
-- `GET /api/v1/models` - List available models
-- `GET /api/v1/metrics` - Usage and cost metrics
-- `POST /api/v1/steering` - Update routing rules
+# API Endpoint
+
+s
+
+- `POST /api/v1/chat
+
+`
+
+ - Route AI chat request
+
+s
+
+- `GET /api/v1/models
+
+`
+
+ - List available model
+
+s
+
+- `GET /api/v1/metrics
+
+`
+
+ - Usage and cost metric
+
+s
+
+- `POST /api/v1/steering
+
+`
+
+ - Update routing rule
+
+s

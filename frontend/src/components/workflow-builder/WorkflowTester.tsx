@@ -166,7 +166,7 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
 
           return unsubscribe;
         } catch (error) {
-          console.error("Failed to connect to execution status:", error);
+
           setError("Failed to connect to real-time updates");
         }
       };
@@ -211,7 +211,7 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
         `🚀 Workflow execution started (ID: ${newExecutionId})`,
       ]);
     } catch (error) {
-      console.error("Workflow execution failed:", error);
+
       setError(error instanceof Error ? error.message : "Execution failed");
       setIsRunning(false);
     }
@@ -504,3 +504,5 @@ const WorkflowTester: React.FC<WorkflowTesterProps> = ({
 };
 
 export default WorkflowTester;
+
+

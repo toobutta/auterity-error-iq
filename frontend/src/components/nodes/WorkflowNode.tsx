@@ -25,3 +25,5 @@ export const WorkflowNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
     </div>
   );
 };
+
+

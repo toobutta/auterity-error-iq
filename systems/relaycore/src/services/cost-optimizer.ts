@@ -315,3 +315,4 @@ export class CostOptimizer {
     return history.reduce((sum, cost) => sum + cost, 0) / history.length;
   }
 }
+

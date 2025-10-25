@@ -1,0 +1,223 @@
+# Prometheus Alert Rules for Auterity Unified AI Platform
+
+groups:
+  - name: auterity_ai_services
+    rules:
+      # VLLM Service Alerts
+      - alert: VLLMServiceDown
+        expr: up{job="auterity-vllm"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          service: vllm
+        annotations:
+          summary: "VLLM service is down"
+          description: "VLLM service has been down for more than 5 minutes"
+          runbook_url: "https://docs.auterity.com/runbooks/vllm-service-down"
+
+      - alert: VLLMHighErrorRate
+        expr: rate(http_requests_total{job="auterity-vllm", status=~"5.."}[5m]) / rate(http_requests_total{job="auterity-vllm"}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          service: vllm
+        annotations:
+          summary: "VLLM high error rate"
+          description: "VLLM service error rate is above 10% for 5 minutes"
+
+      - alert: VLLMHighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="auterity-vllm"}[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: vllm
+        annotations:
+          summary: "VLLM high latency"
+          description: "VLLM service 95th percentile latency is above 5 seconds"
+
+      # LangGraph Service Alerts
+      - alert: LangGraphServiceDown
+        expr: up{job="auterity-langgraph"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          service: langgraph
+        annotations:
+          summary: "LangGraph service is down"
+          description: "LangGraph service has been down for more than 5 minutes"
+
+      - alert: LangGraphWorkflowFailures
+        expr: rate(workflow_executions_total{job="auterity-langgraph", status="failed"}[5m]) / rate(workflow_executions_total{job="auterity-langgraph"}[5m]) > 0.2
+        for: 5m
+        labels:
+          severity: warning
+          service: langgraph
+        annotations:
+          summary: "LangGraph high workflow failure rate"
+          description: "LangGraph workflow failure rate is above 20%"
+
+      # CrewAI Service Alerts
+      - alert: CrewAIServiceDown
+        expr: up{job="auterity-crewai"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          service: crewai
+        annotations:
+          summary: "CrewAI service is down"
+          description: "CrewAI service has been down for more than 5 minutes"
+
+      - alert: CrewAIHighAgentFailures
+        expr: rate(agent_executions_total{job="auterity-crewai", status="failed"}[5m]) / rate(agent_executions_total{job="auterity-crewai"}[5m]) > 0.15
+        for: 5m
+        labels:
+          severity: warning
+          service: crewai
+        annotations:
+          summary: "CrewAI high agent failure rate"
+          description: "CrewAI agent failure rate is above 15%"
+
+  - name: auterity_infrastructure
+    rules:
+      # Database Alerts
+      - alert: PostgresConnectionHigh
+        expr: rate(postgres_connections_total{state="active"}[5m]) > 100
+        for: 5m
+        labels:
+          severity: warning
+          service: postgres
+        annotations:
+          summary: "High PostgreSQL connections"
+          description: "PostgreSQL active connections are above 100"
+
+      - alert: RedisMemoryHigh
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: redis
+        annotations:
+          summary: "Redis high memory usage"
+          description: "Redis memory usage is above 80%"
+
+      # Kong API Gateway Alerts
+      - alert: KongHighErrorRate
+        expr: rate(http_requests_total{job="auterity-kong", status=~"5.."}[5m]) / rate(http_requests_total{job="auterity-kong"}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          service: kong
+        annotations:
+          summary: "Kong high error rate"
+          description: "Kong API gateway error rate is above 5%"
+
+      # Temporal Alerts
+      - alert: TemporalWorkflowQueueHigh
+        expr: temporal_workflow_queue_length > 1000
+        for: 5m
+        labels:
+          severity: warning
+          service: temporal
+        annotations:
+          summary: "Temporal workflow queue high"
+          description: "Temporal workflow queue length is above 1000"
+
+  - name: auterity_monitoring
+    rules:
+      # Monitoring Stack Alerts
+      - alert: PrometheusTargetsDown
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: warning
+          service: monitoring
+        annotations:
+          summary: "Prometheus targets down"
+          description: "One or more Prometheus targets are down"
+
+      - alert: ElasticsearchClusterHealth
+        expr: elasticsearch_cluster_health_status{cluster="auterity"} != 0
+        for: 5m
+        labels:
+          severity: warning
+          service: elasticsearch
+        annotations:
+          summary: "Elasticsearch cluster unhealthy"
+          description: "Elasticsearch cluster health status is not green"
+
+      - alert: DiskSpaceLow
+        expr: (1 - node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: infrastructure
+        annotations:
+          summary: "Disk space low"
+          description: "Disk space usage is above 85%"
+
+  - name: auterity_performance
+    rules:
+      # Performance Degradation Alerts
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+          service: general
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is above 10 seconds"
+
+      - alert: HighCPUUsage
+        expr: rate(cpu_usage_total[5m]) > 0.9
+        for: 10m
+        labels:
+          severity: warning
+          service: infrastructure
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is above 90% for 10 minutes"
+
+      - alert: HighMemoryUsage
+        expr: memory_usage_bytes / memory_total_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: infrastructure
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is above 90%"
+
+  - name: auterity_business_metrics
+    rules:
+      # Business Logic Alerts
+      - alert: LowWorkflowSuccessRate
+        expr: rate(workflow_success_total[1h]) / rate(workflow_total[1h]) < 0.95
+        for: 15m
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "Low workflow success rate"
+          description: "Workflow success rate is below 95% for the last hour"
+
+      - alert: HighUserErrors
+        expr: rate(user_error_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: info
+          service: business
+        annotations:
+          summary: "High user error rate"
+          description: "User error rate is above 10 per minute"
+
+      - alert: SlowAIProcessing
+        expr: histogram_quantile(0.95, rate(ai_processing_duration_seconds_bucket[5m])) > 30
+        for: 5m
+        labels:
+          severity: warning
+          service: ai
+        annotations:
+          summary: "Slow AI processing detected"
+          description: "AI processing 95th percentile latency is above 30 seconds"
+

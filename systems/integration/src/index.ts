@@ -381,14 +381,14 @@ async function startServer(
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error ? error : new Error(String(error));
-    console.error("Failed to start integration server:", errorMessage);
+
     process.exit(1);
   }
 }
 
 // Global error handlers
 process.on("uncaughtException", (error: Error) => {
-  console.error("Uncaught Exception:", error);
+
   process.exit(1);
 });
 
@@ -424,7 +424,8 @@ if (require.main === module) {
   startServer().catch((error: unknown) => {
     const errorMessage =
       error instanceof Error ? error : new Error(String(error));
-    console.error("Failed to start server:", errorMessage);
+
     process.exit(1);
   });
 }
+

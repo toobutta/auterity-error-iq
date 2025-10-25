@@ -56,7 +56,7 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
       setTotalPages(Math.ceil(response.total / response.pageSize));
     } catch (err) {
       setError("Failed to load templates. Please try again.");
-      console.error("Error loading templates:", err);
+
     } finally {
       setLoading(false);
     }
@@ -67,7 +67,7 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
       const response = await getTemplateCategories();
       setCategories(response.categories);
     } catch (err) {
-      console.error("Error loading categories:", err);
+
     }
   }, []);
 
@@ -414,3 +414,5 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
 };
 
 export default TemplateLibrary;
+
+

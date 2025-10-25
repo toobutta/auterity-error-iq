@@ -1,21 +1,65 @@
-# Core Services
 
-## Authentication
 
-- JWT tokens, OAuth2, SSO integration
-- Endpoints: `/api/auth/*`
+# Core Service
 
-## Database
+s
 
-- PostgreSQL with clustering
-- Port: 5432
+#
 
-## Cache
+# Authenticatio
 
-- Redis with persistence
-- Port: 6379
+n
 
-## Queue
+- JWT tokens, OAuth2, SSO integratio
 
-- RabbitMQ + Celery workers
-- Port: 5672
+n
+
+- Endpoints: `/api/auth/*
+
+`
+
+#
+
+# Databas
+
+e
+
+- PostgreSQL with clusterin
+
+g
+
+- Port: 543
+
+2
+
+#
+
+# Cach
+
+e
+
+- Redis with persistenc
+
+e
+
+- Port: 637
+
+9
+
+#
+
+# Queu
+
+e
+
+- RabbitM
+
+Q
+
+ + Celery worker
+
+s
+
+- Port: 567
+
+2

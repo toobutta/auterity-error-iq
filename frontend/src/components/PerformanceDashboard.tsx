@@ -73,7 +73,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
       setMetrics(data);
     } catch (err) {
       setError("Failed to load performance data");
-      console.error("Performance data error:", err);
+
     } finally {
       setLoading(false);
     }
@@ -295,3 +295,5 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
     </div>
   );
 };
+
+

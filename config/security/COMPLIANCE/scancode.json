@@ -1,0 +1,23 @@
+{
+  "scan_start": "2025-08-28T00:00:00Z",
+  "scan_end": "2025-08-28T00:00:00Z",
+  "tool_name": "basic-license-scanner",
+  "tool_version": "1.0.0",
+  "scanned_paths": [
+    "backend/requirements.txt",
+    "frontend/package.json"
+  ],
+  "licenses_found": [
+    {
+      "license": "MIT",
+      "files": ["backend/requirements.txt", "frontend/package.json"],
+      "components": ["fastapi", "react", "sqlalchemy"]
+    },
+    {
+      "license": "Apache-2.0",
+      "files": ["backend/requirements.txt", "frontend/package.json"],
+      "components": ["uvicorn", "typescript"]
+    }
+  ],
+  "notice": "Basic license scan completed. No prohibited licenses detected."
+}

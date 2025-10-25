@@ -1,0 +1,12 @@
+# Grafana dashboard configuration for Auterity AI Platform monitoring
+apiVersion: 1
+
+providers:
+  - name: 'auterity-ai'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
+

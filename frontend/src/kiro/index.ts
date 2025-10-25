@@ -12,3 +12,5 @@ export type { KiroErrorEvent } from "./hooks/error-intelligence.hook";
 export type { ErrorSteeringRule } from "./steering/error-routing";
 export type { KiroRole } from "./permissions/error-analytics";
 export type { KiroModule } from "./register";
+
+

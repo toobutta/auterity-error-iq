@@ -1,6 +1,10 @@
+/* eslint-env node */
 module.exports = {
-  root: true,
-  env: { browser: true, es2020: true },
+  env: { 
+    browser: true, 
+    es2020: true,
+    node: true
+  },
   extends: ["eslint:recommended", "@typescript-eslint/recommended"],
   ignorePatterns: ["dist", ".eslintrc.js", "*.config.js", "*.config.ts"],
   parser: "@typescript-eslint/parser",

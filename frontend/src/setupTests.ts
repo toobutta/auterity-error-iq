@@ -54,3 +54,5 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
 
 // Increase timeout for async operations
 vi.setConfig({ testTimeout: 10000 });
+
+
